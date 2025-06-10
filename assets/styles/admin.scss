@@ -1,0 +1,24 @@
+@import './variables.scss';
+
+@import './Admin/base';
+
+@import './Admin/layout/sidebar';
+@import './Admin/layout/header';
+@import './Admin/layout/details';
+@import './Admin/layout/settings';
+
+@import './Admin/components/badges';
+@import './Admin/components/breadcrumb';
+@import './Admin/components/buttons';
+@import './Admin/components/card';
+@import './Admin/components/charts';
+@import './Admin/components/datatables';
+@import './Admin/components/flash-messages';
+@import './Admin/components/form';
+@import './Admin/components/loader';
+@import './Admin/components/stat-card';
+@import './Admin/components/tables';
+@import './Admin/components/user-menu';
+
+@import './Admin/utils/animations';
+@import './Admin/utils/utilities';

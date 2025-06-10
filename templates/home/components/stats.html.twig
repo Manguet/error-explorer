@@ -1,0 +1,68 @@
+<section class="stats" id="stats">
+    <div class="container">
+        <div class="stats-header">
+            <div class="live-badge">
+                <span>Données en temps réel</span>
+            </div>
+
+            <h2>Tableau de bord de notre plateforme</h2>
+            <p>Statistiques live et indicateurs de performance de Error Explorer</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item primary">
+                <div class="stat-header">
+                    <div class="stat-title">Utilisateurs Actifs</div>
+                    <div class="trend-indicator trend-up">+12%</div>
+                </div>
+                <div class="stat-number" data-count="{{ stats.total_users }}">0</div>
+                <div class="stat-description">Développeurs connectés ce mois</div>
+            </div>
+
+            <div class="stat-item success">
+                <div class="stat-header">
+                    <div class="stat-title">Erreurs Détectées</div>
+                    <div class="trend-indicator trend-up">+34%</div>
+                </div>
+                <div class="stat-number" data-count="{{ stats.total_errors_tracked }}">0</div>
+                <div class="stat-description">Bugs détectés et analysés automatiquement</div>
+            </div>
+
+            <div class="stat-item info">
+                <div class="stat-header">
+                    <div class="stat-title">Projets Protégés</div>
+                    <div class="trend-indicator trend-up">+18%</div>
+                </div>
+                <div class="stat-number" data-count="{{ stats.total_projects }}">0</div>
+                <div class="stat-description">Applications sous monitoring actif</div>
+            </div>
+
+            <div class="stat-item warning">
+                <div class="stat-header">
+                    <div class="stat-title">Disponibilité Système</div>
+                    <div class="trend-indicator trend-stable">stable</div>
+                </div>
+                <div class="stat-number">99.9%</div>
+                <div class="stat-description">Uptime garanti sur les 30 derniers jours</div>
+            </div>
+
+            <div class="stat-item success">
+                <div class="stat-header">
+                    <div class="stat-title">Temps de Réponse</div>
+                    <div class="trend-indicator trend-down">-15%</div>
+                </div>
+                <div class="stat-number">< 50ms</div>
+                <div class="stat-description">Latence moyenne de détection des erreurs</div>
+            </div>
+
+            <div class="stat-item primary">
+                <div class="stat-header">
+                    <div class="stat-title">Résolution Moyenne</div>
+                    <div class="trend-indicator trend-up">+28%</div>
+                </div>
+                <div class="stat-number">2.3h</div>
+                <div class="stat-description">Temps moyen de résolution des bugs critiques</div>
+            </div>
+        </div>
+    </div>
+</section>

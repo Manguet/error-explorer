@@ -1,0 +1,441 @@
+/* =================================================================
+   BILLING DASHBOARD STYLES
+   ================================================================= */
+
+// Subscription info styles
+.subscription-info {
+    .subscription-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--color-border);
+
+        .subscription-plan {
+            h4 {
+                margin: 0 0 0.5rem 0;
+                color: var(--color-text-primary);
+                font-weight: 600;
+            }
+        }
+
+        .subscription-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+    }
+
+    .subscription-limits {
+        display: grid;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+
+        .limit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--color-background-light);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--color-border);
+
+            .limit-label {
+                color: var(--color-text-secondary);
+                font-weight: 500;
+            }
+
+            .limit-value {
+                color: var(--color-text-primary);
+                font-weight: 600;
+            }
+        }
+    }
+
+    .subscription-next-billing {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--color-info-bg);
+        border: 1px solid var(--color-info-border);
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+
+        .next-billing-label {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+
+        .next-billing-date {
+            color: var(--color-info);
+            font-weight: 600;
+        }
+    }
+
+    .subscription-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+}
+
+// Subscription badge styles
+.subscription-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 9999px;
+
+    &.badge-success {
+        background: var(--color-success-bg);
+        color: var(--color-success);
+        border: 1px solid var(--color-success-border);
+    }
+
+    &.badge-warning {
+        background: var(--color-warning-bg);
+        color: var(--color-warning);
+        border: 1px solid var(--color-warning-border);
+    }
+}
+
+// Payment methods list
+.payment-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .payment-method-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--color-background-light);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius);
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--color-primary-light);
+            background: var(--color-primary-bg);
+        }
+
+        .payment-method-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            .payment-method-icon {
+                color: var(--color-text-secondary);
+            }
+
+            .payment-method-details {
+                .payment-method-name {
+                    font-weight: 500;
+                    color: var(--color-text-primary);
+                    margin-bottom: 0.25rem;
+                }
+            }
+        }
+    }
+}
+
+// Payment method badge
+.payment-method-badge {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.675rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 9999px;
+
+    &.badge-primary {
+        background: var(--color-primary-bg);
+        color: var(--color-primary);
+        border: 1px solid var(--color-primary-border);
+    }
+}
+
+// Plan cards in modal
+.plan-card {
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    transition: all 0.2s ease;
+    height: 100%;
+
+    &:hover {
+        border-color: var(--color-primary-light);
+        box-shadow: var(--shadow-md);
+    }
+
+    &.current-plan {
+        border-color: var(--color-primary);
+        background: var(--color-primary-bg);
+    }
+
+    .plan-card-body {
+        padding: 1.5rem;
+        text-align: center;
+
+        .plan-card-title {
+            margin-bottom: 0.75rem;
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+
+        .plan-card-price {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .plan-card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+
+            li {
+                padding: 0.25rem 0;
+                color: var(--color-text-secondary);
+                font-size: 0.875rem;
+            }
+        }
+    }
+}
+
+// Empty states
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+
+    .empty-icon {
+        margin-bottom: 1rem;
+        color: var(--color-text-muted);
+    }
+
+    h4 {
+        margin-bottom: 0.5rem;
+        color: var(--color-text-primary);
+        font-weight: 600;
+    }
+
+    p {
+        color: var(--color-text-secondary);
+        margin-bottom: 1.5rem;
+    }
+}
+
+// Dashboard table specific overrides for billing
+.dashboard-table {
+    .badge {
+        &.badge-success {
+            background: var(--color-success-bg);
+            color: var(--color-success);
+            border: 1px solid var(--color-success-border);
+        }
+
+        &.badge-warning {
+            background: var(--color-warning-bg);
+            color: var(--color-warning);
+            border: 1px solid var(--color-warning-border);
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .subscription-info {
+        .subscription-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .subscription-actions {
+            justify-content: stretch;
+            
+            .btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    }
+
+    .payment-method-item {
+        .payment-method-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+    }
+}
+
+// Alert overrides for billing context
+.alert {
+    &.alert-warning {
+        background: var(--color-warning-bg);
+        border: 1px solid var(--color-warning-border);
+        color: var(--color-warning-text);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin: 1rem 0;
+
+        strong {
+            color: var(--color-warning);
+        }
+    }
+}
+
+/* =================================================================
+   CHECKOUT PAGE STYLES
+   ================================================================= */
+
+// Checkout summary styles
+.checkout-summary {
+    background: var(--color-background-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+}
+
+.plan-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h4 {
+        margin: 0;
+        color: var(--color-text-primary);
+        font-weight: 600;
+    }
+}
+
+.plan-summary-price {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--color-primary-bg);
+    border: 1px solid var(--color-primary-border);
+    border-radius: var(--border-radius);
+    text-align: center;
+
+    .price-main {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin-bottom: 0.5rem;
+        
+        .price-period {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+        }
+    }
+
+    .price-total {
+        color: var(--color-text-secondary);
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .price-savings {
+        color: var(--color-success);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+}
+
+.plan-summary-features {
+    margin-bottom: 2rem;
+
+    h5 {
+        margin-bottom: 1rem;
+        color: var(--color-text-primary);
+        font-weight: 600;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--color-text-secondary);
+            
+            svg {
+                color: var(--color-success);
+                flex-shrink: 0;
+            }
+        }
+    }
+}
+
+.trial-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--color-info-bg);
+    border: 1px solid var(--color-info-border);
+    border-radius: var(--border-radius);
+    color: var(--color-info);
+    margin-bottom: 2rem;
+    font-weight: 500;
+
+    svg {
+        color: var(--color-info);
+        flex-shrink: 0;
+    }
+}
+
+.checkout-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 54px;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+}
+
+// Responsive checkout styles
+@media (max-width: 768px) {
+    .checkout-summary {
+        padding: 1.5rem;
+    }
+
+    .plan-summary-price {
+        padding: 1rem;
+
+        .price-main {
+            font-size: 2rem;
+        }
+    }
+
+    .plan-summary-features {
+        ul li {
+            font-size: 0.875rem;
+        }
+    }
+}

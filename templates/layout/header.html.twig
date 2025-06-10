@@ -1,0 +1,54 @@
+<header class="header" id="main-header">
+    <nav class="nav">
+        <a href="{{ path('home') }}" class="logo">
+            <img src="{{ asset('images/logo.svg') }}" alt="Error Explorer Logo" class="logo-img">
+            <span class="logo-text">Error Explorer</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#features" data-scroll="features">Fonctionnalités</a></li>
+            <li><a href="#pricing" data-scroll="pricing">Tarifs</a></li>
+            <li><a href="{{ path('demo') }}" target="_blank">Démo</a></li>
+            <li><a href="{{ path('api_docs') }}" target="_blank">API</a></li>
+            <li><a href="{{ path('about') }}">À propos</a></li>
+            <li>
+                <div class="live-indicator" id="live-status">
+                    <div class="live-dot"></div>
+                    <span>Live</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="nav-actions">
+            <a href="{{ path('app_login') }}" class="btn btn-secondary">
+                <span>Connexion</span>
+            </a>
+            <a href="{{ path('app_register') }}" class="btn btn-primary">
+                <span>Essai gratuit</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="mobile-menu-btn" id="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu" style="display: none;">
+        <div class="mobile-menu-content">
+            <a href="#features" data-scroll="features">Fonctionnalités</a>
+            <a href="#pricing" data-scroll="pricing">Tarifs</a>
+            <a href="{{ path('demo') }}">Démo</a>
+            <a href="{{ path('api_docs') }}">API</a>
+            <a href="{{ path('about') }}">À propos</a>
+            <div class="mobile-menu-actions">
+                <a href="{{ path('app_login') }}" class="btn btn-secondary">Connexion</a>
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Essai gratuit</a>
+            </div>
+        </div>
+    </div>
+</header>

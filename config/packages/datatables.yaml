@@ -1,0 +1,15 @@
+datatables:
+    language_from_cdn: true
+    options:
+        lengthMenu : [10, 25, 50, 100]
+        pageLength: 10
+        dom: "<'row' <'col-sm-12' tr>><'row' <'col-sm-6'l><'col-sm-6 text-right'pi>>"
+        stateSave: true
+        searching: true
+        ordering: true
+        order: [[ 0, 'desc' ]]
+
+    template_parameters:
+        className: 'table table-striped table-bordered table-hover data-table'
+
+    translation_domain: 'messages'

@@ -1,0 +1,35 @@
+<div class="plan-info">
+    {% if row.plan %}
+        <div class="plan-badge-container">
+            <span class="badge badge-{{ row.plan.isFree ? 'secondary' : 'success' }}">
+                {{ row.plan.name }}
+            </span>
+            {% if row.plan.isPopular %}
+                <span class="badge badge-star">⭐</span>
+            {% endif %}
+        </div>
+        <div class="plan-price">
+            {{ row.plan.isFree ? 'Gratuit' : row.plan.formattedPriceMonthly ~ '/mois' }}
+        </div>
+        {% if row.planExpiresAt %}
+            <div class="plan-expiry {{ row.isPlanExpired ? 'expired' : (row.planExpiresAt|date_modify('+7 days') < 'now'|date('Y-m-d H:i:s')|date('Y-m-d H:i:s')) ? 'expiring-soon' : '' }}">
+                {% if row.isPlanExpired %}
+                    <svg width="12" height="12" class="text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    Expiré le {{ row.planExpiresAt|date('d/m/Y') }}
+                {% else %}
+                    <svg width="12" height="12" class="text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                    Expire le {{ row.planExpiresAt|date('d/m/Y') }}
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <span class="badge badge-danger">Aucun plan</span>
+    {% endif %}
+</div>

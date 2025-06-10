@@ -1,0 +1,1051 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Configuration des alertes - {{ project.name }} - {{ parent() }}{% endblock %}
+
+{% block page_title %}Configuration des alertes{% endblock %}
+{% block page_subtitle %}Paramétrez les notifications pour le projet {{ project.name }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_index') }}">Projets</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_show', { id: project.id }) }}">{{ project.name }}</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Alertes</span>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        Tous les projets
+    </a>
+    <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Retour au projet
+    </a>
+    <form style="display: inline;" method="POST" action="{{ path('project_test_alert', { id: project.id }) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('test_alert_' ~ project.id) }}">
+        <button type="submit" class="header-btn btn-warning" onclick="return confirm('Envoyer une alerte de test ?')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+            </svg>
+            Test d'alerte
+        </button>
+    </form>
+{% endblock %}
+
+{% block body %}
+    <!-- Avertissement si les alertes sont désactivées globalement -->
+    {% if not global_alerts_enabled %}
+        <div class="dashboard-section">
+            <div class="alert alert-warning">
+                <div class="alert-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <h4>Alertes désactivées globalement</h4>
+                    <p>Les alertes d'erreurs sont actuellement désactivées au niveau administrateur.</p>
+                    <p>Aucune alerte ne sera envoyée même si elles sont configurées ici.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="dashboard-section">
+        <div class="projects-edit-layout">
+            <div class="projects-edit-main">
+                <!-- Statut actuel des alertes -->
+                <div>
+                    <div class="projects-stats-grid">
+                        <div class="stat-card {% if project.alertsEnabled %}stat-success{% else %}stat-warning{% endif %}">
+                            <div class="stat-card-icon">
+                                {% if project.alertsEnabled %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if project.alertsEnabled %}ACTIVÉES{% else %}DÉSACTIVÉES{% endif %}</div>
+                                <div class="stat-card-label">Alertes email</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-info">
+                            <div class="stat-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{{ project.alertCooldownMinutes ?? 30 }}min</div>
+                                <div class="stat-card-label">Délai entre alertes</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-primary">
+                            <div class="stat-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{{ project.alertThreshold ?? 1 }}</div>
+                                <div class="stat-card-label">Seuil d'alerte</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card {% if project.dailySummaryEnabled %}stat-success{% else %}stat-secondary{% endif %}">
+                            <div class="stat-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if project.dailySummaryEnabled %}ACTIVÉ{% else %}DÉSACTIVÉ{% endif %}</div>
+                                <div class="stat-card-label">Résumé quotidien</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de configuration -->
+                <div class="projects-form-card">
+                    <div class="projects-form-header">
+                        <div class="form-title">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Configuration des alertes
+                        </div>
+                    </div>
+                    <div class="projects-form-body">
+                        {{ form_start(form, {
+                            'attr': {
+                                'class': 'form-grid',
+                                'novalidate': 'novalidate'
+                            }
+                        }) }}
+
+                        <!-- Configuration générale -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Configuration générale
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertsEnabled, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <label class="toggle-switch">
+                                {{ form_widget(form.alertsEnabled, { 'attr': { 'class': '' } }) }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="form-help">{{ form_help(form.alertsEnabled) }}</div>
+                            {{ form_errors(form.alertsEnabled) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertsEmail, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.alertsEmail, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.alertsEmail) }}</div>
+                            {{ form_errors(form.alertsEmail) }}
+                        </div>
+
+                        <!-- Seuils et fréquence -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Seuils et fréquence
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertThreshold, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.alertThreshold, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.alertThreshold) }}</div>
+                            {{ form_errors(form.alertThreshold) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertCooldownMinutes, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.alertCooldownMinutes, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.alertCooldownMinutes) }}</div>
+                            {{ form_errors(form.alertCooldownMinutes) }}
+                        </div>
+
+                        <!-- Filtres d'alertes -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                                </svg>
+                                Filtres d'alertes
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertStatusFilters, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <div class="filter-group">
+                                {% for child in form.alertStatusFilters %}
+                                    <div class="filter-item">
+                                        <label class="toggle-switch-small">
+                                            {{ form_widget(child) }}
+                                            <span class="toggle-slider-small"></span>
+                                        </label>
+                                        <span>{{ child.vars.label|default(child.vars.value) }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-help">{{ form_help(form.alertStatusFilters) }}</div>
+                            {{ form_errors(form.alertStatusFilters) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.alertEnvironmentFilters, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <div class="filter-group">
+                                {% for child in form.alertEnvironmentFilters %}
+                                    <div class="filter-item">
+                                        <label class="toggle-switch-small">
+                                            {{ form_widget(child) }}
+                                            <span class="toggle-slider-small"></span>
+                                        </label>
+                                        <span>{{ child.vars.label|default(child.vars.value) }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-help">{{ form_help(form.alertEnvironmentFilters) }}</div>
+                            {{ form_errors(form.alertEnvironmentFilters) }}
+                        </div>
+
+                        <!-- Configuration Slack -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Configuration Slack
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.slackAlertsEnabled, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <label class="toggle-switch">
+                                {{ form_widget(form.slackAlertsEnabled, { 'attr': { 'class': '' } }) }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="form-help">{{ form_help(form.slackAlertsEnabled) }}</div>
+                            {{ form_errors(form.slackAlertsEnabled) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.slackWebhookUrl, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.slackWebhookUrl, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.slackWebhookUrl) }}</div>
+                            {{ form_errors(form.slackWebhookUrl) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.slackChannel, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.slackChannel, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.slackChannel) }}</div>
+                            {{ form_errors(form.slackChannel) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.slackUsername, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.slackUsername, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.slackUsername) }}</div>
+                            {{ form_errors(form.slackUsername) }}
+                        </div>
+
+                        <!-- Configuration Discord -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                Configuration Discord
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.discordAlertsEnabled, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <label class="toggle-switch">
+                                {{ form_widget(form.discordAlertsEnabled, { 'attr': { 'class': '' } }) }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="form-help">{{ form_help(form.discordAlertsEnabled) }}</div>
+                            {{ form_errors(form.discordAlertsEnabled) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.discordWebhookUrl, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.discordWebhookUrl, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.discordWebhookUrl) }}</div>
+                            {{ form_errors(form.discordWebhookUrl) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.discordUsername, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            {{ form_widget(form.discordUsername, { 'attr': { 'class': 'form-input' } }) }}
+                            <div class="form-help">{{ form_help(form.discordUsername) }}</div>
+                            {{ form_errors(form.discordUsername) }}
+                        </div>
+
+                        <!-- Rapports automatiques -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                                Rapports automatiques
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.dailySummaryEnabled, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <label class="toggle-switch">
+                                {{ form_widget(form.dailySummaryEnabled, { 'attr': { 'class': '' } }) }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="form-help">{{ form_help(form.dailySummaryEnabled) }}</div>
+                            {{ form_errors(form.dailySummaryEnabled) }}
+                        </div>
+
+                        <!-- Configuration des webhooks externes -->
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                Webhooks externes
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.externalWebhooksEnabled, null, { 'label_attr': { 'class': 'form-label' } }) }}
+                            <label class="toggle-switch">
+                                {{ form_widget(form.externalWebhooksEnabled, { 'attr': { 'class': '' } }) }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <div class="form-help">{{ form_help(form.externalWebhooksEnabled) }}</div>
+                            {{ form_errors(form.externalWebhooksEnabled) }}
+                        </div>
+
+                        {% if project.externalWebhooksEnabled %}
+                            <div class="form-group full-width">
+                                <div class="webhooks-list">
+                                    <div class="webhooks-header">
+                                        <h4>Webhooks configurés</h4>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addWebhook()">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            Ajouter un webhook
+                                        </button>
+                                    </div>
+                                    
+                                    {% if project.externalWebhooks is not empty %}
+                                        {% for webhook in project.externalWebhooks %}
+                                            <div class="webhook-item">
+                                                <div class="webhook-info">
+                                                    <div class="webhook-name">{{ webhook.name }}</div>
+                                                    <div class="webhook-url">{{ webhook.url }}</div>
+                                                    <div class="webhook-events">
+                                                        Événements: {{ webhook.events|join(', ') }}
+                                                    </div>
+                                                </div>
+                                                <div class="webhook-actions">
+                                                    <button type="button" class="btn btn-sm btn-secondary" onclick="testWebhook('{{ webhook.id }}')">
+                                                        Test
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeWebhook('{{ webhook.id }}')">
+                                                        Supprimer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="webhook-empty">
+                                            <p>Aucun webhook configuré. Les webhooks externes vous permettent d'envoyer automatiquement les données d'erreur vers vos systèmes tiers.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Boutons d'action -->
+                        <div class="form-actions full-width">
+                            <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Annuler
+                            </a>
+                            {{ form_widget(form.submit, { 'attr': { 'class': 'header-btn btn-primary' } }) }}
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar avec documentation -->
+            <div class="projects-preview-sidebar">
+                <!-- Documentation -->
+                <div class="projects-info-card">
+                    <div class="info-header">
+                        <div class="info-title">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Comment ça fonctionne
+                        </div>
+                    </div>
+                    <div class="info-body">
+                        <div class="info-items">
+                            <div class="info-item info-success">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    Alertes temps réel
+                                </div>
+                                <div class="info-item-text">Recevez une notification immédiate quand une nouvelle erreur atteint le seuil configuré.</div>
+                            </div>
+
+                            <div class="info-item info-info">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Anti-spam
+                                </div>
+                                <div class="info-item-text">Le délai entre alertes évite les notifications répétitives pour la même erreur.</div>
+                            </div>
+
+                            <div class="info-item info-warning">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                                    </svg>
+                                    Filtres intelligents
+                                </div>
+                                <div class="info-item-text">Personnalisez quels types d'erreurs et environnements déclenchent des alertes.</div>
+                            </div>
+
+                            <div class="info-item info-primary">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    Résumés quotidiens
+                                </div>
+                                <div class="info-item-text">Recevez un rapport quotidien avec les statistiques et tendances de votre projet.</div>
+                            </div>
+
+                            <div class="info-item info-purple">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                    </svg>
+                                    Webhooks externes
+                                </div>
+                                <div class="info-item-text">Intégrez vos systèmes tiers (Jira, ClickUp, CI/CD, etc.) pour automatiser vos workflows d'erreurs.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert-icon {
+            color: #f59e0b;
+            flex-shrink: 0;
+        }
+
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .alert-content p {
+            margin: 0;
+            color: #92400e;
+        }
+
+        .alert-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* Toggle switches pour les checkboxes */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px #3b82f6;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Toggle switches pour les filtres (plus petits) */
+        .toggle-switch-small {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .toggle-switch-small input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider-small {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider-small:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider-small {
+            background-color: #3b82f6;
+        }
+
+        input:focus + .toggle-slider-small {
+            box-shadow: 0 0 1px #3b82f6;
+        }
+
+        input:checked + .toggle-slider-small:before {
+            transform: translateX(16px);
+        }
+
+        /* Style pour les groupes de filtres */
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Style pour les info-item */
+        .info-item.info-primary .info-item-title {
+            color: #3b82f6;
+        }
+
+        .info-item.info-purple .info-item-title {
+            color: #8b5cf6;
+        }
+
+        /* Styles pour les webhooks */
+        .webhooks-list {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #f9fafb;
+        }
+
+        .webhooks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .webhooks-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .webhook-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .webhook-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .webhook-info {
+            flex: 1;
+        }
+
+        .webhook-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .webhook-url {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-family: monospace;
+            margin-bottom: 0.25rem;
+        }
+
+        .webhook-events {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .webhook-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .webhook-empty {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .webhook-empty p {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close:hover {
+            color: #374151;
+        }
+
+        .form-grid-modal {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group-modal {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label-modal {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-input-modal {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input-modal:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .form-help-modal {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Modal pour ajouter/éditer un webhook
+        function addWebhook() {
+            document.getElementById('webhookModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Ajouter un webhook';
+            document.getElementById('webhookForm').reset();
+            document.getElementById('webhookId').value = '';
+        }
+
+        function editWebhook(webhookId, name, url, events) {
+            document.getElementById('webhookModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Modifier le webhook';
+            document.getElementById('webhookId').value = webhookId;
+            document.getElementById('webhookName').value = name;
+            document.getElementById('webhookUrl').value = url;
+            
+            // Cocher les événements
+            const eventCheckboxes = document.querySelectorAll('input[name="webhook_events[]"]');
+            eventCheckboxes.forEach(checkbox => {
+                checkbox.checked = events.includes(checkbox.value);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('webhookModal').style.display = 'none';
+        }
+
+        function saveWebhook() {
+            const form = document.getElementById('webhookForm');
+            const formData = new FormData(form);
+            
+            // Récupérer les événements sélectionnés
+            const events = [];
+            const eventCheckboxes = document.querySelectorAll('input[name="webhook_events[]"]:checked');
+            eventCheckboxes.forEach(checkbox => {
+                events.push(checkbox.value);
+            });
+
+            if (events.length === 0) {
+                alert('Veuillez sélectionner au moins un événement');
+                return;
+            }
+
+            const webhookData = {
+                id: document.getElementById('webhookId').value,
+                name: document.getElementById('webhookName').value,
+                url: document.getElementById('webhookUrl').value,
+                events: events,
+                headers: {}
+            };
+
+            // Headers personnalisés (optionnel)
+            const customHeaders = document.getElementById('webhookHeaders').value;
+            if (customHeaders) {
+                try {
+                    webhookData.headers = JSON.parse(customHeaders);
+                } catch (e) {
+                    alert('Format JSON invalide pour les headers');
+                    return;
+                }
+            }
+
+            // Envoyer via AJAX
+            fetch('{{ path("project_webhook_save", { id: project.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(webhookData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Recharger la page pour voir les changements
+                } else {
+                    alert('Erreur: ' + (data.message || 'Erreur inconnue'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la sauvegarde');
+            });
+        }
+
+        function removeWebhook(webhookId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce webhook ?')) {
+                return;
+            }
+
+            fetch('{{ path("project_webhook_remove", { id: project.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id: webhookId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + (data.message || 'Erreur inconnue'));
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression');
+            });
+        }
+
+        function testWebhook(webhookId) {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Test...';
+            button.disabled = true;
+
+            fetch('{{ path("project_webhook_test", { id: project.id }) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ id: webhookId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Test réussi ! Status: ' + data.status_code);
+                } else {
+                    alert('Test échoué: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors du test');
+            })
+            .finally(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            });
+        }
+
+        // Fermer la modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('webhookModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+    <!-- Modal HTML -->
+    <div id="webhookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Ajouter un webhook</h3>
+                <button type="button" class="close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="webhookForm" class="form-grid-modal">
+                <input type="hidden" id="webhookId">
+                
+                <div class="form-group-modal">
+                    <label for="webhookName" class="form-label-modal">Nom du webhook</label>
+                    <input type="text" id="webhookName" class="form-input-modal" required placeholder="Mon webhook Jira">
+                    <div class="form-help-modal">Nom descriptif pour identifier ce webhook</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label for="webhookUrl" class="form-label-modal">URL du webhook</label>
+                    <input type="url" id="webhookUrl" class="form-input-modal" required placeholder="https://votre-serveur.com/webhook">
+                    <div class="form-help-modal">URL de votre endpoint qui recevra les données d'erreur</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label class="form-label-modal">Événements à surveiller</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="event_created" name="webhook_events[]" value="error.created">
+                            <label for="event_created">Nouvelle erreur</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="event_critical" name="webhook_events[]" value="error.critical">
+                            <label for="event_critical">Erreur critique</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="event_occurred" name="webhook_events[]" value="error.occurred">
+                            <label for="event_occurred">Récurrence d'erreur</label>
+                        </div>
+                    </div>
+                    <div class="form-help-modal">Sélectionnez les types d'événements qui déclencheront ce webhook</div>
+                </div>
+
+                <div class="form-group-modal">
+                    <label for="webhookHeaders" class="form-label-modal">Headers personnalisés (optionnel)</label>
+                    <textarea id="webhookHeaders" class="form-input-modal" rows="3" placeholder='{"Authorization": "Bearer token", "X-Custom": "value"}'></textarea>
+                    <div class="form-help-modal">Headers HTTP au format JSON (optionnel)</div>
+                </div>
+            </form>
+
+            <div class="modal-actions">
+                <button type="button" class="header-btn btn-secondary" onclick="closeModal()">Annuler</button>
+                <button type="button" class="header-btn btn-primary" onclick="saveWebhook()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

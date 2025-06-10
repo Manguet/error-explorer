@@ -1,0 +1,176 @@
+<section class="pricing" id="pricing">
+    <div class="container">
+        <div class="section-title">
+            <h2>Tarifs transparents</h2>
+            <p>Choisissez le plan qui correspond à vos besoins</p>
+        </div>
+
+        <div class="pricing-grid">
+            {% for plan in plans %}
+                <div class="pricing-card {{ plan.isPopular ? 'popular' : '' }}">
+                    <div class="plan-header">
+                        <div class="plan-info">
+                            <h3 class="plan-name">{{ plan.name }}</h3>
+                            {% if plan.isPopular %}
+                                <div class="popular-badge">
+                                    <span class="badge-icon">⭐</span>
+                                    <span>Plus populaire</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="plan-price-container">
+                            <div class="plan-price">
+                                {% if plan.isFree %}
+                                    Gratuit
+                                {% else %}
+                                    {{ plan.priceMonthly|number_format(0, ',', ' ') }}€
+                                {% endif %}
+                            </div>
+                            {% if not plan.isFree %}
+                                <div class="plan-price-unit">par mois</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if plan.description %}
+                        <div class="plan-description">
+                            {{ plan.description }}
+                        </div>
+                    {% endif %}
+
+                    <div class="plan-metrics">
+                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
+                            <div class="metric-value">
+                                {{ plan.maxProjectsLabel }}
+                            </div>
+                            <div class="metric-label">Projets</div>
+                        </div>
+
+                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
+                            <div class="metric-value">
+                                {{ plan.maxMonthlyErrorsLabel }}
+                            </div>
+                            <div class="metric-label">Erreurs/mois</div>
+                        </div>
+
+                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
+                            <div class="metric-value">
+                                {{ plan.dataRetentionDays }}
+                            </div>
+                            <div class="metric-label">Jours rétention</div>
+                        </div>
+
+                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
+                            <div class="metric-value">
+                                {% if plan.hasPrioritySupport %}
+                                    1h
+                                {% elseif plan.hasEmailAlerts %}
+                                    4h
+                                {% else %}
+                                    24h
+                                {% endif %}
+                            </div>
+                            <div class="metric-label">Support</div>
+                        </div>
+                    </div>
+
+                    <div class="plan-features">
+                        <div class="features-title">Fonctionnalités incluses :</div>
+                        <ul class="features-list">
+                            <li class="feature-item">
+                                <span class="feature-check">✓</span>
+                                <span>Dashboard temps réel</span>
+                            </li>
+
+                            {% if plan.hasEmailAlerts %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Alertes email</span>
+                                </li>
+                            {% endif %}
+
+                            {% if plan.hasSlackIntegration %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Intégration Slack</span>
+                                </li>
+                            {% endif %}
+
+                            {% if plan.hasApiAccess %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Accès API complet</span>
+                                </li>
+                            {% endif %}
+
+                            {% if plan.hasAdvancedFilters %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Filtres avancés</span>
+                                </li>
+                            {% endif %}
+
+                            {% if plan.hasCustomRetention %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Rétention personnalisée</span>
+                                </li>
+                            {% endif %}
+
+                            {% if plan.hasPrioritySupport %}
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Support prioritaire</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% if not plan.isFree and plan.maxMonthlyErrors != -1 %}
+                        <div class="usage-indicator">
+                            <div class="usage-bar">
+                                <div class="usage-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="usage-text">
+                                <span>Capacité mensuelle</span>
+                                <span>{{ plan.maxMonthlyErrorsLabel }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if plan.yearlySavings and plan.yearlySavings > 0 %}
+                        <div class="yearly-savings">
+                            <div class="savings-badge">
+                                <span class="savings-icon">💰</span>
+                                <span>Économisez {{ plan.yearlySavings|number_format(0, ',', ' ') }}€ par an</span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="plan-action">
+                        <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
+                           class="btn {{ plan.isPopular ? 'btn-primary' : 'btn-secondary' }} plan-cta-btn"
+                           data-plan="{{ plan.slug }}">
+                            {% if plan.isFree %}
+                                <span>Commencer gratuitement</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            {% else %}
+                                <span>Choisir {{ plan.name }}</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            {% endif %}
+                        </a>
+
+                        {% if not plan.isFree %}
+                            <div class="plan-note">
+                                Sans engagement • Annulation à tout moment
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

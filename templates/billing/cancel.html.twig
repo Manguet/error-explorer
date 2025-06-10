@@ -1,0 +1,208 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Paiement annulé - {{ parent() }}{% endblock %}
+
+{% block page_title %}Paiement annulé{% endblock %}
+{% block page_subtitle %}Aucun frais n'a été prélevé{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('billing_dashboard') }}">Facturation</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Annulé</span>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-warning" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-3">Paiement annulé</h2>
+                    
+                    <p class="lead mb-4">
+                        Votre paiement a été annulé. Aucun frais n'a été prélevé.
+                    </p>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Vous pouvez réessayer à tout moment ou choisir un autre plan.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('pricing') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Voir les plans disponibles
+                        </a>
+                        <a href="{{ path('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Retour au dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Pourquoi choisir un plan payant ?</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-bolt text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>Plus de projets</h6>
+                                    <p class="mb-0 text-muted">Surveillez plusieurs applications simultanément.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-bell text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>Alertes avancées</h6>
+                                    <p class="mb-0 text-muted">Notifications Slack, Discord, et webhooks personnalisés.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-chart-line text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>Analytics détaillés</h6>
+                                    <p class="mb-0 text-muted">Graphiques, tendances et rapports personnalisés.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-database text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>Rétention étendue</h6>
+                                    <p class="mb-0 text-muted">Conservez vos données d'erreur plus longtemps.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-code text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>API complète</h6>
+                                    <p class="mb-0 text-muted">Intégrez Error Explorer dans vos outils existants.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <i class="fas fa-headset text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6>Support prioritaire</h6>
+                                    <p class="mb-0 text-muted">Assistance technique rapide et dédiée.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Questions fréquentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                    Puis-je annuler mon abonnement à tout moment ?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Oui, vous pouvez annuler votre abonnement à tout moment depuis votre tableau de bord. 
+                                    Aucun frais d'annulation ne s'applique et vous conservez l'accès jusqu'à la fin de votre période payée.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                    Y a-t-il une période d'essai gratuite ?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Oui, la plupart de nos plans incluent une période d'essai gratuite de 14 jours. 
+                                    Vous pouvez explorer toutes les fonctionnalités sans engagement.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                    Puis-je changer de plan plus tard ?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Absolument ! Vous pouvez upgrader ou downgrader votre plan à tout moment. 
+                                    Les changements sont appliqués immédiatement avec un calcul au prorata.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <p class="text-muted mb-2">Besoin d'aide pour choisir ?</p>
+                <a href="{{ path('contact') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-envelope me-2"></i>
+                    Contactez-nous
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Optionnel : Analytics du paiement annulé
+        console.log('Payment cancelled');
+        
+        // Vous pouvez ajouter ici du code pour :
+        // - Envoyer des événements analytics sur l'abandon
+        // - Proposer des alternatives ou des remises
+        // - Collecter du feedback sur l'abandon
+    </script>
+{% endblock %}

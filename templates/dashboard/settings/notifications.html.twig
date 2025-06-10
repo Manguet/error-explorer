@@ -1,0 +1,144 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block page_title %}Paramètres - Notifications{% endblock %}
+{% block page_subtitle %}Gérez vos préférences de notifications{% endblock %}
+
+{% block breadcrumb_items %}
+    <span>/</span>
+    <a href="{{ path('dashboard_settings_index') }}">Paramètres</a>
+    <span>/</span>
+    <span class="breadcrumb-current">Notifications</span>
+{% endblock %}
+
+{% block body %}
+<div class="settings-layout">
+    <!-- Navigation latérale des paramètres -->
+    <aside class="settings-sidebar">
+        <nav class="settings-nav">
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_index') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Profil</span>
+                </a>
+            </div>
+            <div class="settings-nav-item active">
+                <a href="{{ path('dashboard_settings_notifications') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zm-5.058-3.058a4 4 0 10-2.518 2.518L9 17.5l1.442-1.442z"/>
+                    </svg>
+                    <span>Notifications</span>
+                </a>
+            </div>
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_account') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Compte</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal des paramètres -->
+    <main class="settings-main">
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Préférences de notifications</h2>
+                <p>Configurez comment et quand vous souhaitez être notifié</p>
+            </div>
+
+            <div class="settings-card">
+                <form method="post" class="settings-form">
+                    <div class="notification-section">
+                        <h3>Notifications par email</h3>
+                        <p class="section-description">Choisissez les types d'emails que vous souhaitez recevoir</p>
+                        
+                        <div class="notification-option">
+                            <div class="notification-header">
+                                <div class="notification-info">
+                                    <h4>Alertes d'erreurs</h4>
+                                    <p>Recevez un email à chaque nouvelle erreur détectée</p>
+                                </div>
+                                <div class="notification-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="emailAlertsEnabled" {{ user.emailAlertsEnabled ? 'checked' : '' }}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="notification-header">
+                                <div class="notification-info">
+                                    <h4>Alertes critiques</h4>
+                                    <p>Recevez des alertes immédiates pour les erreurs critiques et les pics d'activité</p>
+                                </div>
+                                <div class="notification-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="criticalAlertsEnabled" {{ user.criticalAlertsEnabled ? 'checked' : '' }}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notification-option">
+                            <div class="notification-header">
+                                <div class="notification-info">
+                                    <h4>Rapports hebdomadaires</h4>
+                                    <p>Recevez un résumé hebdomadaire de l'activité de vos projets</p>
+                                </div>
+                                <div class="notification-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="weeklyReportsEnabled" {{ user.weeklyReportsEnabled ? 'checked' : '' }}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notification-section">
+                        <h3>Fréquence des notifications</h3>
+                        <p class="section-description">Pour éviter le spam, les notifications sont regroupées selon ces règles :</p>
+                        
+                        <div class="notification-rules">
+                            <div class="rule-item">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Maximum 1 email par erreur toutes les 15 minutes</span>
+                            </div>
+                            <div class="rule-item">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Les alertes critiques sont envoyées immédiatement</span>
+                            </div>
+                            <div class="rule-item">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Rapports hebdomadaires envoyés le lundi matin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Enregistrer les préférences
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

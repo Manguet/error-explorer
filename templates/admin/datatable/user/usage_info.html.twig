@@ -1,0 +1,33 @@
+<div class="usage-info">
+    <div class="usage-item">
+        <div class="usage-label">Projets</div>
+        <div class="usage-value">
+            <span class="usage-current">{{ row.currentProjectsCount }}</span>
+            <span class="usage-separator">/</span>
+            <span class="usage-max">{{ row.plan ? row.plan.maxProjectsLabel : '?' }}</span>
+        </div>
+        {% if row.plan and row.plan.maxProjects > 0 %}
+            <div class="usage-bar">
+                {% set projectsPercentage = (row.currentProjectsCount / row.plan.maxProjects * 100)|round %}
+                <div class="usage-bar-fill {{ projectsPercentage >= 90 ? 'danger' : (projectsPercentage >= 70 ? 'warning' : 'success') }}"
+                     style="width: {{ min(100, projectsPercentage) }}%"></div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="usage-item">
+        <div class="usage-label">Erreurs/mois</div>
+        <div class="usage-value">
+            <span class="usage-current">{{ row.currentMonthlyErrors|number_format }}</span>
+            <span class="usage-separator">/</span>
+            <span class="usage-max">{{ row.plan ? row.plan.maxMonthlyErrorsLabel : '?' }}</span>
+        </div>
+        {% if row.plan and row.plan.maxMonthlyErrors > 0 %}
+            <div class="usage-bar">
+                {% set errorsPercentage = (row.currentMonthlyErrors / row.plan.maxMonthlyErrors * 100)|round %}
+                <div class="usage-bar-fill {{ errorsPercentage >= 90 ? 'danger' : (errorsPercentage >= 70 ? 'warning' : 'success') }}"
+                     style="width: {{ min(100, errorsPercentage) }}%"></div>
+            </div>
+        {% endif %}
+    </div>
+</div>

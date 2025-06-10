@@ -1,0 +1,19 @@
+<div class="plan-info">
+    <div class="plan-icon">{{ row.name|slice(0, 2)|upper }}</div>
+    <div class="plan-details">
+        <div class="plan-name">
+            {{ row.name }}
+            {% if row.isPopular %}
+                <span class="popular-badge">Populaire</span>
+            {% endif %}
+        </div>
+        <div class="plan-slug">
+            <strong>Slug:</strong> {{ row.slug }}
+        </div>
+        {% if row.description %}
+            <div class="plan-description">
+                {{ row.description|length > 50 ? row.description|slice(0, 50) ~ '...' : row.description }}
+            </div>
+        {% endif %}
+    </div>
+</div>

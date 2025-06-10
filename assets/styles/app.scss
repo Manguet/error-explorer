@@ -1,0 +1,21 @@
+@import './variables.scss';
+@import './Site/base';
+
+@import './Site/components/buttons';
+
+@import './Site/utils/animations';
+
+@import './Site/layout/header';
+@import './Site/layout/footer';
+@import './Site/layout/about';
+@import './Site/layout/contact';
+@import './Site/layout/features';
+@import './Site/layout/integration';
+@import './Site/layout/legals';
+@import './Site/layout/pricing';
+
+@import './Site/sections/hero';
+@import './Site/sections/features';
+@import './Site/sections/stats';
+@import './Site/sections/pricing';
+@import './Site/sections/cta';

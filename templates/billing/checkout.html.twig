@@ -1,0 +1,191 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Checkout - {{ plan.name }} - {{ parent() }}{% endblock %}
+
+{% block page_title %}Finaliser votre commande{% endblock %}
+{% block page_subtitle %}Vous avez choisi le plan {{ plan.name }}</{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('billing_dashboard') }}">Facturation</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Checkout</span>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Plan sélectionné -->
+            <div class="data-section">
+                <div class="section-header">
+                    <div>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                        <h3 class="section-title">Récapitulatif de votre commande</h3>
+                    </div>
+                </div>
+
+                <div class="section-content">
+                    <div class="checkout-summary">
+                        <div class="plan-summary">
+                            <div class="plan-summary-header">
+                                <h4>{{ plan.name }}</h4>
+                                {% if plan.isPopular %}
+                                    <span class="badge badge-primary">Populaire</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="plan-summary-price">
+                                {% if billing_period == 'yearly' and plan.priceYearly %}
+                                    <div class="price-main">{{ (plan.priceYearly / 12)|number_format(2, ',', ' ') }}€ <span class="price-period">/ mois</span></div>
+                                    <div class="price-total">{{ plan.priceYearly|number_format(0, ',', ' ') }}€ facturé annuellement</div>
+                                    {% if plan.yearlySavings > 0 %}
+                                        <div class="price-savings">Économisez {{ plan.yearlySavings|number_format(0, ',', ' ') }}€ par an</div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="price-main">{{ plan.priceMonthly|number_format(0, ',', ' ') }}€ <span class="price-period">/ mois</span></div>
+                                {% endif %}
+                            </div>
+
+                            <div class="plan-summary-features">
+                                <h5>Ce qui est inclus :</h5>
+                                <ul>
+                                    <li>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        {{ plan.maxProjects == -1 ? 'Projets illimités' : plan.maxProjects ~ ' projets maximum' }}
+                                    </li>
+                                    <li>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        {{ plan.maxMonthlyErrors == -1 ? 'Erreurs illimitées' : (plan.maxMonthlyErrors|number_format ~ ' erreurs par mois') }}
+                                    </li>
+                                    <li>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        {{ plan.dataRetentionDays }} jours de rétention des données
+                                    </li>
+                                    {% if plan.hasEmailAlerts %}
+                                        <li>
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Alertes email en temps réel
+                                        </li>
+                                    {% endif %}
+                                    {% if plan.hasSlackIntegration %}
+                                        <li>
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Intégration Slack et Discord
+                                        </li>
+                                    {% endif %}
+                                    {% if plan.hasApiAccess %}
+                                        <li>
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Accès API complet
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            {% if plan.trialDays and plan.trialDays > 0 %}
+                                <div class="trial-info">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Essai gratuit de {{ plan.trialDays }} jours
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="checkout-actions">
+                            <button id="checkout-button" class="btn btn-primary btn-lg">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                </svg>
+                                {% if plan.trialDays and plan.trialDays > 0 %}
+                                    Commencer l'essai gratuit
+                                {% else %}
+                                    Finaliser le paiement
+                                {% endif %}
+                            </button>
+                            
+                            <a href="{{ path('pricing') }}" class="btn btn-secondary">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Retour aux plans
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ stripe_public_key }}');
+
+        // Gérer le clic sur le bouton de checkout
+        document.getElementById('checkout-button').addEventListener('click', async function() {
+            try {
+                this.disabled = true;
+                this.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Redirection...';
+
+                // Créer la session de checkout
+                const response = await fetch('{{ path('billing_create_checkout_session') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planId: {{ plan.id }},
+                        billingPeriod: '{{ billing_period }}'
+                    })
+                });
+
+                const sessionData = await response.json();
+
+                if (sessionData.error) {
+                    throw new Error(sessionData.error);
+                }
+
+                // Rediriger vers Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionData.sessionId
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+            } catch (error) {
+                console.error('Erreur checkout:', error);
+                alert('Une erreur est survenue : ' + error.message);
+                
+                // Réactiver le bouton
+                this.disabled = false;
+                this.innerHTML = '{% if plan.trialDays and plan.trialDays > 0 %}Commencer l\'essai gratuit{% else %}Finaliser le paiement{% endif %}';
+            }
+        });
+    </script>
+{% endblock %}

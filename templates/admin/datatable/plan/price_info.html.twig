@@ -1,0 +1,15 @@
+<div class="price-info">
+    {% if row.isFree %}
+        <div class="price-free">Gratuit</div>
+    {% else %}
+        <div class="price-monthly">{{ row.formattedPriceMonthly }}/mois</div>
+        {% if row.priceYearly %}
+            <div class="price-yearly">
+                {{ row.formattedPriceYearly }}/an
+                {% if row.yearlySavings %}
+                    <span class="price-savings">(-{{ row.yearlySavings|number_format(2) }}€)</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

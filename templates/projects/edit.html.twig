@@ -1,0 +1,542 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Éditer {{ project.name }} - {{ parent() }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{{ path('projects_index') }}" class="nav-link">
+        📁 Projets
+    </a>
+    <a href="{{ path('projects_show', { id: project.id }) }}" class="nav-link">
+        {{ project.name }}
+    </a>
+    <span class="nav-link active">Édition</span>
+{% endblock %}
+
+{% block page_title %}Éditer {{ project.name }}{% endblock %}
+{% block page_subtitle %}Modifiez les informations de votre projet{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_index') }}">Projets</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_show', { id: project.id }) }}">{{ project.name }}</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Édition</span>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+        Voir le projet
+    </a>
+    <a href="{{ path('project_alerts_settings', { id: project.id }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
+        </svg>
+        Alertes
+    </a>
+    <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        Retour à la liste
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="projects-edit-layout">
+        <div class="projects-edit-main">
+            <div class="projects-form-card">
+                <div class="projects-form-header">
+                    <div class="form-title">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Modifier les informations
+                    </div>
+                </div>
+                <div class="projects-form-body">
+                    <form method="POST" class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="name" class="form-label required">
+                            Nom du projet
+                        </label>
+                        <input type="text"
+                               id="name"
+                               name="name"
+                               value="{{ app.request.request.get('name', project.name) }}"
+                               required
+                               maxlength="100"
+                               placeholder="Ex: Mon Site E-commerce"
+                               class="form-input"
+                               onkeyup="updateSlugPreview()">
+                        <div class="form-help">
+                            Le nom sera utilisé pour identifier votre projet dans le monitoring.
+                        </div>
+                        <div class="form-help">
+                            <strong>Slug actuel:</strong> <span class="text-primary">{{ project.slug }}</span>
+                            <span id="slug-change" class="d-none">
+                                → <span id="slug-preview" class="text-primary"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">
+                            Description
+                        </label>
+                        <textarea id="description"
+                                  name="description"
+                                  rows="3"
+                                  maxlength="1000"
+                                  placeholder="Description optionnelle du projet..."
+                                  class="form-textarea">{{ app.request.request.get('description', project.description) }}</textarea>
+                        <div class="form-help">
+                            Une description qui vous aidera à identifier rapidement le projet.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="environment" class="form-label">
+                            Environnement principal
+                        </label>
+                        <select id="environment"
+                                name="environment"
+                                class="form-select">
+                            <option value="">-- Aucun --</option>
+                            <option value="prod" {{ (app.request.request.get('environment', project.environment)) == 'prod' ? 'selected' : '' }}>Production</option>
+                            <option value="staging" {{ (app.request.request.get('environment', project.environment)) == 'staging' ? 'selected' : '' }}>Staging</option>
+                            <option value="dev" {{ (app.request.request.get('environment', project.environment)) == 'dev' ? 'selected' : '' }}>Development</option>
+                            <option value="test" {{ (app.request.request.get('environment', project.environment)) == 'test' ? 'selected' : '' }}>Test</option>
+                        </select>
+                        <div class="form-help">
+                            L'environnement principal de ce projet (peut être overridé par le client).
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notification_email" class="form-label">
+                            Email de notification
+                        </label>
+                        <input type="email"
+                               id="notification_email"
+                               name="notification_email"
+                               value="{{ app.request.request.get('notification_email', project.notificationEmail) }}"
+                               placeholder="admin@monsite.com"
+                               class="form-input">
+                        <div class="form-help">
+                            Email pour recevoir les alertes importantes (optionnel).
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="repository_url" class="form-label">
+                            URL du repository
+                        </label>
+                        <input type="url"
+                               id="repository_url"
+                               name="repository_url"
+                               value="{{ app.request.request.get('repository_url', project.repositoryUrl) }}"
+                               placeholder="https://github.com/username/project"
+                               class="form-input">
+                        <div class="form-help">
+                            Lien vers le repository pour faciliter le debug (optionnel).
+                        </div>
+                    </div>
+
+                    <div class="form-actions full-width">
+                        <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            Annuler
+                        </a>
+                        <button type="submit" class="header-btn btn-primary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                            </svg>
+                            Sauvegarder
+                        </button>
+                    </div>
+                </form>
+            </div>
+            </div>
+
+            <!-- Actions rapides - carte séparée -->
+            <div class="projects-info-card projects-info-card-marginTop">
+                <div class="info-header">
+                    <div class="info-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Actions rapides
+                    </div>
+                </div>
+                <div class="info-body">
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-btn btn-secondary" onclick="resetForm()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span>Réinitialiser le formulaire</span>
+                        </button>
+
+                        <a href="{{ path('dashboard_project', { project: project.slug }) }}" class="quick-action-btn btn-primary">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <span>Voir les erreurs</span>
+                        </a>
+
+                        <button class="quick-action-btn btn-warning" onclick="regenerateToken()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v-2l-4-4L7.257 8.743A6 6 0 0115 7zm-5 4v2a2 2 0 002 2h2l1.5-1.5"/>
+                            </svg>
+                            <span>Régénérer le token</span>
+                        </button>
+
+                        <button class="quick-action-btn {{ project.isActive ? 'btn-danger' : 'btn-success' }}"
+                                onclick="toggleStatus()">
+                            {% if project.isActive %}
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Désactiver le projet</span>
+                            {% else %}
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Activer le projet</span>
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="projects-preview-sidebar">
+            <div class="projects-info-card">
+                <div class="info-header">
+                    <div class="info-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Informations actuelles
+                    </div>
+                </div>
+                <div class="info-body">
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Statut</label>
+                            <div class="config-value">
+                                <span class="project-status {{ project.isActive ? 'active' : 'inactive' }}">
+                                    {{ project.isActive ? 'Actif' : 'Inactif' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="config-item">
+                            <label>Slug actuel</label>
+                            <div class="config-value">{{ project.slug }}</div>
+                        </div>
+
+                        <div class="config-item">
+                            <label>Token webhook</label>
+                            <div class="config-value" id="webhook-token-display">{{ project.webhookToken }}</div>
+                        </div>
+
+                        <div class="config-item">
+                            <label>Erreurs</label>
+                            <div class="config-value">
+                                {{ project.totalErrors }} groupes<br>
+                                <span class="text-muted">{{ project.totalOccurrences }} occurrences</span>
+                            </div>
+                        </div>
+
+                        <div class="config-item">
+                            <label>Créé le</label>
+                            <div class="config-value">{{ project.createdAt|date('d/m/Y à H:i') }}</div>
+                        </div>
+
+                        <div class="config-item">
+                            <label>Dernière modification</label>
+                            <div class="config-value">{{ project.updatedAt|date('d/m/Y à H:i') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="projects-help-card">
+                <div class="help-header">
+                    <div class="help-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                        </svg>
+                        Informations importantes
+                    </div>
+                </div>
+                <div class="help-body">
+                    <p><strong>Changement de nom :</strong> Modifier le nom changera aussi le slug, ce qui peut affecter les URLs.</p>
+                    <p><strong>Token webhook :</strong> Le token webhook ne change pas lors de l'édition. Utilisez "Régénérer" si nécessaire.</p>
+                    {% if project.totalErrors > 0 %}
+                    <p><strong>Projet actif :</strong> Ce projet contient {{ project.totalErrors }} erreurs. Soyez prudent avec les modifications.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/Dashboard/functions.js') }}"></script>
+    <script>
+        const originalName = '{{ project.name|e('js') }}';
+        const originalSlug = '{{ project.slug|e('js') }}';
+
+        // Génération du slug en temps réel
+        function updateSlugPreview() {
+            const name = document.getElementById('name').value;
+
+            if (name === originalName) {
+                // Pas de changement, masquer l'aperçu
+                document.getElementById('slug-change').style.display = 'none';
+                return;
+            }
+
+            let slug = name.toLowerCase()
+                .replace(/[^a-z0-9\-_]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            if (slug && slug !== originalSlug) {
+                document.getElementById('slug-preview').textContent = slug;
+                document.getElementById('slug-change').style.display = 'inline';
+            } else {
+                document.getElementById('slug-change').style.display = 'none';
+            }
+        }
+
+        // Réinitialiser le formulaire
+        function resetForm() {
+            if (confirm('Voulez-vous vraiment réinitialiser le formulaire ?\n\nToutes vos modifications non sauvegardées seront perdues.')) {
+                document.getElementById('name').value = originalName;
+                document.getElementById('description').value = '{{ project.description|e('js') }}';
+                document.getElementById('environment').value = '{{ project.environment|e('js') }}';
+                document.getElementById('notification_email').value = '{{ project.notificationEmail|e('js') }}';
+                document.getElementById('repository_url').value = '{{ project.repositoryUrl|e('js') }}';
+                updateSlugPreview();
+            }
+        }
+
+        // Toggle statut du projet
+        async function toggleStatus() {
+            const isCurrentlyActive = {{ project.isActive ? 'true' : 'false' }};
+            const actionText = isCurrentlyActive ? 'désactiver' : 'activer';
+            
+            if (!confirm(`Êtes-vous sûr de vouloir ${actionText} ce projet ?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('{{ path('projects_toggle_status', { id: project.id }) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    
+                    // Mettre à jour l'affichage du bouton et du statut
+                    const toggleBtn = document.querySelector('button[onclick="toggleStatus()"]');
+                    const statusSpan = document.querySelector('.project-status');
+                    
+                    if (result.is_active) {
+                        // Projet activé
+                        toggleBtn.className = 'quick-action-btn btn-danger';
+                        toggleBtn.innerHTML = `
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Désactiver le projet</span>
+                        `;
+                        statusSpan.className = 'project-status active';
+                        statusSpan.textContent = 'Actif';
+                    } else {
+                        // Projet désactivé
+                        toggleBtn.className = 'quick-action-btn btn-success';
+                        toggleBtn.innerHTML = `
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Activer le projet</span>
+                        `;
+                        statusSpan.className = 'project-status inactive';
+                        statusSpan.textContent = 'Inactif';
+                    }
+                } else {
+                    showNotification(result.error || 'Une erreur est survenue', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+                console.error('Toggle status error:', error);
+            }
+        }
+
+        // Régénérer le token
+        async function regenerateToken() {
+            if (!confirm('⚠️ Attention !\n\nRégénérer le token va invalider l\'ancien token. Vous devrez mettre à jour la configuration dans vos applications.\n\nÊtes-vous sûr ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('{{ path('projects_regenerate_token', { id: project.id }) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const result = await response.json();
+                console.log('Token regeneration result:', result);
+                
+                if (result.success) {
+                    showNotification('Token régénéré ! Mettez à jour vos applications.', 'warning');
+                    
+                    // Mettre à jour l'affichage du token
+                    const tokenElement = document.getElementById('webhook-token-display');
+                    console.log('Token element found:', tokenElement);
+                    console.log('New token:', result.new_token);
+                    
+                    if (tokenElement && result.new_token) {
+                        const oldToken = tokenElement.textContent;
+                        
+                        // Force la mise à jour avec plusieurs méthodes
+                        tokenElement.textContent = result.new_token;
+                        tokenElement.innerHTML = result.new_token;
+                        
+                        console.log('Token updated from:', oldToken, 'to:', result.new_token);
+                        console.log('Current token display:', tokenElement.textContent);
+                        
+                        // Animation de mise à jour
+                        tokenElement.style.background = '#fef3c7';
+                        tokenElement.style.transition = 'background 0.3s ease';
+                        tokenElement.style.border = '2px solid #f59e0b';
+                        setTimeout(() => {
+                            tokenElement.style.background = '';
+                            tokenElement.style.border = '';
+                        }, 3000);
+                        
+                        // Force le reflow
+                        tokenElement.offsetHeight;
+                        
+                    } else {
+                        console.error('Token element not found or new_token missing');
+                        console.log('Available elements with webhook-token:', document.querySelectorAll('[id*="webhook"], [class*="token"]'));
+                    }
+                } else {
+                    showNotification(result.error || 'Erreur lors de la régénération du token', 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur de connexion', 'error');
+                console.error('Regenerate token error:', error);
+            }
+        }
+
+        // Écouteurs d'événements
+        document.getElementById('name').addEventListener('input', updateSlugPreview);
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        document.querySelector('form').submit();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        resetForm();
+                        break;
+                }
+            }
+        });
+
+        // Validation côté client
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+
+            if (!name) {
+                e.preventDefault();
+                showNotification('Le nom du projet est requis', 'error');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            if (name.length > 100) {
+                e.preventDefault();
+                showNotification('Le nom du projet ne peut pas dépasser 100 caractères', 'error');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            const email = document.getElementById('notification_email').value.trim();
+            if (email && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                e.preventDefault();
+                showNotification('L\'email de notification n\'est pas valide', 'error');
+                document.getElementById('notification_email').focus();
+                return;
+            }
+
+            const repoUrl = document.getElementById('repository_url').value.trim();
+            if (repoUrl && !repoUrl.match(/^https?:\/\/.+/)) {
+                e.preventDefault();
+                showNotification('L\'URL du repository doit commencer par http:// ou https://', 'error');
+                document.getElementById('repository_url').focus();
+                return;
+            }
+        });
+
+        // Avertissement avant de quitter si modifications non sauvegardées
+        let hasChanges = false;
+
+        ['name', 'description', 'environment', 'notification_email', 'repository_url'].forEach(fieldId => {
+            document.getElementById(fieldId).addEventListener('input', () => {
+                hasChanges = true;
+            });
+        });
+
+        document.querySelector('form').addEventListener('submit', () => {
+            hasChanges = false;
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Focus sur le premier champ
+        document.getElementById('name').focus();
+        document.getElementById('name').select();
+    </script>
+{% endblock %}

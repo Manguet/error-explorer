@@ -1,0 +1,907 @@
+{% extends('layout/base.html.twig') %}
+
+{% block title %}Intégrations - Error Explorer{% endblock %}
+{% block description %}Découvrez comment intégrer Error Explorer dans vos projets : Symfony, Laravel, WordPress, React et plus. Installation en 5 minutes avec notre documentation complète.{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="integration-hero">
+        <div class="container">
+            <div class="integration-hero-content">
+                <div class="hero-badge">
+                    <div class="badge-dot"></div>
+                    <span>Installation simple</span>
+                </div>
+
+                <h1>
+                    Intégrez Error Explorer en
+                    <span class="highlight">moins de 5 minutes</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Peu importe votre stack technique, nous avons la solution parfaite pour vous.
+                    Installation rapide, configuration minimale, résultats immédiats.
+                </p>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Frameworks supportés</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">< 5min</div>
+                        <div class="stat-label">Temps d'installation</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Lignes de code</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="quick-start-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Démarrage rapide</h2>
+                <p>Choisissez votre environnement et suivez les étapes</p>
+            </div>
+
+            <div class="tech-selector">
+                <div class="tech-tabs">
+                    <button class="tech-tab active" data-tech="symfony">
+                        <img src="{{ asset('images/tech/symfony.svg') }}" alt="Symfony" class="tech-icon">
+                        <span>Symfony</span>
+                    </button>
+                    <button class="tech-tab" data-tech="laravel">
+                        <img src="{{ asset('images/tech/laravel.svg') }}" alt="Laravel" class="tech-icon">
+                        <span>Laravel</span>
+                    </button>
+                    <button class="tech-tab" data-tech="wordpress">
+                        <img src="{{ asset('images/tech/wordpress.svg') }}" alt="WordPress" class="tech-icon">
+                        <span>WordPress</span>
+                    </button>
+                    <button class="tech-tab" data-tech="react">
+                        <img src="{{ asset('images/tech/react.svg') }}" alt="React" class="tech-icon">
+                        <span>React</span>
+                    </button>
+                    <button class="tech-tab" data-tech="nodejs">
+                        <img src="{{ asset('images/tech/nodejs.svg') }}" alt="Node.js" class="tech-icon">
+                        <span>Node.js</span>
+                    </button>
+                    <button class="tech-tab" data-tech="python">
+                        <img src="{{ asset('images/tech/python.svg') }}" alt="Python" class="tech-icon">
+                        <span>Python</span>
+                    </button>
+                </div>
+
+                <div class="tech-content">
+                    <div class="tech-panel active" data-tech="symfony">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation du bundle</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="composer require error-explorer/symfony-bundle">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>composer require error-explorer/symfony-bundle</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Configuration</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# config/packages/error_explorer.yaml
+error_explorer:
+    webhook_url: '%env(ERROR_EXPLORER_WEBHOOK_URL)%'
+    project_name: '%env(ERROR_EXPLORER_PROJECT_NAME)%'
+    environment: '%kernel.environment%'
+    enabled: true">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># config/packages/error_explorer.yaml
+error_explorer:
+    webhook_url: '%env(ERROR_EXPLORER_WEBHOOK_URL)%'
+    project_name: '%env(ERROR_EXPLORER_PROJECT_NAME)%'
+    environment: '%kernel.environment%'
+    enabled: true</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Variables d'environnement</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-symfony-app">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>C'est tout ! 🎉</h4>
+                                    <p>Toutes vos erreurs sont maintenant automatiquement capturées et envoyées à Error Explorer.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laravel Integration -->
+                    <div class="tech-panel" data-tech="laravel">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation du package</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="composer require error-explorer/laravel-package">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>composer require error-explorer/laravel-package</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Publication de la configuration</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="php artisan vendor:publish --tag=error-explorer-config">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>php artisan vendor:publish --tag=error-explorer-config</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Configuration .env</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-laravel-app
+ERROR_EXPLORER_ENABLED=true">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-laravel-app
+ERROR_EXPLORER_ENABLED=true</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>Terminé ! 🚀</h4>
+                                    <p>Laravel va maintenant envoyer automatiquement toutes les exceptions à Error Explorer.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WordPress Integration -->
+                    <div class="tech-panel" data-tech="wordpress">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation du plugin</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# Via Composer (recommandé)
+composer require error-explorer/wordpress-plugin
+
+# Ou télécharger depuis WordPress.org">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># Via Composer (recommandé)
+composer require error-explorer/wordpress-plugin
+
+# Ou télécharger depuis WordPress.org</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Configuration dans wp-config.php</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="// wp-config.php
+define('ERROR_EXPLORER_WEBHOOK_URL', 'https://your-domain.com/webhook/project-token');
+define('ERROR_EXPLORER_PROJECT_NAME', 'my-wordpress-site');
+define('ERROR_EXPLORER_ENABLED', true);">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>// wp-config.php
+define('ERROR_EXPLORER_WEBHOOK_URL', 'https://your-domain.com/webhook/project-token');
+define('ERROR_EXPLORER_PROJECT_NAME', 'my-wordpress-site');
+define('ERROR_EXPLORER_ENABLED', true);</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Activation du plugin</h3>
+                                    <p>Activez le plugin "Error Explorer" depuis l'interface d'administration WordPress ou via WP-CLI :</p>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="wp plugin activate error-explorer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>wp plugin activate error-explorer</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>Parfait ! 💪</h4>
+                                    <p>WordPress monitore maintenant toutes les erreurs PHP et les erreurs fatales.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- React Integration -->
+                    <div class="tech-panel" data-tech="react">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation du package</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="npm install @error-explorer/react
+# ou
+yarn add @error-explorer/react">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>npm install @error-explorer/react
+# ou
+yarn add @error-explorer/react</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Initialisation</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="// src/index.js ou src/App.js
+import { ErrorExplorer } from '@error-explorer/react';
+
+ErrorExplorer.init({
+  webhookUrl: 'https://your-domain.com/webhook/project-token',
+  projectName: 'my-react-app',
+  environment: process.env.NODE_ENV,
+  userId: user?.id, // optionnel
+});">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>// src/index.js ou src/App.js
+import { ErrorExplorer } from '@error-explorer/react';
+
+ErrorExplorer.init({
+  webhookUrl: 'https://your-domain.com/webhook/project-token',
+  projectName: 'my-react-app',
+  environment: process.env.NODE_ENV,
+  userId: user?.id, // optionnel
+});</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Error Boundary (optionnel)</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="import { ErrorBoundary } from '@error-explorer/react';
+
+function App() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <Router>
+        <Routes>
+          {/* vos routes */}
+        </Routes>
+      </Router>
+    </ErrorBoundary>
+  );
+}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>import { ErrorBoundary } from '@error-explorer/react';
+
+function App() {
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <Router>
+        <Routes>
+          {/* vos routes */}
+        </Routes>
+      </Router>
+                                                </ErrorBoundary>
+                                                );
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>Excellent ! ⚛️</h4>
+                                    <p>React capture maintenant toutes les erreurs JavaScript et les erreurs de rendu.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Node.js Integration -->
+                    <div class="tech-panel" data-tech="nodejs">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="npm install @error-explorer/node
+# ou
+yarn add @error-explorer/node">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>npm install @error-explorer/node
+# ou
+yarn add @error-explorer/node</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Configuration</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="// app.js ou server.js
+const ErrorExplorer = require('@error-explorer/node');
+
+ErrorExplorer.init({
+  webhookUrl: process.env.ERROR_EXPLORER_WEBHOOK_URL,
+  projectName: process.env.ERROR_EXPLORER_PROJECT_NAME || 'my-node-app',
+  environment: process.env.NODE_ENV || 'development',
+});
+
+// Capture des erreurs non gérées
+process.on('uncaughtException', ErrorExplorer.captureException);
+process.on('unhandledRejection', ErrorExplorer.captureException);">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>// app.js ou server.js
+const ErrorExplorer = require('@error-explorer/node');
+
+ErrorExplorer.init({
+  webhookUrl: process.env.ERROR_EXPLORER_WEBHOOK_URL,
+  projectName: process.env.ERROR_EXPLORER_PROJECT_NAME || 'my-node-app',
+  environment: process.env.NODE_ENV || 'development',
+});
+
+// Capture des erreurs non gérées
+process.on('uncaughtException', ErrorExplorer.captureException);
+process.on('unhandledRejection', ErrorExplorer.captureException);</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Variables d'environnement</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-node-app
+NODE_ENV=production">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-node-app
+NODE_ENV=production</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>Génial ! 🟢</h4>
+                                    <p>Node.js remonte maintenant toutes les exceptions et rejets de promesses.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Python Integration -->
+                    <div class="tech-panel" data-tech="python">
+                        <div class="integration-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h3>Installation</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="pip install error-explorer-python
+# ou
+poetry add error-explorer-python">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code>pip install error-explorer-python
+# ou
+poetry add error-explorer-python</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h3>Configuration Django/Flask</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# settings.py (Django) ou app.py (Flask)
+import error_explorer
+
+error_explorer.init(
+    webhook_url=os.environ.get('ERROR_EXPLORER_WEBHOOK_URL'),
+    project_name=os.environ.get('ERROR_EXPLORER_PROJECT_NAME', 'my-python-app'),
+    environment=os.environ.get('ENVIRONMENT', 'development'),
+)
+
+# Django: ajouter dans INSTALLED_APPS
+INSTALLED_APPS = [
+    # ...
+    'error_explorer.django',
+]
+
+# Flask: utiliser le décorateur
+from error_explorer.flask import capture_exceptions
+app = capture_exceptions(app)">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># settings.py (Django) ou app.py (Flask)
+import error_explorer
+
+error_explorer.init(
+    webhook_url=os.environ.get('ERROR_EXPLORER_WEBHOOK_URL'),
+    project_name=os.environ.get('ERROR_EXPLORER_PROJECT_NAME', 'my-python-app'),
+    environment=os.environ.get('ENVIRONMENT', 'development'),
+)
+
+# Django: ajouter dans INSTALLED_APPS
+INSTALLED_APPS = [
+    # ...
+    'error_explorer.django',
+]
+
+# Flask: utiliser le décorateur
+from error_explorer.flask import capture_exceptions
+app = capture_exceptions(app)</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h3>Variables d'environnement</h3>
+                                    <div class="code-block">
+                                        <button class="copy-btn" data-code="# .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-python-app
+ENVIRONMENT=production">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                        </button>
+                                        <pre><code># .env
+ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
+ERROR_EXPLORER_PROJECT_NAME=my-python-app
+ENVIRONMENT=production</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-success">
+                                <div class="success-icon">✓</div>
+                                <div class="success-content">
+                                    <h4>Fantastique ! 🐍</h4>
+                                    <p>Python capture maintenant toutes les exceptions avec le contexte complet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Integrations -->
+    <section class="all-integrations-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Toutes nos intégrations</h2>
+                <p>Plus de 20 frameworks et langages supportés</p>
+            </div>
+
+            <div class="integrations-grid">
+                <!-- Backend Frameworks -->
+                <div class="integration-category">
+                    <h3>Backend Frameworks</h3>
+                    <div class="integration-list">
+                        <div class="integration-item">
+                            <img src="{{ asset('images/tech/symfony.svg') }}" alt="Symfony">
+                            <span>Symfony</span>
+                            <div class="status available">Disponible</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="{{ asset('images/tech/laravel.svg') }}" alt="Laravel">
+                            <span>Laravel</span>
+                            <div class="status available">Disponible</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/django.svg" alt="Django">
+                            <span>Django</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/flask.svg" alt="Flask">
+                            <span>Flask</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/express.svg" alt="Express.js">
+                            <span>Express.js</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/spring.svg" alt="Spring Boot">
+                            <span>Spring Boot</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frontend Frameworks -->
+                <div class="integration-category">
+                    <h3>Frontend Frameworks</h3>
+                    <div class="integration-list">
+                        <div class="integration-item">
+                            <img src="{{ asset('images/tech/react.svg') }}" alt="React">
+                            <span>React</span>
+                            <div class="status available">Disponible</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/vue.svg" alt="Vue.js">
+                            <span>Vue.js</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/angular.svg" alt="Angular">
+                            <span>Angular</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/svelte.svg" alt="Svelte">
+                            <span>Svelte</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/nextjs.svg" alt="Next.js">
+                            <span>Next.js</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/nuxt.svg" alt="Nuxt.js">
+                            <span>Nuxt.js</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CMS & E-commerce -->
+                <div class="integration-category">
+                    <h3>CMS & E-commerce</h3>
+                    <div class="integration-list">
+                        <div class="integration-item">
+                            <img src="/{{ asset('images/tech/wordpress.svg') }}" alt="WordPress">
+                            <span>WordPress</span>
+                            <div class="status available">Disponible</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/drupal.svg" alt="Drupal">
+                            <span>Drupal</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/magento.svg" alt="Magento">
+                            <span>Magento</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/shopify.svg" alt="Shopify">
+                            <span>Shopify</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/prestashop.svg" alt="PrestaShop">
+                            <span>PrestaShop</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/woocommerce.svg" alt="WooCommerce">
+                            <span>WooCommerce</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Languages -->
+                <div class="integration-category">
+                    <h3>Langages</h3>
+                    <div class="integration-list">
+                        <div class="integration-item">
+                            <img src="/images/tech/php.svg" alt="PHP">
+                            <span>PHP</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/javascript.svg" alt="JavaScript">
+                            <span>JavaScript</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/typescript.svg" alt="TypeScript">
+                            <span>TypeScript</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/python.svg" alt="Python">
+                            <span>Python</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/ruby.svg" alt="Ruby">
+                            <span>Ruby</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                        <div class="integration-item">
+                            <img src="/images/tech/go.svg" alt="Go">
+                            <span>Go</span>
+                            <div class="status coming-soon">Bientôt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manual Integration -->
+    <section class="manual-integration-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Intégration manuelle</h2>
+                <p>Pour les cas spéciaux ou les frameworks non supportés</p>
+            </div>
+
+            <div class="manual-integration-content">
+                <div class="manual-integration-grid">
+                    <div class="manual-step">
+                        <div class="step-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <h3>1. Capturez l'erreur</h3>
+                        <p>Utilisez vos gestionnaires d'erreurs existants pour capturer les exceptions.</p>
+                    </div>
+
+                    <div class="manual-step">
+                        <div class="step-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3>2. Formatez les données</h3>
+                        <p>Structurez vos données selon notre format JSON standardisé.</p>
+                    </div>
+
+                    <div class="manual-step">
+                        <div class="step-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 7l-6 6 6 6"/>
+                                <path d="M9 7l-6 6 6 6"/>
+                            </svg>
+                        </div>
+                        <h3>3. Envoyez via HTTP</h3>
+                        <p>POST sur votre endpoint webhook avec les données formatées.</p>
+                    </div>
+                </div>
+
+                <div class="webhook-example">
+                    <h3>Format du webhook</h3>
+                    <div class="code-block">
+                        <button class="copy-btn" data-code='{
+  "message": "Call to undefined method User::getEmaill()",
+  "exception_class": "Error",
+  "stack_trace": "#0 /var/www/src/Controller/UserController.php(45): User->getEmaill()\n#1 ...",
+  "file": "/var/www/src/Controller/UserController.php",
+  "line": 45,
+  "project": "my-custom-app",
+  "environment": "production",
+  "http_status": 500,
+  "timestamp": "2025-06-04T14:30:25+02:00",
+  "request": {
+    "url": "https://mysite.com/profile",
+    "method": "GET",
+    "ip": "192.168.1.100",
+    "user_agent": "Mozilla/5.0..."
+  },
+  "server": {
+    "php_version": "8.2.7",
+    "memory_usage": 12582912
+  },
+  "context": {
+    "user": {"id": 123, "email": "user@example.com"}
+  }
+}'>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        </button>
+                        <pre><code>{
+  "message": "Call to undefined method User::getEmaill()",
+  "exception_class": "Error",
+  "stack_trace": "#0 /var/www/src/Controller/UserController.php(45): User->getEmaill()\n#1 ...",
+  "file": "/var/www/src/Controller/UserController.php",
+  "line": 45,
+  "project": "my-custom-app",
+  "environment": "production",
+  "http_status": 500,
+  "timestamp": "2025-06-04T14:30:25+02:00",
+  "request": {
+    "url": "https://mysite.com/profile",
+    "method": "GET",
+    "ip": "192.168.1.100",
+    "user_agent": "Mozilla/5.0..."
+  },
+  "server": {
+    "php_version": "8.2.7",
+    "memory_usage": 12582912
+  },
+  "context": {
+    "user": {"id": 123, "email": "user@example.com"}
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="integration-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à intégrer Error Explorer ?</h2>
+                <p>
+                    Commencez dès maintenant et profitez d'un monitoring d'erreurs
+                    professionnel en moins de 5 minutes.
+                </p>
+
+                <div class="cta-actions">
+                    <a href="{{ path('app_register') }}" class="btn btn-primary">
+                        <span>Créer un compte gratuit</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="{{ path('contact') }}" class="btn btn-secondary">
+                        <span>Besoin d'aide ?</span>
+                    </a>
+                </div>
+
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <span class="cta-check">✓</span>
+                        <span>Installation en 5 minutes</span>
+                    </div>
+                    <div class="cta-feature">
+                        <span class="cta-check">✓</span>
+                        <span>Support technique inclus</span>
+                    </div>
+                    <div class="cta-feature">
+                        <span class="cta-check">✓</span>
+                        <span>Documentation complète</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

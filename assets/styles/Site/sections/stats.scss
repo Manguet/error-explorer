@@ -1,0 +1,415 @@
+.stats {
+  padding: 5rem 2rem;
+  background: #111827;
+  color: white;
+  position: relative;
+  overflow: hidden;
+
+  // Effet de grille subtile en arrière-plan
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridFloat 25s linear infinite;
+    pointer-events: none;
+  }
+
+  // Overlay avec particules
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+            radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+    animation: particleDrift 20s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@keyframes gridFloat {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(40px, 40px); }
+}
+
+@keyframes particleDrift {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1) rotate(180deg);
+  }
+}
+
+// Header de la section
+.stats-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: slideInDown 0.8s ease-out;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 700;
+    color: $white;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, $white, #f1f5f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p {
+    color: #9ca3af;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+// Grille des cartes dashboard
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  animation: slideInUp 0.8s ease-out 0.2s both;
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// Cartes individuelles
+.stat-item {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  position: relative;
+  @include smooth-transition(all, 0.3s, ease);
+  overflow: hidden;
+
+  // Animation d'entrée séquentielle
+  opacity: 0;
+  transform: translateY(30px);
+
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation: cardSlideIn 0.6s ease-out #{0.4 + ($i * 0.1)}s forwards;
+    }
+  }
+
+  // Effet de hover
+  &:hover {
+    border-color: $primary-blue;
+    box-shadow:
+            0 8px 25px rgba(59, 130, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+
+    .stat-number {
+      transform: scale(1.05);
+      color: $primary-blue;
+    }
+
+    .trend-indicator {
+      transform: translateX(3px);
+    }
+  }
+
+  // Ligne de glow en haut (optionnel)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primary-blue, transparent);
+    opacity: 0;
+    @include smooth-transition(opacity, 0.3s, ease);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+@keyframes cardSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Header de chaque carte
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+
+  @media screen and (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+.stat-title {
+  color: #d1d5db;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+// Indicateurs de tendance
+.trend-indicator {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  @include smooth-transition(all, 0.3s, ease);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &.trend-up {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+
+    &::before {
+      content: '↗';
+      font-size: 0.8em;
+    }
+  }
+
+  &.trend-down {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+
+    &::before {
+      content: '↘';
+      font-size: 0.8em;
+    }
+  }
+
+  &.trend-stable {
+    background: rgba(156, 163, 175, 0.1);
+    color: #9ca3af;
+    border: 1px solid rgba(156, 163, 175, 0.2);
+
+    &::before {
+      content: '→';
+      font-size: 0.8em;
+    }
+  }
+}
+
+// Nombres principaux
+.stat-number {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 800;
+  color: $white;
+  margin-bottom: 0.75rem;
+  font-family: $font-heading;
+  @include smooth-transition(all, 0.3s, ease);
+  line-height: 1;
+
+  // Effet de compteur animé
+  &.counting {
+    animation: numberPulse 0.5s ease-out;
+  }
+}
+
+@keyframes numberPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+// Descriptions
+.stat-description {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+// Variantes de couleur pour les cartes (optionnel)
+.stat-item {
+  &.primary {
+    border-left: 3px solid $primary-blue;
+
+    &:hover {
+      border-left-color: $light-blue;
+    }
+  }
+
+  &.success {
+    border-left: 3px solid #10b981;
+
+    &:hover {
+      border-left-color: #34d399;
+    }
+  }
+
+  &.warning {
+    border-left: 3px solid #f59e0b;
+
+    &:hover {
+      border-left-color: #fbbf24;
+    }
+  }
+
+  &.info {
+    border-left: 3px solid #06b6d4;
+
+    &:hover {
+      border-left-color: #22d3ee;
+    }
+  }
+}
+
+// Badge "Temps réel" sur certaines cartes
+.realtime-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+
+  &::before {
+    content: '●';
+    margin-right: 0.25rem;
+    animation: livePulse 2s infinite;
+  }
+}
+
+// Animations d'entrée
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive amélioré
+@media screen and (max-width: 1024px) {
+  .stats {
+    padding: 4rem 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .stats {
+    padding: 3rem 1rem;
+  }
+
+  .stats-header {
+    margin-bottom: 2rem;
+  }
+
+  .stat-item {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .stats-grid {
+    gap: 0.75rem;
+  }
+
+  .stat-item {
+    padding: 1.25rem 1rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+}
+
+.stat-number {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.trend-indicator {
+  transition: all 0.3s ease;
+}
+
+.realtime-badge {
+  transition: all 0.3s ease;
+}
+
+.mini-chart::before {
+  transition: height 0.3s ease;
+}
+
+/* Animation de pulsation pour les éléments en temps réel */
+@keyframes realtimePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.realtime-badge:hover {
+  animation: realtimePulse 1s ease-in-out infinite;
+}

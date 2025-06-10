@@ -1,0 +1,177 @@
+// Welcome Banner Component
+.welcome-banner {
+  @include gradient-primary;
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+
+  // Decorative elements like the main site
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: skewX(-15deg) translateX(50px);
+  }
+
+  // Animated tech grid pattern
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: gridFloat 20s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+
+  @include responsive('md') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.welcome-text {
+  flex: 1;
+}
+
+.welcome-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: $font-heading;
+  
+  @include responsive('md') {
+    font-size: 1.25rem;
+  }
+}
+
+.welcome-description {
+  margin: 0;
+  opacity: 0.95;
+  font-size: 1rem;
+  line-height: 1.6;
+  
+  @include responsive('md') {
+    font-size: 0.95rem;
+  }
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+
+  @include responsive('md') {
+    width: 100%;
+  }
+}
+
+.welcome-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: $dashboard-transition;
+  position: relative;
+  overflow: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: left 0.6s;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    &:before {
+      left: 100%;
+    }
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  @include responsive('md') {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes gridFloat {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(30px, 30px);
+  }
+}
+
+// Success state variant
+.welcome-banner.success-state {
+  @include gradient-success;
+  
+  .welcome-title:before {
+    content: '🎉 ';
+  }
+}
+
+// Project setup state
+.welcome-banner.setup-state {
+  background: linear-gradient(135deg, $warning-yellow, darken($warning-yellow, 15%));
+  
+  .welcome-title:before {
+    content: '⚡ ';
+  }
+}

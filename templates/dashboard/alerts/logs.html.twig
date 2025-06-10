@@ -1,0 +1,217 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block page_title %}Historique des alertes{% endblock %}
+{% block page_subtitle %}Toutes les alertes envoyées{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('alerts_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        Retour aux alertes
+    </a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('alerts_index') }}">Alertes</a>
+    <span>Historique</span>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <!-- Filters -->
+    <div class="dashboard-filters">
+        <div class="filters-header">
+            <h4>Filtres</h4>
+        </div>
+        <form method="GET" class="filters-form">
+            <div class="filter-group">
+                <label for="project">Projet</label>
+                <select name="project" id="project" class="form-select">
+                    <option value="">Tous les projets</option>
+                    {% for project in projects %}
+                        <option value="{{ project.id }}" {{ filters.project == project.id ? 'selected' : '' }}>
+                            {{ project.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="status">Statut</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="open" {{ filters.status == 'open' ? 'selected' : '' }}>Ouvert</option>
+                    <option value="investigating" {{ filters.status == 'investigating' ? 'selected' : '' }}>En cours</option>
+                    <option value="resolved" {{ filters.status == 'resolved' ? 'selected' : '' }}>Résolu</option>
+                    <option value="ignored" {{ filters.status == 'ignored' ? 'selected' : '' }}>Ignoré</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="date_from">Date de début</label>
+                <input type="date" name="date_from" id="date_from" value="{{ filters.date_from }}" class="form-input">
+            </div>
+
+            <div class="filter-group">
+                <label for="date_to">Date de fin</label>
+                <input type="date" name="date_to" id="date_to" value="{{ filters.date_to }}" class="form-input">
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="header-btn btn-primary">Filtrer</button>
+                <a href="{{ path('alerts_logs') }}" class="header-btn btn-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div class="data-section">
+        <div class="section-header">
+            <div>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
+                </svg>
+                <h3 class="section-title">{{ total_alerts }} alerte{{ total_alerts != 1 ? 's' : '' }} trouvée{{ total_alerts != 1 ? 's' : '' }}</h3>
+            </div>
+        </div>
+
+        <div class="table-container">
+            {% if alerts|length > 0 %}
+                <div class="dashboard-table-container">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Priorité</th>
+                                <th>Erreur</th>
+                                <th>Projet</th>
+                                <th>Statut</th>
+                                <th>Occurrences</th>
+                                <th>Date d'alerte</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alert in alerts %}
+                                <tr>
+                                    <td>
+                                        {% if alert.httpStatusCode >= 500 %}
+                                            <span class="priority-badge priority-critical" title="Critique">🚨</span>
+                                        {% elseif alert.occurrenceCount > 10 %}
+                                            <span class="priority-badge priority-high" title="Élevée">⚠️</span>
+                                        {% elseif alert.errorType in ['exception', 'error'] %}
+                                            <span class="priority-badge priority-medium" title="Moyenne">🔴</span>
+                                        {% else %}
+                                            <span class="priority-badge priority-low" title="Faible">🟡</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="error-info">
+                                            <a href="{{ path('dashboard_error_detail', {id: alert.id}) }}" class="error-title">
+                                                {{ alert.title|length > 60 ? alert.title|slice(0, 60) ~ '...' : alert.title }}
+                                            </a>
+                                            {% if alert.httpStatusCode %}
+                                                <div class="error-meta">HTTP {{ alert.httpStatusCode }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="project-slug">{{ alert.projectEntity.name }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-{{ alert.status }}">{{ alert.status|title }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="occurrence-count">{{ alert.occurrenceCount|number_format }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div>{{ alert.lastAlertSentAt|date('d/m/Y') }}</div>
+                                            <small>{{ alert.lastAlertSentAt|date('H:i') }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="project-actions">
+                                            <a href="{{ path('dashboard_error_detail', {id: alert.id}) }}" class="action-btn action-btn-view" title="Voir les détails">
+                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- Pagination -->
+            {% if total_pages > 1 %}
+                <div class="pagination-wrapper">
+                    <nav class="pagination">
+                        {% if current_page > 1 %}
+                            <a href="{{ path('alerts_logs', filters|merge({page: current_page - 1})) }}" 
+                               class="pagination-link pagination-prev">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                                Précédent
+                            </a>
+                        {% endif %}
+
+                        <div class="pagination-pages">
+                            {% set start_page = max(1, current_page - 2) %}
+                            {% set end_page = min(total_pages, current_page + 2) %}
+                            
+                            {% if start_page > 1 %}
+                                <a href="{{ path('alerts_logs', filters|merge({page: 1})) }}" class="pagination-link">1</a>
+                                {% if start_page > 2 %}
+                                    <span class="pagination-ellipsis">...</span>
+                                {% endif %}
+                            {% endif %}
+
+                            {% for page in start_page..end_page %}
+                                {% if page == current_page %}
+                                    <span class="pagination-link pagination-current">{{ page }}</span>
+                                {% else %}
+                                    <a href="{{ path('alerts_logs', filters|merge({page: page})) }}" class="pagination-link">{{ page }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if end_page < total_pages %}
+                                {% if end_page < total_pages - 1 %}
+                                    <span class="pagination-ellipsis">...</span>
+                                {% endif %}
+                                <a href="{{ path('alerts_logs', filters|merge({page: total_pages})) }}" class="pagination-link">{{ total_pages }}</a>
+                            {% endif %}
+                        </div>
+
+                        {% if current_page < total_pages %}
+                            <a href="{{ path('alerts_logs', filters|merge({page: current_page + 1})) }}" 
+                               class="pagination-link pagination-next">
+                                Suivant
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+            {% else %}
+                <div class="projects-empty-state">
+                    <div class="empty-icon">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
+                        </svg>
+                    </div>
+                    <h3>Aucune alerte trouvée</h3>
+                    <p>Aucune alerte ne correspond à vos critères de recherche.</p>
+                    <a href="{{ path('alerts_logs') }}" class="header-btn btn-secondary">Afficher toutes les alertes</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

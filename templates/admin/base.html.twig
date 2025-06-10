@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Administration - Error Explorer{% endblock %}</title>
+
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('android-chrome-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('android-chrome-512x512.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Interface d'administration Error Explorer">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+    {% endblock %}
+</head>
+
+<body>
+    <div class="admin-layout">
+        {{ include('admin/layout/sidebar.html.twig') }}
+
+        <main class="main-content">
+            <header class="admin-header">
+                <div class="admin-header-content">
+                    <div class="admin-header-left">
+                        {% block page_header %}
+                            <h1>Administration</h1>
+                            <p>Interface d'administration Error Explorer</p>
+                        {% endblock %}
+                    </div>
+                    {{ include('admin/layout/header.html.twig') }}
+                </div>
+            </header>
+
+            <div class="admin-content">
+                {% for type, messages in app.flashes %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ type }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% block javascripts %}
+        {{ encore_entry_script_tags('admin') }}
+    {% endblock %}
+</body>
+</html>

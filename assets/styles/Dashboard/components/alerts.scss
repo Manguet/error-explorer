@@ -1,0 +1,51 @@
+// Alerts Dashboard Styles - Additional styles for alerts pages
+
+// Priority badges
+.priority-badge {
+  display: inline-block;
+  font-size: 16px;
+  text-align: center;
+  min-width: 24px;
+}
+
+// Additional error info styles
+.error-info {
+  .error-title {
+    color: $dashboard-text;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+
+    &:hover {
+      color: $primary-blue;
+    }
+  }
+
+  .error-meta {
+    font-size: 12px;
+    color: $dashboard-text-light;
+    margin-top: 2px;
+  }
+}
+
+// Date info styles
+.date-info {
+  small {
+    color: $dashboard-text-light;
+    font-size: 12px;
+  }
+}
+
+// Spinner animation for loading states
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

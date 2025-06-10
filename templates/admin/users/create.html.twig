@@ -1,0 +1,678 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ is_edit ? 'Modifier' : 'Créer' }} un utilisateur - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .create-user-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .form-card-header {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 20px;
+        }
+
+        .form-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-help {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .form-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .form-checkbox {
+            width: 16px;
+            height: 16px;
+        }
+
+        .plan-preview {
+            margin-top: 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .plan-preview-header h4 {
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+            color: #1f2937;
+        }
+
+        .plan-preview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .plan-preview-item {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .plan-preview-item strong {
+            color: #374151;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .info-card-header {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 16px;
+        }
+
+        .info-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .info-card-body {
+            padding: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 0.875rem;
+        }
+
+        .info-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .security-tip {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .security-tip:last-child {
+            margin-bottom: 0;
+        }
+
+        .security-tip-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .security-tip-icon.success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .security-tip-icon.info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .security-tip-icon.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .security-tip-content {
+            flex: 1;
+        }
+
+        .security-tip-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+            font-size: 0.75rem;
+        }
+
+        .security-tip-text {
+            font-size: 0.6875rem;
+            color: #6b7280;
+            line-height: 1.3;
+        }
+
+        .right-section{
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .create-user-layout {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .plan-preview-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div class="page-header-modern">
+        <div class="page-header-content">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                {{ is_edit ? 'Modifier l\'utilisateur' : 'Créer un nouvel utilisateur' }}
+            </h1>
+            <p>{{ is_edit ? 'Modifiez les informations et les paramètres de l\'utilisateur' : 'Ajoutez un nouvel utilisateur au système' }}</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumb-modern">
+        <a href="{{ path('admin_dashboard') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Admin
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <a href="{{ path('admin_users_index') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Utilisateurs
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <span class="breadcrumb-current">{{ is_edit ? 'Modifier' : 'Créer' }}</span>
+    </nav>
+
+    <div class="create-user-layout">
+        <div class="form-section">
+            {{ form_start(form) }}
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Informations personnelles
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.firstName) }}
+                            {{ form_errors(form.firstName) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.lastName) }}
+                            {{ form_errors(form.lastName) }}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.email, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.email) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.company, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.company) }}
+                            {{ form_errors(form.company) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <circle cx="12" cy="16" r="1"></circle>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        {{ is_edit ? 'Changer le mot de passe' : 'Mot de passe' }}
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    {% if is_edit %}
+                        <div class="form-group">
+                            {{ form_label(form.newPassword, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.newPassword) }}
+                            <div class="form-help">{{ form.newPassword.vars.help }}</div>
+                            {{ form_errors(form.newPassword) }}
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.plainPassword) }}
+                            {{ form_errors(form.plainPassword) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                        </svg>
+                        Plan d'abonnement
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.plan, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.plan) }}
+                            {{ form_errors(form.plan) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.planExpiresAt, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.planExpiresAt) }}
+                            <div class="form-help">{{ form.planExpiresAt.vars.help }}</div>
+                            {{ form_errors(form.planExpiresAt) }}
+                        </div>
+                    </div>
+
+                    <div class="plan-preview" id="plan-preview" style="display: none;">
+                        <div class="plan-preview-header">
+                            <h4>Aperçu du plan</h4>
+                        </div>
+                        <div class="plan-preview-content">
+                            <div class="plan-preview-item">
+                                <strong>Prix:</strong> <span id="preview-price">-</span>
+                            </div>
+                            <div class="plan-preview-item">
+                                <strong>Projets max:</strong> <span id="preview-projects">-</span>
+                            </div>
+                            <div class="plan-preview-item">
+                                <strong>Erreurs/mois:</strong> <span id="preview-errors">-</span>
+                            </div>
+                            <div class="plan-preview-item">
+                                <strong>Rétention:</strong> <span id="preview-retention">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if form.roles is defined %}
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h3 class="form-card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"></path>
+                                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                            </svg>
+                            Paramètres administrateur
+                        </h3>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group">
+                            {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.roles) }}
+                            <div class="form-help">{{ form.roles.vars.help }}</div>
+                            {{ form_errors(form.roles) }}
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-checkbox-label">
+                                    {{ form_widget(form.isActive) }}
+                                    {{ form.isActive.vars.label }}
+                                </label>
+                                <div class="form-help">{{ form.isActive.vars.help }}</div>
+                                {{ form_errors(form.isActive) }}
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-checkbox-label">
+                                    {{ form_widget(form.isVerified) }}
+                                    {{ form.isVerified.vars.label }}
+                                </label>
+                                <div class="form-help">{{ form.isVerified.vars.help }}</div>
+                                {{ form_errors(form.isVerified) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <polyline points="12,19 5,12 12,5"></polyline>
+                    </svg>
+                    Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,11 12,14 22,4"></polyline>
+                        <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                    </svg>
+                    {{ is_edit ? 'Mettre à jour' : 'Créer l\'utilisateur' }}
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+        <div class="right-section">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h3 class="info-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9,9h0a3,3,0,0,1,5.12,2.12h0L9,15"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Informations sur les plans
+                    </h3>
+                </div>
+                <div class="info-card-body">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Plans disponibles</div>
+                            <div class="info-text">Chaque utilisateur doit avoir un plan qui définit ses limites et fonctionnalités</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Expiration</div>
+                            <div class="info-text">Définissez une date d'expiration ou laissez vide pour un plan permanent</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-title">Limites</div>
+                            <div class="info-text">Les limites sont appliquées automatiquement selon le plan choisi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-header">
+                    <h3 class="info-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        Sécurité
+                    </h3>
+                </div>
+                <div class="info-card-body">
+                    <div class="security-tip">
+                        <div class="security-tip-icon success">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,11 12,14 22,4"></polyline>
+                                <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                            </svg>
+                        </div>
+                        <div class="security-tip-content">
+                            <div class="security-tip-title">Mot de passe fort</div>
+                            <div class="security-tip-text">Minimum 8 caractères avec majuscules, minuscules et chiffres</div>
+                        </div>
+                    </div>
+
+                    <div class="security-tip">
+                        <div class="security-tip-icon info">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"></path>
+                                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
+                                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
+                            </svg>
+                        </div>
+                        <div class="security-tip-content">
+                            <div class="security-tip-title">Vérification email</div>
+                            <div class="security-tip-text">Marquez comme vérifié si l'email a été confirmé</div>
+                        </div>
+                    </div>
+
+                    <div class="security-tip">
+                        <div class="security-tip-icon warning">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="security-tip-content">
+                            <div class="security-tip-title">Rôles admin</div>
+                            <div class="security-tip-text">Accordez les droits administrateur avec prudence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const planSelect = document.getElementById('{{ form.plan.vars.id }}');
+            const planPreview = document.getElementById('plan-preview');
+
+            if (planSelect) {
+                planSelect.addEventListener('change', updatePlanInfo);
+                updatePlanInfo(); // Initial load
+            }
+
+            // Focus sur le premier champ
+            const firstField = document.getElementById('{{ form.firstName.vars.id }}');
+            if (firstField) {
+                firstField.focus();
+            }
+        });
+
+        function updatePlanInfo() {
+            const planSelect = document.getElementById('{{ form.plan.vars.id }}');
+            const planPreview = document.getElementById('plan-preview');
+            const selectedOption = planSelect.options[planSelect.selectedIndex];
+
+            if (selectedOption && selectedOption.value) {
+                // Extraire les informations du plan depuis le texte de l'option
+                const optionText = selectedOption.textContent;
+
+                // Simple parsing - vous pouvez améliorer cela avec des data attributes
+                const priceMatch = optionText.match(/\((.*?)\s-/);
+                const projectsMatch = optionText.match(/(\d+|\w+)\sprojets/);
+                const errorsMatch = optionText.match(/(\d+\w*|\w+)\serreurs/);
+
+                document.getElementById('preview-price').textContent =
+                    priceMatch ? priceMatch[1] : '-';
+                document.getElementById('preview-projects').textContent =
+                    projectsMatch ? projectsMatch[1] : '-';
+                document.getElementById('preview-errors').textContent =
+                    errorsMatch ? errorsMatch[1] : '-';
+                document.getElementById('preview-retention').textContent = '30 jours'; // Par défaut
+
+                planPreview.style.display = 'block';
+            } else {
+                planPreview.style.display = 'none';
+            }
+        }
+    </script>
+{% endblock %}

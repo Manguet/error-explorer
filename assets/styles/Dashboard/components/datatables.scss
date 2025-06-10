@@ -1,0 +1,390 @@
+/* Override des styles DataTables pour intégration avec le dashboard */
+.dataTables_wrapper {
+  color: $dashboard-text !important;
+
+  .dataTables_length,
+  .dataTables_filter,
+  .dataTables_info,
+  .dataTables_paginate {
+    color: $dashboard-text-light !important;
+  }
+
+  .dataTables_length {
+    margin-bottom: 1rem;
+    margin-left: 1.5rem;
+
+    select {
+      background-color: $dashboard-card-bg !important;
+      border: 1px solid $dashboard-border !important;
+      color: $dashboard-text !important;
+      border-radius: 6px !important;
+      padding: 0.5rem !important;
+    }
+  }
+
+  .dataTables_filter {
+    margin-bottom: 1rem;
+    margin-right: 1.5rem;
+
+    input {
+      background-color: $dashboard-card-bg !important;
+      border: 1px solid $dashboard-border !important;
+      color: $dashboard-text !important;
+      border-radius: 6px !important;
+      padding: 0.5rem !important;
+    }
+  }
+
+  .dataTables_info {
+    display: none !important;
+  }
+
+  .dataTables_paginate {
+    margin-top: 1rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    padding-right: 1.5rem;
+
+    .paginate_button {
+      background: $dashboard-card-bg !important;
+      border: 1px solid $dashboard-border !important;
+      color: $dashboard-text-light !important;
+      border-radius: 6px !important;
+      margin: 0 2px !important;
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+
+      &:hover {
+        background: $primary-blue !important;
+        border-color: $primary-blue !important;
+        color: white !important;
+        transform: translateY(-1px) !important;
+      }
+
+      &.current {
+        background: $primary-blue !important;
+        border-color: $primary-blue !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba($primary-blue, 0.3) !important;
+      }
+
+      &.disabled {
+        background: rgba($dashboard-card-bg, 0.5) !important;
+        border-color: rgba($dashboard-border, 0.5) !important;
+        color: rgba($dashboard-text-light, 0.5) !important;
+        cursor: not-allowed !important;
+
+        &:hover {
+          background: rgba($dashboard-card-bg, 0.5) !important;
+          border-color: rgba($dashboard-border, 0.5) !important;
+          color: rgba($dashboard-text-light, 0.5) !important;
+          transform: none !important;
+        }
+      }
+    }
+  }
+
+  .top {
+    padding: 0 1.5rem;
+  }
+
+  .bottom {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+}
+
+/* Styles pour la table */
+table.dataTable {
+  background: $dashboard-card-bg !important;
+  border: none !important;
+
+  thead th {
+    background: rgba(0, 0, 0, 0.2) !important;
+    color: $dashboard-text !important;
+    border-bottom: 1px solid $dashboard-border !important;
+    padding: 1rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+  }
+
+  tbody td {
+    background: $dashboard-card-bg !important;
+    border: none !important;
+    border-bottom: 1px solid $dashboard-border !important;
+    color: $dashboard-text !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 0.875rem !important;
+    vertical-align: top !important;
+  }
+
+  tbody tr:hover td {
+    background: rgba(0, 0, 0, 0.8) !important;
+  }
+}
+
+/* Styles pour les badges dans le datatable */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.badge-info {
+    background-color: rgba($primary-blue, 0.1);
+    color: lighten($primary-blue, 20%);
+    border: 1px solid rgba($primary-blue, 0.2);
+  }
+}
+
+.project-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.active {
+    background-color: rgba($status-resolved, 0.1);
+    color: lighten($status-resolved, 10%);
+    border: 1px solid rgba($status-resolved, 0.2);
+  }
+
+  &.inactive {
+    background-color: rgba($status-ignored, 0.1);
+    color: lighten($status-ignored, 20%);
+    border: 1px solid rgba($status-ignored, 0.2);
+  }
+}
+
+/* Styles pour les cellules du datatable */
+.project-cell {
+  .project-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .project-name .project-link {
+    font-weight: 600;
+    color: $primary-blue;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: lighten($primary-blue, 10%);
+    }
+  }
+
+  .project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+
+  .project-slug {
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.125rem 0.25rem;
+    border-radius: 4px;
+    width: fit-content;
+  }
+}
+
+.errors-cell {
+  .error-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    font-size: 0.75rem;
+  }
+
+  .stat-item {
+    display: flex;
+    gap: 0.25rem;
+    align-items: baseline;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    color: $dashboard-text;
+  }
+
+  .stat-label {
+    color: $dashboard-text-light;
+  }
+}
+
+.actions-cell {
+  .table-actions {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+.action-btn {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: $dashboard-transition;
+  min-width: 2rem;
+  min-height: 2rem;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.btn-secondary {
+    background: rgba($status-ignored, 0.1);
+    color: lighten($status-ignored, 20%);
+
+    &:hover {
+      background: $status-ignored;
+      color: white;
+    }
+  }
+
+  &.btn-success {
+    background: rgba($status-resolved, 0.1);
+    color: $status-resolved;
+
+    &:hover {
+      background: $status-resolved;
+      color: white;
+    }
+  }
+
+  &.btn-warning {
+    background: rgba($status-warning, 0.1);
+    color: $status-warning;
+
+    &:hover {
+      background: $status-warning;
+      color: white;
+    }
+  }
+
+  &.btn-danger {
+    background: rgba($status-open, 0.1);
+    color: $status-open;
+
+    &:hover {
+      background: $status-open;
+      color: white;
+    }
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $dashboard-text-light !important;
+  font-style: italic;
+}
+
+/* Style pour l'état vide si aucun projet dans le datatable */
+.dataTables_empty {
+  text-align: center;
+  padding: 3rem;
+  color: $dashboard-text-light !important;
+}
+
+/* Styles pour section-header cohérents avec l'admin */
+.data-section {
+  @include dashboard-card;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid $dashboard-border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+
+  svg {
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+    color: $primary-blue;
+  }
+
+  > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $dashboard-text;
+  margin: 0;
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: $dashboard-transition;
+  text-decoration: none;
+
+  &-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  &-secondary {
+    background: rgba($status-ignored, 0.1);
+    color: lighten($status-ignored, 20%);
+    border: 1px solid rgba($status-ignored, 0.2);
+
+    &:hover {
+      background: $status-ignored;
+      color: white;
+      border-color: $status-ignored;
+    }
+  }
+}
+
+.table-container {
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  overflow: hidden;
+  padding-top: 1rem;
+}

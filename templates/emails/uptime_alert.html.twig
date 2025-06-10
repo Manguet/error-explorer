@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerte Uptime - {{ project.name }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header.up {
+            background: #28a745;
+        }
+        .header.warning {
+            background: #fd7e14;
+        }
+        .status-card {
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .status-card.up {
+            border-left-color: #28a745;
+            background: #f8fff9;
+        }
+        .status-indicator {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status-indicator.up {
+            color: #28a745;
+        }
+        .status-indicator.down {
+            color: #dc3545;
+        }
+        .url {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .recommendations {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header {{ check.isUp ? 'up' : 'down' }}">
+            <h1>
+                {% if check.isUp %}
+                    ✅ Service Rétabli
+                {% else %}
+                    🚨 Service Indisponible
+                {% endif %}
+            </h1>
+            <p>Statut de monitoring pour le projet <strong>{{ project.name }}</strong></p>
+        </div>
+
+        <h2>Détails du check</h2>
+        
+        <div class="status-card {{ check.isUp ? 'up' : 'down' }}">
+            <div class="status-indicator {{ check.isUp ? 'up' : 'down' }}">
+                {% if check.status == 'up' %}
+                    🟢 Service en ligne
+                {% elseif check.status == 'down' %}
+                    🔴 Service hors ligne
+                {% elseif check.status == 'timeout' %}
+                    ⏱️ Timeout
+                {% else %}
+                    ❌ Erreur
+                {% endif %}
+            </div>
+            
+            <div class="url">{{ check.url }}</div>
+            
+            <div class="metrics">
+                {% if check.responseTimeAsFloat %}
+                <div class="metric">
+                    <div class="metric-value">{{ check.responseTimeAsFloat|number_format(0) }}ms</div>
+                    <div>Temps de réponse</div>
+                </div>
+                {% endif %}
+                
+                {% if check.httpStatusCode %}
+                <div class="metric">
+                    <div class="metric-value">{{ check.httpStatusCode }}</div>
+                    <div>Code HTTP</div>
+                </div>
+                {% endif %}
+                
+                <div class="metric">
+                    <div class="metric-value">{{ check.checkedAt|date('H:i:s') }}</div>
+                    <div>Heure du check</div>
+                </div>
+            </div>
+            
+            {% if check.errorMessage %}
+            <p><strong>Erreur:</strong> {{ check.errorMessage }}</p>
+            {% endif %}
+        </div>
+
+        {% if check.checkLocation %}
+        <p><strong>Lieu de vérification:</strong> {{ check.checkLocation }}</p>
+        {% endif %}
+
+        <div class="recommendations">
+            <h3>📋 Actions recommandées</h3>
+            {% if check.isUp %}
+                <ul>
+                    <li>✅ Le service est maintenant accessible</li>
+                    <li>Vérifiez que toutes les fonctionnalités fonctionnent correctement</li>
+                    <li>Surveillez les métriques pour éviter de futures interruptions</li>
+                </ul>
+            {% else %}
+                {% if check.status == 'down' %}
+                <ul>
+                    <li>🔍 Vérifiez immédiatement l'état du serveur</li>
+                    <li>Consultez les logs d'erreur et de serveur</li>
+                    <li>Vérifiez la connectivité réseau et DNS</li>
+                    {% if check.httpStatusCode >= 500 %}
+                    <li>Erreur serveur ({{ check.httpStatusCode }}) - vérifiez l'application</li>
+                    {% elseif check.httpStatusCode >= 400 %}
+                    <li>Erreur client ({{ check.httpStatusCode }}) - vérifiez la configuration</li>
+                    {% endif %}
+                </ul>
+                {% elseif check.status == 'timeout' %}
+                <ul>
+                    <li>⏱️ Le serveur ne répond pas dans les temps</li>
+                    <li>Vérifiez la charge du serveur</li>
+                    <li>Analysez les performances de l'application</li>
+                    <li>Considérez l'augmentation des ressources</li>
+                </ul>
+                {% else %}
+                <ul>
+                    <li>❌ Erreur lors de la vérification</li>
+                    <li>Vérifiez la configuration du monitoring</li>
+                    <li>Testez manuellement l'accès au service</li>
+                </ul>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{ dashboardUrl }}" class="button">
+                📊 Voir le Dashboard
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>
+                Cette alerte a été générée automatiquement par Error Explorer.<br>
+                Projet: <strong>{{ project.name }}</strong> | 
+                URL: {{ check.url|slice(0, 50) }}{% if check.url|length > 50 %}...{% endif %} |
+                Date: {{ check.checkedAt|date('d/m/Y à H:i:s') }}
+            </p>
+            {% if unsubscribeUrl %}
+            <p>
+                <a href="{{ unsubscribeUrl }}">Se désabonner des alertes</a>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

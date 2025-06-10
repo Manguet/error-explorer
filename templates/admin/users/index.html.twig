@@ -1,0 +1,375 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+    <style>
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease-in-out;
+            position: absolute;
+            z-index: 999;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(10px);
+        }
+
+        .dropdown-item{
+            padding: 12px 4px;
+        }
+
+        .plan-info{
+            flex-direction: column;
+            gap: 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block page_header %}
+    <div class="page-header-modern">
+        <div class="page-header-content">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Gestion des utilisateurs
+            </h1>
+            <p>Gérez les comptes utilisateurs et leurs abonnements</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header-actions">
+        <a href="{{ path('admin_users_create') }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Nouvel utilisateur
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" id="exportDropdown">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Exporter
+            </button>
+            <div class="dropdown-menu">
+                <a href="{{ path('admin_users_export', {format: 'csv'}) }}" class="dropdown-item">
+                    Format CSV
+                </a>
+                <a href="{{ path('admin_users_export', {format: 'json'}) }}" class="dropdown-item">
+                    Format JSON
+                </a>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="window.location.reload()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+            </svg>
+            Actualiser
+        </button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card plans">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.total_users }}</div>
+                    <div class="stat-label">Utilisateurs totaux</div>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                {{ stats.active_users }} actifs
+            </div>
+        </div>
+
+        <div class="stat-card revenue">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.users_this_month }}</div>
+                    <div class="stat-label">Ce mois-ci</div>
+                </div>
+            </div>
+            <div class="stat-change positive">Nouvelles inscriptions</div>
+        </div>
+
+        <div class="stat-card popular">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.users_over_limits }}</div>
+                    <div class="stat-label">En limite</div>
+                </div>
+            </div>
+            <div class="stat-change negative">Dépassement quota</div>
+        </div>
+
+        <div class="stat-card expired">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.expired_plans }}</div>
+                    <div class="stat-label">Plans expirés</div>
+                </div>
+            </div>
+            <div class="stat-change negative">À renouveler</div>
+        </div>
+    </div>
+
+    <div class="bulk-actions" id="bulk-actions" style="display: none;">
+        <div class="bulk-actions-content">
+            <span class="bulk-selected-count">0 utilisateur(s) sélectionné(s)</span>
+            <div class="bulk-actions-buttons">
+                <button class="btn btn-success btn-sm" onclick="bulkAction('activate')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9,11 12,14 22,4"></polyline>
+                        <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                    </svg>
+                    Activer
+                </button>
+                <button class="btn btn-warning btn-sm" onclick="bulkAction('deactivate')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    Désactiver
+                </button>
+                <button class="btn btn-info btn-sm" onclick="bulkAction('reset_limits')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                        <path d="M3 21v-5h5"></path>
+                    </svg>
+                    Reset limites
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <div class="section-header">
+            <div>
+                <h3 class="section-title">Tous les utilisateurs</h3>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-secondary btn-sm" onclick="exportUsers()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Exporter
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="table"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
+    <script>
+        // Gestion des cases à cocher
+        document.addEventListener('DOMContentLoaded', function() {
+            // Checkbox "Tout sélectionner"
+            document.addEventListener('change', function(e) {
+                if (e.target.id === 'select-all') {
+                    const checkboxes = document.querySelectorAll('.user-checkbox');
+                    checkboxes.forEach(cb => cb.checked = e.target.checked);
+                    updateBulkActions();
+                }
+
+                if (e.target.classList.contains('user-checkbox')) {
+                    updateBulkActions();
+                }
+            });
+        });
+
+        function updateBulkActions() {
+            const selected = document.querySelectorAll('.user-checkbox:checked');
+            const bulkActions = document.getElementById('bulk-actions');
+            const countElement = document.querySelector('.bulk-selected-count');
+
+            if (selected.length > 0) {
+                bulkActions.style.display = 'block';
+                countElement.textContent = `${selected.length} utilisateur(s) sélectionné(s)`;
+            } else {
+                bulkActions.style.display = 'none';
+            }
+        }
+
+        // Actions sur les utilisateurs
+        async function toggleUserStatus(userId) {
+            const result = await performAction(`{{ path('admin_users_toggle_status', { id: '__ID__' }) }}`.replace('__ID__', userId));
+            if (result) {
+                $('.dataTable').DataTable().ajax.reload();
+            }
+        }
+
+        async function deleteUser(userId, userName) {
+            if (!confirm(`⚠️ Êtes-vous sûr de vouloir supprimer l'utilisateur "${userName}" ?\n\nCette action est irréversible.`)) {
+                return;
+            }
+
+            const result = await performAction(`{{ path('admin_users_delete', { id: '__ID__' }) }}`.replace('__ID__', userId), 'DELETE');
+            if (result) {
+                $('.dataTable').DataTable().ajax.reload();
+            }
+        }
+
+        async function resetUserLimits(userId) {
+            if (!confirm('Réinitialiser les limites mensuelles de cet utilisateur ?')) {
+                return;
+            }
+
+            const result = await performAction(`{{ path('admin_users_reset_limits', { id: '__ID__' }) }}`.replace('__ID__', userId));
+            if (result) {
+                showNotification('Limites réinitialisées avec succès', 'success');
+                $('.dataTable').DataTable().ajax.reload();
+            }
+        }
+
+        async function extendUserPlan(userId) {
+            const months = prompt('Étendre le plan de combien de mois ? (1-12)', '1');
+            if (!months || isNaN(months) || months < 1 || months > 12) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ path('admin_users_extend_plan', { id: '__ID__' }) }}`.replace('__ID__', userId), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ months: parseInt(months) })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    $('.dataTable').DataTable().ajax.reload();
+                } else {
+                    showNotification(result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur lors de l\'extension du plan', 'error');
+            }
+        }
+
+        async function bulkAction(action) {
+            const selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => parseInt(cb.value));
+
+            if (selected.length === 0) {
+                showNotification('Aucun utilisateur sélectionné', 'warning');
+                return;
+            }
+
+            if (!confirm(`Appliquer l'action "${action}" à ${selected.length} utilisateur(s) ?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ path('admin_users_bulk_actions') }}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, user_ids: selected })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    $('.dataTable').DataTable().ajax.reload();
+                    document.getElementById('select-all').checked = false;
+                    updateBulkActions();
+                } else {
+                    showNotification(result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur lors de l\'action groupée', 'error');
+            }
+        }
+
+        // Export des utilisateurs
+        function exportUsers() {
+            window.open('{{ path('admin_users_export', {format: 'csv'}) }}', '_blank');
+        }
+
+        function toggleDropdown(button) {
+            const dropdown = button.nextElementSibling;
+            dropdown.classList.toggle('show');
+        }
+
+        // Initialisation du DataTable
+        $(document).ready(function () {
+            $('#table').initDataTables({{ datatable_settings(datatable) }}, {
+                searching: true,
+                dom: 'lTfgtpi',
+                pageLength: 25,
+                responsive: true
+            }).then(function(dt) {
+                dt.on('draw', function() {
+                    // Réattacher les événements après redraw
+                    updateBulkActions();
+                });
+            });
+        });
+
+        $('.dropdown-toggle').on('click', function (e) {
+            e.preventDefault();
+            $(this).next('.dropdown-menu').toggleClass('show');
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,506 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ user.fullName }} - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="user-header-info">
+        <h1>
+            {{ user.fullName }}
+            {% if 'ROLE_ADMIN' in user.roles %}
+                <span class="badge badge-warning">Admin</span>
+            {% endif %}
+            {% if user.isActive %}
+                <span class="badge badge-success">Actif</span>
+            {% else %}
+                <span class="badge badge-danger">Inactif</span>
+            {% endif %}
+        </h1>
+        <p>{{ user.email }}</p>
+        {% if user.company %}
+            <p class="user-company">{{ user.company }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumb-modern">
+        <a href="{{ path('admin_dashboard') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Admin
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <a href="{{ path('admin_users_index') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Utilisateurs
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <span class="breadcrumb-current">{{ user.fullName }}</span>
+    </nav>
+
+    <div class="page-header-actions">
+        <a href="{{ path('admin_users_edit', {id: user.id}) }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Modifier
+        </a>
+    </div>
+
+    <div class="user-detail-layout">
+        <div class="details-content">
+            <div class="info-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Informations générales
+                    </h3>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Entreprise</div>
+                        <div class="info-value">{{ user.company ?: 'Non renseignée' }}</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Inscription</div>
+                        <div class="info-value">
+                            {{ user.createdAt|date('d/m/Y à H:i') }}
+                            <small>({{ user.createdAt|diffForHumans }})</small>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Dernière connexion</div>
+                        <div class="info-value">
+                            {% if user.lastLoginAt %}
+                                {{ user.lastLoginAt|date('d/m/Y à H:i') }}
+                                <small>({{ user.lastLoginAt|diffForHumans }})</small>
+                            {% else %}
+                                <span class="text-muted">Jamais connecté</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Statut</div>
+                        <div class="info-value">
+                            <span class="badge badge-{{ user.isActive ? 'success' : 'danger' }}">
+                                {{ user.isActive ? 'Actif' : 'Inactif' }}
+                            </span>
+                            {% if user.isVerified %}
+                                <span class="badge badge-info">Email vérifié</span>
+                            {% else %}
+                                <span class="badge badge-warning">Email non vérifié</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Rôles</div>
+                        <div class="info-value">
+                            {% for role in user.roles %}
+                                <span class="badge badge-{{ role == 'ROLE_ADMIN' ? 'warning' : (role == 'ROLE_SUPER_ADMIN' ? 'danger' : 'secondary') }}">
+                                    {{ role|replace({'ROLE_': ''})|title }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                        </svg>
+                        Plan d'abonnement
+                    </h3>
+                </div>
+
+                {% if user.plan %}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="plan-name">
+                                {{ user.plan.name }}
+                                {% if user.plan.isPopular %}
+                                    <span class="badge badge-star">⭐ Populaire</span>
+                                {% endif %}
+                            </div>
+                            <div class="plan-price">
+                                {{ user.plan.isFree ? 'Gratuit' : user.plan.formattedPriceMonthly ~ '/mois' }}
+                            </div>
+                        </div>
+
+                        {% if user.planExpiresAt %}
+                            <div class="plan-expiry info-item {{ user.isPlanExpired ? 'expired' : 'active' }}">
+                                {% if user.isPlanExpired %}
+                                    <svg width="16" height="16" class="text-danger" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                                    </svg>
+                                    Plan expiré le {{ user.planExpiresAt|date('d/m/Y') }}
+                                {% else %}
+                                    <svg width="16" height="16" class="text-success" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                    Expire le {{ user.planExpiresAt|date('d/m/Y') }}
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="plan-expiry permanent info-item">
+                                <svg width="16" height="16" class="text-info" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                    <path d="M21 3v5h-5"></path>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                    <path d="M3 21v-5h5"></path>
+                                </svg>
+                                Plan permanent
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Aucun plan assigné
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if usage_stats %}
+                <div class="info-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Usage et limites
+                        </h3>
+                    </div>
+
+                    <div class="info-grid">
+                        <div>
+                            <div class="info-header info-item">
+                                <div class="info-label">Projets</div>
+                                <div class="info-value">
+                                    {{ usage_stats.projects.current }}/{{ usage_stats.projects.max_label }}
+                                </div>
+                            </div>
+                            {% if usage_stats.projects.max != -1 %}
+                                <div class="usage-bar">
+                                    <div class="usage-bar-fill {{ usage_stats.projects.percentage >= 90 ? 'danger' : (usage_stats.projects.percentage >= 70 ? 'warning' : 'success') }}"
+                                         style="width: {{ min(100, usage_stats.projects.percentage) }}%"></div>
+                                </div>
+                                <div class="usage-percentage">{{ usage_stats.projects.percentage }}%</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="info-item-marginBottom">
+                            <div class="info-header info-item">
+                                <div class="info-label">Erreurs ce mois</div>
+                                <div class="info-value">
+                                    {{ usage_stats.monthly_errors.current|number_format }}
+                                    /{{ usage_stats.monthly_errors.max_label }}
+                                </div>
+                            </div>
+                            {% if usage_stats.monthly_errors.max != -1 %}
+                                <div class="usage-bar">
+                                    <div class="usage-bar-fill {{ usage_stats.monthly_errors.percentage >= 90 ? 'danger' : (usage_stats.monthly_errors.percentage >= 70 ? 'warning' : 'success') }}"
+                                         style="width: {{ min(100, usage_stats.monthly_errors.percentage) }}%"></div>
+                                </div>
+                                <div class="usage-percentage">{{ usage_stats.monthly_errors.percentage }}%</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if
+                        (not usage_stats.projects.can_create_more and usage_stats.projects.max != -1)
+                        or
+                        (not usage_stats.monthly_errors.can_receive_more and usage_stats.monthly_errors.max != -1) %}
+                        <div class="alert alert-warning">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <strong>Limites atteintes !</strong>
+                            {% if not usage_stats.projects.can_create_more and usage_stats.projects.max != -1 %}
+                                Impossible de créer de nouveaux projets.
+                            {% endif %}
+                            {% if not usage_stats.monthly_errors.can_receive_more and usage_stats.monthly_errors.max != -1 %}}
+                                Limite d'erreurs mensuelles atteinte.
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="info-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Projets ({{ projects|length }})
+                    </h3>
+                </div>
+
+                {% if projects %}
+                    <div class="projects-list">
+                        {% for project in projects %}
+                            <div class="info-item">
+                                <div class="info-name">{{ project.name }}</div>
+                                <div class="info-value">
+                                        <span class="badge badge-{{ project.isActive ? 'success' : 'secondary' }}">
+                                            {{ project.isActive ? 'Actif' : 'Inactif' }}
+                                        </span>
+                                </div>
+                            </div>
+
+                            {% if project.description %}
+                                <div class="info-item">{{ project.description }}</div>
+                            {% endif %}
+
+                            <div class="info-item">
+                                <div class="project-stat">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    {{ project.totalErrors }} erreurs
+                                </div>
+                                <div class="project-stat">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                    {% if project.lastErrorAt %}
+                                        {{ project.lastErrorAt|diffForHumans }}
+                                    {% else %}
+                                        Aucune erreur
+                                    {% endif %}
+                                </div>
+                                <div class="project-stat">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    {{ project.createdAt|date('d/m/Y') }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        <h4>Aucun projet</h4>
+                        <p>Cet utilisateur n'a encore créé aucun projet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="sidebar-card">
+                <div class="sidebar-card-header">
+                    <h4 class="sidebar-card-title">Actions rapides</h4>
+                </div>
+                <div class="sidebar-card-body">
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="resetUserLimits({{ user.id }})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                <path d="M21 3v5h-5"></path>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                <path d="M3 21v-5h5"></path>
+                            </svg>
+                            Reset limites
+                        </button>
+
+                        <button class="quick-action-btn" onclick="extendUserPlan({{ user.id }})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            Étendre plan
+                        </button>
+
+                        <button class="quick-action-btn" onclick="sendTestEmail({{ user.id }})">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            Test email
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {% if project_stats %}
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h4 class="sidebar-card-title">Statistiques</h4>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <div class="stat-label">Projets totaux</div>
+                                <div class="stat-value">{{ project_stats.total_projects }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Projets actifs</div>
+                                <div class="stat-value">{{ project_stats.active_projects }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Erreurs totales</div>
+                                <div class="stat-value">{{ project_stats.total_errors|number_format }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Occurrences</div>
+                                <div class="stat-value">{{ project_stats.total_occurrences|number_format }}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Erreurs ce mois</div>
+                                <div class="stat-value">{{ project_stats.current_month_errors|number_format }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if recent_error_projects %}
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h4 class="sidebar-card-title">Erreurs récentes</h4>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="recent-errors-list">
+                            {% for project in recent_error_projects %}
+                                <div class="recent-error-item">
+                                    <div class="recent-error-name">{{ project.name }}</div>
+                                    <div class="recent-error-time">{{ project.lastErrorAt|diffForHumans }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Actions sur l'utilisateur
+        async function toggleUserStatus(userId) {
+            const result = await performAction(`{{ path('admin_users_toggle_status', { id: '__ID__' }) }}`.replace('__ID__', userId));
+            if (result) {
+                location.reload();
+            }
+        }
+
+        async function resetUserLimits(userId) {
+            if (!confirm('Réinitialiser les limites mensuelles de cet utilisateur ?')) {
+                return;
+            }
+
+            const result = await performAction(`{{ path('admin_users_reset_limits', { id: '__ID__' }) }}`.replace('__ID__', userId));
+            if (result) {
+                showNotification('Limites réinitialisées avec succès', 'success');
+                location.reload();
+            }
+        }
+
+        async function extendUserPlan(userId) {
+            const months = prompt('Étendre le plan de combien de mois ? (1-12)', '1');
+            if (!months || isNaN(months) || months < 1 || months > 12) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ path('admin_users_extend_plan', { id: '__ID__' }) }}`.replace('__ID__', userId), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({months: parseInt(months)})
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    location.reload();
+                } else {
+                    showNotification(result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Erreur lors de l\'extension du plan', 'error');
+            }
+        }
+
+        async function sendTestEmail(userId) {
+            showNotification('Fonctionnalité en cours de développement', 'info');
+        }
+    </script>
+{% endblock %}

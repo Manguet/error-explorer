@@ -1,0 +1,1395 @@
+// Projects Statistics Grid
+.projects-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  @include dashboard-card;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  // Effet de brillance au hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(59, 130, 246, 0.1),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &-content {
+    flex: 1;
+  }
+
+  &-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $dashboard-text;
+    margin-bottom: 0.25rem;
+    font-family: $font-heading;
+  }
+
+  &-label {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  // Variantes de couleur
+  &.stat-primary {
+    .stat-card-icon {
+      background: rgba(59, 130, 246, 0.15);
+      color: $primary-blue;
+    }
+  }
+
+  &.stat-success {
+    .stat-card-icon {
+      background: rgba(16, 185, 129, 0.15);
+      color: $status-resolved;
+    }
+  }
+
+  &.stat-warning {
+    .stat-card-icon {
+      background: rgba(245, 158, 11, 0.15);
+      color: $status-warning;
+    }
+  }
+
+  &.stat-info {
+    .stat-card-icon {
+      background: rgba(139, 92, 246, 0.15);
+      color: #8b5cf6;
+    }
+  }
+}
+
+// Projects Grid
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  @include dashboard-card;
+  padding: 0;
+  overflow: hidden;
+  animation: projectSlideIn 0.6s ease-out;
+
+  &-header {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-bottom: 1px solid $dashboard-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  &-title {
+    flex: 1;
+
+    h3 {
+      color: $dashboard-text;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      font-family: $font-heading;
+    }
+  }
+
+  &-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  &-content {
+    padding: 1.5rem;
+  }
+
+  &-footer {
+    padding: 1rem 1.5rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid $dashboard-border;
+  }
+}
+
+.project-slug {
+  color: $dashboard-text-light;
+  width: fit-content;
+  font-size: 0.875rem;
+  font-family: $font-mono;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.project-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: $status-resolved;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  &.inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: $status-open;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+}
+
+.project-description {
+  color: $dashboard-text-light;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.project-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.project-stat {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid $dashboard-border;
+
+  .stat-label {
+    display: block;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-value {
+    color: $dashboard-text;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $primary-blue;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: $dashboard-transition;
+
+  &:hover {
+    color: $white;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    transform: translateX(2px);
+  }
+
+  svg {
+    transition: $dashboard-transition;
+  }
+
+  &:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+// Empty State
+.projects-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: $dashboard-text-light;
+
+  .empty-icon {
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+  }
+
+  h3 {
+    color: $dashboard-text;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-family: $font-heading;
+  }
+
+  p {
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn {
+    @include dashboard-button();
+  }
+}
+
+// Bouton Export
+.projects-list-actions {
+  .header-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: $primary-blue;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    font-weight: 500;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+  }
+}
+
+// Project Actions
+.project-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+
+  .action-btn {
+    padding: 0.625rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: $dashboard-transition;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &-view {
+      background: rgba(59, 130, 246, 0.1);
+      color: $primary-blue;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.2);
+        transform: scale(1.05);
+      }
+    }
+
+    &-edit {
+      background: rgba(245, 158, 11, 0.1);
+      color: $warning-yellow;
+
+      &:hover {
+        background: rgba(245, 158, 11, 0.2);
+        transform: scale(1.05);
+      }
+    }
+
+    &-pause {
+      background: rgba(239, 68, 68, 0.1);
+      color: $status-open;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: scale(1.05);
+      }
+    }
+
+    &-play {
+      background: rgba(34, 197, 94, 0.1);
+      color: $status-resolved;
+
+      &:hover {
+        background: rgba(34, 197, 94, 0.2);
+        transform: scale(1.05);
+      }
+    }
+
+    &-delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: $status-open;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+// Project Status Banner
+.project-status-banner {
+  @include dashboard-card;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  border-left: 4px solid;
+
+  &.status-active {
+    border-left-color: $status-resolved;
+    background: rgba(16, 185, 129, 0.05);
+  }
+
+  &.status-inactive {
+    border-left-color: $status-open;
+    background: rgba(239, 68, 68, 0.05);
+  }
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.status-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .status-active & {
+    background: rgba(16, 185, 129, 0.15);
+    color: $status-resolved;
+  }
+
+  .status-inactive & {
+    background: rgba(239, 68, 68, 0.15);
+    color: $status-open;
+  }
+}
+
+.status-text {
+  flex: 1;
+
+  h3 {
+    color: $dashboard-text;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: $font-heading;
+  }
+
+  p {
+    color: $dashboard-text-light;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.status-actions {
+  flex-shrink: 0;
+}
+
+// Project Statistics Grid
+.project-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+// Progress Bar
+.stat-progress {
+  margin-top: 0.75rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $status-warning, darken($status-warning, 10%));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  color: $dashboard-text-light;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+// Project Configuration
+.project-config {
+  padding: 2rem;
+}
+
+.config-section {
+  margin-bottom: 3rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    color: $dashboard-text;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    font-family: $font-heading;
+  }
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.config-item {
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    display: block;
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.config-value {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid $dashboard-border;
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: $dashboard-text;
+  font-family: $font-mono;
+  font-size: 0.875rem;
+  word-break: break-all;
+
+  &.copyable {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: $primary-blue;
+      transform: translateY(-1px);
+    }
+
+    svg {
+      opacity: 0.6;
+      transition: $dashboard-transition;
+      flex-shrink: 0;
+    }
+
+    &:hover svg {
+      opacity: 1;
+    }
+  }
+}
+
+.config-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+// Integration Guide
+.integration-guide {
+  padding: 2rem;
+}
+
+.guide-step {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid $dashboard-border;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: $primary-blue;
+  color: $white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.step-content {
+  flex: 1;
+
+  h4 {
+    color: $dashboard-text;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: $font-heading;
+  }
+
+  p {
+    color: $dashboard-text-light;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+  }
+
+  code {
+    background: rgba(59, 130, 246, 0.1);
+    color: $primary-blue;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+  }
+}
+
+.code-block {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid $dashboard-border;
+  border-radius: 8px;
+  padding: 1rem;
+  position: relative;
+  overflow-x: auto;
+
+  code, pre {
+    color: $dashboard-text;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: $primary-blue;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+// Danger Zone
+.danger-zone {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+
+  .dashboard-table-container-header {
+    background: rgba(239, 68, 68, 0.1);
+    border-bottom-color: rgba(239, 68, 68, 0.2);
+  }
+}
+
+.danger-content {
+  padding: 2rem;
+}
+
+.danger-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+
+  @include responsive('md') {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.danger-info {
+  flex: 1;
+
+  h4 {
+    color: $status-open;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: $font-heading;
+  }
+
+  p {
+    color: $dashboard-text-light;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Animations
+@keyframes projectSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: projectSlideIn 0.6s ease-out;
+}
+
+// Form Styles for Project Creation/Edit
+.project-form-container {
+  @include dashboard-card;
+  padding: 0;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.project-form {
+  padding: 2rem;
+}
+
+.form-section {
+  margin-bottom: 3rem;
+
+  &:last-child {
+    margin-bottom: 2rem;
+  }
+
+  h3 {
+    color: $dashboard-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-family: $font-heading;
+  }
+
+  > p {
+    color: $dashboard-text-light;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-label {
+  display: block;
+  color: $dashboard-text-light;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.required::after {
+    content: ' *';
+    color: $status-open;
+  }
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid $dashboard-border;
+  border-radius: 8px;
+  color: $dashboard-text;
+  font-size: 0.875rem;
+  transition: $dashboard-transition;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-blue;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &::placeholder {
+    color: $dashboard-text-light;
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-select {
+  option {
+    background: rgba(30, 41, 59, 0.95);
+    color: $dashboard-text;
+  }
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-checkbox-input {
+  width: 18px;
+  height: 18px;
+  accent-color: $primary-blue;
+}
+
+.form-checkbox-label {
+  color: $dashboard-text;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.form-help {
+  color: $dashboard-text-light;
+  font-size: 0.75rem;
+  margin-top: 4px;
+  margin-left: 4px;
+  line-height: 1.4;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 2rem;
+  border-top: 1px solid $dashboard-border;
+
+  @include responsive('md') {
+    flex-direction: column-reverse;
+  }
+}
+
+// Info Cards for Create Form
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.info-card {
+  @include dashboard-card;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+
+  &-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(59, 130, 246, 0.15);
+    color: $primary-blue;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &-content {
+    flex: 1;
+
+    h4 {
+      color: $dashboard-text;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      font-family: $font-heading;
+    }
+
+    p {
+      color: $dashboard-text-light;
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+// Actions rapides - Grille de boutons
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quick-action-btn {
+  @include dashboard-button();
+  padding: 1rem;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: $dashboard-text-light;
+    border: 1px solid $dashboard-border;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: $white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &.btn-primary {
+    background: $primary-blue;
+    color: $white;
+    border: 1px solid $primary-blue;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.9);
+      border-color: rgba(59, 130, 246, 0.9);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+  }
+
+  &.btn-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: $warning-yellow;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+    }
+  }
+
+  &.btn-success {
+    background: rgba(34, 197, 94, 0.15);
+    color: $status-resolved;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+
+    &:hover {
+      background: rgba(34, 197, 94, 0.25);
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+    }
+  }
+
+  &.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: $status-open;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+    }
+  }
+}
+
+// ========================
+// FORMULAIRE DE CRÉATION/ÉDITION
+// ========================
+
+// Layout principal pour create/edit
+.projects-create-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+// Layout spécifique pour l'édition
+.projects-edit-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.projects-edit-main {
+  display: flex;
+  flex-direction: column;
+}
+
+// Formulaire principal
+.projects-form-card {
+  @include dashboard-card;
+}
+
+.projects-form-header {
+  padding: 1.5rem 1.5rem 0;
+  border-bottom: 1px solid $dashboard-border;
+
+  .form-title {
+    color: $dashboard-text;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem 0;
+    font-family: $font-heading;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      color: $primary-blue;
+    }
+  }
+}
+
+.projects-form-body {
+  padding: 1.5rem;
+}
+
+// Sidebar avec aperçu et info
+.projects-preview-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.projects-preview-card,
+.projects-info-card {
+  @include dashboard-card;
+
+  &-marginTop {
+    margin-top: 1.5rem;
+  }
+}
+
+.preview-header,
+.info-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $dashboard-border;
+
+  .preview-title,
+  .info-title {
+    color: $dashboard-text;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    font-family: $font-heading;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      color: $primary-blue;
+    }
+  }
+}
+
+.preview-body,
+.info-body {
+  padding: 1.5rem;
+}
+
+.preview-content {
+  .preview-name {
+    color: $dashboard-text;
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .preview-description {
+    color: $dashboard-text-light;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .preview-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+
+      &.badge-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: $status-resolved;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      &.badge-warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: $warning-yellow;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+
+      &.badge-info {
+        background: rgba(59, 130, 246, 0.15);
+        color: $primary-blue;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+    }
+  }
+
+  .preview-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .preview-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+
+    svg {
+      color: $primary-blue;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.info-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+
+  &.info-success {
+    background: rgba(16, 185, 129, 0.05);
+    border-left-color: $status-resolved;
+  }
+
+  &.info-warning {
+    background: rgba(245, 158, 11, 0.05);
+    border-left-color: $warning-yellow;
+  }
+
+  &.info-info {
+    background: rgba(59, 130, 246, 0.05);
+    border-left-color: $primary-blue;
+  }
+
+  .info-item-title {
+    color: $dashboard-text;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .info-item-text {
+    color: $dashboard-text-light;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
+
+// Actions de formulaires
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .header-btn {
+    @include dashboard-button();
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: $dashboard-transition;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &.btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: $dashboard-text-light;
+      border: 1px solid $dashboard-border;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: $white;
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
+      }
+    }
+
+    &.btn-primary {
+      background: $primary-blue;
+      color: $white;
+      border: 1px solid $primary-blue;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.9);
+        border-color: rgba(59, 130, 246, 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+    }
+  }
+}
+
+.projects-help-card {
+  @include dashboard-card;
+
+  .help-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid $dashboard-border;
+
+    .help-title {
+      color: $dashboard-text;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      font-family: $font-heading;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        color: $warning-yellow;
+      }
+    }
+  }
+
+  .help-body {
+    padding: 1.5rem;
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    line-height: 1.6;
+
+    p {
+      margin: 0 0 1rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      strong {
+        color: $dashboard-text;
+        font-weight: 600;
+      }
+    }
+  }
+}

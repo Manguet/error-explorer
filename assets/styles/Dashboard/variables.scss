@@ -1,0 +1,241 @@
+// Import variables du site principal
+@import '../variables.scss';
+
+// Variables spécifiques au dashboard
+$dashboard-sidebar-width: 280px;
+$dashboard-header-height: 70px;
+$dashboard-content-padding: 2rem;
+
+// Couleurs dashboard style sombre professionnel
+$dashboard-bg: $black;
+$dashboard-sidebar-bg: rgba($black, 0.95);
+$dashboard-content-bg: rgba(15, 23, 42, 0.98);  // Slate-900 avec transparence
+$dashboard-card-bg: rgba(30, 41, 59, 0.95);     // Slate-800 avec transparence
+$dashboard-border: rgba(255, 255, 255, 0.1);     // Bordures translucides comme le site
+$dashboard-text: $white;
+$dashboard-text-light: rgba(255, 255, 255, 0.7); // Texte semi-transparent
+$dashboard-shadow: rgba(0, 0, 0, 0.3);
+
+// Status colors (cohérent avec votre système)
+$status-open: #ef4444;
+$status-resolved: #10b981;
+$status-ignored: #6b7280;
+$status-warning: #f59e0b;
+
+// Animations dashboard
+$dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Billing specific colors
+$billing-success-bg: rgba(#10b981, 0.1);
+$billing-success-border: rgba(#10b981, 0.2);
+$billing-warning-bg: rgba(#f59e0b, 0.1);
+$billing-warning-border: rgba(#f59e0b, 0.2);
+$billing-info-bg: rgba(#3b82f6, 0.1);
+$billing-info-border: rgba(#3b82f6, 0.2);
+$billing-primary-bg: rgba($primary-blue, 0.1);
+$billing-primary-border: rgba($primary-blue, 0.2);
+
+// CSS Custom Properties for billing
+:root {
+  --color-primary: #{$primary-blue};
+  --color-primary-light: #{lighten($primary-blue, 20%)};
+  --color-primary-bg: #{$billing-primary-bg};
+  --color-primary-border: #{$billing-primary-border};
+  
+  --color-success: #{$status-resolved};
+  --color-success-bg: #{$billing-success-bg};
+  --color-success-border: #{$billing-success-border};
+  
+  --color-warning: #{$status-warning};
+  --color-warning-bg: #{$billing-warning-bg};
+  --color-warning-border: #{$billing-warning-border};
+  --color-warning-text: #{darken($status-warning, 10%)};
+  
+  --color-info: #3b82f6;
+  --color-info-bg: #{$billing-info-bg};
+  --color-info-border: #{$billing-info-border};
+  
+  --color-text-primary: #{$dashboard-text};
+  --color-text-secondary: #{$dashboard-text-light};
+  --color-text-muted: #{rgba($white, 0.5)};
+  
+  --color-background-light: #{$dashboard-card-bg};
+  --color-border: #{$dashboard-border};
+  
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+// Mixins dashboard
+@mixin dashboard-card {
+  background: $dashboard-card-bg;
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  border: 1px solid $dashboard-border;
+  box-shadow: 0 8px 32px $dashboard-shadow;
+  transition: $dashboard-transition;
+
+  &:hover {
+    border-color: rgba($primary-blue, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+@mixin dashboard-button($color: $primary-blue) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: $color;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: $dashboard-transition;
+
+  &:hover {
+    background: darken($color, 10%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($color, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin status-badge($color, $bg-color) {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background: lighten($bg-color, 45%);
+  color: $color;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid lighten($bg-color, 30%);
+}
+
+// Layout responsive
+@mixin dashboard-responsive {
+  @media (max-width: 1024px) {
+    .dashboard-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-sidebar {
+      position: fixed;
+      top: 0;
+      left: -$dashboard-sidebar-width;
+      height: 100vh;
+      z-index: 1000;
+      transition: transform $dashboard-transition;
+
+      &.active {
+        transform: translateX($dashboard-sidebar-width);
+      }
+    }
+
+    .dashboard-main {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-content {
+      padding: 1rem;
+    }
+
+    .dashboard-stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .dashboard-table-container {
+      overflow-x: auto;
+    }
+  }
+}
+
+// Grille tech animée (cohérent avec le site)
+@mixin dashboard-tech-grid {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px),
+            linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridFloat 25s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+@keyframes gridFloat {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(40px, 40px);
+  }
+}
+
+// Classes utilitaires
+.dashboard-hidden {
+  display: none !important;
+}
+
+.dashboard-loading {
+  opacity: 0.6;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid $primary-blue;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dashboard-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

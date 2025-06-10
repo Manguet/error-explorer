@@ -1,0 +1,342 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Analytics Avancés - Error Explorer{% endblock %}
+
+{% block page_title %}Analytics Avancés{% endblock %}
+{% block page_subtitle %}Fonctionnalité premium requise{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Analytics</span>
+{% endblock %}
+
+{% block body %}
+<div class="upgrade-container">
+    <div class="upgrade-hero">
+        <div class="upgrade-icon">
+            <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+        </div>
+        
+        <h1>Analytics Avancés</h1>
+        <p class="upgrade-subtitle">
+            Débloquez des insights puissants sur vos erreurs avec nos analytics avancés
+        </p>
+    </div>
+
+    <div class="current-plan-info">
+        <div class="plan-badge">
+            <span class="plan-name">
+                {% if user_plan_name %}
+                    Plan {{ user_plan_name }}
+                {% else %}
+                    Aucun plan actif
+                {% endif %}
+            </span>
+        </div>
+        
+        <p class="plan-limitation">
+            {% if user_plan_name %}
+                Les analytics avancés ne sont pas inclus dans votre plan actuel.
+            {% else %}
+                Vous devez souscrire à un plan pour accéder aux analytics avancés.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="features-preview">
+        <h2>Fonctionnalités disponibles avec les Analytics Avancés</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h3>Graphiques Interactifs</h3>
+                <p>Graphiques avancés avec Chart.js, zoom, filtres et personnalisation complète.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3>Métriques Historiques</h3>
+                <p>Analyse de tendances sur 6 mois, 1 an ou plus avec historique détaillé.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                    </svg>
+                </div>
+                <h3>Export de Données</h3>
+                <p>Export CSV, PDF et Excel pour vos rapports et analyses externes.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                </div>
+                <h3>Dashboards Personnalisables</h3>
+                <p>Créez vos propres tableaux de bord avec widgets glisser-déposer.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                </div>
+                <h3>Analyse Prédictive</h3>
+                <p>Prédictions de tendances et alertes proactives basées sur l'IA.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <h3>API Analytics</h3>
+                <p>Accès API complet pour intégrer vos analytics dans vos outils.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="upgrade-actions">
+        <a href="{{ path('home_pricing') }}" class="btn btn-primary btn-large">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Voir les Plans
+        </a>
+        
+        <a href="{{ path('dashboard_index') }}" class="btn btn-secondary btn-large">
+            Retour au Dashboard
+        </a>
+    </div>
+
+    <div class="upgrade-note">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Mise à niveau instantanée - Toutes les fonctionnalités sont débloquées immédiatement</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .upgrade-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .upgrade-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .upgrade-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .upgrade-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-subtitle {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .current-plan-info {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .plan-badge {
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-name {
+            background: #f59e0b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .plan-limitation {
+            color: #92400e;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .features-preview h2 {
+            text-align: center;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #eff6ff;
+            border-radius: 10px;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .upgrade-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-large {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: 1px solid #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .upgrade-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .upgrade-container {
+                padding: 1rem;
+            }
+
+            .upgrade-hero h1 {
+                font-size: 2rem;
+            }
+
+            .upgrade-subtitle {
+                font-size: 1.125rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .upgrade-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-large {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %}

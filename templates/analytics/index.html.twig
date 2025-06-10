@@ -1,0 +1,1156 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Analytics - Error Explorer{% endblock %}
+
+{% block page_title %}Analytics{% endblock %}
+{% block page_subtitle %}Analyse détaillée de vos erreurs et tendances{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Analytics</span>
+{% endblock %}
+
+{% block header_actions %}
+    <div class="analytics-filters">
+        <select id="period-filter" onchange="updateAnalytics()">
+            <option value="7" {{ current_period == '7' ? 'selected' : '' }}>7 derniers jours</option>
+            <option value="30" {{ current_period == '30' ? 'selected' : '' }}>30 derniers jours</option>
+            <option value="90" {{ current_period == '90' ? 'selected' : '' }}>90 derniers jours</option>
+            <option value="365" {{ current_period == '365' ? 'selected' : '' }}>1 an</option>
+        </select>
+        
+        <select id="project-filter" onchange="updateAnalytics()">
+            <option value="">Tous les projets</option>
+            {% for project in projects %}
+                <option value="{{ project.slug }}" {{ current_project == project.slug ? 'selected' : '' }}>
+                    {{ project.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="header-export-actions">
+        <div class="export-dropdown">
+            <button class="header-btn btn-primary export-trigger" onclick="toggleExportMenu()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                </svg>
+                Exporter
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="dropdown-arrow">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="export-menu" id="export-menu" style="display: none;">
+                <a href="#" onclick="exportData('csv'); return false;" class="export-option">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    CSV Avancé
+                    <span class="export-desc">Toutes les statistiques</span>
+                </a>
+                <a href="#" onclick="exportData('json'); return false;" class="export-option">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                    JSON API
+                    <span class="export-desc">Données structurées</span>
+                </a>
+                <a href="#" onclick="exportData('summary'); return false;" class="export-option">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Résumé Exécutif
+                    <span class="export-desc">Rapport synthétique</span>
+                </a>
+            </div>
+        </div>
+        
+        <button class="header-btn btn-secondary" onclick="refreshAnalytics()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Actualiser
+        </button>
+    </div>
+{% endblock %}
+
+{% block body %}
+<!-- Statistiques Globales -->
+<div class="dashboard-section">
+    <div class="analytics-stats-grid">
+        <div class="dashboard-stat-card analytics-stat-card stat-primary">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                </div>
+                <div class="stat-title">Total des Erreurs</div>
+            </div>
+            <div class="stat-value">{{ global_stats.total_errors|number_format }}</div>
+            <div class="stat-change {{ global_stats.error_growth >= 0 ? 'positive' : 'negative' }}">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ global_stats.error_growth >= 0 ? 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6' : 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' }}"/>
+                </svg>
+                {{ global_stats.error_growth >= 0 ? '+' : '' }}{{ global_stats.error_growth }}%
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card analytics-stat-card stat-warning">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="stat-title">Occurrences</div>
+            </div>
+            <div class="stat-value">{{ global_stats.total_occurrences|number_format }}</div>
+            <div class="stat-change {{ global_stats.occurrence_growth >= 0 ? 'positive' : 'negative' }}">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ global_stats.occurrence_growth >= 0 ? 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6' : 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' }}"/>
+                </svg>
+                {{ global_stats.occurrence_growth >= 0 ? '+' : '' }}{{ global_stats.occurrence_growth }}%
+            </div>
+        </div>
+
+        <div class="dashboard-stat-card analytics-stat-card stat-success">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="stat-title">Taux de Résolution</div>
+            </div>
+            <div class="stat-value">{{ global_stats.resolution_rate }}%</div>
+            <div class="stat-detail">{{ global_stats.resolved_errors }} résolues</div>
+        </div>
+
+        <div class="dashboard-stat-card analytics-stat-card stat-info">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div class="stat-title">Moy. par Erreur</div>
+            </div>
+            <div class="stat-value">{{ global_stats.avg_occurrences_per_error }}</div>
+            <div class="stat-detail">occurrences</div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphiques -->
+<div class="dashboard-section">
+    <div class="analytics-charts-grid">
+        <!-- Tendance des erreurs -->
+        <div class="analytics-chart-card">
+            <div class="chart-header">
+                <h3>Tendance des erreurs</h3>
+                <div class="chart-legend">
+                    <span class="legend-item errors">Erreurs</span>
+                    <span class="legend-item occurrences">Occurrences</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="trend-chart" width="800" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Répartition par type -->
+        <div class="analytics-chart-card">
+            <div class="chart-header">
+                <h3>Répartition par type</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="distribution-chart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tops & Tables -->
+<div class="dashboard-section">
+    <div class="analytics-tables-grid">
+        <!-- Top des projets -->
+        <div class="analytics-table-card">
+            <div class="table-header">
+                <h3>Top des projets</h3>
+            </div>
+            <div class="table-container">
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Erreurs</th>
+                            <th>Occurrences</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in top_projects %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('dashboard_project', { project: project.project }) }}">
+                                        {{ project.project }}
+                                    </a>
+                                </td>
+                                <td>{{ project.error_count }}</td>
+                                <td>{{ project.occurrence_count|number_format }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Top des erreurs -->
+        <div class="analytics-table-card">
+            <div class="table-header">
+                <h3>Top des erreurs</h3>
+            </div>
+            <div class="table-container">
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Erreur</th>
+                            <th>Projet</th>
+                            <th>Occurrences</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for error in top_errors %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
+                                        {{ error.title|length > 40 ? error.title|slice(0, 40) ~ '...' : error.title }}
+                                    </a>
+                                </td>
+                                <td>{{ error.project }}</td>
+                                <td>{{ error.occurrence_count|number_format }}</td>
+                                <td>
+                                    <span class="status-badge badge-{{ error.status }}">
+                                        {{ error.status|title }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Répartition par statut -->
+<div class="dashboard-section">
+    <div class="analytics-status-grid">
+        <div class="status-card status-open">
+            <div class="status-icon">🔴</div>
+            <div class="status-info">
+                <div class="status-value">{{ global_stats.open_errors }}</div>
+                <div class="status-label">Erreurs ouvertes</div>
+            </div>
+        </div>
+        
+        <div class="status-card status-resolved">
+            <div class="status-icon">✅</div>
+            <div class="status-info">
+                <div class="status-value">{{ global_stats.resolved_errors }}</div>
+                <div class="status-label">Erreurs résolues</div>
+            </div>
+        </div>
+        
+        <div class="status-card status-ignored">
+            <div class="status-icon">🔇</div>
+            <div class="status-info">
+                <div class="status-value">{{ global_stats.ignored_errors }}</div>
+                <div class="status-label">Erreurs ignorées</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Métriques Avancées -->
+<div class="dashboard-section" id="advanced-metrics" style="display: none;">
+    <div class="section-header">
+        <h2>Métriques Avancées</h2>
+        <button class="toggle-metrics-btn" onclick="toggleAdvancedMetrics()">
+            <span class="toggle-text">Afficher</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="advanced-metrics-grid">
+        <!-- Métriques de résolution -->
+        <div class="metric-card">
+            <h3>Temps de Résolution</h3>
+            <div class="metric-content" id="resolution-time-metrics">
+                <div class="loading">Chargement...</div>
+            </div>
+        </div>
+        
+        <!-- Fréquence par jour -->
+        <div class="metric-card">
+            <h3>Erreurs par Jour de la Semaine</h3>
+            <div class="metric-content">
+                <canvas id="frequency-chart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <!-- Santé des projets -->
+        <div class="metric-card full-width">
+            <h3>Santé des Projets</h3>
+            <div class="metric-content" id="project-health-metrics">
+                <div class="loading">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphiques Avancés Supplémentaires -->
+<div class="dashboard-section" id="advanced-charts">
+    <h2>📊 Graphiques Avancés</h2>
+    
+    <div class="advanced-charts-grid">
+        <!-- Métriques de performance -->
+        <div class="chart-card">
+            <h3>Analyse de Performance</h3>
+            <div class="chart-tabs">
+                <button class="tab-btn active" onclick="switchPerformanceChart('response-time')">Temps de Réponse</button>
+                <button class="tab-btn" onclick="switchPerformanceChart('memory')">Mémoire</button>
+                <button class="tab-btn" onclick="switchPerformanceChart('throughput')">Débit</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="performance-chart" width="600" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Heatmap des erreurs -->
+        <div class="chart-card">
+            <h3>Heatmap Temporelle</h3>
+            <div class="chart-container">
+                <canvas id="heatmap-chart" width="600" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Analyse comparative -->
+        <div class="chart-card full-width">
+            <h3>Analyse Comparative des Projets</h3>
+            <div class="chart-controls">
+                <select id="comparison-metric">
+                    <option value="error_count">Nombre d'erreurs</option>
+                    <option value="resolution_rate">Taux de résolution</option>
+                    <option value="avg_resolution_time">Temps de résolution moyen</option>
+                    <option value="user_impact">Impact utilisateur</option>
+                </select>
+                <button onclick="updateComparisonChart()" class="btn btn-sm btn-secondary">Actualiser</button>
+            </div>
+            <div class="chart-container large">
+                <canvas id="comparison-chart" width="800" height="400"></canvas>
+            </div>
+        </div>
+
+        <!-- Prédictions et tendances -->
+        <div class="chart-card">
+            <h3>Prédictions de Tendance</h3>
+            <div class="chart-container">
+                <canvas id="prediction-chart" width="600" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Distribution géographique -->
+        <div class="chart-card">
+            <h3>Distribution des Erreurs</h3>
+            <div class="chart-tabs">
+                <button class="tab-btn active" onclick="switchDistributionChart('browser')">Navigateurs</button>
+                <button class="tab-btn" onclick="switchDistributionChart('os')">Systèmes</button>
+                <button class="tab-btn" onclick="switchDistributionChart('device')">Appareils</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="device-distribution-chart" width="600" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Graphique de corrélation -->
+        <div class="chart-card full-width">
+            <h3>Analyse de Corrélation</h3>
+            <div class="correlation-matrix" id="correlation-matrix">
+                <div class="loading">Chargement de la matrice de corrélation...</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Variables globales pour les graphiques
+        let trendChart, distributionChart;
+        
+        // URLs pour les API
+        const analyticsApiBaseUrl = '{{ path('analytics_api_metrics', {period: 1}) }}'.replace('/1', '');
+        
+        // Données initiales
+        const trendData = {{ trends|json_encode|raw }};
+        const distributionData = {{ error_types|json_encode|raw }};
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initTrendChart();
+            initDistributionChart();
+            initAdvancedCharts();
+        });
+        
+        function initTrendChart() {
+            const ctx = document.getElementById('trend-chart').getContext('2d');
+            
+            // Préparer les données pour Chart.js
+            const labels = trendData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+            });
+            
+            const errorsData = trendData.map(item => item.errors || 0);
+            const occurrencesData = trendData.map(item => item.occurrences || 0);
+            
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Erreurs',
+                        data: errorsData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }, {
+                        label: 'Occurrences',
+                        data: occurrencesData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // On utilise notre propre légende
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#f3f4f6',
+                                borderColor: '#e5e7eb'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f3f4f6',
+                                borderColor: '#e5e7eb'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initDistributionChart() {
+            const ctx = document.getElementById('distribution-chart').getContext('2d');
+            
+            if (!distributionData || distributionData.length === 0) {
+                // Afficher un message si pas de données
+                ctx.font = '16px Inter, sans-serif';
+                ctx.fillStyle = '#64748b';
+                ctx.textAlign = 'center';
+                ctx.fillText('Aucune donnée disponible', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            const labels = distributionData.map(item => item.type || 'Unknown');
+            const data = distributionData.map(item => item.count || 0);
+            const colors = [
+                '#ef4444', '#f97316', '#eab308', '#22c55e', 
+                '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4'
+            ];
+            
+            distributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: '#ffffff',
+                        borderWidth: 2,
+                        hoverBorderWidth: 3,
+                        hoverBorderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                },
+                                color: '#374151'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '50%',
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true
+                    }
+                }
+            });
+        }
+        
+        function updateAnalytics() {
+            const period = document.getElementById('period-filter').value;
+            const project = document.getElementById('project-filter').value;
+            
+            const params = new URLSearchParams();
+            params.set('period', period);
+            if (project) params.set('project', project);
+            
+            window.location.href = '{{ path('analytics_index') }}?' + params.toString();
+        }
+        
+        function refreshAnalytics() {
+            window.location.reload();
+        }
+        
+        function toggleExportMenu() {
+            const menu = document.getElementById('export-menu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        // Fermer le menu si on clique ailleurs
+        document.addEventListener('click', function(event) {
+            const exportDropdown = document.querySelector('.export-dropdown');
+            const menu = document.getElementById('export-menu');
+            
+            if (!exportDropdown.contains(event.target)) {
+                menu.style.display = 'none';
+            }
+        });
+        
+        function exportData(format) {
+            const period = document.getElementById('period-filter').value;
+            const project = document.getElementById('project-filter').value;
+            
+            const params = new URLSearchParams();
+            params.set('period', period);
+            if (project) params.set('project', project);
+            
+            // Fermer le menu d'export
+            document.getElementById('export-menu').style.display = 'none';
+            
+            if (format === 'csv') {
+                window.location.href = '{{ path('analytics_export_csv') }}?' + params.toString();
+            } else if (format === 'json') {
+                params.set('format', 'json');
+                window.location.href = '{{ path('analytics_export_csv') }}?' + params.toString();
+            } else if (format === 'summary') {
+                params.set('format', 'summary');
+                window.location.href = '{{ path('analytics_export_csv') }}?' + params.toString();
+            }
+        }
+        
+        function toggleAdvancedMetrics() {
+            const metricsSection = document.getElementById('advanced-metrics');
+            const toggleBtn = document.querySelector('.toggle-metrics-btn');
+            const toggleText = document.querySelector('.toggle-text');
+            const toggleIcon = toggleBtn.querySelector('svg path');
+            
+            if (metricsSection.style.display === 'none') {
+                metricsSection.style.display = 'block';
+                toggleText.textContent = 'Masquer';
+                toggleIcon.setAttribute('d', 'M5 15l7-7 7 7');
+                loadAdvancedMetrics();
+            } else {
+                metricsSection.style.display = 'none';
+                toggleText.textContent = 'Afficher';
+                toggleIcon.setAttribute('d', 'M19 9l-7 7-7-7');
+            }
+        }
+        
+        function loadAdvancedMetrics() {
+            const period = document.getElementById('period-filter').value;
+            const project = document.getElementById('project-filter').value;
+            
+            const params = new URLSearchParams();
+            if (project) params.set('project', project);
+            
+            const url = analyticsApiBaseUrl + '/' + period;
+            
+            fetch(url + '?' + params.toString())
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Erreur:', data.error);
+                        return;
+                    }
+                    
+                    // Afficher les métriques de temps de résolution
+                    displayResolutionTimeMetrics(data.time_to_resolution);
+                    
+                    // Afficher le graphique de fréquence
+                    displayFrequencyChart(data.error_frequency.by_day_of_week);
+                    
+                    // Afficher la santé des projets
+                    displayProjectHealthMetrics(data.project_health);
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des métriques:', error);
+                });
+        }
+        
+        function displayResolutionTimeMetrics(data) {
+            const container = document.getElementById('resolution-time-metrics');
+            
+            if (data.resolved_count === 0) {
+                container.innerHTML = '<div class="no-data">Aucune erreur résolue dans cette période</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="resolution-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Temps moyen</div>
+                        <div class="stat-value">${data.average_hours}h</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Plus rapide</div>
+                        <div class="stat-value">${data.fastest_hours}h</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Plus lent</div>
+                        <div class="stat-value">${data.slowest_hours}h</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Erreurs résolues</div>
+                        <div class="stat-value">${data.resolved_count}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function displayFrequencyChart(data) {
+            const ctx = document.getElementById('frequency-chart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.day),
+                    datasets: [{
+                        label: 'Erreurs',
+                        data: data.map(item => item.count),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 11 },
+                                color: '#6b7280'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11 },
+                                color: '#6b7280'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function displayProjectHealthMetrics(data) {
+            const container = document.getElementById('project-health-metrics');
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="no-data">Aucun projet trouvé</div>';
+                return;
+            }
+            
+            const html = `
+                <div class="project-health-list">
+                    ${data.map(project => `
+                        <div class="health-item">
+                            <div class="project-info">
+                                <div class="project-name">${project.project}</div>
+                                <div class="project-stats">${project.total_errors} erreurs - ${project.open_errors} ouvertes</div>
+                            </div>
+                            <div class="health-score">
+                                <div class="health-bar">
+                                    <div class="health-fill" style="width: ${project.health_score}%; background-color: ${getHealthColor(project.health_score)}"></div>
+                                </div>
+                                <div class="health-value">${project.health_score}%</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function getHealthColor(score) {
+            if (score >= 80) return '#22c55e';
+            if (score >= 60) return '#eab308';
+            if (score >= 40) return '#f97316';
+            return '#ef4444';
+        }
+
+        // === GRAPHIQUES AVANCÉS ===
+        let performanceChart, heatmapChart, comparisonChart, predictionChart, deviceChart;
+        let currentPerformanceMetric = 'response-time';
+        let currentDistributionType = 'browser';
+
+        function initAdvancedCharts() {
+            initPerformanceChart();
+            initHeatmapChart();
+            initComparisonChart();
+            initPredictionChart();
+            initDeviceDistributionChart();
+            initCorrelationMatrix();
+        }
+
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performance-chart').getContext('2d');
+            
+            // Données simulées pour la démonstration
+            const performanceData = generatePerformanceData(currentPerformanceMetric);
+            
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: performanceData.labels,
+                    datasets: [{
+                        label: performanceData.label,
+                        data: performanceData.data,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function initHeatmapChart() {
+            const ctx = document.getElementById('heatmap-chart').getContext('2d');
+            
+            // Créer une heatmap custom avec canvas
+            drawHeatmap(ctx);
+        }
+
+        function drawHeatmap(ctx) {
+            const canvas = ctx.canvas;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Simulation d'une heatmap 24h x 7 jours
+            const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+            const cellWidth = width / 24;
+            const cellHeight = height / 7;
+            
+            // Générer des données aléatoires pour la demo
+            for (let day = 0; day < 7; day++) {
+                for (let hour = 0; hour < 24; hour++) {
+                    const intensity = Math.random();
+                    const color = getHeatmapColor(intensity);
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(hour * cellWidth, day * cellHeight, cellWidth - 1, cellHeight - 1);
+                }
+            }
+            
+            // Ajouter les labels
+            ctx.fillStyle = '#374151';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            days.forEach((day, index) => {
+                ctx.fillText(day, -20, (index + 0.5) * cellHeight + 4);
+            });
+            
+            for (let hour = 0; hour < 24; hour += 4) {
+                ctx.fillText(hour + 'h', (hour + 0.5) * cellWidth, height + 15);
+            }
+        }
+
+        function getHeatmapColor(intensity) {
+            const colors = [
+                '#f0f9ff', '#e0f2fe', '#bae6fd', '#7dd3fc',
+                '#38bdf8', '#0ea5e9', '#0284c7', '#0369a1'
+            ];
+            const index = Math.floor(intensity * (colors.length - 1));
+            return colors[index];
+        }
+
+        function initComparisonChart() {
+            const ctx = document.getElementById('comparison-chart').getContext('2d');
+            
+            const comparisonData = generateComparisonData();
+            
+            comparisonChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: comparisonData.labels,
+                    datasets: comparisonData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function initPredictionChart() {
+            const ctx = document.getElementById('prediction-chart').getContext('2d');
+            
+            const predictionData = generatePredictionData();
+            
+            predictionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: predictionData.labels,
+                    datasets: [{
+                        label: 'Données historiques',
+                        data: predictionData.historical,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Prédiction',
+                        data: predictionData.prediction,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    }
+                }
+            });
+        }
+
+        function initDeviceDistributionChart() {
+            const ctx = document.getElementById('device-distribution-chart').getContext('2d');
+            
+            const deviceData = generateDeviceData(currentDistributionType);
+            
+            deviceChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: deviceData.labels,
+                    datasets: [{
+                        data: deviceData.data,
+                        backgroundColor: [
+                            '#ef4444', '#f97316', '#eab308', '#22c55e',
+                            '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function initCorrelationMatrix() {
+            const container = document.getElementById('correlation-matrix');
+            
+            // Générer une matrice de corrélation simulée
+            const correlationData = generateCorrelationData();
+            
+            container.innerHTML = '<div class="correlation-grid">' + 
+                correlationData.map(row => 
+                    '<div class="correlation-row">' +
+                    row.map(cell => `<div class="correlation-cell" style="background-color: ${getCorrelationColor(cell)}" title="${cell.toFixed(2)}">${cell.toFixed(2)}</div>`).join('') +
+                    '</div>'
+                ).join('') +
+                '</div>';
+        }
+
+        // === FONCTIONS DE DONNÉES ===
+        function generatePerformanceData(metric) {
+            const labels = [];
+            const data = [];
+            
+            for (let i = 23; i >= 0; i--) {
+                const date = new Date();
+                date.setHours(date.getHours() - i);
+                labels.push(date.getHours() + 'h');
+                
+                switch (metric) {
+                    case 'response-time':
+                        data.push(Math.random() * 500 + 100);
+                        break;
+                    case 'memory':
+                        data.push(Math.random() * 80 + 20);
+                        break;
+                    case 'throughput':
+                        data.push(Math.random() * 1000 + 200);
+                        break;
+                }
+            }
+            
+            return {
+                labels,
+                data,
+                label: {
+                    'response-time': 'Temps de réponse (ms)',
+                    'memory': 'Utilisation mémoire (%)',
+                    'throughput': 'Requêtes/min'
+                }[metric]
+            };
+        }
+
+        function generateComparisonData() {
+            const projects = ['Projet A', 'Projet B', 'Projet C', 'Projet D'];
+            const metrics = ['Performance', 'Stabilité', 'Sécurité', 'Maintenabilité', 'Fiabilité'];
+            
+            return {
+                labels: metrics,
+                datasets: projects.map((project, index) => ({
+                    label: project,
+                    data: metrics.map(() => Math.random() * 100),
+                    borderColor: ['#ef4444', '#f97316', '#22c55e', '#3b82f6'][index],
+                    backgroundColor: ['#ef444420', '#f9731620', '#22c55e20', '#3b82f620'][index]
+                }))
+            };
+        }
+
+        function generatePredictionData() {
+            const labels = [];
+            const historical = [];
+            const prediction = [];
+            
+            // Données historiques (14 derniers jours)
+            for (let i = 13; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.getDate() + '/' + (date.getMonth() + 1));
+                historical.push(Math.random() * 100 + 50);
+                prediction.push(null);
+            }
+            
+            // Prédictions (7 prochains jours)
+            for (let i = 1; i <= 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                labels.push(date.getDate() + '/' + (date.getMonth() + 1));
+                historical.push(null);
+                prediction.push(Math.random() * 80 + 40);
+            }
+            
+            return { labels, historical, prediction };
+        }
+
+        function generateDeviceData(type) {
+            const data = {
+                'browser': {
+                    labels: ['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'],
+                    data: [45, 25, 15, 10, 5]
+                },
+                'os': {
+                    labels: ['Windows', 'macOS', 'Linux', 'Android', 'iOS'],
+                    data: [40, 25, 15, 12, 8]
+                },
+                'device': {
+                    labels: ['Desktop', 'Mobile', 'Tablet'],
+                    data: [60, 35, 5]
+                }
+            };
+            
+            return data[type] || data.browser;
+        }
+
+        function generateCorrelationData() {
+            const size = 5;
+            const matrix = [];
+            
+            for (let i = 0; i < size; i++) {
+                const row = [];
+                for (let j = 0; j < size; j++) {
+                    if (i === j) {
+                        row.push(1);
+                    } else {
+                        row.push((Math.random() - 0.5) * 2);
+                    }
+                }
+                matrix.push(row);
+            }
+            
+            return matrix;
+        }
+
+        function getCorrelationColor(value) {
+            const intensity = Math.abs(value);
+            const hue = value > 0 ? 120 : 0; // Vert pour positif, rouge pour négatif
+            return `hsla(${hue}, 70%, 50%, ${intensity})`;
+        }
+
+        // === FONCTIONS D'INTERACTION ===
+        function switchPerformanceChart(metric) {
+            currentPerformanceMetric = metric;
+            
+            // Mettre à jour les onglets
+            document.querySelectorAll('.chart-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Régénérer les données
+            const newData = generatePerformanceData(metric);
+            performanceChart.data.labels = newData.labels;
+            performanceChart.data.datasets[0].data = newData.data;
+            performanceChart.data.datasets[0].label = newData.label;
+            performanceChart.update();
+        }
+
+        function switchDistributionChart(type) {
+            currentDistributionType = type;
+            
+            // Mettre à jour les onglets
+            event.target.parentElement.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Régénérer les données
+            const newData = generateDeviceData(type);
+            deviceChart.data.labels = newData.labels;
+            deviceChart.data.datasets[0].data = newData.data;
+            deviceChart.update();
+        }
+
+        function updateComparisonChart() {
+            const metric = document.getElementById('comparison-metric').value;
+            // Ici on pourrait faire un appel API pour récupérer les vraies données
+            const newData = generateComparisonData();
+            comparisonChart.data = newData;
+            comparisonChart.update();
+        }
+    </script>
+    
+{% endblock %}

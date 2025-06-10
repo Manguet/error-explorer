@@ -1,0 +1,815 @@
+// Teams Grid
+.dashboard-teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// Team Card
+.dashboard-team-card {
+  @include dashboard-card;
+  padding: 1.5rem;
+}
+
+// Team Card Header
+.dashboard-team-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-team-card-icon {
+  width: 48px;
+  height: 48px;
+  background: $primary-blue;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+}
+
+.dashboard-team-card-title {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin: 0 0 0.25rem 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: $dashboard-text-light;
+    margin: 0;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.dashboard-team-card-role {
+  flex-shrink: 0;
+}
+
+// Role Badges
+.team-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &.role-owner {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1d4ed8;
+  }
+
+  &.role-admin {
+    background: rgba(34, 197, 94, 0.1);
+    color: #059669;
+  }
+
+  &.role-member {
+    background: rgba(99, 102, 241, 0.1);
+    color: #4338ca;
+  }
+
+  &.role-viewer {
+    background: rgba(107, 114, 128, 0.1);
+    color: #374151;
+  }
+}
+
+// Team Stats
+.dashboard-team-card-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba($dashboard-card-bg, 0.5);
+  border-radius: 8px;
+}
+
+.team-stat {
+  flex: 1;
+  text-align: center;
+
+  .team-stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin-bottom: 0.25rem;
+  }
+
+  .team-stat-label {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.5rem;
+  }
+
+  .team-stat-bar {
+    height: 4px;
+    background: $dashboard-border;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .team-stat-progress {
+    height: 100%;
+    background: $primary-blue;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+}
+
+// Team Actions
+.dashboard-team-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.team-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.btn-primary {
+    background: $primary-blue;
+    color: white;
+
+    &:hover {
+      background: darken($primary-blue, 10%);
+      text-decoration: none;
+      color: white;
+    }
+  }
+
+  &.btn-secondary {
+    background: rgba($dashboard-card-bg, 0.5);
+    color: $dashboard-text-light;
+    border-color: $dashboard-border;
+
+    &:hover {
+      background: $dashboard-border;
+      color: $dashboard-text;
+      text-decoration: none;
+    }
+  }
+}
+
+// Team Footer
+.dashboard-team-card-footer {
+  padding-top: 1rem;
+  border-top: 1px solid $dashboard-border;
+
+  .team-updated {
+    font-size: 0.75rem;
+    color: rgba($dashboard-text-light, 0.7);
+  }
+}
+
+// Section Header
+.dashboard-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+}
+
+.dashboard-section-actions {
+  display: flex;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
+}
+
+// Dashboard Button
+.dashboard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &.btn-primary {
+    background: $primary-blue;
+    color: white;
+
+    &:hover {
+      background: darken($primary-blue, 10%);
+      text-decoration: none;
+      color: white;
+    }
+  }
+}
+
+// Form Styles
+.dashboard-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.dashboard-form-card {
+  @include dashboard-card;
+  padding: 2rem;
+}
+
+.dashboard-form-group {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dashboard-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $dashboard-text;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-form-input,
+.dashboard-form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba($dashboard-border, 1.5);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: $dashboard-card-bg;
+  color: $dashboard-text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-blue;
+    box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+  }
+
+  &.is-invalid {
+    border-color: $status-open;
+  }
+}
+
+.dashboard-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.dashboard-form-help {
+  font-size: 0.75rem;
+  color: rgba($dashboard-text-light, 0.7);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.dashboard-form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $dashboard-border;
+
+  @media (max-width: 768px) {
+    justify-content: stretch;
+    
+    .dashboard-btn {
+      flex: 1;
+    }
+  }
+}
+
+// Info Box
+.dashboard-info-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba($primary-blue, 0.05);
+  border: 1px solid rgba($primary-blue, 0.1);
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.dashboard-info-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba($primary-blue, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary-blue;
+}
+
+.dashboard-info-content {
+  flex: 1;
+
+  h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin: 0 0 0.5rem 0;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+    line-height: 1.5;
+
+    li {
+      margin-bottom: 0.25rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Dashboard Content Grid (for show page)
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+// Dashboard Card (improved version for team show)
+.dashboard-card {
+  @include dashboard-card;
+  overflow: hidden;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid $dashboard-border;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.dashboard-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $dashboard-text;
+  margin: 0;
+
+  svg {
+    color: $primary-blue;
+  }
+}
+
+.dashboard-card-action {
+  color: $primary-blue;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+    color: darken($primary-blue, 10%);
+  }
+}
+
+.dashboard-card-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.dashboard-card-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $dashboard-border;
+  background: rgba($dashboard-card-bg, 0.5);
+  text-align: center;
+}
+
+// Members List
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba($dashboard-card-bg, 0.5);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: $dashboard-border;
+  }
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  background: $primary-blue;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    color: white;
+  }
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  font-weight: 600;
+  color: $dashboard-text;
+  margin-bottom: 0.25rem;
+}
+
+.member-role {
+  font-size: 0.75rem;
+  color: $dashboard-text-light;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.member-status {
+  flex-shrink: 0;
+}
+
+// Projects List
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba($dashboard-card-bg, 0.5);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: $dashboard-border;
+  }
+}
+
+.project-icon {
+  width: 40px;
+  height: 40px;
+  background: $status-resolved;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    color: white;
+  }
+}
+
+.project-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-name {
+  font-weight: 600;
+  color: $dashboard-text;
+  margin-bottom: 0.25rem;
+}
+
+.project-env {
+  font-size: 0.75rem;
+  color: $dashboard-text-light;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.project-status {
+  flex-shrink: 0;
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: $dashboard-text-light;
+
+  svg {
+    margin-bottom: 1rem;
+    color: rgba($dashboard-text-light, 0.7);
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+  }
+}
+
+// Info Grid (for team information)
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: $dashboard-text-light;
+}
+
+.info-value {
+  font-weight: 600;
+  color: $dashboard-text;
+}
+
+// Permissions Grid (for invite page)
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.permission-role {
+  .role-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+
+    &.role-owner {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1d4ed8;
+    }
+
+    &.role-admin {
+      background: rgba(34, 197, 94, 0.1);
+      color: #059669;
+    }
+
+    &.role-member {
+      background: rgba(99, 102, 241, 0.1);
+      color: #4338ca;
+    }
+
+    &.role-viewer {
+      background: rgba(107, 114, 128, 0.1);
+      color: #374151;
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: $dashboard-text-light;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      svg {
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// Permissions List (for members table)
+.permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+// Utility classes
+.w-full { width: 100%; }
+.dashboard-text-muted { color: rgba($dashboard-text-light, 0.7); }
+
+// Dashboard Button Small
+.dashboard-btn.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+// Badge Improvements
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &.badge-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #059669;
+  }
+
+  &.badge-secondary {
+    background: rgba(107, 114, 128, 0.1);
+    color: #374151;
+  }
+
+  &.badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+  }
+
+  &.badge-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #1d4ed8;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .dashboard-teams-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-team-card {
+    padding: 1rem;
+  }
+
+  .dashboard-team-card-header {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-team-card-icon {
+    width: 40px;
+    height: 40px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .dashboard-team-card-title h3 {
+    font-size: 1.125rem;
+  }
+
+  .dashboard-team-card-stats {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .team-stat {
+    text-align: left;
+  }
+
+  .dashboard-team-card-actions {
+    flex-wrap: wrap;
+  }
+
+  .team-action-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+}

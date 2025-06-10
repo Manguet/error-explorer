@@ -1,0 +1,10 @@
+parameters:
+    stripe.public_key: '%env(STRIPE_PUBLIC_KEY)%'
+    stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+    stripe.webhook_secret: '%env(STRIPE_WEBHOOK_SECRET)%'
+
+services:
+    App\Service\StripeService:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+            $stripePublicKey: '%env(STRIPE_PUBLIC_KEY)%'

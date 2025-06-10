@@ -1,0 +1,578 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Facturation - {{ parent() }}{% endblock %}
+
+{% block page_title %}Facturation{% endblock %}
+{% block page_subtitle %}Gérez votre abonnement et vos paiements{% endblock %}
+
+{% block header_actions %}
+    {% if subscription and subscription.isActive %}
+        <button class="header-btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePlanModal">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Changer de plan
+        </button>
+    {% else %}
+        <a href="{{ path('pricing') }}" class="header-btn btn-primary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Choisir un plan
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Facturation</span>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <!-- Statistics Cards -->
+    <div class="projects-stats-grid">
+        {% if subscription and subscription.isActive %}
+            <div class="stat-card stat-success">
+                <div class="stat-card-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
+                <div class="stat-card-content">
+                    <div class="stat-card-value">{{ subscription.plan.name }}</div>
+                    <div class="stat-card-label">Plan actuel</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-primary">
+                <div class="stat-card-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <div class="stat-card-content">
+                    <div class="stat-card-value">{{ subscription.getFormattedAmount() }}</div>
+                    <div class="stat-card-label">{{ subscription.isMonthly ? 'par mois' : 'par an' }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-info">
+                <div class="stat-card-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <div class="stat-card-content">
+                    <div class="stat-card-value">{{ subscription.plan.maxProjects == -1 ? '∞' : subscription.plan.maxProjects }}</div>
+                    <div class="stat-card-label">Projets</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-warning">
+                <div class="stat-card-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                </div>
+                <div class="stat-card-content">
+                    <div class="stat-card-value">{{ subscription.plan.maxMonthlyErrors == -1 ? '∞' : (subscription.plan.maxMonthlyErrors|number_format) }}</div>
+                    <div class="stat-card-label">Erreurs/mois</div>
+                </div>
+            </div>
+        {% else %}
+            <div class="stat-card stat-secondary">
+                <div class="stat-card-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                    </svg>
+                </div>
+                <div class="stat-card-content">
+                    <div class="stat-card-value">{{ app.user.plan.name }}</div>
+                    <div class="stat-card-label">Plan actuel</div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Section principale -->
+<div class="dashboard-section">
+    <div class="row">
+        <!-- Abonnement -->
+        <div class="col-md-8">
+            <div class="data-section">
+                <div class="section-header">
+                    <div>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                        <h3 class="section-title">Mon abonnement</h3>
+                    </div>
+                </div>
+
+                <div class="section-content">
+                    {% if subscription and subscription.isActive %}
+                        <div class="subscription-info">
+                            <div class="subscription-header">
+                                <div class="subscription-plan">
+                                    <h4>{{ subscription.plan.name }}</h4>
+                                    <div class="subscription-badge badge-{{ subscription.getStatusLabel() == 'Actif' ? 'success' : 'warning' }}">
+                                        {{ subscription.getStatusLabel() }}
+                                    </div>
+                                </div>
+                                <div class="subscription-price">
+                                    {{ subscription.getFormattedAmount() }}/{{ subscription.isMonthly ? 'mois' : 'an' }}
+                                </div>
+                            </div>
+
+                            <div class="subscription-limits">
+                                <div class="limit-item">
+                                    <span class="limit-label">Projets :</span>
+                                    <span class="limit-value">{{ subscription.plan.maxProjects == -1 ? 'Illimités' : subscription.plan.maxProjects }}</span>
+                                </div>
+                                <div class="limit-item">
+                                    <span class="limit-label">Erreurs/mois :</span>
+                                    <span class="limit-value">{{ subscription.plan.maxMonthlyErrors == -1 ? 'Illimitées' : (subscription.plan.maxMonthlyErrors|number_format) }}</span>
+                                </div>
+                                <div class="limit-item">
+                                    <span class="limit-label">Rétention :</span>
+                                    <span class="limit-value">{{ subscription.plan.dataRetentionDays }} jours</span>
+                                </div>
+                            </div>
+
+                            <div class="subscription-next-billing">
+                                {% if subscription.isTrialing %}
+                                    <span class="next-billing-label">Essai gratuit jusqu'au :</span>
+                                    <span class="next-billing-date">{{ subscription.trialEnd|date('d/m/Y') }}</span>
+                                {% else %}
+                                    <span class="next-billing-label">Prochaine facturation :</span>
+                                    <span class="next-billing-date">{{ subscription.currentPeriodEnd|date('d/m/Y') }}</span>
+                                {% endif %}
+                            </div>
+
+                            {% if subscription.cancelAt %}
+                                <div class="alert alert-warning">
+                                    <strong>Abonnement en cours d'annulation</strong><br>
+                                    Votre abonnement sera annulé le {{ subscription.cancelAt|date('d/m/Y') }}. 
+                                    Vous conserverez l'accès jusqu'à cette date.
+                                </div>
+                            {% endif %}
+
+                            <div class="subscription-actions">
+                                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#changePlanModal">
+                                    Changer de plan
+                                </button>
+                                {% if not subscription.cancelAt %}
+                                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelSubscriptionModal">
+                                        Annuler l'abonnement
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                </svg>
+                            </div>
+                            <h4>Aucun abonnement actif</h4>
+                            <p>Vous êtes actuellement sur le plan {{ app.user.plan.name }}.</p>
+                            <a href="{{ path('pricing') }}" class="btn btn-primary">
+                                Choisir un plan
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Méthodes de paiement -->
+        <div class="col-md-4">
+            <div class="data-section">
+                <div class="section-header">
+                    <div>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <h3 class="section-title">Méthodes de paiement</h3>
+                    </div>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentMethodModal">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                        Ajouter
+                    </button>
+                </div>
+
+                <div class="section-content">
+                    {% if paymentMethods|length > 0 %}
+                        <div class="payment-methods-list">
+                            {% for method in paymentMethods %}
+                                <div class="payment-method-item">
+                                    <div class="payment-method-info">
+                                        <div class="payment-method-icon">
+                                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                                <line x1="1" y1="10" x2="23" y2="10"/>
+                                            </svg>
+                                        </div>
+                                        <div class="payment-method-details">
+                                            <div class="payment-method-name">{{ method.displayName }}</div>
+                                            {% if method.isDefault %}
+                                                <div class="payment-method-badge badge-primary">Par défaut</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="payment-method-actions">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                                </svg>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% if not method.isDefault %}
+                                                    <li><a class="dropdown-item" href="#" onclick="setDefaultPaymentMethod({{ method.id }})">Définir par défaut</a></li>
+                                                {% endif %}
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="removePaymentMethod({{ method.id }})">Supprimer</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                </svg>
+                            </div>
+                            <p>Aucune méthode de paiement</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Factures -->
+<div class="dashboard-section">
+    <div class="data-section">
+        <div class="section-header">
+            <div>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <h3 class="section-title">Historique des factures</h3>
+            </div>
+        </div>
+
+        <div class="section-content">
+            {% if invoices|length > 0 %}
+                <div class="table-responsive">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ invoice.createdAt|date('d/m/Y') }}</td>
+                                    <td>{{ invoice.description }}</td>
+                                    <td>{{ invoice.getFormattedAmount() }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ invoice.isPaid ? 'success' : 'warning' }}">
+                                            {{ invoice.getStatusLabel() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if invoice.isPaid %}
+                                            <a href="{{ path('billing_download_invoice', {id: invoice.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                                </svg>
+                                                Télécharger
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h4>Aucune facture</h4>
+                    <p>Vos factures apparaîtront ici une fois que vous aurez un abonnement actif.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Changer de plan -->
+{% if subscription and subscription.isActive %}
+<div class="modal fade" id="changePlanModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Changer de plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ path('billing_change_plan', {planId: 0}) }}" method="post" id="changePlanForm">
+                <div class="modal-body">
+                    <div class="row">
+                        {% for plan in plans %}
+                            <div class="col-md-4 mb-3">
+                                <div class="plan-card {% if plan.id == subscription.plan.id %}current-plan{% endif %}">
+                                    <div class="plan-card-body">
+                                        <h5 class="plan-card-title">{{ plan.name }}</h5>
+                                        <div class="plan-card-price">
+                                            {{ plan.getFormattedPrice('monthly') }}/mois
+                                        </div>
+                                        <ul class="plan-card-features">
+                                            <li>{{ plan.maxProjects == -1 ? 'Projets illimités' : plan.maxProjects ~ ' projets' }}</li>
+                                            <li>{{ plan.maxMonthlyErrors == -1 ? 'Erreurs illimitées' : (plan.maxMonthlyErrors ~ ' erreurs/mois') }}</li>
+                                        </ul>
+                                        {% if plan.id != subscription.plan.id %}
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="selectPlan({{ plan.id }})">
+                                                Choisir ce plan
+                                            </button>
+                                        {% else %}
+                                            <span class="badge badge-primary">Plan actuel</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label for="billing_period" class="form-label">Période de facturation</label>
+                        <select class="form-select" name="billing_period" id="billing_period">
+                            <option value="monthly" {% if subscription.isMonthly %}selected{% endif %}>Mensuelle</option>
+                            <option value="yearly" {% if subscription.isYearly %}selected{% endif %}>Annuelle (2 mois offerts)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="confirmChangePlan" disabled>Confirmer le changement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal Annuler l'abonnement -->
+{% if subscription and subscription.isActive and not subscription.cancelAt %}
+<div class="modal fade" id="cancelSubscriptionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Annuler l'abonnement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ path('billing_cancel_subscription') }}" method="post">
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir annuler votre abonnement ?</p>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="cancel_type" id="cancel_end_period" value="end_period" checked>
+                        <label class="form-check-label" for="cancel_end_period">
+                            <strong>Annuler à la fin de la période</strong><br>
+                            <small class="text-muted">Votre abonnement restera actif jusqu'au {{ subscription.currentPeriodEnd | date('d/m/Y') }}</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancel_type" id="cancel_immediately" value="immediately">
+                        <label class="form-check-label" for="cancel_immediately">
+                            <strong>Annuler immédiatement</strong><br>
+                            <small class="text-muted">Votre abonnement sera annulé immédiatement (non remboursable)</small>
+                        </label>
+                    </div>
+                    
+                    <input type="hidden" name="immediately" value="0" id="cancelImmediately">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Confirmer l'annulation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal Ajouter une méthode de paiement -->
+<div class="modal fade" id="addPaymentMethodModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une méthode de paiement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="payment-form">
+                    <div id="card-element" class="form-control mb-3" style="height: 40px; padding: 10px;">
+                        <!-- Stripe Elements insérera l'élément de carte ici -->
+                    </div>
+                    <div id="card-errors" role="alert" class="text-danger mb-3"></div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="setAsDefault">
+                        <label class="form-check-label" for="setAsDefault">
+                            Définir comme méthode de paiement par défaut
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="submit-payment-method">Ajouter la carte</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <!-- Stripe Elements seulement si nécessaire -->
+    {% if paymentMethods is defined %}
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            // Initialiser Stripe seulement si la modal est ouverte
+            let stripe = null;
+            let elements = null;
+            let cardElement = null;
+
+            document.getElementById('addPaymentMethodModal').addEventListener('shown.bs.modal', function () {
+                if (!stripe) {
+                    stripe = Stripe('{{ stripe_public_key ?? 'pk_test_placeholder' }}');
+                    elements = stripe.elements();
+                    cardElement = elements.create('card');
+                    cardElement.mount('#card-element');
+
+                    // Gérer les erreurs de carte
+                    cardElement.on('change', ({error}) => {
+                        const displayError = document.getElementById('card-errors');
+                        if (error) {
+                            displayError.textContent = error.message;
+                        } else {
+                            displayError.textContent = '';
+                        }
+                    });
+                }
+            });
+
+            // Gérer la soumission de la méthode de paiement
+            document.getElementById('submit-payment-method').addEventListener('click', async () => {
+                if (!stripe || !cardElement) return;
+
+                const {paymentMethod, error} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                });
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                } else {
+                    const setAsDefault = document.getElementById('setAsDefault').checked;
+                    
+                    fetch('{{ path('billing_add_payment_method') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            payment_method_id: paymentMethod.id,
+                            set_as_default: setAsDefault
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            document.getElementById('card-errors').textContent = data.error;
+                        }
+                    });
+                }
+            });
+
+            // Fonctions pour gérer les changements de plan
+            function selectPlan(planId) {
+                document.getElementById('changePlanForm').action = 
+                    document.getElementById('changePlanForm').action.replace('/0', '/' + planId);
+                document.getElementById('confirmChangePlan').disabled = false;
+            }
+
+            // Gérer la sélection du type d'annulation
+            document.querySelectorAll('input[name="cancel_type"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('cancelImmediately').value = 
+                        this.value === 'immediately' ? '1' : '0';
+                });
+            });
+
+            // Fonctions pour gérer les méthodes de paiement
+            function setDefaultPaymentMethod(id) {
+                fetch(`{{ path('billing_set_default_payment_method', {id: 0}) }}`.replace('/0', '/' + id), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erreur: ' + data.error);
+                    }
+                });
+            }
+
+            function removePaymentMethod(id) {
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?')) {
+                    fetch(`{{ path('billing_remove_payment_method', {id: 0}) }}`.replace('/0', '/' + id), {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Erreur: ' + data.error);
+                        }
+                    });
+                }
+            }
+        </script>
+    {% endif %}
+{% endblock %}

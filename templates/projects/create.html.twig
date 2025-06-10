@@ -1,0 +1,340 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Nouveau projet - {{ parent() }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_index') }}">Projets</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Nouveau projet</span>
+{% endblock %}
+
+{% block page_title %}Créer un nouveau projet{% endblock %}
+{% block page_subtitle %}Un token webhook unique sera généré automatiquement{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        Retour à la liste
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="projects-create-layout">
+        <div class="projects-form-card">
+            <div class="projects-form-header">
+                <h3 class="form-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Informations du projet
+                </h3>
+            </div>
+            <div class="projects-form-body">
+                <form method="POST" class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="name" class="form-label required">
+                            Nom du projet
+                        </label>
+                        <input type="text"
+                               id="name"
+                               name="name"
+                               value="{{ app.request.request.get('name', '') }}"
+                               required
+                               maxlength="100"
+                               placeholder="Ex: Mon Site E-commerce"
+                               class="form-input"
+                               onkeyup="updateSlugPreview()">
+                        <div class="form-help">
+                            Le nom sera utilisé pour identifier votre projet dans le monitoring.
+                        </div>
+                        <div class="form-help">
+                            <strong>Slug généré:</strong> <span id="slug-preview" class="text-primary">-</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">
+                            Description
+                        </label>
+                        <textarea id="description"
+                                  name="description"
+                                  rows="3"
+                                  maxlength="1000"
+                                  placeholder="Description optionnelle du projet..."
+                                  class="form-textarea">{{ app.request.request.get('description', '') }}</textarea>
+                        <div class="form-help">
+                            Une description qui vous aidera à identifier rapidement le projet.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="environment" class="form-label">
+                            Environnement principal
+                        </label>
+                        <select id="environment"
+                                name="environment"
+                                class="form-select">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="prod" {{ app.request.request.get('environment') == 'prod' ? 'selected' : '' }}>Production</option>
+                            <option value="staging" {{ app.request.request.get('environment') == 'staging' ? 'selected' : '' }}>Staging</option>
+                            <option value="dev" {{ app.request.request.get('environment') == 'dev' ? 'selected' : '' }}>Development</option>
+                            <option value="test" {{ app.request.request.get('environment') == 'test' ? 'selected' : '' }}>Test</option>
+                        </select>
+                        <div class="form-help">
+                            L'environnement principal de ce projet (peut être overridé par le client).
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notification_email" class="form-label">
+                            Email de notification
+                        </label>
+                        <input type="email"
+                               id="notification_email"
+                               name="notification_email"
+                               value="{{ app.request.request.get('notification_email', '') }}"
+                               placeholder="admin@monsite.com"
+                               class="form-input">
+                        <div class="form-help">
+                            Email pour recevoir les alertes importantes (optionnel).
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="repository_url" class="form-label">
+                            URL du repository
+                        </label>
+                        <input type="url"
+                               id="repository_url"
+                               name="repository_url"
+                               value="{{ app.request.request.get('repository_url', '') }}"
+                               placeholder="https://github.com/username/project"
+                               class="form-input">
+                        <div class="form-help">
+                            Lien vers le repository pour faciliter le debug (optionnel).
+                        </div>
+                    </div>
+
+                    <div class="form-actions full-width">
+                        <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="header-btn btn-primary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Créer le projet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="projects-preview-sidebar">
+            <div class="projects-preview-card">
+                <div class="preview-header">
+                    <h3 class="preview-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Aperçu
+                    </h3>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-content">
+                        <div class="preview-name" id="preview-name">
+                            Nom du projet
+                        </div>
+                        <div class="preview-description" id="preview-description">
+                            Description du projet
+                        </div>
+                        <div class="preview-badges">
+                            <span class="badge badge-success">Actif</span>
+                            <span class="badge badge-warning" id="preview-environment" style="display: none;">Environment</span>
+                        </div>
+                        <div class="preview-features">
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                                </svg>
+                                Token webhook généré automatiquement
+                            </div>
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                URL webhook configurée
+                            </div>
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                                Prêt pour le monitoring
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="projects-info-card">
+                <div class="info-header">
+                    <h3 class="info-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        À savoir
+                    </h3>
+                </div>
+                <div class="info-body">
+                    <div class="info-items">
+                        <div class="info-item info-success">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Token sécurisé
+                            </div>
+                            <div class="info-item-text">Un token unique de 64 caractères sera généré automatiquement.</div>
+                        </div>
+
+                        <div class="info-item info-info">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Slug automatique
+                            </div>
+                            <div class="info-item-text">Le slug est généré depuis le nom et sera utilisé dans les URLs.</div>
+                        </div>
+
+                        <div class="info-item info-warning">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                                </svg>
+                                Configuration
+                            </div>
+                            <div class="info-item-text">Après création, vous recevrez les instructions d'installation.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="projects-help-card">
+                <div class="help-header">
+                    <h3 class="help-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Aide
+                    </h3>
+                </div>
+                <div class="help-body">
+                    <p><strong>Nom du projet :</strong> Choisissez un nom descriptif et unique.</p>
+                    <p><strong>Description :</strong> Ajoutez une description pour identifier rapidement le projet.</p>
+                    <p><strong>Environnement :</strong> L'environnement principal, mais chaque erreur peut avoir son propre environnement.</p>
+                    <p><strong>Après création :</strong> Vous recevrez toutes les instructions pour configurer votre application.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Mise à jour de l'aperçu en temps réel
+        function updatePreview() {
+            const name = document.getElementById('name').value || 'Nom du projet';
+            const description = document.getElementById('description').value || 'Description du projet';
+            const environment = document.getElementById('environment').value;
+
+            document.getElementById('preview-name').textContent = name;
+            document.getElementById('preview-description').textContent = description;
+
+            const envBadge = document.getElementById('preview-environment');
+            if (environment) {
+                envBadge.textContent = environment.charAt(0).toUpperCase() + environment.slice(1);
+                envBadge.classList.remove('d-none');
+            } else {
+                envBadge.classList.add('d-none');
+            }
+        }
+
+        // Génération du slug en temps réel
+        function updateSlugPreview() {
+            const name = document.getElementById('name').value;
+            let slug = name.toLowerCase()
+                .replace(/[^a-z0-9\-_]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            document.getElementById('slug-preview').textContent = slug || 'nom-du-projet';
+            updatePreview();
+        }
+
+        // Écouteurs d'événements
+        document.getElementById('name').addEventListener('input', updateSlugPreview);
+        document.getElementById('description').addEventListener('input', updatePreview);
+        document.getElementById('environment').addEventListener('change', updatePreview);
+
+        // Focus sur le premier champ
+        document.getElementById('name').focus();
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                document.querySelector('form').submit();
+            }
+        });
+
+        // Validation côté client
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const name = document.getElementById('name').value.trim();
+
+            if (!name) {
+                e.preventDefault();
+                showNotification('Le nom du projet est requis', 'error');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            if (name.length > 100) {
+                e.preventDefault();
+                showNotification('Le nom du projet ne peut pas dépasser 100 caractères', 'error');
+                document.getElementById('name').focus();
+                return;
+            }
+
+            const email = document.getElementById('notification_email').value.trim();
+            if (email && !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                e.preventDefault();
+                showNotification('L\'email de notification n\'est pas valide', 'error');
+                document.getElementById('notification_email').focus();
+                return;
+            }
+
+            const repoUrl = document.getElementById('repository_url').value.trim();
+            if (repoUrl && !repoUrl.match(/^https?:\/\/.+/)) {
+                e.preventDefault();
+                showNotification('L\'URL du repository doit commencer par http:// ou https://', 'error');
+                document.getElementById('repository_url').focus();
+                return;
+            }
+        });
+
+        // Initialiser l'aperçu
+        updateSlugPreview();
+    </script>
+{% endblock %}

@@ -1,0 +1,697 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Monitoring de Performance{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h1>📊 Monitoring de Performance</h1>
+        <p class="text-muted">Surveillez les performances et la disponibilité de vos projets en temps réel</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+        {% if selectedProject %}
+        <button type="button" class="btn btn-outline-primary" onclick="refreshData()">
+            <i class="fas fa-sync-alt"></i> Actualiser
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settingsModal">
+            <i class="fas fa-cog"></i> Configuration
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Sélectionner un projet</h5>
+                <select class="form-select" id="projectSelect" onchange="changeProject()">
+                    <option value="">-- Sélectionner un projet --</option>
+                    {% for project in projects %}
+                    <option value="{{ project.slug }}" {% if selectedProject and project.id == selectedProject.id %}selected{% endif %}>
+                        {{ project.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Période</h5>
+                <select class="form-select" id="periodSelect" onchange="changePeriod()">
+                    <option value="1">Dernière heure</option>
+                    <option value="24" selected>Dernières 24h</option>
+                    <option value="168">Dernière semaine</option>
+                    <option value="720">Dernier mois</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if selectedProject %}
+<!-- Health Score -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="health-score-circle" id="healthScoreCircle">
+                                <span id="healthScoreValue">--</span>
+                            </div>
+                            <h5 class="mt-2">Score de Santé</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card uptime">
+                                    <div class="metric-value" id="uptimePercent">--</div>
+                                    <div class="metric-label">Uptime</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card response">
+                                    <div class="metric-value" id="avgResponseTime">--</div>
+                                    <div class="metric-label">Temps de réponse moy.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card errors">
+                                    <div class="metric-value" id="errorRate">--</div>
+                                    <div class="metric-label">Taux d'erreur</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="metric-card issues">
+                                    <div class="metric-value" id="issuesCount">--</div>
+                                    <div class="metric-label">Problèmes actifs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">📈 Temps de Réponse</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="responseTimeChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">🔄 Uptime</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="uptimeChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Metrics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">⚡ Métriques en Temps Réel</h5>
+            </div>
+            <div class="card-body">
+                <div id="liveMetrics">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">🚨 Problèmes Récents</h5>
+            </div>
+            <div class="card-body">
+                <div id="recentIssues">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Uptime Status -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">🌐 Statut des Services</h5>
+            </div>
+            <div class="card-body">
+                <div id="serviceStatus">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- No Project Selected -->
+<div class="row">
+    <div class="col-12">
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <i class="fas fa-chart-line fa-4x text-muted"></i>
+                </div>
+                <h3>Monitoring de Performance</h3>
+                <p class="text-muted mb-4">Sélectionnez un projet pour commencer à surveiller ses performances</p>
+                {% if projects|length == 0 %}
+                <p class="text-muted">
+                    Vous n'avez pas encore de projets. 
+                    <a href="{{ path('projects_create') }}" class="text-decoration-none">Créer votre premier projet</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Configuration Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Configuration du Monitoring</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="monitoringSettings">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>URLs à surveiller</h6>
+                            <div id="monitoringUrls">
+                                <div class="input-group mb-2">
+                                    <input type="url" class="form-control" placeholder="https://exemple.com" name="urls[]">
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeUrl(this)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="addUrl()">
+                                <i class="fas fa-plus"></i> Ajouter URL
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Seuils d'alerte</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Temps de réponse max (ms)</label>
+                                <input type="number" class="form-control" name="max_response_time" value="2000">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Taux d'erreur max (%)</label>
+                                <input type="number" class="form-control" name="max_error_rate" value="5" step="0.1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CPU max (%)</label>
+                                <input type="number" class="form-control" name="max_cpu_usage" value="80">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let currentProject = '{{ selectedProject ? selectedProject.slug : '' }}';
+let currentPeriod = 24;
+let charts = {};
+let refreshInterval;
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    if (currentProject) {
+        initializeCharts();
+        loadData();
+        startAutoRefresh();
+    }
+});
+
+function changeProject() {
+    const select = document.getElementById('projectSelect');
+    currentProject = select.value;
+    
+    if (currentProject) {
+        window.location.href = `{{ path('performance_dashboard') }}?project=${currentProject}`;
+    } else {
+        window.location.href = `{{ path('performance_dashboard') }}`;
+    }
+}
+
+function changePeriod() {
+    currentPeriod = document.getElementById('periodSelect').value;
+    if (currentProject) {
+        loadData();
+    }
+}
+
+function initializeCharts() {
+    // Response Time Chart
+    const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+    charts.responseTime = new Chart(responseTimeCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Temps de réponse (ms)',
+                data: [],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Milliseconds'
+                    }
+                }
+            }
+        }
+    });
+
+    // Uptime Chart
+    const uptimeCtx = document.getElementById('uptimeChart').getContext('2d');
+    charts.uptime = new Chart(uptimeCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Uptime (%)',
+                data: [],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Pourcentage'
+                    }
+                }
+            }
+        }
+    });
+}
+
+async function loadData() {
+    try {
+        // Charger les données de santé
+        await loadHealthData();
+        
+        // Charger les métriques
+        await loadMetrics();
+        
+        // Charger les données d'uptime
+        await loadUptimeData();
+        
+    } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+        showErrorMessage('Erreur lors du chargement des données');
+    }
+}
+
+async function loadHealthData() {
+    const response = await fetch(`/performance/api/health?project=${currentProject}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+        updateHealthScore(data.health_score, data.status);
+        updateIssuesCount(data.issues_count);
+        updateRecentIssues(data.recent_issues || []);
+    }
+}
+
+async function loadMetrics() {
+    const response = await fetch(`/performance/api/metrics?project=${currentProject}&period=${currentPeriod}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+        updateMetricsDisplay(data.averages);
+        updateLiveMetrics(data.metrics);
+        
+        if (data.trend && charts.responseTime) {
+            updateResponseTimeChart(data.trend);
+        }
+    }
+}
+
+async function loadUptimeData() {
+    const response = await fetch(`/performance/api/uptime?project=${currentProject}&period=${currentPeriod}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+        updateUptimeDisplay(data.stats);
+        updateServiceStatus(data.latest_checks);
+        
+        if (data.trend && charts.uptime) {
+            updateUptimeChart(data.trend);
+        }
+    }
+}
+
+function updateHealthScore(score, status) {
+    const scoreElement = document.getElementById('healthScoreValue');
+    const circleElement = document.getElementById('healthScoreCircle');
+    
+    scoreElement.textContent = score || '--';
+    
+    circleElement.className = 'health-score-circle';
+    if (score >= 90) {
+        circleElement.classList.add('excellent');
+    } else if (score >= 75) {
+        circleElement.classList.add('good');
+    } else if (score >= 50) {
+        circleElement.classList.add('warning');
+    } else {
+        circleElement.classList.add('critical');
+    }
+}
+
+function updateMetricsDisplay(averages) {
+    // Temps de réponse
+    const responseTime = averages.response_time?.avg;
+    document.getElementById('avgResponseTime').textContent = 
+        responseTime ? `${Math.round(responseTime)}ms` : '--';
+    
+    // Taux d'erreur
+    const errorRate = averages.error_rate?.avg;
+    document.getElementById('errorRate').textContent = 
+        errorRate ? `${errorRate.toFixed(1)}%` : '--';
+}
+
+function updateUptimeDisplay(stats) {
+    const uptimeElement = document.getElementById('uptimePercent');
+    uptimeElement.textContent = stats.uptime_percent ? `${stats.uptime_percent}%` : '--';
+}
+
+function updateIssuesCount(count) {
+    document.getElementById('issuesCount').textContent = count || '0';
+}
+
+function updateLiveMetrics(metrics) {
+    const container = document.getElementById('liveMetrics');
+    
+    if (!metrics || metrics.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Aucune métrique récente</p>';
+        return;
+    }
+    
+    const recentMetrics = metrics.slice(0, 5);
+    let html = '<div class="list-group list-group-flush">';
+    
+    recentMetrics.forEach(metric => {
+        const severityClass = metric.severity === 'critical' ? 'danger' : 
+                             metric.severity === 'high' ? 'warning' : 'info';
+        
+        html += `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${metric.description}</strong>
+                    <small class="text-muted d-block">${new Date(metric.recorded_at).toLocaleString()}</small>
+                </div>
+                <span class="badge bg-${severityClass}">${metric.severity}</span>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updateRecentIssues(issues) {
+    const container = document.getElementById('recentIssues');
+    
+    if (!issues || issues.length === 0) {
+        container.innerHTML = '<p class="text-success text-center"><i class="fas fa-check-circle"></i> Aucun problème récent</p>';
+        return;
+    }
+    
+    let html = '<div class="list-group list-group-flush">';
+    
+    issues.slice(0, 5).forEach(issue => {
+        const severityClass = issue.severity === 'critical' ? 'danger' : 
+                             issue.severity === 'warning' ? 'warning' : 'info';
+        
+        html += `
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${issue.description}</h6>
+                    <small class="text-${severityClass}">${issue.severity}</small>
+                </div>
+                <small class="text-muted">${new Date(issue.timestamp).toLocaleString()}</small>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updateServiceStatus(checks) {
+    const container = document.getElementById('serviceStatus');
+    
+    if (!checks || checks.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">Aucun service surveillé</p>';
+        return;
+    }
+    
+    let html = '<div class="row">';
+    
+    checks.forEach(check => {
+        const statusClass = check.is_up ? 'success' : 'danger';
+        const statusIcon = check.is_up ? 'check-circle' : 'times-circle';
+        const responseTime = check.response_time ? `${Math.round(check.response_time)}ms` : 'N/A';
+        
+        html += `
+            <div class="col-md-6 mb-3">
+                <div class="card border-${statusClass}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">${check.url}</h6>
+                                <small class="text-muted">Vérifié: ${new Date(check.checked_at).toLocaleString()}</small>
+                            </div>
+                            <div class="text-end">
+                                <i class="fas fa-${statusIcon} text-${statusClass} fa-2x"></i>
+                                <div class="small mt-1">${responseTime}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function updateResponseTimeChart(trend) {
+    if (!charts.responseTime) return;
+    
+    const labels = trend.map(t => new Date(t.timestamp).toLocaleTimeString());
+    const data = trend.map(t => t.avg_response_time);
+    
+    charts.responseTime.data.labels = labels;
+    charts.responseTime.data.datasets[0].data = data;
+    charts.responseTime.update();
+}
+
+function updateUptimeChart(trend) {
+    if (!charts.uptime) return;
+    
+    const labels = trend.map(t => new Date(t.timestamp).toLocaleTimeString());
+    const data = trend.map(t => t.uptime_percent);
+    
+    charts.uptime.data.labels = labels;
+    charts.uptime.data.datasets[0].data = data;
+    charts.uptime.update();
+}
+
+function refreshData() {
+    if (currentProject) {
+        loadData();
+    }
+}
+
+function startAutoRefresh() {
+    // Actualiser toutes les 30 secondes
+    refreshInterval = setInterval(refreshData, 30000);
+}
+
+function stopAutoRefresh() {
+    if (refreshInterval) {
+        clearInterval(refreshInterval);
+    }
+}
+
+// Configuration des URLs de monitoring
+function addUrl() {
+    const container = document.getElementById('monitoringUrls');
+    const newInput = document.createElement('div');
+    newInput.className = 'input-group mb-2';
+    newInput.innerHTML = `
+        <input type="url" class="form-control" placeholder="https://exemple.com" name="urls[]">
+        <button type="button" class="btn btn-outline-danger" onclick="removeUrl(this)">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    container.appendChild(newInput);
+}
+
+function removeUrl(button) {
+    button.closest('.input-group').remove();
+}
+
+function saveSettings() {
+    // Logique de sauvegarde des paramètres
+    const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+    modal.hide();
+    
+    // Afficher un message de succès
+    showSuccessMessage('Configuration sauvegardée avec succès');
+}
+
+function showErrorMessage(message) {
+    // Afficher un message d'erreur
+    console.error(message);
+}
+
+function showSuccessMessage(message) {
+    // Afficher un message de succès
+    console.log(message);
+}
+
+// Nettoyer les intervalles à la fermeture de la page
+window.addEventListener('beforeunload', stopAutoRefresh);
+</script>
+
+<style>
+.health-score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    margin: 0 auto;
+    background: #6c757d;
+}
+
+.health-score-circle.excellent {
+    background: #28a745;
+}
+
+.health-score-circle.good {
+    background: #20c997;
+}
+
+.health-score-circle.warning {
+    background: #ffc107;
+    color: #333;
+}
+
+.health-score-circle.critical {
+    background: #dc3545;
+}
+
+.metric-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.metric-card.uptime .metric-value {
+    color: #28a745;
+}
+
+.metric-card.response .metric-value {
+    color: #007bff;
+}
+
+.metric-card.errors .metric-value {
+    color: #dc3545;
+}
+
+.metric-card.issues .metric-value {
+    color: #fd7e14;
+}
+</style>
+{% endblock %}

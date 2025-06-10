@@ -1,0 +1,982 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}{{ error_group.title }} - Error Explorer{% endblock %}
+
+{% block page_title %}{{ error_group.exceptionClass }}{% endblock %}
+{% block page_subtitle %}Détails et occurrences de cette erreur{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('dashboard_project', { project: error_group.project }) }}">{{ error_group.project }}</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Détail erreur</span>
+{% endblock %}
+
+{% block header_actions %}
+    {% if error_group.status == 'open' %}
+        <button class="header-btn" style="background: #10b981; color: white;" onclick="resolveError({{ error_group.id }})">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Résoudre
+        </button>
+        <button class="header-btn btn-secondary" onclick="ignoreError({{ error_group.id }})">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Ignorer
+        </button>
+    {% elseif error_group.status == 'resolved' or error_group.status == 'ignored' %}
+        <button class="header-btn" style="background: #f59e0b; color: white;" onclick="reopenError({{ error_group.id }})">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Rouvrir
+        </button>
+    {% endif %}
+    <button class="header-btn btn-secondary" onclick="window.print()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m12 0v4a2 2 0 01-2 2H7a2 2 0 01-2-2v-4m12 0H5m12 0v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2"/>
+        </svg>
+        Imprimer
+    </button>
+{% endblock %}
+
+{% block body %}
+    <!-- Error Overview Card -->
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-bottom: 2rem;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <span class="status-badge badge-{{ error_group.status }}" style="font-size: 0.875rem;">
+                                {{ error_group.status|title }}
+                            </span>
+                            {% if error_group.httpStatusCode %}
+                                <span class="status-badge badge-warning">
+                                    HTTP {{ error_group.httpStatusCode }}
+                                </span>
+                            {% endif %}
+                            <span class="status-badge badge-{{ error_group.errorType }}">
+                                {{ error_group.errorType|title }}
+                            </span>
+                        </div>
+
+                        <p style="color: #64748b; margin: 0 0 1.5rem 0; font-size: 1.1rem; line-height: 1.6;">
+                            {{ error_group.message }}
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; color: #64748b; font-size: 0.875rem;">
+                            <div>
+                                <strong style="color: #374151;">📁 Projet:</strong><br>
+                                <a href="{{ path('dashboard_project', { project: error_group.project }) }}" style="color: #3b82f6; text-decoration: none;">
+                                    {{ error_group.project }}
+                                </a>
+                                {% if error_group.environment %}
+                                    <span style="margin-left: 0.5rem; padding: 0.125rem 0.5rem; background: #f1f5f9; border-radius: 0.25rem; font-size: 0.75rem;">
+                                        {{ error_group.environment }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <strong style="color: #374151;">📍 Fichier:</strong><br>
+                                {{ error_group.file|split('/')|last }}:{{ error_group.line }}
+                            </div>
+                            <div>
+                                <strong style="color: #374151;">🔢 Occurrences:</strong><br>
+                                {{ error_group.occurrenceCount }} au total
+                            </div>
+                            <div>
+                                <strong style="color: #374151;">⏰ Dernière:</strong><br>
+                                {{ error_group.lastSeen|date('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Suggestions Section -->
+    {% if ai_suggestions %}
+        <div class="dashboard-section">
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-container-header">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        Suggestions {{ ai_suggestions.source == 'ai' ? 'IA' : (ai_suggestions.source == 'plan_limitation' or ai_suggestions.source == 'quota_exceeded' ? 'automatiques' : 'automatiques') }}
+                    </h3>
+                    <div class="table-actions">
+                        <button class="filter-btn btn-secondary" onclick="regenerateAiSuggestions({{ error_group.id }})">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Régénérer
+                        </button>
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    {% set suggestions = ai_suggestions.suggestions ?? ai_suggestions %}
+
+                    <!-- Source Badge - simplifié pour les plans sans IA -->
+                    {% if ai_suggestions.source == 'plan_limitation' or ai_suggestions.source == 'quota_exceeded' %}
+                        <!-- Interface simplifiée pour les plans sans IA -->
+                    {% else %}
+                        <!-- Interface complète pour les plans avec IA -->
+                        <div class="dashboard-info-card" style="margin-bottom: 2rem; border-left: 4px solid {{ ai_suggestions.source == 'ai' ? '#0ea5e9' : '#64748b' }};">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    {% if ai_suggestions.source == 'ai' %}
+                                        <svg width="24" height="24" fill="none" stroke="#0ea5e9" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                        </svg>
+                                        <div>
+                                            <div class="table-cell-title" style="color: #0ea5e9;">
+                                                Suggestions générées par Intelligence Artificielle
+                                                {% if ai_suggestions.provider is defined %}
+                                                    <span style="text-transform: uppercase; font-size: 0.75rem; padding: 0.25rem 0.5rem; background: #0ea5e9; color: white; border-radius: 4px; margin-left: 0.5rem;">
+                                                        {{ ai_suggestions.provider }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            {% if ai_suggestions.model is defined %}
+                                                <div class="table-cell-meta">Modèle: {{ ai_suggestions.model }}</div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <svg width="24" height="24" fill="none" stroke="#64748b" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <div>
+                                            <div class="table-cell-title">Suggestions générées par analyse automatique</div>
+                                            <div class="table-cell-meta">Basées sur des règles prédéfinies et patterns d'erreurs</div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="table-cell-meta" style="text-align: right;">
+                                    {% if ai_suggestions.generated_at is defined %}
+                                        {% if ai_suggestions.generated_at.date is defined %}
+                                            {{ ai_suggestions.generated_at.date|date('d/m/Y H:i') }}
+                                        {% else %}
+                                            {{ ai_suggestions.generated_at }}
+                                        {% endif %}
+                                    {% elseif error_group.aiSuggestionsGeneratedAt %}
+                                        {{ error_group.aiSuggestionsGeneratedAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        {{ "now"|date('d/m/Y H:i') }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Severity and Category badges -->
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        {% set severity = suggestions.severity is iterable ? (suggestions.severity|first) : suggestions.severity %}
+                        {% set category = suggestions.category is iterable ? (suggestions.category|first) : suggestions.category %}
+                        <span class="status-badge badge-{{ severity == 'critical' ? 'error' : (severity == 'high' ? 'warning' : 'ignored') }}">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.25rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                            {{ severity|title }}
+                        </span>
+                        <span class="status-badge badge-info">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.25rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                            {{ category|title }}
+                        </span>
+                    </div>
+
+                    <!-- Root Cause -->
+                    <div class="dashboard-info-card" style="border-left: 4px solid #3b82f6; margin-bottom: 2rem;">
+                        <h4 class="table-cell-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Cause probable
+                        </h4>
+                        <p class="table-cell-subtitle" style="margin: 0; line-height: 1.6;">{{ suggestions.root_cause is iterable ? (suggestions.root_cause|join(' ')) : suggestions.root_cause }}</p>
+                    </div>
+
+                    <!-- Immediate Actions -->
+                    {% if suggestions.immediate_actions is defined and suggestions.immediate_actions|length > 0 %}
+                        <div class="dashboard-info-card" style="margin-bottom: 2rem;">
+                            <h4 class="table-cell-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Actions immédiates
+                            </h4>
+                            <ul class="table-cell-subtitle" style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                                {% for action in suggestions.immediate_actions %}
+                                    <li>{{ action }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Solutions -->
+                    {% if suggestions.solutions is defined and suggestions.solutions|length > 0 %}
+                        <div class="dashboard-info-card" style="margin-bottom: 2rem;">
+                            <h4 class="table-cell-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                Solutions proposées
+                            </h4>
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                {% for solution in suggestions.solutions %}
+                                    <div class="dashboard-card" style="padding: 1.5rem;">
+                                        <h5 class="table-cell-title" style="margin: 0 0 0.75rem 0;">{{ solution.title }}</h5>
+                                        <p class="table-cell-subtitle" style="margin: 0 0 1rem 0; line-height: 1.6;">{{ solution.description }}</p>
+                                        {% if solution.code_example is defined %}
+                                            <div class="dashboard-code-block" style="margin-top: 1rem;">
+                                                <div class="dashboard-code-block-header">
+                                                    <span>Exemple de code</span>
+                                                    <button class="copy-btn" onclick="copyCode(this)">
+                                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                                        </svg>
+                                                        Copier
+                                                    </button>
+                                                </div>
+                                                <pre><code>{{ solution.code_example }}</code></pre>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Preventive Measures -->
+                    {% if suggestions.preventive_measures is defined and suggestions.preventive_measures|length > 0 %}
+                        <div class="dashboard-info-card" style="margin-bottom: 2rem;">
+                            <h4 class="table-cell-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                                Mesures préventives
+                            </h4>
+                            <ul class="table-cell-subtitle" style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                                {% for measure in suggestions.preventive_measures %}
+                                    <li>{{ measure }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Similar Issues Keywords -->
+                    {% if suggestions.similar_issues_keywords is defined and suggestions.similar_issues_keywords|length > 0 %}
+                        <div class="dashboard-info-card">
+                            <h4 class="table-cell-title" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                Mots-clés pour recherche
+                            </h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                {% for keyword in suggestions.similar_issues_keywords %}
+                                    <span class="status-badge badge-ignored" style="cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.25rem;" onclick="searchKeyword('{{ keyword }}')" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                        {{ keyword }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- No AI Suggestions -->
+        <div class="dashboard-section">
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-container-header">
+                    <h3>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        Suggestions intelligentes
+                    </h3>
+                    <div class="table-actions">
+                        {% if user.canUseAiSuggestions %}
+                            <button class="filter-btn" onclick="generateAiSuggestions({{ error_group.id }})">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Générer suggestions
+                            </button>
+                        {% else %}
+                            <button class="filter-btn btn-secondary" disabled title="Plan requis pour les suggestions IA">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Plan requis
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="dashboard-empty-state">
+                    {% if not user.canUseAiSuggestions %}
+                        <div class="empty-icon">
+                            <svg width="48" height="48" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <h3>Suggestions IA non disponibles</h3>
+                        {% if not user.plan or not user.plan.hasAiSuggestions %}
+                            <p>Votre plan actuel ({{ user.planName ?? 'Gratuit' }}) ne comprend pas les suggestions IA. Mettez à niveau pour accéder aux suggestions intelligentes.</p>
+                            <div style="margin-top: 1rem;">
+                                <a href="{{ path('pricing') }}" class="filter-btn" style="text-decoration: none;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    Voir les plans
+                                </a>
+                            </div>
+                        {% else %}
+                            <p>Vous avez utilisé {{ user.currentMonthlyAiSuggestions }}/{{ user.plan.maxMonthlyAiSuggestionsLabel }} suggestions IA ce mois-ci.</p>
+                            <div style="margin-top: 1rem;">
+                                <a href="{{ path('pricing') }}" class="filter-btn" style="text-decoration: none;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    Augmenter le quota
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-icon">
+                            <svg width="48" height="48" fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3>Suggestions non générées</h3>
+                        <p>Cliquez sur "Générer suggestions" pour obtenir des recommandations intelligentes pour résoudre cette erreur.</p>
+                        {% if user.plan and user.plan.hasAiSuggestions %}
+                            <div style="margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.875rem;">
+                                <div style="color: #3b82f6; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Quota IA ce mois-ci
+                                </div>
+                                <div style="color: #64748b;">
+                                    {{ user.currentMonthlyAiSuggestions }}/{{ user.plan.maxMonthlyAiSuggestionsLabel }} suggestions utilisées
+                                    {% if user.plan.aiProvider %}
+                                        <br>Provider: {{ user.plan.aiProvider|title }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Chart Section -->
+    {% if occurrence_stats %}
+        <div class="dashboard-section">
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-container-header">
+                    <h3>📈 Tendance des occurrences (30 derniers jours)</h3>
+                    <div class="table-actions">
+                        <button class="filter-btn btn-secondary" onclick="refreshOccurrenceChart()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Actualiser
+                        </button>
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    <canvas id="occurrence-chart" width="100%" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Two Column Layout -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Left Column - Stack Trace & Occurrences -->
+        <div>
+            <!-- Stack Trace -->
+            {% if occurrences|length > 0 and occurrences[0].stackTrace %}
+                <div class="dashboard-section">
+                    <div class="dashboard-code-block">
+                        <div class="dashboard-code-block-header">
+                            <h4>🔍 Stack Trace</h4>
+                            <button class="copy-btn" onclick="copyStackTrace()">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Copier
+                            </button>
+                        </div>
+                        <pre id="stack-trace-content"><code>{{ occurrences[0].stackTrace }}</code></pre>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Occurrences List -->
+            <div class="dashboard-section">
+                <div class="dashboard-table-container">
+                    <div class="dashboard-table-container-header">
+                        <h3>
+                            📝 Occurrences récentes
+                            <span style="color: #64748b; font-weight: 400; font-size: 0.875rem; margin-left: 0.5rem;">
+                                ({{ pagination.total_items }} au total)
+                            </span>
+                        </h3>
+                    </div>
+
+                    {% if occurrences|length > 0 %}
+                        <table class="dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Environnement</th>
+                                <th>URL</th>
+                                <th>Utilisateur</th>
+                                <th>Performance</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for occurrence in occurrences %}
+                                <tr data-occurrence-id="{{ occurrence.id }}">
+                                    <td>
+                                        <div class="table-cell-title">{{ occurrence.createdAt|date('d/m/Y') }}</div>
+                                        <div class="table-cell-meta">{{ occurrence.createdAt|date('H:i:s') }}</div>
+                                    </td>
+                                    <td>
+                                            <span class="status-badge badge-ignored">
+                                                {{ occurrence.environment }}
+                                            </span>
+                                    </td>
+                                    <td>
+                                        {% if occurrence.url %}
+                                            <div class="table-cell-title" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                {{ occurrence.url }}
+                                            </div>
+                                            {% if occurrence.httpMethod %}
+                                                <div class="table-cell-meta">{{ occurrence.httpMethod }}</div>
+                                            {% endif %}
+                                        {% else %}
+                                            <span style="color: #9ca3af;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if occurrence.userId %}
+                                            <div class="table-cell-title">{{ occurrence.userId }}</div>
+                                        {% endif %}
+                                        {% if occurrence.ipAddress %}
+                                            <div class="table-cell-meta">{{ occurrence.ipAddress }}</div>
+                                        {% endif %}
+                                        {% if not occurrence.userId and not occurrence.ipAddress %}
+                                            <span style="color: #9ca3af;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if occurrence.formattedMemoryUsage %}
+                                            <div class="table-cell-subtitle">🧠 {{ occurrence.formattedMemoryUsage }}</div>
+                                        {% endif %}
+                                        {% if occurrence.formattedExecutionTime %}
+                                            <div class="table-cell-subtitle">⏱️ {{ occurrence.formattedExecutionTime }}</div>
+                                        {% endif %}
+                                        {% if not occurrence.formattedMemoryUsage and not occurrence.formattedExecutionTime %}
+                                            <span style="color: #9ca3af;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="action-btn btn-secondary" onclick="toggleOccurrenceDetails({{ occurrence.id }})" title="Voir détails">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Details Row (Hidden by default) -->
+                                <tr id="details-{{ occurrence.id }}" style="display: none;">
+                                    <td colspan="6" style="background: #f8fafc; padding: 1.5rem;">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                            {% if occurrence.request %}
+                                                <div>
+                                                    <h5 style="font-weight: 600; margin: 0 0 1rem 0; color: #374151;">📨 Données de la requête</h5>
+                                                    <div style="font-size: 0.875rem; color: #64748b; line-height: 1.6;">
+                                                        {% if occurrence.request.method is defined %}
+                                                            <div><strong>Méthode:</strong> {{ occurrence.request.method }}</div>
+                                                        {% endif %}
+                                                        {% if occurrence.request.route is defined %}
+                                                            <div><strong>Route:</strong> {{ occurrence.request.route }}</div>
+                                                        {% endif %}
+                                                        {% if occurrence.request.user_agent is defined %}
+                                                            <div><strong>User-Agent:</strong> {{ occurrence.request.user_agent|slice(0, 50) }}...</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if occurrence.server %}
+                                                <div>
+                                                    <h5 style="font-weight: 600; margin: 0 0 1rem 0; color: #374151;">🖥️ Informations serveur</h5>
+                                                    <div style="font-size: 0.875rem; color: #64748b; line-height: 1.6;">
+                                                        {% if occurrence.server.php_version is defined %}
+                                                            <div><strong>PHP:</strong> {{ occurrence.server.php_version }}</div>
+                                                        {% endif %}
+                                                        {% if occurrence.server.server_name is defined %}
+                                                            <div><strong>Serveur:</strong> {{ occurrence.server.server_name }}</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if occurrence.hasUserContext %}
+                                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                                                <h5 style="font-weight: 600; margin: 0 0 1rem 0; color: #374151;">👤 Contexte utilisateur</h5>
+                                                <div style="font-size: 0.875rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 1rem;">
+                                                    {% for key, value in occurrence.userContext %}
+                                                        <div>
+                                                            <strong>{{ key|title }}:</strong>
+                                                            {% if value is iterable %}
+                                                                {{ value|join(', ') }}
+                                                            {% else %}
+                                                                {{ value }}
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="dashboard-empty-state">
+                            <div class="empty-icon">📝</div>
+                            <h3>Aucune occurrence enregistrée</h3>
+                            <p>Les détails des occurrences apparaîtront ici lorsque cette erreur se produira.</p>
+                        </div>
+                    {% endif %}
+
+                    {% if pagination.total_pages > 1 %}
+                        <div class="dashboard-pagination">
+                            {% if pagination.current_page > 1 %}
+                                <a href="{{ path('dashboard_error_detail', { id: error_group.id, page: pagination.current_page - 1 }) }}">
+                                    ← Précédent
+                                </a>
+                            {% endif %}
+
+                            {% for page in range(max(1, pagination.current_page - 2), min(pagination.total_pages, pagination.current_page + 2)) %}
+                                {% if page == pagination.current_page %}
+                                    <span class="current">{{ page }}</span>
+                                {% else %}
+                                    <a href="{{ path('dashboard_error_detail', { id: error_group.id, page: page }) }}">{{ page }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if pagination.current_page < pagination.total_pages %}
+                                <a href="{{ path('dashboard_error_detail', { id: error_group.id, page: pagination.current_page + 1 }) }}">
+                                    Suivant →
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Sidebar Info -->
+        <div>
+            <!-- Info Card -->
+            <div class="dashboard-section">
+                <div class="dashboard-table-container">
+                    <div class="dashboard-table-container-header">
+                        <h3>ℹ️ Informations</h3>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 1.5rem; font-size: 0.875rem;">
+                            <div>
+                                <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">📅 Première occurrence</div>
+                                <div style="color: #64748b;">{{ error_group.firstSeen|date('d/m/Y H:i') }}</div>
+                            </div>
+
+                            <div>
+                                <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">⏰ Dernière occurrence</div>
+                                <div style="color: #64748b;">{{ error_group.lastSeen|date('d/m/Y H:i') }}</div>
+                            </div>
+
+                            <div>
+                                <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">📊 Fréquence</div>
+                                <div style="color: #64748b;">
+                                    {{ error_group.occurrenceCount }} occurrences
+                                    {% set days = date().diff(error_group.firstSeen).days + 1 %}
+                                    {% if days > 0 %}
+                                        <div style="font-size: 0.75rem; margin-top: 0.25rem;">
+                                            ({{ (error_group.occurrenceCount / days)|round(2) }}/jour en moyenne)
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🔍 Fingerprint</div>
+                                <div style="color: #64748b; font-size: 0.75rem; word-break: break-all; background: #f1f5f9; padding: 0.5rem; border-radius: 6px; position: relative;">
+                                    {{ error_group.fingerprint|slice(0, 16) }}...
+                                    <button onclick="copyFingerprint()" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; color: #3b82f6; cursor: pointer; padding: 0.25rem;" title="Copier fingerprint">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="dashboard-section">
+                <div class="dashboard-table-container">
+                    <div class="dashboard-table-container-header">
+                        <h3>⚡ Actions rapides</h3>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button class="filter-btn btn-secondary" onclick="refreshOccurrenceChart()" style="width: 100%; justify-content: center;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Actualiser graphique
+                            </button>
+
+                            <button class="filter-btn btn-secondary" onclick="exportOccurrences()" style="width: 100%; justify-content: center;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Exporter occurrences
+                            </button>
+
+                            <a href="{{ path('dashboard_project', { project: error_group.project }) }}" class="filter-btn btn-secondary" style="width: 100%; justify-content: center; text-decoration: none;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                Voir projet {{ error_group.project }}
+                            </a>
+
+                            <button class="filter-btn btn-secondary" onclick="findSimilarErrors()" style="width: 100%; justify-content: center;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                Erreurs similaires
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Card -->
+            <div class="dashboard-section">
+                <div class="dashboard-table-container">
+                    <div class="dashboard-table-container-header">
+                        <h3>📊 Statistiques</h3>
+                    </div>
+                    <div style="padding: 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem;">
+                            {% if occurrences|length > 0 %}
+                                <div>
+                                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🌍 Environnements touchés</div>
+                                    <div style="color: #64748b;">
+                                        {% set environments = [] %}
+                                        {% for occurrence in occurrences %}
+                                            {% if occurrence.environment not in environments %}
+                                                {% set environments = environments|merge([occurrence.environment]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for env in environments %}
+                                            <span class="status-badge badge-ignored" style="margin-right: 0.5rem; margin-bottom: 0.25rem;">{{ env }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🌐 Dernières IPs</div>
+                                    <div style="color: #64748b; font-size: 0.75rem;">
+                                        {% set ips = [] %}
+                                        {% for occurrence in occurrences|slice(0, 3) %}
+                                            {% if occurrence.ipAddress and occurrence.ipAddress not in ips %}
+                                                {% set ips = ips|merge([occurrence.ipAddress]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ ips|slice(0, 3)|join(', ') }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🏷️ Type d'erreur</div>
+                                <div>
+                                    <span class="status-badge badge-{{ error_group.errorType }}">
+                                        {{ error_group.errorType|title }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actions sur l'erreur
+            window.resolveError = async function(errorId) {
+                const result = await performAction(`{{ path('dashboard_error_resolve', { id: 'ID' })|replace({'ID': ''}) }}${errorId}`);
+                if (result) {
+                    location.reload();
+                }
+            };
+
+            window.ignoreError = async function(errorId) {
+                const result = await performAction(`{{ path('dashboard_error_ignore', { id: 'ID' })|replace({'ID': ''}) }}${errorId}`);
+                if (result) {
+                    location.reload();
+                }
+            };
+
+            window.reopenError = async function(errorId) {
+                const result = await performAction(`{{ path('dashboard_error_reopen', { id: 'ID' })|replace({'ID': ''}) }}${errorId}`);
+                if (result) {
+                    location.reload();
+                }
+            };
+
+            // Toggle des détails d'occurrence
+            window.toggleOccurrenceDetails = function(occurrenceId) {
+                const detailsRow = document.getElementById(`details-${occurrenceId}`);
+                if (detailsRow.style.display === 'none') {
+                    detailsRow.style.display = 'table-row';
+                } else {
+                    detailsRow.style.display = 'none';
+                }
+            };
+
+            // Copier la stack trace
+            window.copyStackTrace = function() {
+                const stackTrace = document.getElementById('stack-trace-content');
+                if (stackTrace) {
+                    copyToClipboard(stackTrace.textContent);
+                }
+            };
+
+            // Copier le fingerprint
+            window.copyFingerprint = function() {
+                copyToClipboard('{{ error_group.fingerprint }}');
+            };
+
+            // Graphique des occurrences
+            {% if occurrence_stats %}
+            function initOccurrenceChart() {
+                const canvas = document.getElementById('occurrence-chart');
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                const stats = {{ occurrence_stats|json_encode|raw }};
+
+                drawSimpleChart(ctx, stats);
+            }
+
+            function drawSimpleChart(ctx, data) {
+                const canvas = ctx.canvas;
+                const width = canvas.width;
+                const height = canvas.height;
+
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+
+                if (!data || data.length === 0) return;
+
+                // Configuration
+                const padding = 60;
+                const chartWidth = width - (padding * 2);
+                const chartHeight = height - (padding * 2);
+
+                // Find min/max values
+                const values = data.map(d => d.count);
+                const maxValue = Math.max(...values, 1);
+
+                // Draw axes
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+
+                // Y axis
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, height - padding);
+                ctx.stroke();
+
+                // X axis
+                ctx.beginPath();
+                ctx.moveTo(padding, height - padding);
+                ctx.lineTo(width - padding, height - padding);
+                ctx.stroke();
+
+                // Draw line chart
+                if (data.length > 1) {
+                    ctx.strokeStyle = '#3b82f6';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+
+                    data.forEach((point, index) => {
+                        const x = padding + (index / (data.length - 1)) * chartWidth;
+                        const y = height - padding - (point.count / maxValue) * chartHeight;
+
+                        if (index === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+
+                    ctx.stroke();
+
+                    // Draw points
+                    ctx.fillStyle = '#3b82f6';
+                    data.forEach((point, index) => {
+                        const x = padding + (index / (data.length - 1)) * chartWidth;
+                        const y = height - padding - (point.count / maxValue) * chartHeight;
+
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                        ctx.fill();
+                    });
+                }
+
+                // Labels
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px Inter, system-ui, sans-serif';
+                ctx.textAlign = 'center';
+
+                // X labels (dates)
+                data.forEach((point, index) => {
+                    if (index % Math.ceil(data.length / 7) === 0) {
+                        const x = padding + (index / (data.length - 1)) * chartWidth;
+                        const date = new Date(point.date);
+                        ctx.fillText(date.getDate() + '/' + (date.getMonth() + 1), x, height - 10);
+                    }
+                });
+
+                // Y label max
+                ctx.textAlign = 'right';
+                ctx.fillText(maxValue.toString(), padding - 10, padding + 5);
+                ctx.fillText('0', padding - 10, height - padding + 5);
+            }
+
+            window.refreshOccurrenceChart = function() {
+                fetch(`{{ path('dashboard_api_occurrence_chart', { id: error_group.id }) }}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const canvas = document.getElementById('occurrence-chart');
+                        if (canvas) {
+                            drawSimpleChart(canvas.getContext('2d'), data);
+                            showNotification('Graphique mis à jour', 'success');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        showNotification('Erreur lors de la mise à jour', 'error');
+                    });
+            };
+
+            // Initialize chart
+            initOccurrenceChart();
+            {% endif %}
+
+            // Actions supplémentaires
+            window.exportOccurrences = function() {
+                showNotification('Export en cours de développement', 'warning');
+            };
+
+            window.findSimilarErrors = function() {
+                const searchUrl = `{{ path('dashboard_index') }}?search={{ error_group.exceptionClass|url_encode }}`;
+                window.open(searchUrl, '_blank');
+            };
+
+            // AI Suggestions functions
+            window.generateAiSuggestions = async function(errorId) {
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+
+                button.disabled = true;
+                button.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="animate-spin"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Génération...';
+
+                try {
+                    const response = await fetch(`{{ path('dashboard_error_generate_suggestions', { id: 'ID' })|replace({'ID': ''}) }}${errorId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showNotification('Suggestions générées avec succès', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification(result.error || 'Erreur lors de la génération', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    showNotification('Erreur lors de la génération des suggestions', 'error');
+                } finally {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            };
+
+            window.regenerateAiSuggestions = function(errorId) {
+                return generateAiSuggestions(errorId);
+            };
+
+            window.copyCode = function(button) {
+                const codeElement = button.parentElement.querySelector('code');
+                if (codeElement) {
+                    copyToClipboard(codeElement.textContent);
+                    const originalText = button.textContent;
+                    button.textContent = 'Copié!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                }
+            };
+
+            window.searchKeyword = function(keyword) {
+                const searchUrl = `{{ path('dashboard_index') }}?search=${encodeURIComponent(keyword)}`;
+                window.open(searchUrl, '_blank');
+            };
+        });
+    </script>
+{% endblock %}

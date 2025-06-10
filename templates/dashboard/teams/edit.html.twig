@@ -1,0 +1,237 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Modifier {{ team.name }} - {{ parent() }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('team_index') }}">Équipes</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('team_show', {slug: team.slug}) }}">{{ team.name }}</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Modifier</span>
+{% endblock %}
+
+{% block page_title %}Modifier l'équipe{% endblock %}
+{% block page_subtitle %}Modifiez les paramètres de {{ team.name }}{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('team_show', {slug: team.slug}) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Retour
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="projects-create-layout">
+        <div class="projects-form-card">
+            <div class="projects-form-header">
+                <h3 class="form-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Paramètres de l'équipe
+                </h3>
+            </div>
+            <div class="projects-form-body">
+                {{ form_start(form, {'attr': {'class': 'form-grid'}}) }}
+                    <div class="form-group full-width">
+                        <label for="{{ form.name.vars.id }}" class="form-label required">
+                            {{ form.name.vars.label }}
+                        </label>
+                        {{ form_widget(form.name, {'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Ex: Équipe Frontend',
+                            'maxlength': 100
+                        }}) }}
+                        <div class="form-help">
+                            Le nom de votre équipe sera visible par tous les membres.
+                        </div>
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="{{ form.description.vars.id }}" class="form-label">
+                            {{ form.description.vars.label }}
+                        </label>
+                        {{ form_widget(form.description, {'attr': {
+                            'class': 'form-textarea',
+                            'placeholder': 'Description de l\'équipe...',
+                            'rows': 3,
+                            'maxlength': 1000
+                        }}) }}
+                        <div class="form-help">
+                            Décrivez brièvement l'objectif et le rôle de cette équipe.
+                        </div>
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.maxMembers.vars.id }}" class="form-label">
+                            {{ form.maxMembers.vars.label }}
+                        </label>
+                        {{ form_widget(form.maxMembers, {'attr': {
+                            'class': 'form-input',
+                            'min': 1,
+                            'max': 50
+                        }}) }}
+                        <div class="form-help">
+                            Actuellement: {{ team.membersCount }} membre{{ team.membersCount > 1 ? 's' : '' }}.
+                        </div>
+                        {{ form_errors(form.maxMembers) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.maxProjects.vars.id }}" class="form-label">
+                            {{ form.maxProjects.vars.label }}
+                        </label>
+                        {{ form_widget(form.maxProjects, {'attr': {
+                            'class': 'form-input',
+                            'min': 1,
+                            'max': 100
+                        }}) }}
+                        <div class="form-help">
+                            Actuellement: {{ team.projectsCount }} projet{{ team.projectsCount > 1 ? 's' : '' }}.
+                        </div>
+                        {{ form_errors(form.maxProjects) }}
+                    </div>
+
+                    <!-- Current Status -->
+                    <div class="dashboard-team-card-stats full-width">
+                        <div class="team-stat">
+                            <div class="team-stat-label">Utilisation membres</div>
+                            <div class="team-stat-value">{{ team.membersCount }}/{{ team.maxMembers }}</div>
+                            <div class="team-stat-bar">
+                                {% set memberPercentage = (team.membersCount / team.maxMembers * 100)|round %}
+                                <div class="team-stat-progress" style="width: {{ memberPercentage }}%"></div>
+                            </div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-label">Utilisation projets</div>
+                            <div class="team-stat-value">{{ team.projectsCount }}/{{ team.maxProjects }}</div>
+                            <div class="team-stat-bar">
+                                {% set projectPercentage = (team.projectsCount / team.maxProjects * 100)|round %}
+                                <div class="team-stat-progress" style="width: {{ projectPercentage }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warnings -->
+                    {% if form.vars.data.maxMembers < team.membersCount %}
+                        <div class="dashboard-info-box full-width" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.1);">
+                            <div class="dashboard-info-icon" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                                </svg>
+                            </div>
+                            <div class="dashboard-info-content">
+                                <h4>Attention !</h4>
+                                <p>Vous tentez de réduire la limite de membres en dessous du nombre actuel. 
+                                Cela peut empêcher l'ajout de nouveaux membres jusqu'à ce que des membres existants soient retirés.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if form.vars.data.maxProjects < team.projectsCount %}
+                        <div class="dashboard-info-box full-width" style="background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.1);">
+                            <div class="dashboard-info-icon" style="background: rgba(245, 158, 11, 0.1); color: #d97706;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                                </svg>
+                            </div>
+                            <div class="dashboard-info-content">
+                                <h4>Attention !</h4>
+                                <p>Vous tentez de réduire la limite de projets en dessous du nombre actuel. 
+                                Cela peut empêcher l'ajout de nouveaux projets jusqu'à ce que des projets existants soient retirés.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="form-actions full-width">
+                        <a href="{{ path('team_show', {slug: team.slug}) }}" class="header-btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="header-btn btn-primary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                            </svg>
+                            Sauvegarder les modifications
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="projects-preview-sidebar">
+            <div class="projects-info-card">
+                <div class="info-header">
+                    <h3 class="info-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Informations de l'équipe
+                    </h3>
+                </div>
+                <div class="info-body">
+                    <div class="info-items">
+                        <div class="info-item info-info">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Propriétaire
+                            </div>
+                            <div class="info-item-text">{{ team.owner.fullName }}</div>
+                        </div>
+
+                        <div class="info-item info-success">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Statut
+                            </div>
+                            <div class="info-item-text">
+                                {% if team.isActive %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="info-item info-warning">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Créée le
+                            </div>
+                            <div class="info-item-text">{{ team.createdAt|date('d/m/Y à H:i') }}</div>
+                        </div>
+
+                        <div class="info-item info-info">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                                Slug
+                            </div>
+                            <div class="info-item-text"><code>{{ team.slug }}</code></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

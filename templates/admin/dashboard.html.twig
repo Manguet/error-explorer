@@ -1,0 +1,339 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard Administration - Error Explorer{% endblock %}
+
+{% block body %}
+    <div class="stats-grid">
+        <div class="stat-card users">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.users.total_users }}</div>
+                    <div class="stat-label">Utilisateurs totaux</div>
+                </div>
+            </div>
+            <div class="stat-change positive">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23,6 13.5,15.5 8.5,10.5 1,18"></polyline>
+                </svg>
+                {{ stats.users.active_users }} actifs
+            </div>
+        </div>
+
+        <div class="stat-card plans">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.plans.user_distribution|length }}</div>
+                    <div class="stat-label">Plans disponibles</div>
+                </div>
+            </div>
+            <div class="stat-change neutral">{{ stats.usage.total_users }} abonnés</div>
+        </div>
+
+        <div class="stat-card errors">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.errors.total_groups | number_format }}</div>
+                    <div class="stat-label">Erreurs trackées</div>
+                </div>
+            </div>
+            <div class="stat-change neutral">{{ stats.errors.total_projects }} projets</div>
+        </div>
+
+        <div class="stat-card limits">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.usage.users_over_error_limit }}</div>
+                    <div class="stat-label">Utilisateurs en limite</div>
+                </div>
+            </div>
+            <div class="stat-change negative">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1,18 8.5,10.5 13.5,15.5 23,6"></polyline>
+                </svg>
+                {{ stats.errors.expired_plans }} plans expirés
+            </div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <div class="section-header">
+            <h3 class="section-title">Utilisateurs récents</h3>
+            <a href="/admin/users" class="btn btn-primary btn-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Voir tous
+            </a>
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Plan</th>
+                    <th>Projets</th>
+                    <th>Erreurs/mois</th>
+                    <th>Inscription</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in recent_users %}
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar-table">{{ user.firstName|slice(0, 1) }}{{ user.lastName|slice(0, 1) }}</div>
+                                <div class="user-details">
+                                    <div class="user-name">{{ user.firstName }}{{ user.lastName }}</div>
+                                    <div class="user-email">{{ user.email }}</div>
+                                    <div class="user-company">{{ user.company }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ user.plan.isFree ? 'secondary' : 'success' }}">{{ user.plan.name }}</span>
+                        </td>
+                        <td>{{ user.currentProjectsCount }}</td>
+                        <td>{{ user.currentMonthlyErrors | number_format }}</td>
+                        <td>{{ user.createdAt | date('d/m/Y') }}</td>
+                        <td>
+                            <span class="badge badge-{{ user.isActive ? 'success' : 'danger' }}">{{ user.isActive ? 'Actif' : 'Inactif' }}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ path('admin_users_show', { 'id' : user.id }) }}" class="btn btn-secondary btn-sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </a>
+                                <a href="{{ path('admin_users_edit', { 'id' : user.id }) }}" class="btn btn-secondary btn-sm">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-container">
+            <h3 class="chart-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                    <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                </svg>
+                Répartition par plan
+            </h3>
+            <div class="chart-wrapper">
+                <canvas id="plansChart"></canvas>
+            </div>
+            <div class="chart-stats">
+                {% for plan_stat in stats.plans.user_distribution %}
+                    <div class="chart-stat">
+                        <div class="chart-stat-value">{{ plan_stat.user_count }}</div>
+                        <div class="chart-stat-label">{{ plan_stat.name }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Usage des limites
+            </h3>
+            <div class="chart-wrapper">
+                <canvas id="usageChart"></canvas>
+            </div>
+            <div class="chart-stats">
+                <div class="chart-stat">
+                    <div class="chart-stat-value">{{ stats.usage.users_over_project_limit }}</div>
+                    <div class="chart-stat-label">Limite projets</div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-value">{{ stats.usage.users_over_error_limit }}</div>
+                    <div class="chart-stat-label">Limite erreurs</div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-value">{{ stats.usage.users_with_expired_plan }}</div>
+                    <div class="chart-stat-label">Plans expirés</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration globale Chart.js
+            Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            Chart.defaults.font.size = 12;
+            Chart.defaults.color = '#64748b';
+
+            // Couleurs modernes
+            const colors = {
+                primary: '#3b82f6',
+                success: '#10b981',
+                warning: '#f59e0b',
+                danger: '#ef4444',
+                secondary: '#64748b',
+                info: '#06b6d4'
+            };
+
+            // Données depuis Symfony
+            const plansData = {{ stats.plans.user_distribution|json_encode|raw }};
+            const usageData = {{ stats.usage|json_encode|raw }};
+
+            // Graphique 1: Répartition par plan (Doughnut)
+            if (document.getElementById('plansChart')) {
+                const plansChart = new Chart(document.getElementById('plansChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: plansData.map(plan => plan.name),
+                        datasets: [{
+                            data: plansData.map(plan => plan.user_count),
+                            backgroundColor: [
+                                colors.secondary,
+                                colors.primary,
+                                colors.success,
+                                colors.warning,
+                                colors.danger
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: 'white',
+                                bodyColor: 'white',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + ' utilisateurs';
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            animateRotate: true,
+                            duration: 1000
+                        }
+                    }
+                });
+            }
+
+            // Graphique 2: Usage des limites (Bar)
+            if (document.getElementById('usageChart')) {
+                const usageChart = new Chart(document.getElementById('usageChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Projets', 'Erreurs/mois', 'Plans expirés'],
+                        datasets: [{
+                            label: 'Utilisateurs concernés',
+                            data: [
+                                usageData.users_over_project_limit || 0,
+                                usageData.users_over_error_limit || 0,
+                                usageData.users_with_expired_plan || 0
+                            ],
+                            backgroundColor: [colors.primary, colors.warning, colors.danger],
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: 'white',
+                                bodyColor: 'white',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f1f5f9'
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

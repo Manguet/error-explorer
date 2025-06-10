@@ -1,0 +1,574 @@
+.pricing {
+  padding: 6rem 2rem;
+  background: $black;
+  color: $white;
+  position: relative;
+  overflow: hidden;
+
+  // Grille tech animée en arrière-plan (cohérent avec le hero)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridFloat 25s linear infinite;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@keyframes gridFloat {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(40px, 40px); }
+}
+
+// Header de section
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  h2 {
+    font-family: $font-heading;
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, $white, #f0fdf4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: slideInDown 0.8s ease-out;
+  }
+
+  p {
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    color: $white-semi;
+    animation: slideInUp 0.8s ease-out 0.2s both;
+  }
+}
+
+// Grille des cartes pricing
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+// Cartes individuelles
+.pricing-card {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 20px;
+  padding: 2rem;
+  @include smooth-transition(all, 0.3s, ease);
+  position: relative;
+  overflow: hidden;
+
+  // Animation d'entrée séquentielle
+  opacity: 0;
+  transform: translateY(30px);
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation: cardSlideIn 0.6s ease-out #{0.4 + ($i * 0.1)}s forwards;
+    }
+  }
+
+  // Effet de hover
+  &:hover {
+    border-color: $primary-blue;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    transform: translateY(-5px);
+
+    .usage-fill {
+      animation: usageDemo 2s ease-in-out;
+    }
+  }
+
+  // Ligne de glow en haut
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primary-blue, transparent);
+    opacity: 0;
+    @include smooth-transition(opacity, 0.3s, ease);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  // Style pour la carte populaire
+  &.popular {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+    transform: scale(1.02);
+
+    &::before {
+      background: linear-gradient(90deg, transparent, #10b981, transparent);
+      opacity: 1;
+    }
+
+    &:hover {
+      border-color: #10b981;
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.2);
+      transform: scale(1.02) translateY(-8px);
+    }
+  }
+}
+
+@keyframes cardSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Header de chaque carte
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+
+  @media screen and (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+.plan-info {
+  flex: 1;
+}
+
+.plan-name {
+  font-family: $font-heading;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $white;
+  margin-bottom: 0.5rem;
+}
+
+.popular-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  animation: badgePulse 2s infinite;
+
+  .badge-icon {
+    font-size: 0.875rem;
+  }
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+.plan-price-container {
+  text-align: right;
+
+  @media screen and (max-width: 480px) {
+    text-align: left;
+  }
+}
+
+.plan-price {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 800;
+  font-family: $font-heading;
+  background: linear-gradient(135deg, $primary-blue, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.plan-price-unit {
+  font-size: 0.875rem;
+  color: $white-semi;
+  margin-top: 0.25rem;
+}
+
+// Description du plan
+.plan-description {
+  color: $white-semi;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+// Métriques principales en grille
+.plan-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin: 1.5rem 0;
+
+  @media screen and (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.metric {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  @include smooth-transition(all, 0.3s, ease);
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+  }
+
+  &.metric-highlighted {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.15);
+
+    &:hover {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .metric-value {
+      color: #10b981;
+    }
+  }
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $primary-blue;
+  font-family: $font-heading;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: $white-semi;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+// Fonctionnalités détaillées
+.plan-features {
+  margin: 2rem 0;
+}
+
+.features-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $white;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: $white-semi;
+  @include smooth-transition(all, 0.2s, ease);
+
+  &:hover {
+    color: $white;
+    padding-left: 0.5rem;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+
+    .feature-check {
+      background: #374151;
+      color: #6b7280;
+    }
+  }
+}
+
+.feature-check {
+  width: 20px;
+  height: 20px;
+  background: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  @include smooth-transition(all, 0.2s, ease);
+}
+
+// Économies annuelles
+.yearly-savings {
+  margin: 1.5rem 0;
+}
+
+.savings-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+
+  .savings-icon {
+    font-size: 1rem;
+  }
+}
+
+// Action button
+.plan-action {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.plan-cta-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  @include smooth-transition(all, 0.3s, cubic-bezier(0.4, 0, 0.2, 1));
+  position: relative;
+  overflow: hidden;
+
+  // Effet de brillance
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &.btn-primary {
+    background: linear-gradient(135deg, $primary-blue, $primary-blue-dark);
+    color: $white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    }
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: $primary-blue;
+    border: 2px solid $primary-blue;
+
+    &:hover {
+      background: $primary-blue;
+      color: $white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+    }
+  }
+}
+
+.plan-note {
+  font-size: 0.75rem;
+  color: $white-semi;
+  margin-top: 0.75rem;
+  line-height: 1.4;
+}
+
+// Indicateur d'usage
+.usage-indicator {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.usage-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.usage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $primary-blue, #8b5cf6);
+  border-radius: 3px;
+  @include smooth-transition(width, 0.8s, ease);
+}
+
+@keyframes usageDemo {
+  0% { width: 0%; }
+  50% { width: 75%; }
+  100% { width: 0%; }
+}
+
+.usage-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: $white-semi;
+  font-weight: 500;
+}
+
+// Animations d'entrée
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive amélioré
+@media screen and (max-width: 1024px) {
+  .pricing {
+    padding: 4rem 1.5rem;
+  }
+
+  .pricing-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .pricing-card.popular {
+    transform: none;
+
+    &:hover {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .pricing {
+    padding: 3rem 1rem;
+  }
+
+  .section-title {
+    margin-bottom: 3rem;
+  }
+
+  .pricing-card {
+    padding: 1.5rem;
+  }
+
+  .plan-metrics {
+    gap: 0.75rem;
+  }
+
+  .metric {
+    padding: 1rem 0.75rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .pricing-grid {
+    gap: 1rem;
+  }
+
+  .pricing-card {
+    padding: 1.25rem;
+  }
+
+  .plan-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .info-item {
+    text-align: center;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.metric,
+.feature-item,
+.plan-cta-btn,
+.usage-fill,
+.popular-badge {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

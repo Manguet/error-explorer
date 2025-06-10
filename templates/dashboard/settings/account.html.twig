@@ -1,0 +1,187 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block page_title %}Paramètres - Compte{% endblock %}
+{% block page_subtitle %}Gérez votre compte et sécurité{% endblock %}
+
+{% block breadcrumb_items %}
+    <span>/</span>
+    <a href="{{ path('dashboard_settings_index') }}">Paramètres</a>
+    <span>/</span>
+    <span class="breadcrumb-current">Compte</span>
+{% endblock %}
+
+{% block body %}
+<div class="settings-layout">
+    <!-- Navigation latérale des paramètres -->
+    <aside class="settings-sidebar">
+        <nav class="settings-nav">
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_index') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Profil</span>
+                </a>
+            </div>
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_notifications') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zm-5.058-3.058a4 4 0 10-2.518 2.518L9 17.5l1.442-1.442z"/>
+                    </svg>
+                    <span>Notifications</span>
+                </a>
+            </div>
+            <div class="settings-nav-item active">
+                <a href="{{ path('dashboard_settings_account') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Compte</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal des paramètres -->
+    <main class="settings-main">
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Informations du compte</h2>
+                <p>Gérez votre compte et informations de sécurité</p>
+            </div>
+
+            <div class="settings-card">
+                <div class="account-info">
+                    <div class="account-detail">
+                        <h3>Adresse email</h3>
+                        <p>{{ user.email }}</p>
+                        <small>Votre adresse email est utilisée pour vous connecter et recevoir les notifications</small>
+                    </div>
+
+                    <div class="account-detail">
+                        <h3>Compte créé</h3>
+                        <p>{{ user.createdAt|date('d F Y à H:i') }}</p>
+                        <small>Date de création de votre compte ErrorExplorer</small>
+                    </div>
+
+                    <div class="account-detail">
+                        <h3>Dernière connexion</h3>
+                        <p>
+                            {% if user.lastLoginAt %}
+                                {{ user.lastLoginAt|date('d F Y à H:i') }}
+                            {% else %}
+                                Jamais
+                            {% endif %}
+                        </p>
+                        <small>Votre dernière activité sur la plateforme</small>
+                    </div>
+
+                    <div class="account-detail">
+                        <h3>Statut du compte</h3>
+                        <div class="status-badges">
+                            {% if user.isVerified %}
+                                <span class="status-badge verified">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Email vérifié
+                                </span>
+                            {% else %}
+                                <span class="status-badge unverified">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                    Email non vérifié
+                                </span>
+                            {% endif %}
+                            
+                            {% if user.isActive %}
+                                <span class="status-badge active">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Compte actif
+                                </span>
+                            {% else %}
+                                <span class="status-badge inactive">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                                    </svg>
+                                    Compte suspendu
+                                </span>
+                            {% endif %}
+                        </div>
+                        <small>Statut de vérification et d'activation de votre compte</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section sécurité -->
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Sécurité</h2>
+                <p>Gérez la sécurité de votre compte</p>
+            </div>
+
+            <div class="settings-card">
+                <div class="security-options">
+                    <div class="security-option">
+                        <div class="security-info">
+                            <h3>Mot de passe</h3>
+                            <p>Changez votre mot de passe pour sécuriser votre compte</p>
+                        </div>
+                        <div class="security-action">
+                            <button class="btn btn-secondary" onclick="alert('Fonctionnalité à venir')">
+                                Changer le mot de passe
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="security-option">
+                        <div class="security-info">
+                            <h3>Sessions actives</h3>
+                            <p>Gérez les appareils connectés à votre compte</p>
+                        </div>
+                        <div class="security-action">
+                            <button class="btn btn-secondary" onclick="alert('Fonctionnalité à venir')">
+                                Voir les sessions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section danger -->
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Zone de danger</h2>
+                <p>Actions irréversibles sur votre compte</p>
+            </div>
+
+            <div class="settings-card danger-zone">
+                <div class="danger-option">
+                    <div class="danger-info">
+                        <h3>Supprimer le compte</h3>
+                        <p>Supprimez définitivement votre compte et toutes vos données. Cette action est irréversible.</p>
+                    </div>
+                    <div class="danger-action">
+                        <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                            Supprimer le compte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+function confirmDeleteAccount() {
+    if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera toutes vos données.')) {
+        alert('Fonctionnalité à venir - Suppression de compte');
+    }
+}
+</script>
+{% endblock %}

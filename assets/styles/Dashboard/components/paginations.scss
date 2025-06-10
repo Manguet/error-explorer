@@ -1,0 +1,33 @@
+.dashboard-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-top: 1px solid $dashboard-border;
+  background: $gray-50;
+
+  a, span {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    color: $dashboard-text;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: $dashboard-transition;
+    background: white;
+
+    &:hover {
+      background: $primary-blue;
+      color: white;
+      border-color: $primary-blue;
+    }
+
+    &.current {
+      background: $primary-blue;
+      color: white;
+      border-color: $primary-blue;
+    }
+  }
+}

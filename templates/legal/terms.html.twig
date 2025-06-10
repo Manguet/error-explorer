@@ -1,0 +1,432 @@
+{% extends('layout/base.html.twig') %}
+
+{% block title %}Conditions Générales d'Utilisation - Error Explorer{% endblock %}
+{% block description %}Consultez les conditions générales d'utilisation d'Error Explorer, notre politique de service et les termes contractuels de notre solution de monitoring d'erreurs.{% endblock %}
+
+{% block body %}
+    <section class="legal-hero">
+        <div class="container">
+            <div class="legal-hero-content">
+                <div class="hero-badge fade-in-up">
+                    <div class="badge-dot"></div>
+                    <span>Conditions d'utilisation</span>
+                </div>
+
+                <h1 class="fade-in-up">
+                    Conditions Générales
+                    <span class="highlight">d'Utilisation</span>
+                </h1>
+
+                <p class="hero-subtitle fade-in-up">
+                    Dernière mise à jour : {{ 'now'|date('d/m/Y') }}
+                </p>
+
+                <div class="legal-nav fade-in-up">
+                    <a href="#definitions" class="legal-nav-link">Définitions</a>
+                    <a href="#service" class="legal-nav-link">Service</a>
+                    <a href="#obligations" class="legal-nav-link">Obligations</a>
+                    <a href="#donnees" class="legal-nav-link">Données</a>
+                    <a href="#responsabilite" class="legal-nav-link">Responsabilité</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-content">
+        <div class="container">
+            <div class="legal-layout">
+                <aside class="legal-sidebar">
+                    <div class="sidebar-sticky">
+                        <h3>Sommaire</h3>
+                        <nav class="legal-toc">
+                            <ul>
+                                <li><a href="#preambule" class="toc-link">Préambule</a></li>
+                                <li><a href="#definitions" class="toc-link">Définitions</a></li>
+                                <li><a href="#objet" class="toc-link">Objet du service</a></li>
+                                <li><a href="#inscription" class="toc-link">Inscription</a></li>
+                                <li><a href="#service" class="toc-link">Utilisation du service</a></li>
+                                <li><a href="#obligations" class="toc-link">Obligations des parties</a></li>
+                                <li><a href="#donnees" class="toc-link">Protection des données</a></li>
+                                <li><a href="#propriete" class="toc-link">Propriété intellectuelle</a></li>
+                                <li><a href="#responsabilite" class="toc-link">Responsabilité</a></li>
+                                <li><a href="#duree" class="toc-link">Durée et résiliation</a></li>
+                                <li><a href="#tarifs" class="toc-link">Tarifs et paiement</a></li>
+                                <li><a href="#support" class="toc-link">Support technique</a></li>
+                                <li><a href="#force-majeure" class="toc-link">Force majeure</a></li>
+                                <li><a href="#dispositions" class="toc-link">Dispositions finales</a></li>
+                            </ul>
+                        </nav>
+
+                        <div class="sidebar-cta">
+                            <h4>Une question ?</h4>
+                            <p>Notre équipe juridique est à votre disposition</p>
+                            <a href="{{ path('contact') }}" class="btn btn-primary btn-sm">
+                                <span>Nous contacter</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="legal-main">
+                    <article class="legal-article">
+                        <section id="preambule" class="legal-section">
+                            <h2>Préambule</h2>
+                            <p>
+                                Les présentes Conditions Générales d'Utilisation (ci-après "CGU") régissent l'utilisation
+                                de la plateforme Error Explorer, service de monitoring et de surveillance d'erreurs pour
+                                applications web, proposé par la société Error Explorer SAS.
+                            </p>
+                            <p>
+                                L'utilisation de notre service implique l'acceptation pleine et entière des présentes CGU.
+                                Si vous n'acceptez pas ces conditions, vous ne devez pas utiliser notre service.
+                            </p>
+                        </section>
+
+                        <section id="definitions" class="legal-section">
+                            <h2>1. Définitions</h2>
+                            <div class="definitions-list">
+                                <div class="definition-item">
+                                    <h3>"Service" ou "Plateforme"</h3>
+                                    <p>Désigne la solution Error Explorer accessible via le site web et ses API, permettant
+                                        le monitoring, la détection, l'analyse et la gestion d'erreurs dans les applications web.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Utilisateur" ou "Client"</h3>
+                                    <p>Désigne toute personne physique ou morale qui utilise le Service, qu'elle soit
+                                        utilisatrice gratuite ou payante.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Error Explorer" ou "Nous"</h3>
+                                    <p>Désigne la société Error Explorer SAS, éditrice du Service.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Compte"</h3>
+                                    <p>Désigne l'espace personnel de l'Utilisateur sur la Plateforme, accessible
+                                        après inscription et authentification.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Données d'Erreur"</h3>
+                                    <p>Désigne l'ensemble des informations techniques transmises par les applications
+                                        de l'Utilisateur concernant les erreurs détectées (stack traces, contexte, métriques).</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="objet" class="legal-section">
+                            <h2>2. Objet du service</h2>
+                            <p>
+                                Error Explorer propose un service de monitoring d'erreurs permettant aux développeurs
+                                et équipes techniques de :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Détecter automatiquement les erreurs dans leurs applications</li>
+                                <li>Recevoir des alertes en temps réel</li>
+                                <li>Analyser les erreurs avec des outils avancés</li>
+                                <li>Suivre la résolution des problèmes</li>
+                                <li>Accéder à des tableaux de bord et statistiques</li>
+                                <li>Intégrer le service avec leurs outils existants</li>
+                            </ul>
+                            <p>
+                                Le Service est fourni en mode SaaS (Software as a Service) et accessible
+                                via une interface web et des API.
+                            </p>
+                        </section>
+
+                        <section id="inscription" class="legal-section">
+                            <h2>3. Inscription et création de compte</h2>
+                            <h3>3.1 Conditions d'inscription</h3>
+                            <p>
+                                L'inscription au Service est ouverte à toute personne physique ou morale.
+                                L'Utilisateur doit fournir des informations exactes, complètes et à jour lors de son inscription.
+                            </p>
+
+                            <h3>3.2 Validation du compte</h3>
+                            <p>
+                                Après inscription, l'Utilisateur reçoit un email de confirmation. L'activation du compte
+                                se fait en cliquant sur le lien de validation.
+                            </p>
+
+                            <h3>3.3 Responsabilité du compte</h3>
+                            <p>
+                                L'Utilisateur est seul responsable de la confidentialité de ses identifiants de connexion
+                                et de toutes les activités qui se déroulent sous son compte.
+                            </p>
+                        </section>
+
+                        <section id="service" class="legal-section">
+                            <h2>4. Utilisation du service</h2>
+                            <h3>4.1 Accès au service</h3>
+                            <p>
+                                Le Service est accessible 24h/24 et 7j/7, sous réserve des opérations de maintenance
+                                programmées ou d'urgence. Nous nous efforçons de maintenir un taux de disponibilité de 99,9%.
+                            </p>
+
+                            <h3>4.2 Limites d'utilisation</h3>
+                            <p>
+                                L'utilisation du Service est soumise aux limites définies par le plan d'abonnement choisi :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Nombre maximum de projets</li>
+                                <li>Volume mensuel d'erreurs traitées</li>
+                                <li>Durée de rétention des données</li>
+                                <li>Fonctionnalités disponibles</li>
+                            </ul>
+
+                            <h3>4.3 Usage acceptable</h3>
+                            <p>L'Utilisateur s'engage à utiliser le Service de manière conforme à sa destination et s'interdit notamment de :</p>
+                            <ul class="legal-list">
+                                <li>Transmettre des données illégales, offensantes ou malveillantes</li>
+                                <li>Tenter de contourner les mesures de sécurité</li>
+                                <li>Surcharger volontairement les serveurs</li>
+                                <li>Revendre l'accès au Service sans autorisation</li>
+                                <li>Utiliser le Service à des fins de spam ou de phishing</li>
+                            </ul>
+                        </section>
+
+                        <section id="obligations" class="legal-section">
+                            <h2>5. Obligations des parties</h2>
+                            <h3>5.1 Obligations d'Error Explorer</h3>
+                            <div class="obligations-grid">
+                                <div class="obligation-item">
+                                    <h4>🛡️ Sécurité</h4>
+                                    <p>Mettre en œuvre les mesures de sécurité appropriées pour protéger les données</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>⚡ Performance</h4>
+                                    <p>Maintenir un niveau de service optimal et une haute disponibilité</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>🔒 Confidentialité</h4>
+                                    <p>Respecter la confidentialité des données transmises par l'Utilisateur</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>📞 Support</h4>
+                                    <p>Fournir un support technique selon les niveaux de service souscrits</p>
+                                </div>
+                            </div>
+
+                            <h3>5.2 Obligations de l'Utilisateur</h3>
+                            <div class="obligations-grid">
+                                <div class="obligation-item">
+                                    <h4>✅ Conformité légale</h4>
+                                    <p>S'assurer que l'utilisation du Service respecte les lois applicables</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>🔐 Sécurité du compte</h4>
+                                    <p>Maintenir la sécurité de ses identifiants et signaler tout usage non autorisé</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>💳 Paiement</h4>
+                                    <p>Régler les sommes dues dans les délais convenus</p>
+                                </div>
+                                <div class="obligation-item">
+                                    <h4>📋 Données personnelles</h4>
+                                    <p>Respecter la réglementation sur la protection des données personnelles</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="donnees" class="legal-section">
+                            <h2>6. Protection des données</h2>
+                            <h3>6.1 Collecte et traitement</h3>
+                            <p>
+                                Les données transmises par l'Utilisateur sont traitées conformément à notre
+                                <a href="{{ path('privacy') }}" class="legal-link">Politique de Confidentialité</a>
+                                et au Règlement Général sur la Protection des Données (RGPD).
+                            </p>
+
+                            <h3>6.2 Localisation des données</h3>
+                            <p>
+                                Les données sont hébergées dans des centres de données situés dans l'Union Européenne,
+                                garantissant le respect de la réglementation européenne sur la protection des données.
+                            </p>
+
+                            <h3>6.3 Durée de conservation</h3>
+                            <p>
+                                Les données d'erreur sont conservées selon la durée définie par le plan d'abonnement.
+                                Les données de compte sont conservées tant que le compte reste actif.
+                            </p>
+                        </section>
+
+                        <section id="propriete" class="legal-section">
+                            <h2>7. Propriété intellectuelle</h2>
+                            <p>
+                                Error Explorer demeure propriétaire de tous les droits de propriété intellectuelle
+                                relatifs au Service, à l'exception des données de l'Utilisateur.
+                            </p>
+                            <p>
+                                L'Utilisateur conserve la propriété de toutes les données qu'il transmet au Service.
+                                Il accorde à Error Explorer une licence limitée pour traiter ces données dans le cadre
+                                de la fourniture du Service.
+                            </p>
+                        </section>
+
+                        <section id="responsabilite" class="legal-section">
+                            <h2>8. Responsabilité et garanties</h2>
+                            <h3>8.1 Limitations de responsabilité</h3>
+                            <p>
+                                Error Explorer ne saurait être tenu responsable des dommages indirects,
+                                accessoires ou consécutifs résultant de l'utilisation ou de l'impossibilité
+                                d'utiliser le Service.
+                            </p>
+
+                            <h3>8.2 Garanties</h3>
+                            <p>
+                                Le Service est fourni "en l'état". Error Explorer ne garantit pas que le Service
+                                sera exempt d'erreurs ou d'interruptions, bien que nous nous efforcions de maintenir
+                                un haut niveau de qualité.
+                            </p>
+
+                            <h3>8.3 Indisponibilité</h3>
+                            <p>
+                                En cas d'indisponibilité prolongée du Service imputable à Error Explorer,
+                                l'Utilisateur pourra prétendre à un crédit de service selon les conditions
+                                définies dans notre SLA (Service Level Agreement).
+                            </p>
+                        </section>
+
+                        <section id="duree" class="legal-section">
+                            <h2>9. Durée et résiliation</h2>
+                            <h3>9.1 Durée</h3>
+                            <p>
+                                Les présentes CGU prennent effet à la date d'inscription de l'Utilisateur
+                                et demeurent en vigueur tant que le compte reste actif.
+                            </p>
+
+                            <h3>9.2 Résiliation par l'Utilisateur</h3>
+                            <p>
+                                L'Utilisateur peut résilier son compte à tout moment depuis son espace personnel
+                                ou en contactant notre support. La résiliation prend effet immédiatement.
+                            </p>
+
+                            <h3>9.3 Résiliation par Error Explorer</h3>
+                            <p>
+                                Error Explorer se réserve le droit de suspendre ou résilier un compte en cas de :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Non-respect des présentes CGU</li>
+                                <li>Non-paiement des sommes dues</li>
+                                <li>Usage abusif ou frauduleux du Service</li>
+                            </ul>
+
+                            <h3>9.4 Conséquences de la résiliation</h3>
+                            <p>
+                                À la résiliation du compte, l'accès au Service est immédiatement suspendu.
+                                Les données sont conservées pendant 30 jours pour permettre une éventuelle récupération,
+                                puis définitivement supprimées.
+                            </p>
+                        </section>
+
+                        <section id="tarifs" class="legal-section">
+                            <h2>10. Tarifs et modalités de paiement</h2>
+                            <h3>10.1 Tarification</h3>
+                            <p>
+                                Les tarifs du Service sont indiqués sur notre site web et peuvent être modifiés.
+                                Toute modification tarifaire sera communiquée 30 jours à l'avance.
+                            </p>
+
+                            <h3>10.2 Modalités de paiement</h3>
+                            <p>
+                                Le paiement s'effectue mensuellement ou annuellement, par carte bancaire
+                                ou virement. La facturation est automatique et récurrente.
+                            </p>
+
+                            <h3>10.3 Défaut de paiement</h3>
+                            <p>
+                                En cas de défaut de paiement, le Service peut être suspendu après un délai de grâce de 7 jours.
+                                Des frais de relance peuvent être appliqués.
+                            </p>
+                        </section>
+
+                        <section id="support" class="legal-section">
+                            <h2>11. Support technique</h2>
+                            <p>
+                                Error Explorer fournit un support technique selon les modalités définies
+                                par le plan d'abonnement :
+                            </p>
+                            <div class="support-levels">
+                                <div class="support-level">
+                                    <h4>Plan Gratuit</h4>
+                                    <p>Support communautaire via forum et documentation</p>
+                                </div>
+                                <div class="support-level">
+                                    <h4>Plan Pro</h4>
+                                    <p>Support email avec réponse sous 4h ouvrées</p>
+                                </div>
+                                <div class="support-level">
+                                    <h4>Plan Enterprise</h4>
+                                    <p>Support prioritaire avec réponse sous 1h</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="force-majeure" class="legal-section">
+                            <h2>12. Force majeure</h2>
+                            <p>
+                                Error Explorer ne saurait être tenu responsable de tout retard ou défaillance
+                                dans l'exécution de ses obligations résultant d'un cas de force majeure tel que
+                                défini par la jurisprudence française.
+                            </p>
+                        </section>
+
+                        <section id="dispositions" class="legal-section">
+                            <h2>13. Dispositions finales</h2>
+                            <h3>13.1 Droit applicable</h3>
+                            <p>
+                                Les présentes CGU sont régies par le droit français. Tout litige sera soumis
+                                à la compétence des tribunaux de Paris.
+                            </p>
+
+                            <h3>13.2 Modification des CGU</h3>
+                            <p>
+                                Error Explorer se réserve le droit de modifier les présentes CGU.
+                                Les modifications prennent effet 30 jours après notification à l'Utilisateur.
+                            </p>
+
+                            <h3>13.3 Divisibilité</h3>
+                            <p>
+                                Si une disposition des présentes CGU est déclarée nulle ou non applicable,
+                                les autres dispositions demeurent en vigueur.
+                            </p>
+
+                            <h3>13.4 Contact</h3>
+                            <p>
+                                Pour toute question relative aux présentes CGU, vous pouvez nous contacter :
+                            </p>
+                            <div class="contact-info">
+                                <p><strong>Error Explorer SAS</strong></p>
+                                <p>123 Avenue de la Technologie<br>75001 Paris, France</p>
+                                <p>Email : <a href="mailto:legal@errorexplorer.com">legal@errorexplorer.com</a></p>
+                                <p>Téléphone : +33 1 23 45 67 89</p>
+                            </div>
+                        </section>
+                    </article>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Des questions sur nos conditions ?</h2>
+                <p>
+                    Notre équipe juridique est disponible pour répondre à toutes vos questions
+                    concernant nos conditions générales d'utilisation.
+                </p>
+
+                <div class="cta-actions">
+                    <a href="{{ path('contact') }}" class="btn btn-primary">
+                        <span>Nous contacter</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="{{ path('privacy') }}" class="btn btn-secondary">
+                        <span>Politique de confidentialité</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

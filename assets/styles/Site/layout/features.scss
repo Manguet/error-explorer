@@ -1,0 +1,454 @@
+// Features page specific styles
+.features-content {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.features-hero {
+  min-height: 70vh;
+  padding-top: 120px;
+
+  .hero-text-centered {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.features-page {
+  padding: 6rem 2rem;
+  background: #f8fafc;
+}
+
+// Feature header with icon
+.feature-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  color: $white;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  &.feature-icon-primary {
+    background: linear-gradient(135deg, $primary-blue, #1d4ed8);
+  }
+
+  &.feature-icon-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  &.feature-icon-purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+
+  &.feature-icon-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+}
+
+// Integrations section
+.integrations-section {
+  padding: 6rem 2rem;
+  background: $black;
+  color: $white;
+
+  .section-title {
+    h2 {
+      color: $white;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+.integrations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.integration-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  @include smooth-transition(all, 0.3s, ease);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  h3 {
+    margin: 1rem 0;
+    color: $white;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+}
+
+.integration-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  color: $white;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+
+    &[stroke] {
+      stroke: currentColor;
+      fill: none;
+    }
+  }
+
+  &.integration-icon-slack {
+    background: #4A154B;
+  }
+
+  &.integration-icon-email {
+    background: #EA4335;
+  }
+
+  &.integration-icon-webhook {
+    background: #FF6B6B;
+  }
+
+  &.integration-icon-api {
+    background: #4F46E5;
+  }
+
+  &.integration-icon-discord {
+    background: #5865F2;
+  }
+
+  &.integration-icon-teams {
+    background: #6264A7;
+  }
+}
+
+.integration-features {
+  list-style: none;
+  text-align: left;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.check-small {
+  color: #10b981;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+// Advanced features section
+.advanced-features {
+  padding: 6rem 2rem;
+  background: #0f172a;
+}
+
+.advanced-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+  margin-top: 4rem;
+}
+
+.advanced-feature-card {
+  background: $white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  @include smooth-transition(all, 0.3s, ease);
+
+  &:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+  }
+}
+
+.advanced-feature-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    margin: 0;
+    color: #1e293b;
+  }
+}
+
+.advanced-feature-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  color: $white;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+  }
+
+  &.advanced-feature-icon-info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+  }
+
+  &.advanced-feature-icon-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  &.advanced-feature-icon-purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+}
+
+.advanced-feature-card {
+  p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+}
+
+.advanced-feature-list {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: #374151;
+  }
+}
+
+.check-advanced {
+  color: #10b981;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+// Features CTA section
+.features-cta {
+  .cta-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .cta-demo-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: $white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .cta-features {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    opacity: 0.8;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+
+  .cta-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+
+    @media screen and (max-width: 768px) {
+      justify-content: center;
+    }
+  }
+
+  .cta-check {
+    color: #10b981;
+    font-weight: bold;
+  }
+}
+
+// Styles pour les SVG dans les mock interfaces
+.mock-line-v2 {
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    vertical-align: middle;
+
+    &[fill="currentColor"] {
+      fill: currentColor;
+      stroke: none;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .features-hero {
+    padding-top: 100px;
+    min-height: 60vh;
+  }
+
+  .features-page,
+  .integrations-section,
+  .advanced-features {
+    padding: 4rem 1.5rem;
+  }
+
+  .integrations-grid,
+  .advanced-features-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .features-hero {
+    padding-top: 80px;
+    min-height: 50vh;
+  }
+
+  .features-page,
+  .integrations-section,
+  .advanced-features {
+    padding: 3rem 1rem;
+  }
+
+  .feature-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .feature-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .integrations-grid,
+  .advanced-features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .integration-card,
+  .advanced-feature-card {
+    padding: 1.5rem;
+  }
+
+  .features-cta {
+    .cta-actions {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+
+      .cta-button,
+      .cta-demo-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .feature-section-v2 {
+    .feature-content-v2,
+    .feature-visual-v2 {
+      text-align: center;
+    }
+  }
+
+  .advanced-feature-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+
+    h3 {
+      margin: 0;
+    }
+  }
+}
