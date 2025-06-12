@@ -37,3 +37,8 @@ yarn-error.log
 ###> error-explorer/sdk ###
 /packages
 ###< error-explorer/sdk ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###

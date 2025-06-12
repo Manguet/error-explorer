@@ -10,7 +10,6 @@
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
-        <!-- 🔧 AJOUT : Configuration du Kernel pour Symfony -->
         <server name="KERNEL_CLASS" value="App\Kernel" force="true" />
     </php>
 
@@ -34,8 +33,6 @@
         </exclude>
     </source>
 
-    <!-- 🔧 AJOUT : Extensions Symfony -->
     <extensions>
-        <bootstrap class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
 </phpunit>

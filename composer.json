@@ -103,8 +103,9 @@
         }
     },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
+        "friendsofphp/php-cs-fixer": "^3.75",
         "phpunit/phpunit": "^11.5",
+        "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",

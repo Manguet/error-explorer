@@ -78,7 +78,19 @@ jobs:
         env:
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
 
-      # 9. Lancer les tests PHPUnit
+      # 9. Vérifier la qualité du code avec PHP CS Fixer
+      - name: 🎨 Vérifier le style de code (PHP CS Fixer)
+        run: |
+          # Installer PHP CS Fixer s'il n'est pas déjà installé
+          if [ ! -f "vendor/bin/php-cs-fixer" ]; then
+            composer require --dev friendsofphp/php-cs-fixer
+          fi
+          
+          # Vérifier le code (dry-run = ne corrige pas, juste signale)
+          vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+        continue-on-error: true  # Continue même si le style n'est pas parfait
+
+      # 10. Lancer les vrais tests PHPUnit
       - name: 🧪 Lancer les tests PHPUnit
         run: |
           # D'abord vérifier que Symfony fonctionne
