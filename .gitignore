@@ -36,3 +36,4 @@ yarn-error.log
 ###> error-explorer/sdk ###
 /packages
 ###< error-explorer/sdk ###
+.env
