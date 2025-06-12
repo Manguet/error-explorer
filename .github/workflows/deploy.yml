@@ -44,7 +44,7 @@ jobs:
       # 4. Installer les dépendances pour le build
       - name: 📦 Install dependencies
         run: |
-          composer install --no-dev --optimize-autoloader --no-interaction
+          composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
           npm ci --omit=dev
 
       # 5. Build des assets
