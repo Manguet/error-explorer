@@ -1,0 +1,103 @@
+name: 🚀 Deploy via FTP to o2Switch
+
+on:
+  workflow_run:
+    workflows: ["Tests & Quality Check"]
+    types:
+      - completed
+    branches: [main]
+
+env:
+  PHP_VERSION: '8.2'
+  NODE_VERSION: '18'
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to error-explorer.com (FTP)
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      # 1. Récupérer le code
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Installer PHP
+      - name: 🐘 Setup PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, pdo, zip
+
+      # 3. Installer Node.js
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # 4. Installer les dépendances
+      - name: 📦 Install dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+          npm ci
+
+      # 5. Build des assets
+      - name: 🔨 Build production assets
+        run: npm run build
+
+      # 6. Vérifier les fichiers buildés
+      - name: 🔍 Check build files
+        run: |
+          echo "Fichiers dans public/build:"
+          ls -la public/build/ || echo "Pas de dossier build"
+          
+          echo "Structure du projet:"
+          find . -name "*.php" -o -name "*.js" -o -name "*.css" | head -20
+
+      # 7. Déploiement FTP
+      - name: 📤 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./
+          server-dir: /public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/tests/**
+            **/var/cache/**
+            **/var/log/**
+            **/.env.local
+            **/.env.test
+            **/.env.dev
+            **/phpunit.xml.dist
+            **/.php-cs-fixer.*
+            **/webpack.config.js
+            **/package*.json
+            **/package-lock.json
+            **/README.md
+            **/.github/**
+            **/.gitignore
+            **/composer.lock
+            **/symfony.lock
+
+      # 8. Post-deployment
+      - name: 🧹 Post-deployment cleanup
+        run: |
+          echo "✅ Fichiers déployés via FTP"
+          echo "🌐 Site: https://error-explorer.com"
+          echo "📅 Déployé le: $(date)"
+
+      # 9. Notification de succès
+      - name: 🎉 Deployment successful
+        run: |
+          echo "🎉 Déploiement FTP terminé avec succès!"
+          echo "🌐 Votre site est maintenant à jour sur: https://error-explorer.com"
+          echo "📦 Fichiers synchronisés via FTP vers o2Switch"
