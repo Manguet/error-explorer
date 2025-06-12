@@ -269,6 +269,17 @@
                         </label>
 
                         <label class="feature-checkbox">
+                            {{ form_widget(form.hasAdvancedAnalytics) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" stroke-width="2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 20H4V4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M4 16.5L12 9L15 12L19.5 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                {{ form.hasAdvancedAnalytics.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
                             {{ form_widget(form.hasPrioritySupport) }}
                             <div class="feature-content">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

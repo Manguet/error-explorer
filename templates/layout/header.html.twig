@@ -6,17 +6,10 @@
         </a>
 
         <ul class="nav-links">
-            <li><a href="#features" data-scroll="features">Fonctionnalités</a></li>
-            <li><a href="#pricing" data-scroll="pricing">Tarifs</a></li>
+            <li><a href="{{ path('features') }}">Fonctionnalités</a></li>
+            <li><a href="{{ path('pricing') }}">Tarifs</a></li>
             <li><a href="{{ path('demo') }}" target="_blank">Démo</a></li>
             <li><a href="{{ path('api_docs') }}" target="_blank">API</a></li>
-            <li><a href="{{ path('about') }}">À propos</a></li>
-            <li>
-                <div class="live-indicator" id="live-status">
-                    <div class="live-dot"></div>
-                    <span>Live</span>
-                </div>
-            </li>
         </ul>
 
         <div class="nav-actions">
@@ -40,11 +33,10 @@
 
     <div class="mobile-menu" id="mobile-menu" style="display: none;">
         <div class="mobile-menu-content">
-            <a href="#features" data-scroll="features">Fonctionnalités</a>
-            <a href="#pricing" data-scroll="pricing">Tarifs</a>
+            <a href="{{ path('features') }}">Fonctionnalités</a>
+            <a href="{{ path('pricing') }}">Tarifs</a>
             <a href="{{ path('demo') }}">Démo</a>
             <a href="{{ path('api_docs') }}">API</a>
-            <a href="{{ path('about') }}">À propos</a>
             <div class="mobile-menu-actions">
                 <a href="{{ path('app_login') }}" class="btn btn-secondary">Connexion</a>
                 <a href="{{ path('app_register') }}" class="btn btn-primary">Essai gratuit</a>

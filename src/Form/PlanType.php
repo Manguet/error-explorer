@@ -224,6 +224,15 @@ class PlanType extends AbstractType
                 ]
             ])
 
+            ->add('hasAdvancedAnalytics', CheckboxType::class, [
+                'label' => 'Analytique avancée',
+                'required' => false,
+                'attr' => [
+                    'onchange' => 'updatePreview()',
+                    'class' => 'form-checkbox'
+                ]
+            ])
+
             ->add('hasPrioritySupport', CheckboxType::class, [
                 'label' => 'Support prioritaire',
                 'required' => false,

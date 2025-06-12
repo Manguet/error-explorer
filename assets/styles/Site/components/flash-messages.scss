@@ -1,0 +1,35 @@
+.flash-message{
+  position: absolute;
+  top: 120px;
+  right: 20px;
+  max-width: 250px;
+  z-index: 99;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  @include smooth-transition(all, $transition-normal, $ease-in-out);
+
+  &.flash-success {
+      background: $success-green;
+      color: $white;
+      @include gradient-success();
+  }
+
+  &.flash-error {
+      background: $error-red;
+      color: $white;
+      @include gradient-error();
+  }
+
+  &.flash-info {
+      background: $primary-blue;
+      color: $white;
+      @include gradient-info();
+  }
+
+  &.flash-warning {
+      background: $warning-yellow;
+      color: $black;
+      @include gradient-warning();
+  }
+}

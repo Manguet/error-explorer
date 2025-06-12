@@ -230,13 +230,7 @@ class CreateSuperAdminCommand extends Command
             ->setDataRetentionDays(365)
             ->setIsActive(true)
             ->setSortOrder(999)
-            ->setFeatures([
-                'Projets illimités',
-                'Erreurs illimitées',
-                'Toutes les fonctionnalités',
-                'Accès administration',
-                'Support prioritaire'
-            ]);
+            ->setFeatures('');
 
         $this->entityManager->persist($plan);
 

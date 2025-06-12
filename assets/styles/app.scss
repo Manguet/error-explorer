@@ -2,6 +2,7 @@
 @import './Site/base';
 
 @import './Site/components/buttons';
+@import './Site/components/flash-messages';
 
 @import './Site/utils/animations';
 
@@ -12,7 +13,9 @@
 @import './Site/layout/features';
 @import './Site/layout/integration';
 @import './Site/layout/legals';
+@import './Site/layout/login';
 @import './Site/layout/pricing';
+@import './Site/layout/welcome';
 
 @import './Site/sections/hero';
 @import './Site/sections/features';

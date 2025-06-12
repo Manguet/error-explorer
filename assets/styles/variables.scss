@@ -123,6 +123,18 @@ $ease-out: cubic-bezier(0, 0, 0.2, 1);
   background: linear-gradient(135deg, $success-green, #047857);
 }
 
+@mixin gradient-error() {
+  background: linear-gradient(135deg, $error-red, #b91c1c);
+}
+
+@mixin gradient-info() {
+  background: linear-gradient(135deg, $primary-blue, $secondary-blue);
+}
+
+@mixin gradient-warning() {
+  background: linear-gradient(135deg, $warning-yellow, $warning-yellow-light);
+}
+
 @mixin gradient-hero() {
   background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-dark 100%);
 }

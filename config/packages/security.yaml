@@ -29,19 +29,11 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            pattern: ^/
-
-            # Formulaire de connexion
             form_login:
                 login_path: app_login
                 check_path: app_login
+                enable_csrf: true
                 default_target_path: dashboard_index
-                always_use_default_target_path: false
-                use_referer: true
-                username_parameter: _username
-                password_parameter: _password
-
-            # Déconnexion
             logout:
                 path: app_logout
                 target: home
@@ -49,14 +41,9 @@ security:
             # Remember me
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800 # 1 semaine
+                lifetime: 604800
                 path: /
                 always_remember_me: true
-
-    # Hiérarchie des rôles
-    role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_USER]
 
     # Easy way to control access for large sections of your site
     access_control:
@@ -65,6 +52,10 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }
+        - { path: ^/resend-verification, roles: PUBLIC_ACCESS }
+        - { path: ^/api/validate-email, roles: PUBLIC_ACCESS }
         - { path: ^/pricing, roles: PUBLIC_ACCESS }
         - { path: ^/features, roles: PUBLIC_ACCESS }
         - { path: ^/about, roles: PUBLIC_ACCESS }
@@ -72,6 +63,7 @@ security:
         - { path: ^/demo, roles: PUBLIC_ACCESS }
         - { path: ^/terms, roles: PUBLIC_ACCESS }
         - { path: ^/privacy, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: PUBLIC_ACCESS }
 
         # Webhooks publics (avec validation de token dans le contrôleur)
         - { path: ^/webhook, roles: PUBLIC_ACCESS }
@@ -83,10 +75,14 @@ security:
         # Dashboard et projets - nécessite une connexion
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/projects, roles: ROLE_USER }
-        - { path: ^/api, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
 
         # Administration - nécessite le rôle admin
         - { path: ^/admin, roles: ROLE_ADMIN }
+
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
 when@test:
     security:

@@ -87,6 +87,14 @@
   font-family: $font-heading;
   font-weight: 800;
   letter-spacing: -0.02em;
+
+  @media screen and (max-width: 1200px) {
+    display: none;
+  }
+
+  @media screen and (max-width: 920px) {
+    display: block;
+  }
 }
 
 // Navigation avec effets modernes
@@ -184,6 +192,15 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+
+  .btn{
+    max-width: 185px !important;
+    min-width: 150px !important;
+
+    @media screen and (max-width: 920px) {
+      display: none !important;
+    }
+  }
 }
 
 // Boutons - Imbrication limitée à 2 niveaux
@@ -243,12 +260,6 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
   }
-
-  @include responsive('lg') {
-    span {
-      display: none;
-    }
-  }
 }
 
 // Menu mobile amélioré
@@ -279,7 +290,7 @@
 
   &.active {
     span:nth-child(1) {
-      transform: rotate(45deg) translate(8px, 8px);
+      transform: rotate(45deg) translate(4px, 4px);
     }
 
     span:nth-child(2) {
@@ -288,7 +299,7 @@
     }
 
     span:nth-child(3) {
-      transform: rotate(-45deg) translate(8px, -8px);
+      transform: rotate(-45deg) translate(6px, -6px);
     }
   }
 }

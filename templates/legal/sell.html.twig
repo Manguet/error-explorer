@@ -1,0 +1,516 @@
+{% extends('layout/base.html.twig') %}
+
+{% block title %}Conditions Générales de Vente - Error Explorer{% endblock %}
+{% block description %}Découvrez les conditions générales de vente d'Error Explorer, nos modalités commerciales, tarifs et conditions d'abonnement à notre solution de monitoring d'erreurs.{% endblock %}
+
+{% block body %}
+    <section class="legal-hero">
+        <div class="container">
+            <div class="legal-hero-content">
+                <div class="hero-badge fade-in-up">
+                    <div class="badge-dot"></div>
+                    <span>Conditions commerciales</span>
+                </div>
+
+                <h1 class="fade-in-up">
+                    Conditions Générales
+                    <span class="highlight">de Vente</span>
+                </h1>
+
+                <p class="hero-subtitle fade-in-up">
+                    Dernière mise à jour : {{ 'now'|date('d/m/Y') }}
+                </p>
+
+                <div class="legal-nav fade-in-up">
+                    <a href="#offres" class="legal-nav-link">Offres</a>
+                    <a href="#commande" class="legal-nav-link">Commande</a>
+                    <a href="#paiement" class="legal-nav-link">Paiement</a>
+                    <a href="#livraison" class="legal-nav-link">Livraison</a>
+                    <a href="#remboursement" class="legal-nav-link">Remboursement</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-content">
+        <div class="container">
+            <div class="legal-layout">
+                <aside class="legal-sidebar">
+                    <div class="sidebar-sticky">
+                        <h3>Sommaire</h3>
+                        <nav class="legal-toc">
+                            <ul>
+                                <li><a href="#preambule" class="toc-link">Préambule</a></li>
+                                <li><a href="#definitions" class="toc-link">Définitions</a></li>
+                                <li><a href="#vendeur" class="toc-link">Informations vendeur</a></li>
+                                <li><a href="#offres" class="toc-link">Offres et services</a></li>
+                                <li><a href="#commande" class="toc-link">Processus de commande</a></li>
+                                <li><a href="#prix" class="toc-link">Prix et tarification</a></li>
+                                <li><a href="#paiement" class="toc-link">Modalités de paiement</a></li>
+                                <li><a href="#livraison" class="toc-link">Livraison du service</a></li>
+                                <li><a href="#retractation" class="toc-link">Droit de rétractation</a></li>
+                                <li><a href="#remboursement" class="toc-link">Remboursement</a></li>
+                                <li><a href="#garanties" class="toc-link">Garanties</a></li>
+                                <li><a href="#facturation" class="toc-link">Facturation</a></li>
+                                <li><a href="#modification" class="toc-link">Modification d'abonnement</a></li>
+                                <li><a href="#resiliation" class="toc-link">Résiliation</a></li>
+                                <li><a href="#litige" class="toc-link">Règlement des litiges</a></li>
+                            </ul>
+                        </nav>
+
+                        <div class="pricing-badge">
+                            <div class="badge-icon">💰</div>
+                            <div class="badge-content">
+                                <h4>Tarification transparente</h4>
+                                <p>Pas de coûts cachés, pas d'engagement long terme pour débuter.</p>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-cta">
+                            <h4>Questions commerciales</h4>
+                            <p>Notre équipe commerciale est à votre écoute</p>
+                            <a href="mailto:sales@errorexplorer.com" class="btn btn-primary btn-sm">
+                                <span>Nous contacter</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="legal-main">
+                    <article class="legal-article">
+                        <section id="preambule" class="legal-section">
+                            <h2>Préambule</h2>
+                            <p>
+                                Les présentes Conditions Générales de Vente (ci-après "CGV") s'appliquent à tous les
+                                achats de services effectués sur la plateforme Error Explorer. Elles complètent nos
+                                Conditions Générales d'Utilisation et définissent les modalités commerciales de nos
+                                offres d'abonnement.
+                            </p>
+                            <p>
+                                Toute commande implique l'acceptation pleine et entière des présentes CGV.
+                                Ces conditions prévalent sur tout autre document commercial.
+                            </p>
+                        </section>
+
+                        <section id="definitions" class="legal-section">
+                            <h2>1. Définitions</h2>
+                            <div class="definitions-list">
+                                <div class="definition-item">
+                                    <h3>"Vendeur"</h3>
+                                    <p>Désigne Error Explorer SAS, société éditrice de la plateforme de monitoring d'erreurs.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Client" ou "Acheteur"</h3>
+                                    <p>Désigne toute personne physique ou morale effectuant un achat sur la plateforme.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Service"</h3>
+                                    <p>Désigne l'ensemble des fonctionnalités de monitoring d'erreurs fournies selon le plan d'abonnement choisi.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Abonnement"</h3>
+                                    <p>Désigne le contrat de fourniture de service à durée déterminée ou indéterminée selon la formule choisie.</p>
+                                </div>
+                                <div class="definition-item">
+                                    <h3>"Commande"</h3>
+                                    <p>Désigne l'acte par lequel le Client demande l'activation d'un abonnement au Service.</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="vendeur" class="legal-section">
+                            <h2>2. Informations sur le vendeur</h2>
+                            <div class="company-info">
+                                <h3>Error Explorer SAS</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <h4>Siège social</h4>
+                                        <p>123 Avenue de la Technologie<br>75001 Paris, France</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>SIRET</h4>
+                                        <p>123 456 789 00012</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>TVA intracommunautaire</h4>
+                                        <p>FR12345678901</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>Capital social</h4>
+                                        <p>100 000 €</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>Email commercial</h4>
+                                        <p><a href="mailto:sales@errorexplorer.com">sales@errorexplorer.com</a></p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>Téléphone</h4>
+                                        <p>+33 1 23 45 67 89</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="offres" class="legal-section">
+                            <h2>3. Offres et services</h2>
+                            <p>Error Explorer propose plusieurs formules d'abonnement adaptées aux besoins de chaque type d'utilisateur :</p>
+                            <p class="service-note">
+                                Les fonctionnalités et limites de chaque plan sont détaillées sur notre page tarifs
+                                et peuvent évoluer. Les améliorations sont généralement incluses sans surcoût.
+                            </p>
+                        </section>
+
+                        <section id="commande" class="legal-section">
+                            <h2>4. Processus de commande</h2>
+                            <h3>4.1 Sélection de l'offre</h3>
+                            <p>
+                                Le Client choisit son plan d'abonnement sur notre site web ou via notre équipe commerciale
+                                pour les plans Enterprise. Chaque offre est clairement décrite avec ses fonctionnalités et limitations.
+                            </p>
+
+                            <h3>4.2 Validation de la commande</h3>
+                            <div class="order-steps">
+                                <div class="step-item">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h4>Sélection du plan</h4>
+                                        <p>Choix du plan d'abonnement et de la périodicité (mensuel/annuel)</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h4>Informations de facturation</h4>
+                                        <p>Saisie des coordonnées de facturation et informations de paiement</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h4>Confirmation</h4>
+                                        <p>Vérification et validation définitive de la commande</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h4>Activation</h4>
+                                        <p>Activation immédiate du service après validation du paiement</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3>4.3 Confirmation de commande</h3>
+                            <p>
+                                Une confirmation de commande est envoyée par email avec les détails de l'abonnement,
+                                la facture et les informations d'accès au service.
+                            </p>
+                        </section>
+
+                        <section id="prix" class="legal-section">
+                            <h2>5. Prix et tarification</h2>
+                            <h3>5.1 Prix affichés</h3>
+                            <p>
+                                Tous les prix sont affichés en euros (EUR) et s'entendent toutes taxes comprises (TTC)
+                                pour les clients particuliers français, et hors taxes (HT) pour les clients professionnels
+                                avec numéro de TVA valide.
+                            </p>
+
+                            <h3>5.2 TVA</h3>
+                            <p>
+                                La TVA applicable est celle en vigueur au moment de la commande selon la localisation
+                                du Client et la réglementation européenne :
+                            </p>
+                            <ul class="legal-list">
+                                <li><strong>France :</strong> TVA à 20%</li>
+                                <li><strong>Union Européenne (B2B) :</strong> Auto-liquidation de la TVA</li>
+                                <li><strong>Union Européenne (B2C) :</strong> TVA du pays de résidence</li>
+                                <li><strong>Hors UE :</strong> Exonération de TVA française</li>
+                            </ul>
+
+                            <h3>5.3 Évolution des prix</h3>
+                            <p>
+                                Les prix peuvent être modifiés à tout moment. Pour les abonnements en cours,
+                                toute augmentation sera notifiée 30 jours à l'avance et ne s'appliquera qu'au
+                                renouvellement suivant.
+                            </p>
+
+                            <h3>5.4 Promotions</h3>
+                            <p>
+                                Les offres promotionnelles sont valables dans la limite des stocks disponibles
+                                et selon les conditions spécifiques de chaque promotion.
+                            </p>
+                        </section>
+
+                        <section id="paiement" class="legal-section">
+                            <h2>6. Modalités de paiement</h2>
+                            <h3>6.1 Moyens de paiement acceptés</h3>
+                            <div class="payment-methods">
+                                <div class="payment-method">
+                                    <h4>💳 Cartes bancaires</h4>
+                                    <p>Visa, Mastercard, American Express (via Stripe sécurisé)</p>
+                                </div>
+                                <div class="payment-method">
+                                    <h4>🏦 Virement bancaire</h4>
+                                    <p>Pour les plans Enterprise sur facturation (paiement sous 30 jours)</p>
+                                </div>
+                                <div class="payment-method">
+                                    <h4>💰 Prélèvement SEPA</h4>
+                                    <p>Pour les abonnements annuels (sur demande)</p>
+                                </div>
+                            </div>
+
+                            <h3>6.2 Périodicité de facturation</h3>
+                            <ul class="legal-list">
+                                <li><strong>Mensuel :</strong> Prélèvement automatique chaque mois</li>
+                                <li><strong>Annuel :</strong> Prélèvement automatique chaque année (avec remise)</li>
+                                <li><strong>Enterprise :</strong> Facturation selon accord commercial</li>
+                            </ul>
+
+                            <h3>6.3 Échec de paiement</h3>
+                            <p>
+                                En cas d'échec de paiement, le service est suspendu après un délai de grâce de 3 jours.
+                                Des tentatives de prélèvement automatique sont effectuées. Si le paiement n'est pas
+                                régularisé sous 7 jours, l'abonnement peut être résilié.
+                            </p>
+
+                            <h3>6.4 Sécurité des paiements</h3>
+                            <p>
+                                Tous les paiements sont sécurisés via notre partenaire Stripe, certifié PCI DSS Level 1.
+                                Aucune donnée bancaire n'est stockée sur nos serveurs.
+                            </p>
+                        </section>
+
+                        <section id="livraison" class="legal-section">
+                            <h2>7. Livraison du service</h2>
+                            <h3>7.1 Activation immédiate</h3>
+                            <p>
+                                Le service est activé immédiatement après validation du paiement. Les identifiants
+                                d'accès sont envoyés par email dans les minutes suivant la commande.
+                            </p>
+
+                            <h3>7.2 Accès au service</h3>
+                            <p>
+                                L'accès au service s'effectue via notre interface web sécurisée et nos API.
+                                La documentation d'intégration est fournie avec l'activation du compte.
+                            </p>
+
+                            <h3>7.3 Support à l'intégration</h3>
+                            <p>
+                                Un support à l'intégration est inclus selon le plan choisi :
+                            </p>
+                            <ul class="legal-list">
+                                <li><strong>Plan Pro :</strong> Documentation et support email</li>
+                                <li><strong>Plan Enterprise :</strong> Accompagnement personnalisé et support dédié</li>
+                            </ul>
+                        </section>
+
+                        <section id="retractation" class="legal-section">
+                            <h2>8. Droit de rétractation</h2>
+                            <h3>8.1 Délai de rétractation</h3>
+                            <p>
+                                Conformément au Code de la consommation, vous disposez d'un délai de 14 jours
+                                pour exercer votre droit de rétractation sans avoir à justifier de motifs ni à payer de pénalités.
+                            </p>
+
+                            <h3>8.2 Point de départ du délai</h3>
+                            <p>
+                                Le délai de rétractation court à compter de la date de souscription à l'abonnement.
+                            </p>
+
+                            <h3>8.3 Exercice du droit</h3>
+                            <p>
+                                Pour exercer votre droit de rétractation, vous devez nous notifier votre décision
+                                par email à <a href="mailto:support@errorexplorer.com">support@errorexplorer.com</a>
+                                ou via votre espace client.
+                            </p>
+
+                            <h3>8.4 Exception</h3>
+                            <p>
+                                Si vous avez expressément demandé que la prestation commence avant la fin
+                                du délai de rétractation, ce droit ne s'applique que pour la partie non encore fournie.
+                            </p>
+                        </section>
+
+                        <section id="remboursement" class="legal-section">
+                            <h2>9. Remboursement</h2>
+                            <h3>9.1 Remboursement en cas de rétractation</h3>
+                            <p>
+                                En cas d'exercice du droit de rétractation, nous vous rembourserons tous les paiements
+                                reçus dans un délai de 14 jours à compter de la notification de rétractation.
+                            </p>
+
+                            <h3>9.2 Modalités de remboursement</h3>
+                            <p>
+                                Le remboursement s'effectue par le même moyen de paiement que celui utilisé
+                                pour la transaction initiale, sauf accord exprès contraire.
+                            </p>
+
+                            <h3>9.3 Remboursement partiel</h3>
+                            <p>
+                                Si le service a été partiellement consommé, le remboursement sera calculé
+                                au prorata de la période non utilisée.
+                            </p>
+
+                            <h3>9.4 Garantie satisfait ou remboursé</h3>
+                            <p>
+                                Nous offrons une garantie satisfait ou remboursé de 30 jours sur tous nos plans payants.
+                                Si vous n'êtes pas satisfait du service, contactez-nous pour un remboursement intégral.
+                            </p>
+                        </section>
+
+                        <section id="garanties" class="legal-section">
+                            <h2>10. Garanties</h2>
+                            <h3>10.1 Garantie de disponibilité</h3>
+                            <div class="sla-guarantees">
+                                <div class="sla-item">
+                                    <h4>Plan Pro</h4>
+                                    <p>Disponibilité garantie de 99,5%</p>
+                                </div>
+                                <div class="sla-item">
+                                    <h4>Plan Enterprise</h4>
+                                    <p>Disponibilité garantie de 99,9% avec SLA contractuel</p>
+                                </div>
+                            </div>
+
+                            <h3>10.2 Compensation en cas d'indisponibilité</h3>
+                            <p>
+                                En cas de non-respect des niveaux de service garantis, des crédits de service
+                                sont accordés selon notre politique SLA :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Indisponibilité > 1h : crédit de 5% du montant mensuel</li>
+                                <li>Indisponibilité > 4h : crédit de 15% du montant mensuel</li>
+                                <li>Indisponibilité > 12h : crédit de 50% du montant mensuel</li>
+                            </ul>
+
+                            <h3>10.3 Exclusions</h3>
+                            <p>Les garanties ne s'appliquent pas en cas de :</p>
+                            <ul class="legal-list">
+                                <li>Maintenance programmée (notifiée 48h à l'avance)</li>
+                                <li>Force majeure ou cas fortuit</li>
+                                <li>Défaillance imputable au Client ou à un tiers</li>
+                                <li>Utilisation non conforme du service</li>
+                            </ul>
+                        </section>
+
+                        <section id="facturation" class="legal-section">
+                            <h2>11. Facturation</h2>
+                            <h3>11.1 Émission des factures</h3>
+                            <p>
+                                Les factures sont émises automatiquement et envoyées par email à chaque échéance.
+                                Elles sont également disponibles dans votre espace client.
+                            </p>
+
+                            <h3>11.2 Informations de facturation</h3>
+                            <p>
+                                Il est de votre responsabilité de maintenir à jour vos informations de facturation.
+                                Toute modification doit être effectuée avant la prochaine échéance.
+                            </p>
+
+                            <h3>11.3 Contestation</h3>
+                            <p>
+                                Toute contestation de facture doit être effectuée dans un délai de 30 jours
+                                suivant l'émission de la facture.
+                            </p>
+                        </section>
+
+                        <section id="modification" class="legal-section">
+                            <h2>12. Modification d'abonnement</h2>
+                            <h3>12.1 Changement de plan</h3>
+                            <p>
+                                Vous pouvez modifier votre plan d'abonnement à tout moment depuis votre espace client :
+                            </p>
+                            <ul class="legal-list">
+                                <li><strong>Upgrade :</strong> Prise d'effet immédiate avec facturation prorata</li>
+                                <li><strong>Downgrade :</strong> Prise d'effet au prochain cycle de facturation</li>
+                            </ul>
+
+                            <h3>12.2 Changement de périodicité</h3>
+                            <p>
+                                Le passage d'un abonnement mensuel à annuel (ou inversement) prend effet
+                                à la prochaine échéance de facturation.
+                            </p>
+                        </section>
+
+                        <section id="resiliation" class="legal-section">
+                            <h2>13. Résiliation</h2>
+                            <h3>13.1 Résiliation par le Client</h3>
+                            <p>
+                                L'abonnement peut être résilié à tout moment sans préavis depuis l'espace client.
+                                La résiliation prend effet à la fin de la période de facturation en cours.
+                            </p>
+
+                            <h3>13.2 Résiliation par Error Explorer</h3>
+                            <p>
+                                Nous nous réservons le droit de résilier un abonnement en cas de :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Non-paiement après mise en demeure</li>
+                                <li>Violation des conditions d'utilisation</li>
+                                <li>Usage frauduleux ou abusif du service</li>
+                            </ul>
+
+                            <h3>13.3 Conséquences de la résiliation</h3>
+                            <p>
+                                À la résiliation, l'accès au service est maintenu jusqu'à la fin de la période payée,
+                                puis l'account passe en mode lecture seule pendant 30 jours avant suppression définitive.
+                            </p>
+                        </section>
+
+                        <section id="litige" class="legal-section">
+                            <h2>14. Règlement des litiges</h2>
+                            <h3>14.1 Réclamations</h3>
+                            <p>
+                                Pour toute réclamation, contactez notre service client à
+                                <a href="mailto:support@errorexplorer.com">support@errorexplorer.com</a>.
+                                Nous nous engageons à répondre sous 48h ouvrées.
+                            </p>
+
+                            <h3>14.2 Médiation</h3>
+                            <p>
+                                En cas de litige non résolu à l'amiable, vous pouvez recourir à la médiation
+                                de la consommation. Notre médiateur est :
+                            </p>
+                            <div class="mediator-info">
+                                <p><strong>Médiateur du e-commerce de la FEVAD</strong></p>
+                                <p>60 rue la Boétie - 75008 Paris</p>
+                                <p><a href="http://www.mediateurfevad.fr">www.mediateurfevad.fr</a></p>
+                            </div>
+
+                            <h3>14.3 Droit applicable</h3>
+                            <p>
+                                Les présentes CGV sont régies par le droit français. En cas de litige,
+                                les tribunaux français seront seuls compétents.
+                            </p>
+                        </section>
+                    </article>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à commencer ?</h2>
+                <p>
+                    Choisissez le plan qui correspond à vos besoins et commencez à monitorer
+                    vos erreurs dès aujourd'hui avec notre garantie satisfait ou remboursé.
+                </p>
+
+                <div class="cta-actions">
+                    <a href="{{ path('pricing') }}" class="btn btn-primary">
+                        <span>Voir nos tarifs</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="mailto:sales@errorexplorer.com" class="btn btn-secondary">
+                        <span>Contact commercial</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

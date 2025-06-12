@@ -73,6 +73,47 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return count($query->getQuery()->getScalarResult());
     }
 
+    /**
+     * Compte les utilisateurs créés dans une période donnée
+     */
+    public function countUsersBetweenDates(\DateTime $startDate, \DateTime $endDate): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.createdAt >= :start')
+            ->andWhere('u.createdAt < :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Obtient les statistiques de croissance mensuelle
+     */
+    public function getMonthlyGrowthStats(): array
+    {
+        $now = new \DateTime();
+        $months = [];
+
+        // Obtenir les 6 derniers mois
+        for ($i = 5; $i >= 0; $i--) {
+            $month = (clone $now)->modify("-{$i} months");
+            $startOfMonth = (clone $month)->modify('first day of this month')->setTime(0, 0, 0);
+            $endOfMonth = (clone $month)->modify('last day of this month')->setTime(23, 59, 59);
+
+            $userCount = $this->countUsersBetweenDates($startOfMonth, $endOfMonth);
+
+            $months[] = [
+                'month' => $month->format('Y-m'),
+                'month_name' => $month->format('F Y'),
+                'users' => $userCount
+            ];
+        }
+
+        return $months;
+    }
+
     public function countUsersThisMonth(?string $search = null): int
     {
         $query = $this->createQueryBuilder('u')
@@ -241,5 +282,224 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * Trouve un utilisateur par son email
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return $this->findOneBy(['email' => $email]);
+    }
+
+    /**
+     * Trouve un utilisateur par son token de vérification d'email
+     */
+    public function findByEmailVerificationToken(string $token): ?User
+    {
+        return $this->findOneBy(['emailVerificationToken' => $token]);
+    }
+
+    /**
+     * Trouve un utilisateur par son token de réinitialisation de mot de passe
+     */
+    public function findByPasswordResetToken(string $token): ?User
+    {
+        return $this->findOneBy(['passwordResetToken' => $token]);
+    }
+
+    /**
+     * Trouve les utilisateurs non vérifiés depuis plus de X jours
+     */
+    public function findUnverifiedUsers(int $daysOld = 7): array
+    {
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('P' . $daysOld . 'D'));
+
+        return $this->createQueryBuilder('u')
+            ->where('u.isVerified = :verified')
+            ->andWhere('u.createdAt < :date')
+            ->setParameter('verified', false)
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les utilisateurs avec des tokens de réinitialisation expirés
+     */
+    public function findExpiredPasswordResetTokens(int $hoursOld = 24): array
+    {
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('PT' . $hoursOld . 'H'));
+
+        return $this->createQueryBuilder('u')
+            ->where('u.passwordResetToken IS NOT NULL')
+            ->andWhere('u.passwordResetRequestedAt < :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Nettoie les tokens expirés
+     */
+    public function cleanupExpiredTokens(): int
+    {
+        // Nettoyer les tokens de réinitialisation expirés
+        $passwordResetCount = $this->createQueryBuilder('u')
+            ->update()
+            ->set('u.passwordResetToken', 'NULL')
+            ->set('u.passwordResetRequestedAt', 'NULL')
+            ->where('u.passwordResetToken IS NOT NULL')
+            ->andWhere('u.passwordResetRequestedAt < :date')
+            ->setParameter('date', new \DateTime('-24 hours'))
+            ->getQuery()
+            ->execute();
+
+        return $passwordResetCount;
+    }
+
+    /**
+     * Compte les utilisateurs par statut
+     */
+    public function countByStatus(): array
+    {
+        $result = $this->createQueryBuilder('u')
+            ->select('
+                COUNT(u.id) as total,
+                SUM(CASE WHEN u.isActive = true THEN 1 ELSE 0 END) as active,
+                SUM(CASE WHEN u.isVerified = true THEN 1 ELSE 0 END) as verified,
+                SUM(CASE WHEN u.isActive = true AND u.isVerified = true THEN 1 ELSE 0 END) as active_verified
+            ')
+            ->getQuery()
+            ->getSingleResult();
+
+        return [
+            'total' => (int) $result['total'],
+            'active' => (int) $result['active'],
+            'verified' => (int) $result['verified'],
+            'active_verified' => (int) $result['active_verified'],
+            'inactive' => (int) $result['total'] - (int) $result['active'],
+            'unverified' => (int) $result['total'] - (int) $result['verified'],
+        ];
+    }
+
+    /**
+     * Trouve les utilisateurs récemment inscrits
+     */
+    public function findRecentlyRegistered(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les utilisateurs avec des connexions récentes
+     */
+    public function findRecentlyActive(int $hours = 24): array
+    {
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('PT' . $hours . 'H'));
+
+        return $this->createQueryBuilder('u')
+            ->where('u.lastLoginAt > :date')
+            ->setParameter('date', $date)
+            ->orderBy('u.lastLoginAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les utilisateurs dont le plan expire bientôt
+     */
+    public function findExpiringPlans(int $daysBeforeExpiration = 7): array
+    {
+        $date = new \DateTime();
+        $date->add(new \DateInterval('P' . $daysBeforeExpiration . 'D'));
+
+        return $this->createQueryBuilder('u')
+            ->where('u.planExpiresAt IS NOT NULL')
+            ->andWhere('u.planExpiresAt <= :date')
+            ->andWhere('u.planExpiresAt > :now')
+            ->setParameter('date', $date)
+            ->setParameter('now', new \DateTime())
+            ->orderBy('u.planExpiresAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouve les utilisateurs avec des plans expirés
+     */
+    public function findExpiredPlans(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.planExpiresAt IS NOT NULL')
+            ->andWhere('u.planExpiresAt < :now')
+            ->setParameter('now', new \DateTime())
+            ->orderBy('u.planExpiresAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Met à jour le compteur de projets pour un utilisateur
+     */
+    public function updateProjectsCount(int $userId): void
+    {
+        $this->createQueryBuilder('u')
+            ->update()
+            ->set('u.currentProjectsCount', '(
+                SELECT COUNT(p.id) 
+                FROM App\Entity\Project p 
+                WHERE p.owner = u.id AND p.isActive = true
+            )')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Statistiques d'inscription par mois
+     */
+    public function getRegistrationStats(int $months = 12): array
+    {
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('P' . $months . 'M'));
+
+        return $this->createQueryBuilder('u')
+            ->select('
+                YEAR(u.createdAt) as year,
+                MONTH(u.createdAt) as month,
+                COUNT(u.id) as count
+            ')
+            ->where('u.createdAt >= :date')
+            ->setParameter('date', $date)
+            ->groupBy('year, month')
+            ->orderBy('year, month')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Supprime les utilisateurs non vérifiés anciens
+     */
+    public function deleteUnverifiedOldUsers(int $daysOld = 30): int
+    {
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('P' . $daysOld . 'D'));
+
+        return $this->createQueryBuilder('u')
+            ->delete()
+            ->where('u.isVerified = false')
+            ->andWhere('u.createdAt < :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->execute();
     }
 }

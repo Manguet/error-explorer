@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
@@ -22,6 +23,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'L\'adresse email est requise')]
+    #[Assert\Email(message: 'Veuillez saisir une adresse email valide')]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -30,13 +33,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le prénom est requis')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s\-\']+$/',
+        message: 'Le prénom contient des caractères non valides'
+    )]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le nom est requis')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s\-\']+$/',
+        message: 'Le nom contient des caractères non valides'
+    )]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Le nom de l\'entreprise ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $company = null;
 
     #[ORM\ManyToOne(targetEntity: Plan::class, fetch: 'EAGER')]
@@ -81,6 +110,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $settings = [];
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $emailVerificationToken = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $emailVerifiedAt = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $passwordResetToken = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $passwordResetRequestedAt = null;
+
 
     // Préférences d'alertes
     #[ORM\Column]
@@ -405,7 +447,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $maxAiSuggestions = $this->plan->getMaxMonthlyAiSuggestions();
-        return $maxAiSuggestions === -1 || 
+        return $maxAiSuggestions === -1 ||
                $this->currentMonthlyAiSuggestions < $maxAiSuggestions;
     }
 
@@ -529,17 +571,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getAllTeams(): array
     {
         $teams = [];
-        
+
         foreach ($this->ownedTeams as $team) {
             $teams[] = $team;
         }
-        
+
         foreach ($this->teamMemberships as $membership) {
             if ($membership->isActive() && $membership->getTeam()) {
                 $teams[] = $membership->getTeam();
             }
         }
-        
+
         return array_unique($teams, SORT_REGULAR);
     }
 
@@ -586,5 +628,157 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return false;
+    }
+
+    public function getEmailVerificationToken(): ?string
+    {
+        return $this->emailVerificationToken;
+    }
+
+    public function setEmailVerificationToken(?string $emailVerificationToken): static
+    {
+        $this->emailVerificationToken = $emailVerificationToken;
+        return $this;
+    }
+
+    public function getEmailVerifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerifiedAt;
+    }
+
+    public function setEmailVerifiedAt(?\DateTimeImmutable $emailVerifiedAt): static
+    {
+        $this->emailVerifiedAt = $emailVerifiedAt;
+        return $this;
+    }
+
+    public function getPasswordResetToken(): ?string
+    {
+        return $this->passwordResetToken;
+    }
+
+    public function setPasswordResetToken(?string $passwordResetToken): static
+    {
+        $this->passwordResetToken = $passwordResetToken;
+        return $this;
+    }
+
+    public function getPasswordResetRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->passwordResetRequestedAt;
+    }
+
+    public function setPasswordResetRequestedAt(?\DateTimeImmutable $passwordResetRequestedAt): static
+    {
+        $this->passwordResetRequestedAt = $passwordResetRequestedAt;
+        return $this;
+    }
+
+    /**
+     * Retourne les initiales de l'utilisateur
+     */
+    public function getInitials(): string
+    {
+        $firstInitial = $this->firstName ? strtoupper($this->firstName[0]) : '';
+        $lastInitial = $this->lastName ? strtoupper($this->lastName[0]) : '';
+        return $firstInitial . $lastInitial;
+    }
+
+    /**
+     * Vérifie si l'utilisateur a un plan gratuit
+     */
+    public function hasFreePlan(): bool
+    {
+        return $this->plan && $this->plan->isFree();
+    }
+
+    /**
+     * Génère un token de vérification d'email
+     */
+    public function generateEmailVerificationToken(): string
+    {
+        $this->emailVerificationToken = bin2hex(random_bytes(32));
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this->emailVerificationToken;
+    }
+
+    /**
+     * Génère un token de réinitialisation de mot de passe
+     */
+    public function generatePasswordResetToken(): string
+    {
+        $this->passwordResetToken = bin2hex(random_bytes(32));
+        $this->passwordResetRequestedAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this->passwordResetToken;
+    }
+
+    /**
+     * Vérifie si le token de réinitialisation de mot de passe est valide
+     */
+    public function isPasswordResetTokenValid(int $maxAgeInHours = 24): bool
+    {
+        if (!$this->passwordResetToken || !$this->passwordResetRequestedAt) {
+            return false;
+        }
+
+        $expirationDate = $this->passwordResetRequestedAt->modify("+{$maxAgeInHours} hours");
+        return new \DateTimeImmutable() < $expirationDate;
+    }
+
+    /**
+     * Marque l'email comme vérifié
+     */
+    public function markEmailAsVerified(): static
+    {
+        $this->isVerified = true;
+        $this->emailVerifiedAt = new \DateTimeImmutable();
+        $this->emailVerificationToken = null;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Met à jour la date de dernière connexion
+     */
+    public function updateLastLoginAt(): static
+    {
+        $this->lastLoginAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function hasRecentLogin(int $hours = 24): bool
+    {
+        if (!$this->lastLoginAt) {
+            return false;
+        }
+
+        $threshold = new \DateTimeImmutable("-{$hours} hours");
+        return $this->lastLoginAt >= $threshold;
+    }
+
+    public function isFirstLogin(): bool
+    {
+        return $this->lastLoginAt === null;
+    }
+
+    /**
+     * Réinitialise le token de mot de passe
+     */
+    public function clearPasswordResetToken(): static
+    {
+        $this->passwordResetToken = null;
+        $this->passwordResetRequestedAt = null;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    /**
+     * Retourne une représentation string de l'utilisateur
+     */
+    public function __toString(): string
+    {
+        return $this->getFullName() ?: $this->email ?: 'Utilisateur';
     }
 }

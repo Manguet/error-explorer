@@ -35,11 +35,13 @@ class ApiController extends AbstractController
         $docsPublic = $this->settingsManager->getSetting('api.api_docs_public', false);
 
         if (!$apiEnabled) {
-            throw $this->createNotFoundException('API is disabled');
+            $this->addFlash('error', 'API is disabled');
+            return $this->redirectToRoute('home');
         }
 
         if (!$docsPublic && !$this->isGranted('ROLE_USER')) {
-            throw $this->createAccessDeniedException('API documentation access denied');
+            $this->addFlash('error', 'API documentation is not publicly accessible');
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('api/documentation.html.twig', [
@@ -52,7 +54,7 @@ class ApiController extends AbstractController
 
     #[Route('/projects', name: 'projects', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    public function getProjects(Request $request): JsonResponse
+    public function getProjects(): JsonResponse
     {
         if (!$this->checkApiAccess()) {
             return new JsonResponse(['error' => 'API access denied'], 403);

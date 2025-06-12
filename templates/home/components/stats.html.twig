@@ -13,7 +13,15 @@
             <div class="stat-item primary">
                 <div class="stat-header">
                     <div class="stat-title">Utilisateurs Actifs</div>
-                    <div class="trend-indicator trend-up">+12%</div>
+                    <div class="trend-indicator {{ stats.trends.users.class }}">
+                        {% if stats.trends.users.direction == 'up' %}
+                            +{{ stats.trends.users.percentage }}%
+                        {% elseif stats.trends.users.direction == 'down' %}
+                            -{{ stats.trends.users.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number" data-count="{{ stats.total_users }}">0</div>
                 <div class="stat-description">Développeurs connectés ce mois</div>
@@ -22,7 +30,15 @@
             <div class="stat-item success">
                 <div class="stat-header">
                     <div class="stat-title">Erreurs Détectées</div>
-                    <div class="trend-indicator trend-up">+34%</div>
+                    <div class="trend-indicator {{ stats.trends.errors.class }}">
+                        {% if stats.trends.errors.direction == 'up' %}
+                            +{{ stats.trends.errors.percentage }}%
+                        {% elseif stats.trends.errors.direction == 'down' %}
+                            -{{ stats.trends.errors.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number" data-count="{{ stats.total_errors_tracked }}">0</div>
                 <div class="stat-description">Bugs détectés et analysés automatiquement</div>
@@ -31,7 +47,15 @@
             <div class="stat-item info">
                 <div class="stat-header">
                     <div class="stat-title">Projets Protégés</div>
-                    <div class="trend-indicator trend-up">+18%</div>
+                    <div class="trend-indicator {{ stats.trends.projects.class }}">
+                        {% if stats.trends.projects.direction == 'up' %}
+                            +{{ stats.trends.projects.percentage }}%
+                        {% elseif stats.trends.projects.direction == 'down' %}
+                            -{{ stats.trends.projects.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number" data-count="{{ stats.total_projects }}">0</div>
                 <div class="stat-description">Applications sous monitoring actif</div>
@@ -40,7 +64,15 @@
             <div class="stat-item warning">
                 <div class="stat-header">
                     <div class="stat-title">Disponibilité Système</div>
-                    <div class="trend-indicator trend-stable">stable</div>
+                    <div class="trend-indicator {{ stats.trends.uptime.class }}">
+                        {% if stats.trends.uptime.direction == 'up' %}
+                            +{{ stats.trends.uptime.percentage }}%
+                        {% elseif stats.trends.uptime.direction == 'down' %}
+                            -{{ stats.trends.uptime.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number">99.9%</div>
                 <div class="stat-description">Uptime garanti sur les 30 derniers jours</div>
@@ -49,7 +81,15 @@
             <div class="stat-item success">
                 <div class="stat-header">
                     <div class="stat-title">Temps de Réponse</div>
-                    <div class="trend-indicator trend-down">-15%</div>
+                    <div class="trend-indicator {{ stats.trends.response_time.class }}">
+                        {% if stats.trends.response_time.direction == 'up' %}
+                            +{{ stats.trends.response_time.percentage }}%
+                        {% elseif stats.trends.response_time.direction == 'down' %}
+                            -{{ stats.trends.response_time.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number">< 50ms</div>
                 <div class="stat-description">Latence moyenne de détection des erreurs</div>
@@ -58,7 +98,15 @@
             <div class="stat-item primary">
                 <div class="stat-header">
                     <div class="stat-title">Résolution Moyenne</div>
-                    <div class="trend-indicator trend-up">+28%</div>
+                    <div class="trend-indicator {{ stats.trends.resolution_time.class }}">
+                        {% if stats.trends.resolution_time.direction == 'up' %}
+                            +{{ stats.trends.resolution_time.percentage }}%
+                        {% elseif stats.trends.resolution_time.direction == 'down' %}
+                            -{{ stats.trends.resolution_time.percentage }}%
+                        {% else %}
+                            stable
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="stat-number">2.3h</div>
                 <div class="stat-description">Temps moyen de résolution des bugs critiques</div>

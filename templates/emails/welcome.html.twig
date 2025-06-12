@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur Error Explorer !</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2rem; text-align: center; }
+        .content { padding: 2rem; }
+        .button { display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 1rem 0; }
+        .footer { background: #f8fafc; padding: 2rem; text-align: center; font-size: 0.875rem; color: #64748b; }
+        .feature { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Bienvenue sur Error Explorer !</h1>
+        <p>Votre compte est maintenant actif</p>
+    </div>
+
+    <div class="content">
+        <h2>Félicitations {{ user.firstName }} !</h2>
+
+        <p>Votre email a été vérifié avec succès. Vous pouvez maintenant profiter de toutes les fonctionnalités d'Error Explorer.</p>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="{{ dashboard_url }}" class="button">Accéder à mon dashboard</a>
+        </div>
+
+        <h3>Votre plan : {{ plan.name }}</h3>
+        <div class="feature">
+            <span>📊</span>
+            <div>
+                <strong>{{ plan.maxProjectsLabel }} projets</strong><br>
+                <small>Surveillez vos applications</small>
+            </div>
+        </div>
+
+        <div class="feature">
+            <span>🚨</span>
+            <div>
+                <strong>{{ plan.maxMonthlyErrorsLabel }} erreurs/mois</strong><br>
+                <small>Détection automatique</small>
+            </div>
+        </div>
+
+        <div class="feature">
+            <span>⚡</span>
+            <div>
+                <strong>Alertes en temps réel</strong><br>
+                <small>Soyez notifié instantanément</small>
+            </div>
+        </div>
+
+        <h3>Prochaines étapes :</h3>
+        <ol>
+            <li>Créez votre premier projet</li>
+            <li>Intégrez Error Explorer dans votre application</li>
+            <li>Configurez vos alertes</li>
+            <li>Commencez à surveiller vos erreurs !</li>
+        </ol>
+
+        <p>Si vous avez des questions, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider.</p>
+
+        <p>Cordialement,<br>L'équipe Error Explorer</p>
+    </div>
+
+    <div class="footer">
+        <p>Error Explorer - Monitoring intelligent d'applications</p>
+        <p>Cet email a été envoyé à {{ user.email }}</p>
+    </div>
+</div>
+</body>
+</html>

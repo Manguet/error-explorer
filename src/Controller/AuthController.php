@@ -3,17 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\RegistrationFormType;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class AuthController extends AbstractController
 {
@@ -22,8 +25,8 @@ class AuthController extends AbstractController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly PlanRepository $planRepository,
         private readonly UserRepository $userRepository,
-        private readonly ValidatorInterface $validator,
-        private readonly UserAuthenticatorInterface $userAuthenticator
+        private readonly EmailService $emailService,
+        private readonly LoggerInterface $logger
     ) {}
 
     #[Route('/login', name: 'app_login')]
@@ -60,6 +63,10 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('dashboard_index');
         }
 
+        // Créer une nouvelle instance utilisateur
+        $user = new User();
+
+        // Pré-sélectionner un plan basé sur l'URL
         $selectedPlanSlug = $request->query->get('plan', 'free');
         $selectedPlan = $this->planRepository->findBySlug($selectedPlanSlug);
 
@@ -68,143 +75,105 @@ class AuthController extends AbstractController
             $selectedPlan = $this->planRepository->findFreePlan();
         }
 
-        if ($request->isMethod('POST')) {
-            return $this->handleRegistration($request, $selectedPlan);
+        // Pré-remplir le plan sélectionné
+        if ($selectedPlan) {
+            $user->setPlan($selectedPlan);
         }
 
-        // Récupérer tous les plans pour le sélecteur
+        // Créer le formulaire
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->handleRegistration($form, $user);
+        }
+
+        // Récupérer tous les plans pour l'affichage
         $allPlans = $this->planRepository->findActivePlans();
 
         return $this->render('auth/register.html.twig', [
+            'registrationForm' => $form->createView(),
             'selected_plan' => $selectedPlan,
-            'all_plans' => $allPlans
+            'all_plans' => $allPlans,
         ]);
     }
 
-    private function handleRegistration(Request $request, $selectedPlan): Response
+    private function handleRegistration($form, User $user): Response
     {
-        $firstName = trim($request->request->get('first_name', ''));
-        $lastName = trim($request->request->get('last_name', ''));
-        $email = trim($request->request->get('email', ''));
-        $password = $request->request->get('password', '');
-        $confirmPassword = $request->request->get('confirm_password', '');
-        $company = trim($request->request->get('company', ''));
-        $planId = $request->request->get('plan_id');
-        $acceptTerms = $request->request->get('accept_terms');
-
-        // Validation
-        $errors = [];
-
-        if (empty($firstName)) {
-            $errors[] = 'Le prénom est requis';
-        }
-
-        if (empty($lastName)) {
-            $errors[] = 'Le nom est requis';
-        }
-
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Un email valide est requis';
-        }
-
-        if (empty($password) || strlen($password) < 8) {
-            $errors[] = 'Le mot de passe doit contenir au moins 8 caractères';
-        }
-
-        if ($password !== $confirmPassword) {
-            $errors[] = 'Les mots de passe ne correspondent pas';
-        }
-
-        if (!$acceptTerms) {
-            $errors[] = 'Vous devez accepter les conditions d\'utilisation';
-        }
-
         // Vérifier si l'email existe déjà
-        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
+        $existingUser = $this->userRepository->findOneBy(['email' => $user->getEmail()]);
         if ($existingUser) {
-            $errors[] = 'Un compte avec cet email existe déjà';
+            $this->addFlash('error', 'Un compte avec cet email existe déjà');
+            return $this->redirectToRoute('app_register');
         }
-
-        // Vérifier le plan sélectionné
-        $plan = $this->planRepository->find($planId);
-        if (!$plan || !$plan->isActive()) {
-            $errors[] = 'Plan sélectionné invalide';
-        }
-
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                $this->addFlash('error', $error);
-            }
-
-            $allPlans = $this->planRepository->findActivePlans();
-            return $this->render('auth/register.html.twig', [
-                'selected_plan' => $selectedPlan,
-                'all_plans' => $allPlans,
-                'form_data' => [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'email' => $email,
-                    'company' => $company
-                ]
-            ]);
-        }
-
-        // Créer l'utilisateur
-        $user = new User();
-        $user->setFirstName($firstName)
-            ->setLastName($lastName)
-            ->setEmail($email)
-            ->setCompany($company ?: null)
-            ->setPlan($plan);
 
         // Hasher le mot de passe
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+        $plainPassword = $form->get('plainPassword')->getData();
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
 
+        // Définir les dates de création et modification
+        $now = new \DateTimeImmutable();
+        $user->setCreatedAt($now);
+        $user->setUpdatedAt($now);
+
+        // Définir un statut par défaut
+        $user->setIsActive(true);
+        $user->setIsVerified(false);
+
+        // Générer un token de vérification d'email
+        $user->generateEmailVerificationToken();
+
         // Pour les plans payants, définir une expiration d'un mois
-        if (!$plan->isFree()) {
-            $user->setPlanExpiresAt(new \DateTime('+1 month'));
+        $plan = $user->getPlan();
+        if ($plan && !$plan->isFree()) {
+            $user->setPlanExpiresAt(new \DateTimeImmutable('+1 month'));
         }
 
         try {
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            // Connecter automatiquement l'utilisateur
-            // Note: L'auto-login sera géré par Symfony après l'inscription
+            // Envoyer l'email de vérification
+            $this->emailService->sendEmailVerification($user);
 
-            $this->addFlash('success', 'Votre compte a été créé avec succès !');
+            // Message de succès
+            $this->addFlash('success', sprintf(
+                'Bienvenue %s ! Un email de vérification a été envoyé à %s.',
+                $user->getFirstName(),
+                $user->getEmail()
+            ));
 
-            // Si plan payant, rediriger vers le checkout
-            if ($plan->getPriceMonthly() > 0) {
-                return $this->redirectToRoute('billing_checkout', [
-                    'planId' => $plan->getId()
-                ]);
-            }
+            // Log pour debug
+            $this->logger->info('Nouvel utilisateur inscrit', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'plan' => $plan?->getName(),
+            ]);
 
-            // Sinon, rediriger vers le dashboard
-            return $this->redirectToRoute('dashboard_index');
+            // Rediriger vers la page de vérification d'email
+            return $this->redirectToRoute('app_verify_email_pending');
 
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte');
-
-            $allPlans = $this->planRepository->findActivePlans();
-            return $this->render('auth/register.html.twig', [
-                'selected_plan' => $selectedPlan,
-                'all_plans' => $allPlans,
-                'form_data' => [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'email' => $email,
-                    'company' => $company
-                ]
+            // Log de l'erreur
+            $this->logger->error('Erreur lors de l\'inscription', [
+                'error' => $e->getMessage(),
+                'email' => $user->getEmail(),
             ]);
+
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.');
+
+            return $this->redirectToRoute('app_register');
         }
     }
 
     #[Route('/forgot-password', name: 'app_forgot_password')]
     public function forgotPassword(Request $request): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('dashboard_index');
+        }
+
         if ($request->isMethod('POST')) {
             $email = trim($request->request->get('email', ''));
 
@@ -216,11 +185,29 @@ class AuthController extends AbstractController
             $user = $this->userRepository->findOneBy(['email' => $email]);
 
             // Toujours afficher le même message pour éviter l'énumération d'emails
-            $this->addFlash('success', 'Si un compte avec cet email existe, vous recevrez un lien de réinitialisation');
+            $this->addFlash('success', 'Si un compte avec cet email existe, vous recevrez un lien de réinitialisation sous peu.');
 
             if ($user) {
-                // TODO: Implémenter l'envoi d'email de réinitialisation
-                // $this->sendPasswordResetEmail($user);
+                try {
+                    // Générer un nouveau token
+                    $user->generatePasswordResetToken();
+                    $this->entityManager->flush();
+
+                    // Envoyer l'email de réinitialisation
+                    $this->emailService->sendPasswordReset($user);
+
+                    // Log pour debug
+                    $this->logger->info('Demande de réinitialisation de mot de passe', [
+                        'user_id' => $user->getId(),
+                        'email' => $user->getEmail(),
+                    ]);
+
+                } catch (\Exception $e) {
+                    $this->logger->error('Erreur lors de l\'envoi de l\'email de réinitialisation', [
+                        'error' => $e->getMessage(),
+                        'email' => $user->getEmail(),
+                    ]);
+                }
             }
 
             return $this->redirectToRoute('app_login');
@@ -229,10 +216,184 @@ class AuthController extends AbstractController
         return $this->render('auth/forgot_password.html.twig');
     }
 
-    #[Route('/verify-email', name: 'app_verify_email')]
-    public function verifyEmail(): Response
+    #[Route('/reset-password/{token}', name: 'app_reset_password')]
+    public function resetPassword(Request $request, string $token): Response
     {
-        // TODO: Implémenter la vérification d'email
-        return $this->render('auth/verify_email.html.twig');
+        if ($this->getUser()) {
+            return $this->redirectToRoute('dashboard_index');
+        }
+
+        // Trouver l'utilisateur avec ce token
+        $user = $this->userRepository->findOneBy(['passwordResetToken' => $token]);
+
+        if (!$user || !$user->isPasswordResetTokenValid()) {
+            $this->addFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
+            return $this->redirectToRoute('app_forgot_password');
+        }
+
+        if ($request->isMethod('POST')) {
+            $newPassword = $request->request->get('password');
+            $confirmPassword = $request->request->get('confirm_password');
+
+            // Validation
+            if (strlen($newPassword) < 8) {
+                $this->addFlash('error', 'Le mot de passe doit contenir au moins 8 caractères.');
+                return $this->render('auth/reset_password.html.twig', ['token' => $token]);
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
+                return $this->render('auth/reset_password.html.twig', ['token' => $token]);
+            }
+
+            try {
+                // Hasher et sauvegarder le nouveau mot de passe
+                $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
+                $user->setPassword($hashedPassword);
+                $user->clearPasswordResetToken();
+                $user->setUpdatedAt(new \DateTimeImmutable());
+
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès. Vous pouvez maintenant vous connecter.');
+
+                $this->logger->info('Mot de passe réinitialisé', [
+                    'user_id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                ]);
+
+                return $this->redirectToRoute('app_login');
+
+            } catch (\Exception $e) {
+                $this->logger->error('Erreur lors de la réinitialisation du mot de passe', [
+                    'error' => $e->getMessage(),
+                    'user_id' => $user->getId(),
+                ]);
+
+                $this->addFlash('error', 'Une erreur est survenue. Veuillez réessayer.');
+            }
+        }
+
+        return $this->render('auth/reset_password.html.twig', [
+            'token' => $token,
+            'user' => $user
+        ]);
+    }
+
+    #[Route('/verify-email', name: 'app_verify_email_pending')]
+    public function verifyEmailPending(): Response
+    {
+        return $this->render('auth/verify_email.html.twig', [
+            'verification_status' => 'pending'
+        ]);
+    }
+
+    #[Route('/verify-email/{token}', name: 'app_verify_email')]
+    public function verifyEmail(string $token): Response
+    {
+        $user = $this->userRepository->findOneBy(['emailVerificationToken' => $token]);
+
+        if (!$user) {
+            return $this->render('auth/verify_email.html.twig', [
+                'verification_status' => 'invalid'
+            ]);
+        }
+
+        if ($user->isVerified()) {
+            $this->addFlash('info', 'Votre email est déjà vérifié.');
+            return $this->redirectToRoute('dashboard_index');
+        }
+
+        try {
+            // Marquer l'email comme vérifié
+            $user->markEmailAsVerified();
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Votre email a été vérifié avec succès !');
+
+            $this->logger->info('Email vérifié', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+            ]);
+
+            return $this->render('auth/verify_email.html.twig', [
+                'verification_status' => 'success'
+            ]);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de la vérification d\'email', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->getId(),
+            ]);
+
+            $this->addFlash('error', 'Une erreur est survenue lors de la vérification.');
+
+            return $this->render('auth/verify_email.html.twig', [
+                'verification_status' => 'error'
+            ]);
+        }
+    }
+
+    #[Route('/resend-verification', name: 'app_resend_verification', methods: ['POST'])]
+    public function resendVerification(Request $request): Response
+    {
+        $email = trim($request->request->get('email', ''));
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->addFlash('error', 'Veuillez entrer un email valide.');
+            return $this->redirectToRoute('app_verify_email_pending');
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        // Message générique pour éviter l'énumération
+        $this->addFlash('success', 'Si un compte non vérifié existe avec cet email, un nouveau lien de vérification a été envoyé.');
+
+        if ($user && !$user->isVerified()) {
+            try {
+                // Générer un nouveau token
+                $user->generateEmailVerificationToken();
+                $this->entityManager->flush();
+
+                // Renvoyer l'email
+                $this->emailService->sendEmailVerification($user);
+
+                $this->logger->info('Email de vérification renvoyé', [
+                    'user_id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                ]);
+
+            } catch (\Exception $e) {
+                $this->logger->error('Erreur lors du renvoi de l\'email de vérification', [
+                    'error' => $e->getMessage(),
+                    'email' => $email,
+                ]);
+            }
+        }
+
+        return $this->redirectToRoute('app_verify_email_pending');
+    }
+
+    /**
+     * Route AJAX pour valider l'email en temps réel
+     */
+    #[Route('/api/validate-email', name: 'api_validate_email', methods: ['POST'])]
+    public function validateEmail(Request $request): Response
+    {
+        $email = trim($request->getContent());
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->json([
+                'valid' => false,
+                'message' => 'Format d\'email invalide'
+            ]);
+        }
+
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
+
+        return $this->json([
+            'valid' => !$existingUser,
+            'message' => $existingUser ? 'Un compte avec cet email existe déjà' : 'Email disponible'
+        ]);
     }
 }

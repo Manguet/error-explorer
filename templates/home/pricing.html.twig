@@ -44,7 +44,6 @@
 
                         <div class="plan-header">
                             <h3 class="plan-name">{{ plan.name }}</h3>
-                            <p class="plan-description">{{ plan.description }}</p>
 
                             <div class="monthly-price">
                                 <div class="plan-price">
@@ -71,6 +70,8 @@
                                 </div>
                             {% endif %}
                         </div>
+
+                        <p class="plan-description">{{ plan.description }}</p>
 
                         <div class="plan-features">
                             <div class="features-title">Ce qui est inclus :</div>
@@ -186,7 +187,7 @@
                                     </a>
                                 {% endif %}
                             {% endif %}
-                            
+
                             {% if plan.priceMonthly != 0 %}
                                 <div class="plan-note">
                                     {% if plan.trialDays %}

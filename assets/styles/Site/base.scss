@@ -12,3 +12,22 @@ h1, h2, h3, h4, h5, h6, .logo-text {
 body, p, a, span, .btn {
   font-family: $font-body;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $primary-blue;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $primary-blue-dark;
+}
