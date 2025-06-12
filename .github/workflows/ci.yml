@@ -78,11 +78,14 @@ jobs:
         env:
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
 
-      # 9. Lancer les tests
-      - name: 🧪 Lancer les tests
+      # 9. Lancer les tests PHPUnit
+      - name: 🧪 Lancer les tests PHPUnit
         run: |
-          echo "✅ Symfony installé correctement"
+          # D'abord vérifier que Symfony fonctionne
           php bin/console about --env=test
+          
+          # Ensuite lancer les tests
+          vendor/bin/phpunit --testdox
         env:
           DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
 
