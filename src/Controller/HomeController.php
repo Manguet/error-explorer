@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Plan;
 use App\Form\ContactType;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
@@ -144,7 +145,8 @@ class HomeController extends AbstractController
         $plans = $this->planRepository->findActivePlans();
 
         return $this->render('home/pricing.html.twig', [
-            'plans' => $plans
+            'plans' => $plans,
+            'feature_categories' => Plan::getFeatureCategories()
         ]);
     }
 

@@ -23,7 +23,7 @@
                                 {% if plan.isFree %}
                                     Gratuit
                                 {% else %}
-                                    {{ plan.priceMonthly|number_format(0, ',', ' ') }}€
+                                    {{ plan.priceMonthly|number_format(2, ',', ' ') }}€
                                 {% endif %}
                             </div>
                             {% if not plan.isFree %}

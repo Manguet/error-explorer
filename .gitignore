@@ -9,6 +9,7 @@
 /var/
 /vendor/
 /.idea
+/.claude
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

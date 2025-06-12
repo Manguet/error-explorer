@@ -354,28 +354,6 @@
   @include smooth-transition(all, 0.2s, ease);
 }
 
-// Économies annuelles
-.yearly-savings {
-  margin: 1.5rem 0;
-}
-
-.savings-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(245, 158, 11, 0.1);
-  color: #fbbf24;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid rgba(245, 158, 11, 0.2);
-
-  .savings-icon {
-    font-size: 1rem;
-  }
-}
-
 // Action button
 .plan-action {
   margin-top: 2rem;

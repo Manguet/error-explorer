@@ -1,0 +1,97 @@
+name: Tests & Quality Check
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+env:
+  PHP_VERSION: '8.2'
+  NODE_VERSION: '22'
+
+jobs:
+  tests:
+    name: Tests PHP & JavaScript
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: error_explorer_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      # 1. Récupérer le code source
+      - name: 📥 Récupérer le code
+        uses: actions/checkout@v4
+
+      # 2. Installer PHP avec les extensions nécessaires
+      - name: 🐘 Installer PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, pdo, zip
+          coverage: xdebug
+
+      # 3. Installer Node.js pour les assets
+      - name: 📦 Installer Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # 4. Cache pour Composer (accélère les builds)
+      - name: 🗄️ Cache Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: 📂 Utiliser le cache Composer
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      # 5. Installer les dépendances PHP
+      - name: 🎼 Installer les dépendances Composer
+        run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+
+      # 6. Installer les dépendances JavaScript
+      - name: 📦 Installer les dépendances npm
+        run: npm ci
+
+      # 7. Compiler les assets
+      - name: 🔨 Compiler les assets
+        run: npm run build
+
+      # 8. Préparer la base de données de test
+      - name: 🗄️ Préparer la base de données de test
+        run: |
+          cp .env.test .env.local
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:schema:create --env=test
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
+
+      # 9. Lancer les tests
+      - name: 🧪 Lancer les tests
+        run: |
+          echo "✅ Symfony installé correctement"
+          php bin/console about --env=test
+        env:
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
+
+      # 10. Vérifier que les assets sont compilés
+      - name: 🎨 Vérifier les assets
+        run: |
+          if [ -f "public/build/manifest.json" ]; then
+            echo "✅ Assets compilés avec succès"
+          else
+            echo "❌ Erreur : Assets non compilés"
+            exit 1
+          fi

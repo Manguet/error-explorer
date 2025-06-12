@@ -489,4 +489,140 @@ class Plan
 
         return $this->aiProvider === $provider || $this->aiProvider === 'all';
     }
+
+    /**
+     * Retourne toutes les fonctionnalités avec leur statut pour la comparaison
+     */
+    public function getFeatureComparison(): array
+    {
+        return [
+            'projects' => [
+                'name' => 'Projets maximum',
+                'description' => 'Nombre de projets que vous pouvez monitorer',
+                'value' => $this->getMaxProjectsLabel(),
+                'type' => 'limit'
+            ],
+            'errors' => [
+                'name' => 'Erreurs par mois',
+                'description' => 'Nombre d\'erreurs trackées mensuellement',
+                'value' => $this->getMaxMonthlyErrorsLabel(),
+                'type' => 'limit'
+            ],
+            'retention' => [
+                'name' => 'Rétention des données',
+                'description' => 'Durée de conservation des erreurs',
+                'value' => $this->dataRetentionDays . ' jours',
+                'type' => 'limit'
+            ],
+            'dashboard' => [
+                'name' => 'Dashboard temps réel',
+                'description' => 'Interface de monitoring en temps réel',
+                'value' => true,
+                'type' => 'boolean'
+            ],
+            'email_alerts' => [
+                'name' => 'Alertes email',
+                'description' => 'Notifications par email des erreurs critiques',
+                'value' => $this->hasEmailAlerts,
+                'type' => 'boolean'
+            ],
+            'slack_integration' => [
+                'name' => 'Intégration Slack',
+                'description' => 'Notifications directement dans Slack',
+                'value' => $this->hasSlackIntegration,
+                'type' => 'boolean'
+            ],
+            'api_access' => [
+                'name' => 'Accès API complet',
+                'description' => 'API REST pour intégrations personnalisées',
+                'value' => $this->hasApiAccess,
+                'type' => 'boolean'
+            ],
+            'advanced_filters' => [
+                'name' => 'Filtres avancés',
+                'description' => 'Filtrage et recherche avancée des erreurs',
+                'value' => $this->hasAdvancedFilters,
+                'type' => 'boolean'
+            ],
+            'advanced_analytics' => [
+                'name' => 'Analytics avancées',
+                'description' => 'Rapports détaillés et métriques avancées',
+                'value' => $this->hasAdvancedAnalytics,
+                'type' => 'boolean'
+            ],
+            'custom_retention' => [
+                'name' => 'Rétention personnalisée',
+                'description' => 'Configuration personnalisée de la rétention',
+                'value' => $this->hasCustomRetention,
+                'type' => 'boolean'
+            ],
+            'ai_suggestions' => [
+                'name' => 'Suggestions IA',
+                'description' => 'Suggestions automatiques pour résoudre les erreurs',
+                'value' => $this->hasAiSuggestions,
+                'type' => 'boolean'
+            ],
+            'support_response' => [
+                'name' => 'Temps de réponse support',
+                'description' => 'Délai moyen de réponse du support',
+                'value' => $this->getSupportResponseTime(),
+                'type' => 'text'
+            ],
+            'priority_support' => [
+                'name' => 'Support prioritaire',
+                'description' => 'Accès au support premium avec priorité',
+                'value' => $this->hasPrioritySupport,
+                'type' => 'boolean'
+            ]
+        ];
+    }
+
+    /**
+     * Retourne les catégories de fonctionnalités pour l'organisation du tableau
+     */
+    public static function getFeatureCategories(): array
+    {
+        return [
+            'limits' => [
+                'name' => 'Limites et quotas',
+                'features' => ['projects', 'errors', 'retention']
+            ],
+            'basic' => [
+                'name' => 'Fonctionnalités de base',
+                'features' => ['dashboard', 'email_alerts']
+            ],
+            'integrations' => [
+                'name' => 'Intégrations',
+                'features' => ['slack_integration', 'api_access']
+            ],
+            'advanced' => [
+                'name' => 'Fonctionnalités avancées',
+                'features' => ['advanced_filters', 'advanced_analytics', 'custom_retention']
+            ],
+            'ai' => [
+                'name' => 'Intelligence Artificielle',
+                'features' => ['ai_suggestions']
+            ],
+            'support' => [
+                'name' => 'Support',
+                'features' => ['support_response', 'priority_support']
+            ]
+        ];
+    }
+
+    /**
+     * Retourne le temps de réponse du support formaté
+     */
+    public function getSupportResponseTime(): string
+    {
+        if ($this->hasPrioritySupport) {
+            return '1h';
+        }
+
+        if ($this->hasEmailAlerts) {
+            return '4h';
+        }
+
+        return '24h';
+    }
 }
