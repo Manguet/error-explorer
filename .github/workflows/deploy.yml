@@ -44,12 +44,17 @@ jobs:
       # 4. Installer les dépendances pour le build
       - name: 📦 Install dependencies
         run: |
+          # PHP : production seulement
           composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-          npm ci --omit=dev
+          
+          # Node.js : AVEC les dépendances de dev pour pouvoir builder
+          npm ci
 
       # 5. Build des assets
       - name: 🔨 Build production assets
-        run: npm run build
+        run: |
+          # Build avec Encore
+          npm run build
 
       # 6. Préparer la clé SSH
       - name: 🔑 Setup SSH key
