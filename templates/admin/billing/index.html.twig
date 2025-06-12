@@ -1,0 +1,209 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Facturation - Administration{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Facturation</h2>
+        <div class="btn-group">
+            <a href="{{ path('admin_billing_subscriptions') }}" class="btn btn-outline-primary">Abonnements</a>
+            <a href="{{ path('admin_billing_invoices') }}" class="btn btn-outline-primary">Factures</a>
+            <a href="{{ path('admin_billing_revenue') }}" class="btn btn-outline-primary">Revenus</a>
+        </div>
+    </div>
+
+    <!-- Statistiques principales -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">Revenue mensuel</h5>
+                            <h3 class="mb-0">{{ stats.monthly_revenue | number_format(2) }}€</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">Revenue annuel</h5>
+                            <h3 class="mb-0">{{ stats.yearly_revenue | number_format(2) }}€</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">Nouveaux abonnements</h5>
+                            <h3 class="mb-0">{{ stats.new_subscriptions }}</h3>
+                            <small class="text-muted">Ce mois</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1">Abonnements actifs</h5>
+                            <h3 class="mb-0">{{ stats.total_active_subscriptions }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Répartition des abonnements par statut -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Abonnements récents</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_subscriptions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Utilisateur</th>
+                                        <th>Plan</th>
+                                        <th>Statut</th>
+                                        <th>Montant</th>
+                                        <th>Créé le</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subscription in recent_subscriptions %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ subscription.user.fullName }}</strong><br>
+                                                <small class="text-muted">{{ subscription.user.email }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-primary">{{ subscription.plan.name }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if subscription.isActive %}badge-success
+                                                    {% elseif subscription.isCanceled %}badge-secondary
+                                                    {% elseif subscription.isTrialing %}badge-info
+                                                    {% else %}badge-warning
+                                                    {% endif %}">
+                                                    {{ subscription.status | title }}
+                                                </span>
+                                            </td>
+                                            <td>{{ subscription.formattedAmount }}</td>
+                                            <td>{{ subscription.createdAt | date('d/m/Y') }}</td>
+                                            <td>
+                                                <a href="{{ path('admin_billing_subscription_detail', {id: subscription.id}) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    Détails
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ path('admin_billing_subscriptions') }}" class="btn btn-outline-primary">
+                                Voir tous les abonnements
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">Aucun abonnement trouvé</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Répartition par statut</h5>
+                </div>
+                <div class="card-body">
+                    {% if stats.subscription_stats %}
+                        {% for stat in stats.subscription_stats %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge 
+                                    {% if stat.status == 'active' %}badge-success
+                                    {% elseif stat.status == 'canceled' %}badge-secondary
+                                    {% elseif stat.status == 'trialing' %}badge-info
+                                    {% else %}badge-warning
+                                    {% endif %}">
+                                    {{ stat.status | title }}
+                                </span>
+                                <strong>{{ stat.count }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Aucune donnée disponible</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Factures récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_invoices %}
+                        {% for invoice in recent_invoices %}
+                            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                                <div>
+                                    <strong>#{{ invoice.number }}</strong><br>
+                                    <small class="text-muted">{{ invoice.user.fullName }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <div>{{ invoice.formattedTotal }}</div>
+                                    <span class="badge {{ invoice.statusBadgeClass }}">
+                                        {{ invoice.statusLabel }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="text-center mt-3">
+                            <a href="{{ path('admin_billing_invoices') }}" class="btn btn-sm btn-outline-primary">
+                                Voir toutes les factures
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">Aucune facture trouvée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

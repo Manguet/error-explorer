@@ -1,0 +1,9 @@
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+        envelope:
+            sender: 'error.explorer.contact@gmail.com'
+        headers:
+            From: 'Error Explorer <error.explorer.contact@gmail.com>'
+            'X-Mailer': 'Error Explorer - Symfony Mailer'
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'

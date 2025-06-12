@@ -1,0 +1,13 @@
+<div class="status-container">
+    <span class="badge badge-{{ row.isActive ? 'success' : 'danger' }} mb-1">
+        {{ row.isActive ? 'Actif' : 'Inactif' }}
+    </span>
+
+    {% if row.isVerified %}
+        <br><span class="badge badge-info">Vérifié</span>
+    {% endif %}
+
+    {% if row.isPlanExpired %}
+        <br><span class="badge badge-warning">Expiré</span>
+    {% endif %}
+</div>

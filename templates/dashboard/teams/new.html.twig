@@ -1,0 +1,241 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Nouvelle équipe - {{ parent() }}{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('team_index') }}">Équipes</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Nouvelle équipe</span>
+{% endblock %}
+
+{% block page_title %}Créer une nouvelle équipe{% endblock %}
+{% block page_subtitle %}Collaborez avec votre équipe sur vos projets{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('team_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        Retour aux équipes
+    </a>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <div class="projects-create-layout">
+        <div class="projects-form-card">
+            <div class="projects-form-header">
+                <h3 class="form-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Informations de l'équipe
+                </h3>
+            </div>
+            <div class="projects-form-body">
+                {{ form_start(form, {'attr': {'class': 'form-grid'}}) }}
+                    <div class="form-group full-width">
+                        <label for="{{ form.name.vars.id }}" class="form-label required">
+                            {{ form.name.vars.label }}
+                        </label>
+                        {{ form_widget(form.name, {'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Ex: Équipe Frontend',
+                            'maxlength': 100
+                        }}) }}
+                        <div class="form-help">
+                            Le nom sera utilisé pour identifier votre équipe dans les projets.
+                        </div>
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="{{ form.description.vars.id }}" class="form-label">
+                            {{ form.description.vars.label }}
+                        </label>
+                        {{ form_widget(form.description, {'attr': {
+                            'class': 'form-textarea',
+                            'placeholder': 'Description de l\'équipe...',
+                            'rows': 3,
+                            'maxlength': 1000
+                        }}) }}
+                        <div class="form-help">
+                            Une description qui vous aidera à identifier rapidement l'équipe.
+                        </div>
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.maxMembers.vars.id }}" class="form-label">
+                            {{ form.maxMembers.vars.label }}
+                        </label>
+                        {{ form_widget(form.maxMembers, {'attr': {
+                            'class': 'form-input',
+                            'min': 1,
+                            'max': 50
+                        }}) }}
+                        <div class="form-help">
+                            Nombre maximum de membres dans cette équipe.
+                        </div>
+                        {{ form_errors(form.maxMembers) }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.maxProjects.vars.id }}" class="form-label">
+                            {{ form.maxProjects.vars.label }}
+                        </label>
+                        {{ form_widget(form.maxProjects, {'attr': {
+                            'class': 'form-input',
+                            'min': 1,
+                            'max': 100
+                        }}) }}
+                        <div class="form-help">
+                            Nombre maximum de projets pour cette équipe.
+                        </div>
+                        {{ form_errors(form.maxProjects) }}
+                    </div>
+
+                    <div class="form-actions full-width">
+                        <a href="{{ path('team_index') }}" class="header-btn btn-secondary">
+                            Annuler
+                        </a>
+                        <button type="submit" class="header-btn btn-primary">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Créer l'équipe
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="projects-preview-sidebar">
+            <div class="projects-preview-card">
+                <div class="preview-header">
+                    <h3 class="preview-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Aperçu
+                    </h3>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-content">
+                        <div class="preview-name" id="preview-name">
+                            Nom de l'équipe
+                        </div>
+                        <div class="preview-description" id="preview-description">
+                            Description de l'équipe
+                        </div>
+                        <div class="preview-badges">
+                            <span class="badge badge-success">Active</span>
+                            <span class="badge badge-info">Propriétaire</span>
+                        </div>
+                        <div class="preview-features">
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                </svg>
+                                <span id="preview-members">10</span> membres maximum
+                            </div>
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                                <span id="preview-projects">5</span> projets maximum
+                            </div>
+                            <div class="preview-feature">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                                Gestion des permissions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="projects-info-card">
+                <div class="info-header">
+                    <h3 class="info-title">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        À savoir
+                    </h3>
+                </div>
+                <div class="info-body">
+                    <div class="info-items">
+                        <div class="info-item info-success">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Propriétaire automatique
+                            </div>
+                            <div class="info-item-text">Vous serez automatiquement propriétaire de cette équipe.</div>
+                        </div>
+
+                        <div class="info-item info-info">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                                </svg>
+                                Permissions granulaires
+                            </div>
+                            <div class="info-item-text">Définissez précisément les droits de chaque membre.</div>
+                        </div>
+
+                        <div class="info-item info-warning">
+                            <div class="info-item-title">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                                </svg>
+                                Invitations
+                            </div>
+                            <div class="info-item-text">Après création, vous pourrez inviter des membres.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Mise à jour de l'aperçu en temps réel
+        function updatePreview() {
+            const name = document.getElementById('{{ form.name.vars.id }}').value || 'Nom de l\'équipe';
+            const description = document.getElementById('{{ form.description.vars.id }}').value || 'Description de l\'équipe';
+            const maxMembers = document.getElementById('{{ form.maxMembers.vars.id }}').value || '10';
+            const maxProjects = document.getElementById('{{ form.maxProjects.vars.id }}').value || '5';
+
+            document.getElementById('preview-name').textContent = name;
+            document.getElementById('preview-description').textContent = description;
+            document.getElementById('preview-members').textContent = maxMembers;
+            document.getElementById('preview-projects').textContent = maxProjects;
+        }
+
+        // Écouteurs d'événements
+        document.getElementById('{{ form.name.vars.id }}').addEventListener('input', updatePreview);
+        document.getElementById('{{ form.description.vars.id }}').addEventListener('input', updatePreview);
+        document.getElementById('{{ form.maxMembers.vars.id }}').addEventListener('input', updatePreview);
+        document.getElementById('{{ form.maxProjects.vars.id }}').addEventListener('input', updatePreview);
+
+        // Focus sur le premier champ
+        document.getElementById('{{ form.name.vars.id }}').focus();
+
+        // Initialiser l'aperçu
+        updatePreview();
+    </script>
+{% endblock %}

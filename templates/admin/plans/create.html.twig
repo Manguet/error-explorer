@@ -1,0 +1,617 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{% if is_edit %}Modifier{% else %}Créer{% endif %} un plan - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header-modern">
+        <div class="page-header-content">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                </svg>
+                {% if is_edit %}
+                    Modifier le plan "{{ plan.name }}"
+                {% else %}
+                    Créer un nouveau plan
+                {% endif %}
+            </h1>
+            <p>Définissez les tarifs, limites et fonctionnalités</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumb-modern">
+        <a href="{{ path('admin_dashboard') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Admin
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <a href="{{ path('admin_plans_index') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+            </svg>
+            Plans
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <span class="breadcrumb-current">
+            {% if is_edit %}
+                Plan "{{ plan.name }}"
+            {% else %}
+                Nouveau plan
+            {% endif %}
+        </span>
+    </nav>
+    <div class="create-plan-layout">
+        <div class="form-section">
+            {{ form_start(form) }}
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Informations du plan
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.name) }}
+                            <div class="form-hint">
+                                <strong>Slug:</strong> <span id="slug-preview" class="slug-preview">nom-du-plan</span>
+                            </div>
+                            {{ form_errors(form.name) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.sortOrder, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.sortOrder) }}
+                            <div class="form-help">{{ form.sortOrder.vars.help }}</div>
+                            {{ form_errors(form.sortOrder) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Tarification
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.priceMonthly, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.priceMonthly) }}
+                            {{ form_errors(form.priceMonthly) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.priceYearly, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.priceYearly) }}
+                            <div class="form-help">{{ form.priceYearly.vars.help }}</div>
+                            {{ form_errors(form.priceYearly) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        Configuration Stripe
+                    </h3>
+                    <div class="form-card-subtitle">
+                        Identifiants des prix dans Stripe pour permettre les paiements
+                    </div>
+                </div>
+                <div class="form-card-body">
+                    <div class="alert alert-info">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Ces Price IDs doivent d'abord être créés dans votre dashboard Stripe.
+                        <a href="https://dashboard.stripe.com/products" target="_blank" rel="noopener">Accéder au dashboard Stripe</a>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.stripePriceIdMonthly, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.stripePriceIdMonthly) }}
+                            <div class="form-help">{{ form.stripePriceIdMonthly.vars.help }}</div>
+                            {{ form_errors(form.stripePriceIdMonthly) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.stripePriceIdYearly, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.stripePriceIdYearly) }}
+                            <div class="form-help">{{ form.stripePriceIdYearly.vars.help }}</div>
+                            {{ form_errors(form.stripePriceIdYearly) }}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            {{ form_label(form.trialDays, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.trialDays) }}
+                            <div class="form-help">{{ form.trialDays.vars.help }}</div>
+                            {{ form_errors(form.trialDays) }}
+                        </div>
+                        <div class="form-group">
+                            <!-- Espace pour équilibrer la mise en page -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Limites
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            {{ form_label(form.maxProjects, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.maxProjects) }}
+                            <div class="form-help">{{ form.maxProjects.vars.help }}</div>
+                            {{ form_errors(form.maxProjects) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.maxMonthlyErrors, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.maxMonthlyErrors) }}
+                            <div class="form-help">{{ form.maxMonthlyErrors.vars.help }}</div>
+                            {{ form_errors(form.maxMonthlyErrors) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.dataRetentionDays, null, {'label_attr': {'class': 'form-label required'}}) }}
+                            {{ form_widget(form.dataRetentionDays) }}
+                            <div class="form-help">{{ form.dataRetentionDays.vars.help }}</div>
+                            {{ form_errors(form.dataRetentionDays) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9,11 12,14 22,4"></polyline>
+                            <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                        </svg>
+                        Fonctionnalités
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="features-grid">
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasEmailAlerts) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                {{ form.hasEmailAlerts.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasApiAccess) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                </svg>
+                                {{ form.hasApiAccess.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasSlackIntegration) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                {{ form.hasSlackIntegration.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasAdvancedFilters) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"></polygon>
+                                </svg>
+                                {{ form.hasAdvancedFilters.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasPrioritySupport) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0-6 0"></path>
+                                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"></path>
+                                </svg>
+                                {{ form.hasPrioritySupport.vars.label }}
+                            </div>
+                        </label>
+
+                        <label class="feature-checkbox">
+                            {{ form_widget(form.hasCustomRetention) }}
+                            <div class="feature-content">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                {{ form.hasCustomRetention.vars.label }}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Options
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="options-grid">
+                        <label class="option-toggle">
+                            {{ form_widget(form.isActive) }}
+                            <div class="option-content">
+                                <div class="option-icon success">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9,11 12,14 22,4"></polyline>
+                                        <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="option-title">{{ form.isActive.vars.label }}</div>
+                                    <div class="option-description">{{ form.isActive.vars.help }}</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-toggle">
+                            {{ form_widget(form.isPopular) }}
+                            <div class="option-content">
+                                <div class="option-icon warning">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"></polygon>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="option-title">{{ form.isPopular.vars.label }}</div>
+                                    <div class="option-description">{{ form.isPopular.vars.help }}</div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="option-toggle">
+                            {{ form_widget(form.isBuyable) }}
+                            <div class="option-content">
+                                <div class="option-icon error">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="m1 1 4 4 16 0 -1.5 7 -12.5 0"></path>
+                                        <path d="m7 13 5 0"></path>
+                                        <circle cx="17" cy="8" r="3" fill="currentColor" stroke="none"></circle>
+                                        <path d="m15.5 8 1 1 2-2" stroke="white" stroke-width="1.5" fill="none"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="option-title">{{ form.isBuyable.vars.label }}</div>
+                                    <div class="option-description">{{ form.isBuyable.vars.help }}</div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h3 class="form-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        Liste des fonctionnalités
+                    </h3>
+                </div>
+                <div class="form-card-body">
+                    <div class="form-group">
+                        {{ form_label(form.features, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.features) }}
+                        <div class="form-help">{{ form.features.vars.help }}</div>
+                        {{ form_errors(form.features) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ path('admin_plans_index') }}" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5"></path>
+                        <polyline points="12,19 5,12 12,5"></polyline>
+                    </svg>
+                    Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                    </svg>
+                    Créer le plan
+                </button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+        <div class="preview-section">
+            <div class="preview-card">
+                <div class="preview-card-header">
+                    <h3 class="preview-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Aperçu
+                    </h3>
+                </div>
+                <div class="preview-card-body">
+                    <div class="plan-preview" id="plan-preview">
+                        <div class="preview-header">
+                            <div class="preview-name" id="preview-name">Nom du plan</div>
+                            <div class="preview-price" id="preview-price">0€</div>
+                            <div class="preview-period">par mois</div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">Limites</div>
+                            <div class="preview-limits">
+                                <div class="preview-limit" id="preview-projects">• Projets: -</div>
+                                <div class="preview-limit" id="preview-errors">• Erreurs/mois: -</div>
+                                <div class="preview-limit" id="preview-retention">• Rétention: 30 jours</div>
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <div class="preview-section-title">Fonctionnalités</div>
+                            <div class="preview-features" id="preview-features">
+                                Aucune fonctionnalité sélectionnée
+                            </div>
+                        </div>
+
+                        <div class="preview-badges" id="preview-badges">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-card">
+                <div class="tips-card-header">
+                    <h3 class="tips-card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9,9h0a3,3,0,0,1,5.12,2.12h0L9,15"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Conseils
+                    </h3>
+                </div>
+                <div class="tips-card-body">
+                    <div class="tip success">
+                        <div class="tip-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="tip-content">
+                            <div class="tip-title">Prix</div>
+                            <div class="tip-text">Mettez 0 pour un plan gratuit. Le prix annuel peut offrir une réduction.</div>
+                        </div>
+                    </div>
+
+                    <div class="tip primary">
+                        <div class="tip-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <div class="tip-content">
+                            <div class="tip-title">Limites</div>
+                            <div class="tip-text">Utilisez -1 pour "illimité". Ajustez selon votre infrastructure.</div>
+                        </div>
+                    </div>
+
+                    <div class="tip warning">
+                        <div class="tip-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"></polygon>
+                            </svg>
+                        </div>
+                        <div class="tip-content">
+                            <div class="tip-title">Populaire</div>
+                            <div class="tip-text">Marquez un plan comme "populaire" pour le mettre en avant.</div>
+                        </div>
+                    </div>
+
+                    <div class="tip danger">
+                        <div class="tip-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="tip-content">
+                            <div class="tip-title">Attention</div>
+                            <div class="tip-text">Un plan inactif ne peut pas être sélectionné par les nouveaux utilisateurs.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function updateSlugPreview() {
+            const nameField = document.getElementById('{{ form.name.vars.id }}');
+            const name = nameField ? nameField.value : '';
+            let slug = name.toLowerCase()
+                .replace(/[^a-z0-9\-_]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '');
+
+            const slugPreview = document.getElementById('slug-preview');
+            if (slugPreview) {
+                slugPreview.textContent = slug || 'nom-du-plan';
+            }
+            updatePreview();
+        }
+
+        function updatePreview() {
+            // Adaptation des IDs générés par Symfony
+            const nameField = document.getElementById('{{ form.name.vars.id }}');
+            const priceMonthlyField = document.getElementById('{{ form.priceMonthly.vars.id }}');
+            const priceYearlyField = document.getElementById('{{ form.priceYearly.vars.id }}');
+            const maxProjectsField = document.getElementById('{{ form.maxProjects.vars.id }}');
+            const maxErrorsField = document.getElementById('{{ form.maxMonthlyErrors.vars.id }}');
+            const retentionField = document.getElementById('{{ form.dataRetentionDays.vars.id }}');
+
+            const name = nameField ? nameField.value || 'Nom du plan' : 'Nom du plan';
+            const priceMonthly = priceMonthlyField ? parseFloat(priceMonthlyField.value) || 0 : 0;
+            const maxProjects = maxProjectsField ? parseInt(maxProjectsField.value) || 0 : 0;
+            const maxErrors = maxErrorsField ? parseInt(maxErrorsField.value) || 0 : 0;
+            const retention = retentionField ? parseInt(retentionField.value) || 30 : 30;
+
+            // Mise à jour de l'aperçu
+            const previewName = document.getElementById('preview-name');
+            const previewPrice = document.getElementById('preview-price');
+            const previewProjects = document.getElementById('preview-projects');
+            const previewErrors = document.getElementById('preview-errors');
+            const previewRetention = document.getElementById('preview-retention');
+
+            if (previewName) previewName.textContent = name;
+            if (previewPrice) previewPrice.textContent = priceMonthly === 0 ? 'Gratuit' : priceMonthly.toFixed(2) + '€';
+            if (previewProjects) previewProjects.textContent = `• Projets: ${maxProjects === -1 ? 'Illimité' : maxProjects}`;
+            if (previewErrors) previewErrors.textContent = `• Erreurs/mois: ${maxErrors === -1 ? 'Illimité' : maxErrors.toLocaleString()}`;
+            if (previewRetention) previewRetention.textContent = `• Rétention: ${retention} jours`;
+
+            // Fonctionnalités
+            const features = [];
+            const checkboxes = [
+                { id: '{{ form.hasEmailAlerts.vars.id }}', label: 'Alertes email' },
+                { id: '{{ form.hasApiAccess.vars.id }}', label: 'Accès API' },
+                { id: '{{ form.hasSlackIntegration.vars.id }}', label: 'Intégration Slack' },
+                { id: '{{ form.hasAdvancedFilters.vars.id }}', label: 'Filtres avancés' },
+                { id: '{{ form.hasPrioritySupport.vars.id }}', label: 'Support prioritaire' },
+                { id: '{{ form.hasCustomRetention.vars.id }}', label: 'Rétention personnalisée' }
+            ];
+
+            checkboxes.forEach(checkbox => {
+                const field = document.getElementById(checkbox.id);
+                if (field && field.checked) {
+                    features.push(`• ${checkbox.label}`);
+                }
+            });
+
+            const previewFeatures = document.getElementById('preview-features');
+            if (previewFeatures) {
+                previewFeatures.innerHTML = features.length > 0 ? features.join('<br>') : 'Aucune fonctionnalité sélectionnée';
+            }
+
+            // Badges
+            const badges = [];
+            const isActiveField = document.getElementById('{{ form.isActive.vars.id }}');
+            const isPopularField = document.getElementById('{{ form.isPopular.vars.id }}');
+
+            if (isActiveField && isActiveField.checked) {
+                badges.push('<span class="badge badge-success">Actif</span>');
+            }
+            if (isPopularField && isPopularField.checked) {
+                badges.push('<span class="badge badge-warning">Populaire</span>');
+            }
+            if (priceMonthly === 0) {
+                badges.push('<span class="badge badge-success">Gratuit</span>');
+            }
+
+            const previewBadges = document.getElementById('preview-badges');
+            if (previewBadges) {
+                previewBadges.innerHTML = badges.join('');
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+
+            // Focus sur le premier champ
+            const firstField = document.getElementById('{{ form.name.vars.id }}');
+            if (firstField) {
+                firstField.focus();
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,308 @@
+// Dashboard Cards - Style sombre professionnel
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-stat-card {
+  @include dashboard-card;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  // Effet de brillance au hover comme le site principal
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(59, 130, 246, 0.1),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  &-title {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $dashboard-text;
+    margin-bottom: 0.5rem;
+    font-family: $font-heading;
+  }
+
+  &-label {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &-trend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &.trend-up {
+      color: $status-resolved;
+    }
+
+    &.trend-down {
+      color: $status-open;
+    }
+
+    &.trend-stable {
+      color: $dashboard-text-light;
+    }
+  }
+
+  // Variantes de couleur
+  &.stat-danger {
+    .dashboard-stat-card-icon {
+      background: rgba(239, 68, 68, 0.1);
+      color: $status-open;
+    }
+  }
+
+  &.stat-success {
+    .dashboard-stat-card-icon {
+      background: rgba(16, 185, 129, 0.1);
+      color: $status-resolved;
+    }
+  }
+
+  &.stat-warning {
+    .dashboard-stat-card-icon {
+      background: rgba(245, 158, 11, 0.1);
+      color: $status-warning;
+    }
+  }
+
+  &.stat-info {
+    .dashboard-stat-card-icon {
+      background: rgba(59, 130, 246, 0.1);
+      color: $primary-blue;
+    }
+  }
+}
+
+// Table containers
+.dashboard-table-container {
+  @include dashboard-card;
+  overflow: hidden;
+  margin-bottom: 2rem;
+
+  &-header {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid $dashboard-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      color: $dashboard-text;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+      font-family: $font-heading;
+    }
+  }
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+
+  th {
+    background: rgba(0, 0, 0, 0.3);
+    color: $dashboard-text-light;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid $dashboard-border;
+  }
+
+  td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: $dashboard-text-light;
+    transition: $dashboard-transition;
+  }
+
+  tr {
+    transition: $dashboard-transition;
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateX(2px);
+    }
+  }
+
+  .table-cell-title {
+    color: $dashboard-text;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+
+    a {
+      color: $dashboard-text;
+      text-decoration: none;
+      transition: $dashboard-transition;
+
+      &:hover {
+        color: $primary-blue;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      }
+    }
+  }
+
+  .table-cell-subtitle {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .table-cell-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: $dashboard-transition;
+  background: rgba(255, 255, 255, 0.1);
+  color: $dashboard-text-light;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &.btn-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: $status-resolved;
+
+    &:hover {
+      background: rgba(16, 185, 129, 0.3);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+  }
+
+  &.btn-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: $status-open;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.3);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  &.btn-warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: $status-warning;
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.3);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+  }
+}
+
+// Empty states
+.dashboard-empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: $dashboard-text-light;
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: $dashboard-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-family: $font-heading;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .empty-action {
+    @include dashboard-button();
+    text-decoration: none;
+  }
+}

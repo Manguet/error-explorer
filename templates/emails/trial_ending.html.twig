@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fin d'essai proche - Error Explorer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 30px;
+        }
+        .clock-icon {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .clock-icon .icon {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background-color: #ffc107;
+            border-radius: 50%;
+            line-height: 60px;
+            color: white;
+            font-size: 24px;
+        }
+        .trial-details {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .trial-details h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #856404;
+            margin: 10px 0;
+        }
+        .plan-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .plan-summary h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .usage-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .stat {
+            flex: 1;
+            padding: 0 10px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+        }
+        .button-secondary {
+            display: inline-block;
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .features {
+            margin: 30px 0;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .alert {
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px 15px;
+            }
+            .usage-stats {
+                flex-direction: column;
+            }
+            .stat {
+                margin-bottom: 15px;
+            }
+            .button, .button-secondary {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Error Explorer</h1>
+        </div>
+        
+        <div class="content">
+            <div class="clock-icon">
+                <div class="icon">⏰</div>
+            </div>
+            
+            <h2 style="text-align: center; color: #856404; margin-bottom: 10px;">Votre essai se termine bientôt</h2>
+            <p style="text-align: center; font-size: 18px; color: #6c757d; margin-bottom: 30px;">
+                Bonjour {{ user.firstName }}, il vous reste quelques jours pour profiter de votre essai gratuit.
+            </p>
+            
+            <div class="trial-details">
+                <h3>Temps restant</h3>
+                <div class="countdown">{{ subscription.trialDaysRemaining }}</div>
+                <p style="margin: 5px 0 0 0; font-size: 18px;">
+                    {{ subscription.trialDaysRemaining == 1 ? 'jour' : 'jours' }} restant{{ subscription.trialDaysRemaining > 1 ? 's' : '' }}
+                </p>
+                <p style="margin: 15px 0 0 0; color: #856404;">
+                    Votre essai se termine le <strong>{{ subscription.trialEnd | date('d/m/Y') }}</strong>
+                </p>
+            </div>
+            
+            {% if user.currentMonthlyErrors > 0 or user.currentProjectsCount > 0 %}
+            <div class="plan-summary">
+                <h3>Votre utilisation pendant l'essai</h3>
+                <div class="usage-stats">
+                    <div class="stat">
+                        <div class="stat-number">{{ user.currentProjectsCount }}</div>
+                        <div class="stat-label">Projet{{ user.currentProjectsCount > 1 ? 's' : '' }} créé{{ user.currentProjectsCount > 1 ? 's' : '' }}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">{{ user.currentMonthlyErrors }}</div>
+                        <div class="stat-label">Erreur{{ user.currentMonthlyErrors > 1 ? 's' : '' }} reçue{{ user.currentMonthlyErrors > 1 ? 's' : '' }}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">{{ subscription.plan.dataRetentionDays }}</div>
+                        <div class="stat-label">Jours de rétention</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #495057;">Continuez à bénéficier de toutes ces fonctionnalités</h3>
+                <div class="features">
+                    <ul>
+                        <li>{{ subscription.plan.maxProjects == -1 ? 'Projets illimités' : subscription.plan.maxProjects ~ ' projets maximum' }}</li>
+                        <li>{{ subscription.plan.maxMonthlyErrors == -1 ? 'Erreurs illimitées' : (subscription.plan.maxMonthlyErrors ~ ' erreurs par mois') }}</li>
+                        <li>Rétention des données : {{ subscription.plan.dataRetentionDays }} jours</li>
+                        {% if subscription.plan.emailAlerts %}
+                        <li>Alertes par email personnalisées</li>
+                        {% endif %}
+                        {% if subscription.plan.slackIntegration %}
+                        <li>Intégrations Slack et Discord</li>
+                        {% endif %}
+                        {% if subscription.plan.apiAccess %}
+                        <li>Accès API complet</li>
+                        {% endif %}
+                        <li>Support technique prioritaire</li>
+                        <li>Analytics et graphiques avancés</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="font-size: 18px; margin-bottom: 20px;">
+                    <strong>Continuez sans interruption pour seulement {{ subscription.formattedAmount }}/{{ subscription.isYearly ? 'an' : 'mois' }}</strong>
+                </p>
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="button">
+                    Activer mon abonnement
+                </a>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>💳 Aucune action requise</strong>
+                <p style="margin: 10px 0 0 0;">
+                    Si vous avez déjà enregistré une méthode de paiement, votre abonnement sera automatiquement activé à la fin de l'essai. 
+                    Vous pouvez annuler à tout moment.
+                </p>
+            </div>
+            
+            <div style="background-color: #f8f9fa; border-radius: 5px; padding: 20px; margin: 20px 0;">
+                <h4 style="margin-top: 0;">Que se passe-t-il si je n'active pas mon abonnement ?</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Votre compte passera automatiquement au plan gratuit</li>
+                    <li>Vos projets et données seront conservés selon les limites gratuites</li>
+                    <li>Vous pourrez réactiver votre abonnement à tout moment</li>
+                    <li>Aucun frais ne sera prélevé</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="color: #6c757d; margin-bottom: 15px;">
+                    Vous préférez un autre plan ?
+                </p>
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="button-secondary">
+                    Voir tous les plans
+                </a>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0; font-size: 14px; color: #6c757d;">
+                <p>Des questions sur votre abonnement ?</p>
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" style="color: #667eea;">
+                    Contactez notre équipe
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <strong>Error Explorer</strong><br>
+                Surveillance d'erreurs pour développeurs
+            </p>
+            <p>
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}">Gérer mon abonnement</a> | 
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}">Plans et tarifs</a> | 
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}">Support</a>
+            </p>
+            <p style="font-size: 12px; margin-top: 15px;">
+                Cet email vous rappelle que votre essai gratuit Error Explorer se termine bientôt.<br>
+                Vous pouvez vous désabonner de ces rappels dans vos paramètres de compte.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

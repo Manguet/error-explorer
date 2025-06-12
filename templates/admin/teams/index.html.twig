@@ -1,0 +1,217 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des équipes - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Gestion des équipes</h1>
+                    <p class="text-muted mb-0">Administrez toutes les équipes de la plateforme</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ path('admin_team_analytics') }}" class="btn btn-outline-info">
+                        <i class="fas fa-chart-bar me-2"></i>Analytics
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ stats.total_teams }}</h5>
+                                    <p class="text-muted mb-0 small">Total équipes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ stats.active_teams }}</h5>
+                                    <p class="text-muted mb-0 small">Équipes actives</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ stats.teams_needing_attention }}</h5>
+                                    <p class="text-muted mb-0 small">Besoin attention</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info rounded-circle d-flex align-items-center justify-content-center me-2">
+                                    <i class="fas fa-percentage text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ ((stats.active_teams / stats.total_teams) * 100)|round }}%</h5>
+                                    <p class="text-muted mb-0 small">Taux d'activité</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text" name="search" class="form-control" placeholder="Rechercher par nom d'équipe..." value="{{ search }}">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Rechercher
+                                </button>
+                                {% if search %}
+                                    <a href="{{ path('admin_team_index') }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Teams Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        {% if search %}
+                            Résultats de recherche ({{ teams|length }})
+                        {% else %}
+                            Toutes les équipes
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if teams is not empty %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Équipe</th>
+                                        <th>Propriétaire</th>
+                                        <th>Membres</th>
+                                        <th>Projets</th>
+                                        <th>Statut</th>
+                                        <th>Créée le</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for team in teams %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                        <i class="fas fa-users text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">{{ team.name }}</div>
+                                                        <small class="text-muted">{{ team.slug }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <div class="fw-bold">{{ team.owner.fullName }}</div>
+                                                    <small class="text-muted">{{ team.owner.email }}</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-light text-dark me-2">{{ team.membersCount }}/{{ team.maxMembers }}</span>
+                                                    <div class="progress flex-grow-1" style="height: 6px;">
+                                                        {% set percentage = (team.membersCount / team.maxMembers * 100)|round %}
+                                                        <div class="progress-bar {% if percentage >= 90 %}bg-danger{% elseif percentage >= 70 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ percentage }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-light text-dark me-2">{{ team.projectsCount }}/{{ team.maxProjects }}</span>
+                                                    <div class="progress flex-grow-1" style="height: 6px;">
+                                                        {% set percentage = (team.projectsCount / team.maxProjects * 100)|round %}
+                                                        <div class="progress-bar {% if percentage >= 90 %}bg-danger{% elseif percentage >= 70 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ percentage }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if team.isActive %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">{{ team.createdAt|date('d/m/Y H:i') }}</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ path('admin_team_show', {id: team.id}) }}" class="btn btn-outline-primary" title="Voir">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ path('admin_team_edit', {id: team.id}) }}" class="btn btn-outline-secondary" title="Modifier">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form method="post" action="{{ path('admin_team_toggle_status', {id: team.id}) }}" style="display: inline-block;">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ team.id) }}">
+                                                        <button type="submit" class="btn btn-outline-{% if team.isActive %}warning{% else %}success{% endif %}" title="{% if team.isActive %}Désactiver{% else %}Activer{% endif %}">
+                                                            <i class="fas fa-{% if team.isActive %}pause{% else %}play{% endif %}"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Aucune équipe trouvée</h5>
+                            <p class="text-muted">{% if search %}Aucun résultat pour "{{ search }}"{% else %}Aucune équipe n'a encore été créée{% endif %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

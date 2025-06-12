@@ -1,0 +1,390 @@
+{% extends('layout/base.html.twig') %}
+
+{% block title %}Tarifs - Error Explorer{% endblock %}
+{% block description %}Découvrez nos plans de monitoring d'erreurs : gratuit, professionnel ou entreprise. Tarifs transparents, sans engagement, avec toutes les fonctionnalités essentielles.{% endblock %}
+
+{% block body %}
+    <section class="pricing-hero">
+        <div class="pricing-hero-content">
+            <div class="hero-badge">
+                <div class="badge-dot"></div>
+                <span>Tarifs transparents</span>
+            </div>
+
+            <h1>
+                Choisissez le plan qui
+                <span class="highlight">correspond à vos besoins</span>
+            </h1>
+
+            <p>
+                Commencez gratuitement et évoluez à votre rythme.
+                Pas de frais cachés, pas d'engagement, annulation possible à tout moment.
+            </p>
+
+            <div class="billing-toggle" id="billing-toggle">
+                <div class="billing-option active" data-period="monthly">
+                    Mensuel
+                </div>
+                <div class="billing-option" data-period="yearly">
+                    Annuel
+                    <span class="savings-badge">-20%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-grid">
+                {% for plan in plans %}
+                    <div class="pricing-card {{ plan.isPopular ? 'popular' : '' }}">
+                        {% if plan.isPopular %}
+                            <div class="popular-badge">Plus populaire</div>
+                        {% endif %}
+
+                        <div class="plan-header">
+                            <h3 class="plan-name">{{ plan.name }}</h3>
+                            <p class="plan-description">{{ plan.description }}</p>
+
+                            <div class="monthly-price">
+                                <div class="plan-price">
+                                    {% if plan.isFree %}
+                                        Gratuit
+                                    {% else %}
+                                        {{ plan.priceMonthly|number_format(0, ',', ' ') }}€
+                                    {% endif %}
+                                </div>
+                                {% if not plan.isFree %}
+                                    <div class="plan-price-period">par mois</div>
+                                {% endif %}
+                            </div>
+
+                            {% if not plan.isFree and plan.priceYearly %}
+                                <div class="yearly-price" style="display: none;">
+                                    <div class="plan-price">
+                                        {{ (plan.priceYearly / 12)|number_format(0, ',', ' ') }}€
+                                    </div>
+                                    <div class="plan-price-period">par mois, facturé annuellement</div>
+                                    <div class="yearly-savings">
+                                        Économisez {{ plan.yearlySavings|number_format(0, ',', ' ') }}€ par an
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="plan-features">
+                            <div class="features-title">Ce qui est inclus :</div>
+                            <ul class="features-list">
+                                <li class="feature-item">
+                                    <span class="feature-check">{{ plan.maxProjectsLabel }}</span>
+                                    <span>Projets {{ plan.maxProjects == -1 ? 'illimités' : 'maximum' }}</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-check">{{ plan.maxMonthlyErrorsLabel }}</span>
+                                    <span>Erreurs par mois</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-check">{{ plan.dataRetentionDays }}</span>
+                                    <span>Jours de rétention des données</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Dashboard temps réel</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-check">✓</span>
+                                    <span>Stack trace détaillé</span>
+                                </li>
+                                {% if plan.hasEmailAlerts %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Alertes email</span>
+                                    </li>
+                                {% else %}
+                                    <li class="feature-item disabled">
+                                        <span class="feature-check">✗</span>
+                                        <span>Alertes email</span>
+                                    </li>
+                                {% endif %}
+                                {% if plan.hasSlackIntegration %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Intégration Slack</span>
+                                    </li>
+                                {% else %}
+                                    <li class="feature-item disabled">
+                                        <span class="feature-check">✗</span>
+                                        <span>Intégration Slack</span>
+                                    </li>
+                                {% endif %}
+                                {% if plan.hasApiAccess %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Accès API complet</span>
+                                    </li>
+                                {% else %}
+                                    <li class="feature-item disabled">
+                                        <span class="feature-check">✗</span>
+                                        <span>Accès API complet</span>
+                                    </li>
+                                {% endif %}
+                                {% if plan.hasAdvancedFilters %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Filtres avancés</span>
+                                    </li>
+                                {% else %}
+                                    <li class="feature-item disabled">
+                                        <span class="feature-check">✗</span>
+                                        <span>Filtres avancés</span>
+                                    </li>
+                                {% endif %}
+                                {% if plan.hasPrioritySupport %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Support prioritaire (1h)</span>
+                                    </li>
+                                {% elseif plan.hasEmailAlerts %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Support standard (4h)</span>
+                                    </li>
+                                {% else %}
+                                    <li class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Support communautaire (24h)</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <div class="plan-cta">
+                            {% if app.user %}
+                                {# Utilisateur connecté #}
+                                {% if plan.priceMonthly == 0 %}
+                                    <a href="{{ path('dashboard_index') }}"
+                                       class="cta-btn cta-btn-secondary">
+                                        Accéder au dashboard
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('billing_checkout', {planId: plan.id}) }}"
+                                       class="cta-btn {{ plan.isPopular ? 'cta-btn-primary' : 'cta-btn-secondary' }}">
+                                        Choisir {{ plan.name }}
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {# Utilisateur non connecté #}
+                                {% if plan.priceMonthly == 0 %}
+                                    <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
+                                       class="cta-btn cta-btn-secondary">
+                                        Commencer gratuitement
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
+                                       class="cta-btn {{ plan.isPopular ? 'cta-btn-primary' : 'cta-btn-secondary' }}">
+                                        Commencer avec {{ plan.name }}
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% if plan.priceMonthly != 0 %}
+                                <div class="plan-note">
+                                    {% if plan.trialDays %}
+                                        Essai gratuit {{ plan.trialDays }} jours • Sans engagement
+                                    {% else %}
+                                        Sans engagement • Annulation à tout moment
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Comparaison détaillée</h2>
+                <p>Toutes les fonctionnalités en un coup d'œil</p>
+            </div>
+
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div>Fonctionnalités</div>
+                    <div>Gratuit</div>
+                    <div>Pro</div>
+                    <div>Enterprise</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Projets</div>
+                    <div class="feature-value">3</div>
+                    <div class="feature-value">10</div>
+                    <div class="feature-value">Illimité</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Erreurs/mois</div>
+                    <div class="feature-value">5 000</div>
+                    <div class="feature-value">50 000</div>
+                    <div class="feature-value">Illimité</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Rétention des données</div>
+                    <div class="feature-value">30 jours</div>
+                    <div class="feature-value">90 jours</div>
+                    <div class="feature-value">1 an</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Dashboard temps réel</div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Stack trace détaillé</div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Alertes email</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Intégrations (Slack, Discord)</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">API Access</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Filtres avancés</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Support</div>
+                    <div class="feature-value">Communauté</div>
+                    <div class="feature-value">Email (4h)</div>
+                    <div class="feature-value">Prioritaire (1h)</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">Équipes multiples</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+
+                <div class="table-row">
+                    <div class="feature-name">SSO (SAML/OAuth)</div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="cross-icon">✗</span></div>
+                    <div class="feature-value"><span class="check-icon">✓</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Questions fréquentes</h2>
+                <p>Tout ce que vous devez savoir sur nos tarifs</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3 class="faq-question">Puis-je changer de plan à tout moment ?</h3>
+                    <p class="faq-answer">
+                        Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment.
+                        Les changements prennent effet immédiatement et nous ajustons votre facturation au prorata.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Que se passe-t-il si je dépasse mes limites ?</h3>
+                    <p class="faq-answer">
+                        Nous vous prévenons par email lorsque vous atteignez 80% de vos limites.
+                        Au-delà, les nouvelles erreurs ne seront plus traitées jusqu'au mois suivant ou jusqu'à votre upgrade.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Y a-t-il des frais de configuration ?</h3>
+                    <p class="faq-answer">
+                        Aucun frais caché ! Le prix affiché est tout compris.
+                        L'installation se fait en moins de 5 minutes avec notre documentation complète.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Proposez-vous des remises pour les non-profits ?</h3>
+                    <p class="faq-answer">
+                        Oui, nous offrons 50% de réduction sur tous nos plans payants pour les organisations à but non lucratif.
+                        Contactez-nous avec vos justificatifs.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Puis-je annuler à tout moment ?</h3>
+                    <p class="faq-answer">
+                        Absolument. Pas d'engagement, pas de frais d'annulation.
+                        Vous gardez accès à vos données pendant 30 jours après l'annulation.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Mes données sont-elles sécurisées ?</h3>
+                    <p class="faq-answer">
+                        Toutes vos données sont chiffrées en transit et au repos.
+                        Nous sommes conformes RGPD et effectuons des audits de sécurité réguliers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à commencer ?</h2>
+                <p>
+                    Rejoignez des milliers de développeurs qui font confiance à Error Explorer
+                    pour maintenir leurs applications en parfaite santé.
+                </p>
+
+                <div class="cta-actions">
+                    <a href="{{ path('app_register') }}" class="btn btn-primary">
+                        <span>Commencer gratuitement</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="{{ path('contact') }}" class="btn btn-secondary">
+                        <span>Nous contacter</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,74 @@
+.dashboard-filters {
+  @include dashboard-card;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+
+  &-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 600;
+      color: $dashboard-text-light;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select, input {
+      padding: 0.75rem;
+      border: 1px solid $dashboard-border;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      color: $dashboard-text;
+      font-size: 0.875rem;
+      transition: $dashboard-transition;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+        box-shadow: 0 0 0 3px rgba($primary-blue, 0.2);
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      &::placeholder {
+        color: $dashboard-text-light;
+      }
+
+      option {
+        background: rgba(30, 41, 59, 0.95);
+        color: $dashboard-text;
+      }
+    }
+  }
+
+  &-actions {
+    display: flex;
+    gap: 0.75rem;
+
+    .filter-btn {
+      @include dashboard-button();
+      padding: 0.75rem 1.25rem;
+
+      &.btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: $dashboard-text-light;
+        border: 1px solid $dashboard-border;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          color: $dashboard-text;
+        }
+      }
+    }
+  }
+}

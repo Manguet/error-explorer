@@ -1,0 +1,907 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Documentation API - Error Explorer{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Variables cohérentes avec le site */
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-blue-dark: #1d4ed8;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --white: #ffffff;
+            --black: #0f172a;
+            --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+            --transition-normal: 0.3s;
+            --ease-out: cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        /* Hero section dans le style du site */
+        .api-docs-hero {
+            background: var(--black);
+            color: var(--white);
+            padding: 6rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Effet de grille tech comme sur l'accueil */
+        .api-docs-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .api-docs-hero .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        .api-docs-hero h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .api-docs-hero .highlight {
+            background: linear-gradient(135deg, var(--primary-blue), #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .api-docs-hero p {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+        
+        /* Container principal */
+        .api-docs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+            background: var(--white);
+        }
+        
+        /* Layout principal avec CSS Grid */
+        .api-docs-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        /* Sidebar responsive */
+        .api-docs-sidebar {
+            /* Styles déjà définis dans .nav-sidebar */
+        }
+        
+        /* Contenu principal */
+        .api-docs-content {
+            min-width: 0; /* Permet au contenu de se rétrécir */
+        }
+        
+        /* Boîte clé API avec style moderne */
+        .api-key-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02));
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+        
+        .api-key-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        
+        .api-key-box h5 {
+            font-family: var(--font-heading);
+            color: var(--primary-blue-dark);
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .api-key-box code {
+            font-family: var(--font-mono);
+            background: var(--gray-50);
+            color: var(--gray-800);
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            display: block;
+            margin: 1rem 0;
+            border: 1px solid var(--gray-200);
+            word-break: break-all;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+            position: relative;
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+        
+        .api-key-box code:hover {
+            background: var(--gray-100);
+            border-color: var(--primary-blue);
+        }
+        
+        /* Navigation sidebar moderne */
+        .nav-sidebar {
+            position: sticky;
+            top: 2rem;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            backdrop-filter: blur(20px);
+            transition: all var(--transition-normal) var(--ease-out);
+        }
+        
+        .nav-sidebar:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-sidebar h5 {
+            font-family: var(--font-heading);
+            color: var(--gray-800);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .nav-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-sidebar li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-sidebar a {
+            display: block;
+            padding: 0.875rem 1.25rem;
+            color: var(--gray-500);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all var(--transition-normal) var(--ease-out);
+            font-family: var(--font-body);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-sidebar a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            transition: width var(--transition-normal) var(--ease-out);
+            z-index: -1;
+        }
+        
+        .nav-sidebar a:hover {
+            background: var(--gray-100);
+            color: var(--primary-blue);
+            transform: translateX(6px);
+        }
+        
+        .nav-sidebar a:hover::before {
+            width: 4px;
+        }
+        
+        /* Endpoints avec design moderne */
+        .endpoint {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-normal) var(--ease-out);
+            position: relative;
+        }
+        
+        .endpoint::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            transform: scaleX(0);
+            transition: transform var(--transition-normal) var(--ease-out);
+        }
+        
+        .endpoint:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .endpoint:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .endpoint-header {
+            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-right: 1.5rem;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.75px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .method.get { 
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+        }
+        .method.post { 
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        .method.put { 
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        .method.delete { 
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .endpoint-header strong {
+            font-family: var(--font-mono);
+            color: var(--gray-800);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .endpoint-header p {
+            margin-top: 0.75rem;
+            color: var(--gray-500);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .endpoint-body {
+            padding: 2rem;
+        }
+        
+        .endpoint-body h5 {
+            font-family: var(--font-heading);
+            color: var(--gray-800);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .endpoint-body h5:first-child {
+            margin-top: 0;
+        }
+        
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .parameter-table th,
+        .parameter-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .parameter-table th {
+            background: var(--gray-50);
+            font-weight: 700;
+            color: var(--gray-700);
+            font-family: var(--font-heading);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .parameter-table td {
+            color: var(--gray-500);
+            font-family: var(--font-body);
+        }
+        
+        .parameter-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .required {
+            color: #ef4444;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
+        .optional {
+            color: var(--gray-500);
+            font-family: var(--font-mono);
+            background: rgba(100, 116, 139, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
+        .response-example {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .code {
+            font-family: var(--font-mono);
+            background: var(--gray-900);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 0.875rem;
+            line-height: 1.7;
+            border: 1px solid var(--gray-700);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .code::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+        
+        .section h2 {
+            font-family: var(--font-heading);
+            color: var(--gray-800);
+            font-weight: 800;
+            font-size: clamp(1.75rem, 4vw, 2.25rem);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            border-radius: 2px;
+        }
+        
+        .section h3 {
+            font-family: var(--font-heading);
+            color: var(--gray-700);
+            font-weight: 700;
+            font-size: 1.375rem;
+            margin: 2rem 0 1rem 0;
+        }
+        
+        .section p {
+            color: var(--gray-500);
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+            font-family: var(--font-body);
+        }
+        
+        .alert {
+            padding: 1.25rem 1.75rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.03));
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            color: var(--primary-blue-dark);
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .intro-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.9));
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            border: 1px solid var(--gray-200);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Responsive amélioré */
+        @media (max-width: 1024px) {
+            .api-docs-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .api-docs-sidebar {
+                order: 2;
+            }
+            
+            .api-docs-content {
+                order: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .api-docs-hero {
+                padding: 4rem 0 3rem;
+            }
+            
+            .api-docs-hero h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+            
+            .api-docs-container {
+                padding: 2rem 1rem;
+            }
+            
+            .api-docs-layout {
+                gap: 1.5rem;
+            }
+            
+            .nav-sidebar {
+                position: relative;
+                margin-bottom: 0;
+            }
+            
+            .endpoint-header {
+                padding: 1.5rem;
+            }
+            
+            .endpoint-body {
+                padding: 1.5rem;
+            }
+            
+            .parameter-table th,
+            .parameter-table td {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+            
+            .code {
+                font-size: 0.8rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<!-- Hero section cohérent avec le site -->
+<section class="api-docs-hero">
+    <div class="container">
+        <h1>Documentation <span class="highlight">API</span></h1>
+        <p>Intégrez Error Explorer dans vos applications avec notre API REST moderne et intuitive</p>
+    </div>
+</section>
+
+<div class="api-docs-container">
+    <div class="api-docs-layout">
+        <div class="api-docs-sidebar">
+            <nav class="nav-sidebar">
+                <h5>Documentation API</h5>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#authentication">Authentification</a></li>
+                    <li><a href="#projects">Projets</a></li>
+                    <li><a href="#errors">Erreurs</a></li>
+                    <li><a href="#stats">Statistiques</a></li>
+                    <li><a href="#examples">Exemples</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="api-docs-content">
+            <div class="api-docs">
+                
+                {% if api_key %}
+                <div class="api-key-box">
+                    <h5><i class="fas fa-key"></i> Votre clé API</h5>
+                    <p>Utilisez cette clé pour authentifier vos requêtes :</p>
+                    <code>{{ api_key }}</code>
+                    <p class="mt-2 mb-0"><small>Gardez cette clé secrète et ne la partagez pas.</small></p>
+                </div>
+                {% endif %}
+
+                <section id="introduction">
+                    <h2>Introduction</h2>
+                    <p>L'API Error Explorer vous permet d'accéder programmatiquement à vos données d'erreurs, de gérer vos projets et d'obtenir des statistiques détaillées.</p>
+                    
+                    <h3>URL de base</h3>
+                    <div class="code">{{ app.request.schemeAndHttpHost }}/api</div>
+                    
+                    <h3>Format des réponses</h3>
+                    <p>Toutes les réponses sont au format JSON avec les codes de statut HTTP appropriés.</p>
+                    
+                    <h3>Limitation du taux</h3>
+                    <p>L'API est limitée à <strong>{{ rate_limit }}</strong> requêtes par heure par utilisateur.</p>
+                </section>
+
+                <section id="authentication">
+                    <h2>Authentification</h2>
+                    <p>Pour accéder à l'API, vous devez être connecté à votre compte Error Explorer. Les requêtes sont authentifiées via votre session utilisateur.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Note :</strong> Une authentification par token API sera disponible prochainement pour les intégrations externes.
+                    </div>
+                </section>
+
+                <section id="projects">
+                    <h2>Gestion des projets</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>/api/projects</strong>
+                            <p class="mb-0">Récupère la liste de vos projets</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Réponse</h5>
+                            <div class="response-example">
+                                <div class="code">{
+  "projects": [
+    {
+      "id": 1,
+      "name": "Mon Site Web",
+      "environment": "production",
+      "webhook_token": "ee_wh_...",
+      "created_at": "2025-01-01T10:00:00+00:00",
+      "error_count": 42,
+      "last_error": {
+        "id": 123,
+        "message": "Undefined variable $user",
+        "occurred_at": "2025-01-08T15:30:00+00:00"
+      }
+    }
+  ],
+  "total": 1
+}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>/api/projects/{id}</strong>
+                            <p class="mb-0">Récupère les détails d'un projet spécifique</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Paramètres</h5>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Paramètre</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="required">id</span></td>
+                                        <td>integer</td>
+                                        <td>ID du projet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h5>Réponse</h5>
+                            <div class="response-example">
+                                <div class="code">{
+  "project": {
+    "id": 1,
+    "name": "Mon Site Web",
+    "environment": "production",
+    "webhook_token": "ee_wh_...",
+    "created_at": "2025-01-01T10:00:00+00:00",
+    "error_count": 42,
+    "recent_errors": [
+      {
+        "id": 123,
+        "message": "Undefined variable $user",
+        "type": "Error",
+        "status": "open",
+        "count": 5,
+        "first_occurred": "2025-01-08T10:00:00+00:00",
+        "last_occurred": "2025-01-08T15:30:00+00:00"
+      }
+    ]
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="errors">
+                    <h2>Gestion des erreurs</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>/api/errors</strong>
+                            <p class="mb-0">Récupère la liste de vos erreurs</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Paramètres de requête</h5>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Paramètre</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="optional">project_id</span></td>
+                                        <td>integer</td>
+                                        <td>Filtrer par projet</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="optional">status</span></td>
+                                        <td>string</td>
+                                        <td>Filtrer par statut (open, resolved, ignored)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="optional">limit</span></td>
+                                        <td>integer</td>
+                                        <td>Nombre d'erreurs par page (max 100, défaut 50)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="optional">offset</span></td>
+                                        <td>integer</td>
+                                        <td>Décalage pour la pagination (défaut 0)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>/api/errors/{id}</strong>
+                            <p class="mb-0">Récupère les détails d'une erreur avec ses occurrences</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Réponse</h5>
+                            <div class="response-example">
+                                <div class="code">{
+  "error": {
+    "id": 123,
+    "message": "Undefined variable $user",
+    "type": "Error",
+    "status": "open",
+    "count": 5,
+    "fingerprint": "abc123...",
+    "file": "/path/to/file.php",
+    "line": 42,
+    "project_id": 1,
+    "project_name": "Mon Site Web",
+    "first_occurred": "2025-01-08T10:00:00+00:00",
+    "last_occurred": "2025-01-08T15:30:00+00:00",
+    "recent_occurrences": [
+      {
+        "id": 456,
+        "created_at": "2025-01-08T15:30:00+00:00",
+        "stack_trace": "...",
+        "context": {...},
+        "request_data": {...},
+        "server_data": {...}
+      }
+    ]
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <strong>/api/errors/{id}/resolve</strong>
+                            <p class="mb-0">Marque une erreur comme résolue</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Réponse</h5>
+                            <div class="response-example">
+                                <div class="code">{
+  "message": "Error resolved successfully",
+  "error_id": 123,
+  "new_status": "resolved"
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="stats">
+                    <h2>Statistiques</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <strong>/api/stats</strong>
+                            <p class="mb-0">Récupère vos statistiques d'erreurs</p>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Paramètres de requête</h5>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Paramètre</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="optional">project_id</span></td>
+                                        <td>integer</td>
+                                        <td>Statistiques pour un projet spécifique</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="optional">days</span></td>
+                                        <td>integer</td>
+                                        <td>Période en jours pour les nouvelles erreurs (max 30, défaut 7)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h5>Réponse</h5>
+                            <div class="response-example">
+                                <div class="code">{
+  "stats": {
+    "total_projects": 3,
+    "total_errors": 156,
+    "resolved_errors": 89,
+    "new_errors_last_7_days": 12,
+    "resolution_rate": 57.05
+  },
+  "period_days": 7
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="examples">
+                    <h2>Exemples d'utilisation</h2>
+                    
+                    <h3>Récupérer toutes les erreurs ouvertes</h3>
+                    <div class="code">curl -X GET "{{ app.request.schemeAndHttpHost }}/api/errors?status=open" \
+  -H "Accept: application/json" \
+  --cookie "session=your_session_cookie"</div>
+                    
+                    <h3>Résoudre une erreur</h3>
+                    <div class="code">curl -X POST "{{ app.request.schemeAndHttpHost }}/api/errors/123/resolve" \
+  -H "Accept: application/json" \
+  --cookie "session=your_session_cookie"</div>
+                    
+                    <h3>Obtenir les statistiques du dernier mois</h3>
+                    <div class="code">curl -X GET "{{ app.request.schemeAndHttpHost }}/api/stats?days=30" \
+  -H "Accept: application/json" \
+  --cookie "session=your_session_cookie"</div>
+                </section>
+
+                <section id="errors-codes">
+                    <h2>Codes d'erreur</h2>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>200</td>
+                                <td>Succès</td>
+                            </tr>
+                            <tr>
+                                <td>401</td>
+                                <td>Non authentifié</td>
+                            </tr>
+                            <tr>
+                                <td>403</td>
+                                <td>Accès refusé ou API désactivée</td>
+                            </tr>
+                            <tr>
+                                <td>404</td>
+                                <td>Ressource non trouvée</td>
+                            </tr>
+                            <tr>
+                                <td>429</td>
+                                <td>Trop de requêtes (rate limit dépassé)</td>
+                            </tr>
+                            <tr>
+                                <td>500</td>
+                                <td>Erreur serveur</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

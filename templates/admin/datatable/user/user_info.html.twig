@@ -1,0 +1,17 @@
+<div class="user-info">
+    <div class="user-avatar-table">
+        {{ row.firstName|slice(0, 1)|upper }}{{ row.lastName|slice(0, 1)|upper }}
+    </div>
+    <div class="user-details">
+        <div class="user-name">
+            <strong>{{ row.fullName }}</strong>
+            {% if 'ROLE_ADMIN' in row.roles %}
+                <span class="badge badge-warning badge-sm">Admin</span>
+            {% endif %}
+        </div>
+        <div class="user-email">{{ row.email }}</div>
+        {% if row.company %}
+            <div class="user-company">{{ row.company }}</div>
+        {% endif %}
+    </div>
+</div>

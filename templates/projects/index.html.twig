@@ -1,0 +1,182 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Projets - {{ parent() }}{% endblock %}
+
+{% block nav_items %}
+    <a href="{{ path('projects_index') }}" class="nav-link active">
+        📁 Projets
+    </a>
+{% endblock %}
+
+{% block page_title %}Projets{% endblock %}
+{% block page_subtitle %}Gérez vos projets et leurs tokens webhook{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('projects_create') }}" class="header-btn btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Nouveau projet
+    </a>
+    <button class="header-btn btn-secondary" onclick="window.location.reload()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Actualiser
+    </button>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Projets</span>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-section">
+    <!-- Statistics Cards -->
+    <div class="projects-stats-grid">
+        <div class="stat-card stat-primary">
+            <div class="stat-card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+            </div>
+            <div class="stat-card-content">
+                <div class="stat-card-value">{{ stats.total_projects }}</div>
+                <div class="stat-card-label">Total des projets</div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                </svg>
+            </div>
+            <div class="stat-card-content">
+                <div class="stat-card-value">{{ stats.total_errors }}</div>
+                <div class="stat-card-label">Total des erreurs</div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-info">
+            <div class="stat-card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+            <div class="stat-card-content">
+                <div class="stat-card-value">{{ stats.total_occurrences }}</div>
+                <div class="stat-card-label">Total occurrences</div>
+            </div>
+        </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="stat-card-content">
+                <div class="stat-card-value">{{ stats.projects_with_recent_errors }}</div>
+                <div class="stat-card-label">Projets avec erreurs (7j)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <div class="section-header">
+            <div>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <h3 class="section-title">Tous les projets</h3>
+            </div>
+            <div class="section-actions">
+                <button class="btn btn-secondary btn-sm" onclick="exportProjects()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Exporter
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="window.location.reload()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Actualiser
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div id="table"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
+    
+    <script>
+        // Configuration des routes pour les actions AJAX
+        window.routes = {
+            projects_create: '{{ path('projects_create') }}',
+            projects_toggle_status: '{{ path('projects_toggle_status', { id: '__ID__' }) }}',
+            projects_delete: '{{ path('projects_delete', { id: '__ID__' }) }}'
+        };
+        
+        // Configuration DataTable depuis le contrôleur
+        window.datatableSettings = {{ datatable_settings(datatable) }};
+    </script>
+    
+    <script src="{{ asset('js/Dashboard/datatables/actions.js') }}"></script>
+    <script src="{{ asset('js/Dashboard/datatables/projects.js') }}"></script>
+    <script src="{{ asset('js/Dashboard/datatables/init.js') }}"></script>
+    <script>
+        // Fonction d'export des projets
+        function exportProjects() {
+            const format = prompt('Format d\'export (csv, json, xlsx):', 'csv');
+            console.log('Format sélectionné:', format);
+            
+            if (!format || !['csv', 'json', 'xlsx'].includes(format.toLowerCase())) {
+                alert('Format non supporté. Formats disponibles: csv, json, xlsx');
+                return;
+            }
+            
+            // Créer un lien de téléchargement
+            const downloadUrl = '{{ path('projects_export') }}?format=' + format.toLowerCase();
+            console.log('URL de téléchargement:', downloadUrl);
+            
+            // Afficher une notification de début d'export
+            if (window.showNotification) {
+                window.showNotification('Export en cours...', 'info');
+            }
+            
+            try {
+                // Utiliser window.open pour tester d'abord
+                window.open(downloadUrl, '_blank');
+                
+                // Notification de succès après un délai
+                setTimeout(() => {
+                    if (window.showNotification) {
+                        window.showNotification('Export terminé !', 'success');
+                    }
+                }, 1000);
+            } catch (error) {
+                console.error('Erreur lors de l\'export:', error);
+                alert('Erreur lors de l\'export: ' + error.message);
+            }
+        }
+    </script>
+{% endblock %}

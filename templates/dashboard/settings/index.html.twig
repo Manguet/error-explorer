@@ -1,0 +1,193 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block page_title %}Paramètres{% endblock %}
+{% block page_subtitle %}Gérez vos préférences et paramètres de compte{% endblock %}
+
+{% block breadcrumb_items %}
+    <span>/</span>
+    <span class="breadcrumb-current">Paramètres</span>
+{% endblock %}
+
+{% block body %}
+<div class="settings-layout">
+    <!-- Navigation latérale des paramètres -->
+    <aside class="settings-sidebar">
+        <nav class="settings-nav">
+            <div class="settings-nav-item active">
+                <a href="{{ path('dashboard_settings_index') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Profil</span>
+                </a>
+            </div>
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_notifications') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zm-5.058-3.058a4 4 0 10-2.518 2.518L9 17.5l1.442-1.442z"/>
+                    </svg>
+                    <span>Notifications</span>
+                </a>
+            </div>
+            <div class="settings-nav-item">
+                <a href="{{ path('dashboard_settings_account') }}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Compte</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal des paramètres -->
+    <main class="settings-main">
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Profil utilisateur</h2>
+                <p>Gérez vos informations personnelles et préférences</p>
+            </div>
+
+            <div class="settings-card">
+                {{ form_start(form, {'attr': {'class': 'settings-form'}}) }}
+
+                <div class="form-section">
+                    <h3>Informations personnelles</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            {{ form_label(form.firstName) }}
+                            {{ form_widget(form.firstName) }}
+                            {{ form_errors(form.firstName) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.lastName) }}
+                            {{ form_widget(form.lastName) }}
+                            {{ form_errors(form.lastName) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                        <small class="form-help">Votre adresse email ne peut pas être modifiée pour des raisons de sécurité</small>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.company) }}
+                        {{ form_widget(form.company) }}
+                        {{ form_errors(form.company) }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Préférences de notification</h3>
+                    <div class="form-group-checkbox">
+                        <div class="form-check">
+                            {{ form_widget(form.emailAlertsEnabled) }}
+                            {{ form_label(form.emailAlertsEnabled) }}
+                        </div>
+                        <small class="form-help">Recevez des notifications par email pour les nouvelles erreurs</small>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <div class="form-check">
+                            {{ form_widget(form.criticalAlertsEnabled) }}
+                            {{ form_label(form.criticalAlertsEnabled) }}
+                        </div>
+                        <small class="form-help">Recevez des alertes immédiates pour les erreurs critiques</small>
+                    </div>
+                    <div class="form-group-checkbox">
+                        <div class="form-check">
+                            {{ form_widget(form.weeklyReportsEnabled) }}
+                            {{ form_label(form.weeklyReportsEnabled) }}
+                        </div>
+                        <small class="form-help">Recevez un rapport hebdomadaire de vos erreurs</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    {{ form_widget(form.save) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <!-- Section plan et usage -->
+        <div class="settings-section">
+            <div class="settings-section-header">
+                <h2>Plan et utilisation</h2>
+                <p>Informations sur votre abonnement et limites</p>
+            </div>
+
+            <div class="settings-card">
+                <div class="plan-info">
+                    <div class="plan-header">
+                        <div class="plan-name">
+                            <h3>{{ user.plan ? user.plan.name : 'Aucun plan' }}</h3>
+                            <span class="plan-badge {% if user.plan %}plan-{{ user.plan.slug }}{% else %}plan-none{% endif %}">
+                                {{ user.plan ? user.plan.name : 'Gratuit' }}
+                            </span>
+                        </div>
+                        {% if user.plan %}
+                            <div class="plan-price">
+                                {% if user.plan.priceMonthly == 0 %}
+                                    <span class="price">Gratuit</span>
+                                {% else %}
+                                    <span class="price">{{ user.plan.priceMonthly }}€</span>
+                                    <span class="period">/mois</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if user.plan %}
+                        <div class="usage-stats">
+                            <div class="usage-item">
+                                <div class="usage-label">Projets</div>
+                                <div class="usage-value">
+                                    {{ user.currentProjectsCount }} /
+                                    {% if user.plan.maxProjects == -1 %}
+                                        Illimité
+                                    {% else %}
+                                        {{ user.plan.maxProjects }}
+                                    {% endif %}
+                                </div>
+                                {% if user.plan.maxProjects != -1 %}
+                                    <div class="usage-bar">
+                                        <div class="usage-progress" style="width: {{ (user.currentProjectsCount / user.plan.maxProjects * 100)|round }}%"></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="usage-item">
+                                <div class="usage-label">Erreurs ce mois</div>
+                                <div class="usage-value">
+                                    {{ user.currentMonthlyErrors }} /
+                                    {% if user.plan.maxMonthlyErrors == -1 %}
+                                        Illimité
+                                    {% else %}
+                                        {{ user.plan.maxMonthlyErrors }}
+                                    {% endif %}
+                                </div>
+                                {% if user.plan.maxMonthlyErrors != -1 %}
+                                    <div class="usage-bar">
+                                        <div class="usage-progress" style="width: {{ (user.currentMonthlyErrors / user.plan.maxMonthlyErrors * 100)|round }}%"></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if user.planExpiresAt %}
+                            <div class="plan-expiry">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Expire le {{ user.planExpiresAt|date('d/m/Y') }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ invoice.number }}</title>
+    <style>
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+        }
+        
+        .company-info {
+            float: left;
+            width: 50%;
+        }
+        
+        .invoice-info {
+            float: right;
+            width: 45%;
+            text-align: right;
+        }
+        
+        .company-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-number {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .billing-info {
+            margin: 30px 0;
+        }
+        
+        .billing-to {
+            float: left;
+            width: 50%;
+        }
+        
+        .billing-from {
+            float: right;
+            width: 45%;
+            text-align: right;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        .details-table th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+        }
+        
+        .details-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .details-table .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            float: right;
+            width: 300px;
+            margin-top: 20px;
+        }
+        
+        .totals table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals td {
+            padding: 8px 12px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 2px solid #333;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+        }
+        
+        .payment-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-open {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-void {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header clearfix">
+        <div class="company-info">
+            <div class="company-logo">Error Explorer</div>
+            <div>Surveillance d'erreurs pour développeurs</div>
+            <div>France</div>
+            <div>contact@error-explorer.com</div>
+        </div>
+        
+        <div class="invoice-info">
+            <div class="invoice-title">FACTURE</div>
+            <div class="invoice-number">#{{ invoice.number }}</div>
+            <div>Date : {{ invoice.createdAt | date('d/m/Y') }}</div>
+            {% if invoice.dueDate %}
+                <div>Échéance : {{ invoice.dueDate | date('d/m/Y') }}</div>
+            {% endif %}
+            <div>
+                <span class="status status-{{ invoice.status }}">
+                    {{ invoice.statusLabel }}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="billing-info clearfix">
+        <div class="billing-to">
+            <div class="section-title">Facturé à :</div>
+            <div><strong>{{ user.fullName }}</strong></div>
+            {% if user.company %}
+                <div>{{ user.company }}</div>
+            {% endif %}
+            <div>{{ user.email }}</div>
+        </div>
+        
+        <div class="billing-from">
+            <div class="section-title">Émetteur :</div>
+            <div><strong>Error Explorer SARL</strong></div>
+            <div>France</div>
+            <div>SIRET : XXX XXX XXX XXXXX</div>
+            <div>TVA : FR XX XXX XXX XXX</div>
+        </div>
+    </div>
+    
+    <div class="payment-info">
+        <strong>Période de facturation :</strong> {{ invoice.periodLabel }}<br>
+        <strong>Plan :</strong> {{ subscription.plan.name }}<br>
+        <strong>Type de facturation :</strong> {{ subscription.isYearly ? 'Annuelle' : 'Mensuelle' }}
+    </div>
+    
+    <table class="details-table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th class="text-right">Quantité</th>
+                <th class="text-right">Prix unitaire</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if invoice.lineItems %}
+                {% for item in invoice.lineItems %}
+                <tr>
+                    <td>
+                        {{ item.description }}
+                        {% if item.period_start and item.period_end %}
+                            <br><small>{{ item.period_start | date('d/m/Y') }} - {{ item.period_end | date('d/m/Y') }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">{{ item.quantity ?? 1 }}</td>
+                    <td class="text-right">{{ item.amount | number_format(2) }}€</td>
+                    <td class="text-right">{{ (item.amount * (item.quantity ?? 1)) | number_format(2) }}€</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>
+                        Abonnement {{ subscription.plan.name }}
+                        <br><small>{{ invoice.periodLabel }}</small>
+                    </td>
+                    <td class="text-right">1</td>
+                    <td class="text-right">{{ invoice.subtotal | number_format(2) }}€</td>
+                    <td class="text-right">{{ invoice.subtotal | number_format(2) }}€</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Sous-total HT :</td>
+                <td class="text-right">{{ invoice.formattedSubtotal }}</td>
+            </tr>
+            {% if invoice.tax > 0 %}
+            <tr>
+                <td>TVA (20%) :</td>
+                <td class="text-right">{{ invoice.formattedTax }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-row">
+                <td>Total TTC :</td>
+                <td class="text-right">{{ invoice.formattedTotal }}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div style="clear: both;"></div>
+    
+    {% if invoice.isPaid %}
+        <div class="payment-info">
+            <strong>✓ Facture payée</strong><br>
+            Paiement reçu le {{ invoice.paidAt | date('d/m/Y à H:i') }}<br>
+            Méthode de paiement : Carte bancaire (Stripe)
+        </div>
+    {% elseif invoice.isOpen %}
+        <div class="payment-info">
+            <strong>⚠ Facture en attente de paiement</strong><br>
+            Le paiement sera tenté automatiquement selon votre méthode de paiement enregistrée.
+        </div>
+    {% endif %}
+    
+    <div class="footer">
+        <p>
+            <strong>Error Explorer</strong> - Surveillance d'erreurs pour développeurs<br>
+            Cette facture a été générée automatiquement par notre système de facturation.<br>
+            Pour toute question, contactez-nous à : contact@error-explorer.com
+        </p>
+        
+        <p style="margin-top: 15px;">
+            <small>
+                Conditions de paiement : Paiement à réception<br>
+                En cas de retard de paiement, des pénalités pourront être appliquées conformément à la loi.<br>
+                TVA non applicable - Article 293 B du CGI (micro-entreprise)
+            </small>
+        </p>
+        
+        <p style="margin-top: 15px; font-size: 9px;">
+            Facture générée le {{ "now" | date('d/m/Y à H:i') }}
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Équipes - {{ parent() }}{% endblock %}
+
+{% block page_title %}Équipes{% endblock %}
+{% block page_subtitle %}Gérez vos équipes et collaborez sur des projets{% endblock %}
+
+{% block breadcrumb_items %}
+    <span>&rsaquo;</span>
+    <span>Équipes</span>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('team_new') }}" class="header-btn btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Créer une équipe
+    </a>
+{% endblock %}
+
+{% block body %}
+    {% if teams|length == 0 %}
+        <div class="dashboard-section">
+            <div class="welcome-banner">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h3 class="welcome-title">
+                            👥 Aucune équipe trouvée
+                        </h3>
+                        <p class="welcome-description">
+                            Créez votre première équipe pour commencer à collaborer avec d'autres utilisateurs sur vos projets.
+                        </p>
+                    </div>
+                    <div class="welcome-actions">
+                        <a href="{{ path('team_new') }}" class="welcome-btn">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Créer ma première équipe
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-section">
+        <div class="dashboard-stats-grid">
+            <div class="dashboard-stat-card stat-info">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Total Équipes</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ teams|length }}</div>
+                <div class="dashboard-stat-card-label">Toutes équipes</div>
+                <div class="dashboard-stat-card-trend trend-stable">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Vue d'ensemble
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-success">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Équipes Créées</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ owned_teams|length }}</div>
+                <div class="dashboard-stat-card-label">Propriétaire</div>
+                <div class="dashboard-stat-card-trend trend-up">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Leadership
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-warning">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Équipes Rejointes</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ teams|length - owned_teams|length }}</div>
+                <div class="dashboard-stat-card-label">Membre</div>
+                <div class="dashboard-stat-card-trend trend-stable">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Collaboration
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-primary">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Projets d'Équipe</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">
+                    {% set team_projects = 0 %}
+                    {% for team in teams %}
+                        {% set team_projects = team_projects + team.projects|length %}
+                    {% endfor %}
+                    {{ team_projects }}
+                </div>
+                <div class="dashboard-stat-card-label">Total projets</div>
+                <div class="dashboard-stat-card-trend trend-up">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Productivité
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams List -->
+    {% if teams is not empty %}
+        <div class="dashboard-section">
+            <div class="dashboard-section-header">
+                <h2>Mes Équipes</h2>
+                <div class="dashboard-section-actions">
+                    <a href="{{ path('team_new') }}" class="dashboard-btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Nouvelle équipe
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-teams-grid">
+                {% for team in teams %}
+                    <div class="dashboard-team-card">
+                        <div class="dashboard-team-card-header">
+                            <div class="dashboard-team-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div class="dashboard-team-card-title">
+                                <h3>{{ team.name }}</h3>
+                                <p>{{ team.description|default('Aucune description') }}</p>
+                            </div>
+                            <div class="dashboard-team-card-role">
+                                {% set role = team.getMemberRole(app.user) %}
+                                {% if role == 'owner' %}
+                                    <span class="team-role-badge role-owner">Propriétaire</span>
+                                {% elseif role == 'admin' %}
+                                    <span class="team-role-badge role-admin">Admin</span>
+                                {% elseif role == 'member' %}
+                                    <span class="team-role-badge role-member">Membre</span>
+                                {% else %}
+                                    <span class="team-role-badge role-viewer">Viewer</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="dashboard-team-card-stats">
+                            <div class="team-stat">
+                                <div class="team-stat-value">{{ team.members|length }}/{{ team.maxMembers }}</div>
+                                <div class="team-stat-label">Membres</div>
+                                <div class="team-stat-bar">
+                                    {% set percentage = (team.members|length / team.maxMembers * 100)|round %}
+                                    <div class="team-stat-progress" style="width: {{ percentage }}%"></div>
+                                </div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="team-stat-value">{{ team.projects|length }}/{{ team.maxProjects }}</div>
+                                <div class="team-stat-label">Projets</div>
+                                <div class="team-stat-bar">
+                                    {% set percentage = (team.projects|length / team.maxProjects * 100)|round %}
+                                    <div class="team-stat-progress" style="width: {{ percentage }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-team-card-actions">
+                            <a href="{{ path('team_show', {slug: team.slug}) }}" class="team-action-btn btn-primary">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Voir
+                            </a>
+                            <a href="{{ path('team_members', {slug: team.slug}) }}" class="team-action-btn btn-secondary">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+                                </svg>
+                                Membres
+                            </a>
+                            {% if team.hasPermission(app.user, 'manage_team') %}
+                                <a href="{{ path('team_edit', {slug: team.slug}) }}" class="team-action-btn btn-secondary">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Éditer
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="dashboard-team-card-footer">
+                            <span class="team-updated">Modifiée {{ team.updatedAt|date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

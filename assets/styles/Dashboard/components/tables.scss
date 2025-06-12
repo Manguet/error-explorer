@@ -1,0 +1,364 @@
+.dashboard-table-container {
+  @include dashboard-card;
+  overflow: hidden;
+
+  &-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid $dashboard-border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: $dashboard-card-bg;
+
+    h3 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: $dashboard-text;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.5rem;
+
+      .text-muted{
+        font-style: italic;
+        font-size: 0.875rem;
+      }
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+
+      .sort-select {
+        padding: 0.5rem;
+        border: 1px solid $dashboard-border;
+        border-radius: 6px;
+        background: $dashboard-card-bg;
+        color: $dashboard-text;
+        font-size: 0.8rem;
+
+        option {
+          background: $dashboard-card-bg;
+          color: $dashboard-text;
+        }
+      }
+    }
+  }
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $dashboard-card-bg;
+
+  thead {
+    background: rgba(0, 0, 0, 0.2);
+
+    th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      color: $dashboard-text;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid $dashboard-border;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: $dashboard-transition;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $dashboard-border;
+      }
+    }
+
+    td {
+      padding: 1rem 1.5rem;
+      color: $dashboard-text;
+      font-size: 0.875rem;
+      vertical-align: top;
+    }
+  }
+
+  .table-cell-title {
+    font-weight: 600;
+    color: $dashboard-text;
+    margin-bottom: 0.25rem;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover {
+        color: $primary-blue;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .table-cell-subtitle {
+    font-size: 0.8rem;
+    color: $dashboard-text-light;
+    line-height: 1.4;
+  }
+
+  .table-cell-meta {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+    margin-top: 0.25rem;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    .action-btn {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: $dashboard-transition;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      &.btn-success {
+        background: rgba($status-resolved, 0.1);
+        color: $status-resolved;
+
+        &:hover {
+          background: $status-resolved;
+          color: white;
+        }
+      }
+
+      &.btn-danger {
+        background: rgba($status-open, 0.1);
+        color: $status-open;
+
+        &:hover {
+          background: $status-open;
+          color: white;
+        }
+      }
+
+      &.btn-warning {
+        background: rgba($status-warning, 0.1);
+        color: $status-warning;
+
+        &:hover {
+          background: $status-warning;
+          color: white;
+        }
+      }
+
+      &.btn-secondary {
+        background: rgba($gray-500, 0.1);
+        color: $gray-500;
+
+        &:hover {
+          background: $gray-500;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Actions en lot - barre flottante en bas
+.bulk-actions {
+  position: fixed !important;
+  bottom: 2rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1000 !important;
+  background: rgba(30, 41, 59, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.1) !important;
+  padding: 1.25rem 2rem !important;
+  animation: bulkActionsSlideUp 0.4s ease-out !important;
+  min-width: 400px !important;
+  max-width: 600px !important;
+
+  // Effet de brillance subtile
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+  }
+
+  // Contenu interne
+  > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1.5rem !important;
+  }
+
+  .selected-count {
+    color: $white !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: $primary-blue;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  .bulk-actions-buttons {
+    display: flex !important;
+    gap: 0.75rem !important;
+  }
+}
+
+.bulk-action-btn {
+  @include dashboard-button();
+  padding: 0.75rem 1.25rem !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+  font-size: 0.875rem !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid transparent !important;
+
+  // Effet de brillance au survol
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  // Style par défaut (neutre)
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: $dashboard-text-light !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: $white !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  // Actions spécifiques
+  &[data-action="resolve"] {
+    background: rgba(34, 197, 94, 0.15) !important;
+    color: $status-resolved !important;
+    border-color: rgba(34, 197, 94, 0.3) !important;
+
+    &:hover {
+      background: rgba(34, 197, 94, 0.25) !important;
+      border-color: rgba(34, 197, 94, 0.5) !important;
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3) !important;
+    }
+  }
+
+  &[data-action="ignore"] {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: $warning-yellow !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.25) !important;
+      border-color: rgba(245, 158, 11, 0.5) !important;
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3) !important;
+    }
+  }
+
+  &[data-action="reopen"] {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: $primary-blue !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.25) !important;
+      border-color: rgba(59, 130, 246, 0.5) !important;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3) !important;
+    }
+  }
+
+  &[data-action="delete"] {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: $status-open !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25) !important;
+      border-color: rgba(239, 68, 68, 0.5) !important;
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3) !important;
+    }
+  }
+}
+
+// Animation d'apparition
+@keyframes bulkActionsSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+// Animation de disparition
+.bulk-actions.hiding {
+  animation: bulkActionsSlideDown 0.3s ease-in forwards !important;
+}
+
+@keyframes bulkActionsSlideDown {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+  }
+}

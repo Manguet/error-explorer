@@ -1,0 +1,30 @@
+.dashboard-empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: $dashboard-text-light;
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    opacity: 0.5;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: $dashboard-text;
+    font-size: 1.125rem;
+  }
+
+  p {
+    margin: 0 0 1.5rem 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  .empty-action {
+    @include dashboard-button();
+  }
+}

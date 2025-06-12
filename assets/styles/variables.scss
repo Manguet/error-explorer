@@ -1,0 +1,128 @@
+// ===== COULEURS =====
+$primary-blue: #3b82f6;
+$primary-blue-dark: #1d4ed8;
+$primary-blue-darker: #1e40af;
+$secondary-blue: #2563eb;
+$light-blue: #60a5fa;
+
+$success-green: #10b981;
+$success-green-light: #34d399;
+$warning-yellow: #f59e0b;
+$warning-yellow-light: #fbbf24;
+$error-red: #ef4444;
+$error-red-light: #f87171;
+
+$white: #ffffff;
+$black: #0f172a;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-300: #cbd5e1;
+$gray-400: #94a3b8;
+$gray-500: #64748b;
+$gray-600: #475569;
+$gray-700: #334155;
+$gray-800: #1e293b;
+$gray-900: #0f172a;
+
+// Transparences
+$white-transparent: rgba(255, 255, 255, 0.08);
+$white-border: rgba(255, 255, 255, 0.1);
+$white-semi: rgba(255, 255, 255, 0.9);
+$white-hover: rgba(255, 255, 255, 0.2);
+$black-transparent: rgba(15, 23, 42, 0.08);
+
+// ===== TYPOGRAPHIE =====
+$font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-mono: 'JetBrains Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+
+// Tailles de police
+$text-xs: 0.75rem;
+$text-sm: 0.875rem;
+$text-base: 1rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+$text-2xl: 1.5rem;
+$text-3xl: 1.875rem;
+$text-4xl: 2.25rem;
+
+// ===== ESPACEMENTS =====
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+$spacing-3xl: 4rem;
+
+// ===== BREAKPOINTS =====
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// ===== ANIMATIONS =====
+$transition-fast: 0.15s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+// ===== MIXINS CENTRALISÉS =====
+@mixin gradient-text($from, $to) {
+  background: linear-gradient(135deg, $from 0%, $to 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@mixin glass-effect($opacity: 0.08, $blur: 20px) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur($blur);
+}
+
+@mixin smooth-transition($properties: all, $duration: $transition-normal, $timing: $ease-out) {
+  transition: $properties $duration $timing;
+}
+
+@mixin hover-lift($y: -2px, $shadow-color: $primary-blue, $shadow-opacity: 0.3) {
+  transform: translateY($y);
+  box-shadow: 0 8px 25px rgba($shadow-color, $shadow-opacity);
+}
+
+@mixin card-shadow($level: 1) {
+  @if $level == 1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  } @else if $level == 2 {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  } @else if $level == 3 {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+}
+
+@mixin responsive($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (max-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (max-width: $breakpoint-xl) { @content; }
+  }
+}
+
+// Gradients communs
+@mixin gradient-primary() {
+  background: linear-gradient(135deg, $primary-blue, $primary-blue-dark);
+}
+
+@mixin gradient-success() {
+  background: linear-gradient(135deg, $success-green, #047857);
+}
+
+@mixin gradient-hero() {
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-dark 100%);
+}

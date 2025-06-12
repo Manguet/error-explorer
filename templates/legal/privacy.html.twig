@@ -1,0 +1,550 @@
+{% extends('layout/base.html.twig') %}
+
+{% block title %}Politique de Confidentialité - Error Explorer{% endblock %}
+{% block description %}Découvrez comment Error Explorer protège et traite vos données personnelles. Notre politique de confidentialité détaille nos pratiques de collecte, d'utilisation et de protection des données.{% endblock %}
+
+{% block body %}
+    <section class="legal-hero">
+        <div class="container">
+            <div class="legal-hero-content">
+                <div class="hero-badge fade-in-up">
+                    <div class="badge-dot"></div>
+                    <span>Protection des données</span>
+                </div>
+
+                <h1 class="fade-in-up">
+                    Politique de
+                    <span class="highlight">Confidentialité</span>
+                </h1>
+
+                <p class="hero-subtitle fade-in-up">
+                    Dernière mise à jour : {{ 'now'|date('d/m/Y') }}
+                </p>
+
+                <div class="legal-nav fade-in-up">
+                    <a href="#collecte" class="legal-nav-link">Collecte</a>
+                    <a href="#utilisation" class="legal-nav-link">Utilisation</a>
+                    <a href="#partage" class="legal-nav-link">Partage</a>
+                    <a href="#droits" class="legal-nav-link">Vos droits</a>
+                    <a href="#securite" class="legal-nav-link">Sécurité</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-content">
+        <div class="container">
+            <div class="legal-layout">
+                <aside class="legal-sidebar">
+                    <div class="sidebar-sticky">
+                        <h3>Sommaire</h3>
+                        <nav class="legal-toc">
+                            <ul>
+                                <li><a href="#introduction" class="toc-link">Introduction</a></li>
+                                <li><a href="#responsable" class="toc-link">Responsable de traitement</a></li>
+                                <li><a href="#collecte" class="toc-link">Données collectées</a></li>
+                                <li><a href="#utilisation" class="toc-link">Utilisation des données</a></li>
+                                <li><a href="#base-legale" class="toc-link">Base légale</a></li>
+                                <li><a href="#partage" class="toc-link">Partage des données</a></li>
+                                <li><a href="#conservation" class="toc-link">Conservation</a></li>
+                                <li><a href="#droits" class="toc-link">Vos droits</a></li>
+                                <li><a href="#securite" class="toc-link">Sécurité</a></li>
+                                <li><a href="#cookies" class="toc-link">Cookies</a></li>
+                                <li><a href="#transferts" class="toc-link">Transferts internationaux</a></li>
+                                <li><a href="#mineurs" class="toc-link">Données des mineurs</a></li>
+                                <li><a href="#modifications" class="toc-link">Modifications</a></li>
+                                <li><a href="#contact" class="toc-link">Contact</a></li>
+                            </ul>
+                        </nav>
+
+                        <div class="privacy-badge">
+                            <div class="badge-icon">🔒</div>
+                            <div class="badge-content">
+                                <h4>Conformité RGPD</h4>
+                                <p>Nous respectons scrupuleusement le RGPD et vos droits à la protection des données.</p>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-cta">
+                            <h4>Délégué à la protection des données</h4>
+                            <p>Contactez notre DPO pour toute question relative à vos données</p>
+                            <a href="mailto:dpo@errorexplorer.com" class="btn btn-primary btn-sm">
+                                <span>Contacter le DPO</span>
+                            </a>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="legal-main">
+                    <article class="legal-article">
+                        <section id="introduction" class="legal-section">
+                            <h2>Introduction</h2>
+                            <p>
+                                Error Explorer s'engage à protéger votre vie privée et vos données personnelles.
+                                Cette politique de confidentialité explique comment nous collectons, utilisons,
+                                stockons et protégeons vos informations lorsque vous utilisez notre service de
+                                monitoring d'erreurs.
+                            </p>
+                            <p>
+                                Nous respectons le Règlement Général sur la Protection des Données (RGPD)
+                                et nous nous engageons à traiter vos données de manière transparente,
+                                sécurisée et conforme à la réglementation en vigueur.
+                            </p>
+                        </section>
+
+                        <section id="responsable" class="legal-section">
+                            <h2>1. Responsable de traitement</h2>
+                            <div class="company-info">
+                                <h3>Error Explorer SAS</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <h4>Adresse</h4>
+                                        <p>123 Avenue de la Technologie<br>75001 Paris, France</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>Email</h4>
+                                        <p><a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>Téléphone</h4>
+                                        <p>+33 1 23 45 67 89</p>
+                                    </div>
+                                    <div class="info-item">
+                                        <h4>DPO</h4>
+                                        <p><a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="collecte" class="legal-section">
+                            <h2>2. Données que nous collectons</h2>
+                            <p>
+                                Nous collectons différents types de données selon votre utilisation de notre service :
+                            </p>
+
+                            <div class="data-categories">
+                                <div class="data-category">
+                                    <h3>🔐 Données de compte</h3>
+                                    <ul class="data-list">
+                                        <li><strong>Informations d'identification :</strong> nom, prénom, adresse email</li>
+                                        <li><strong>Informations professionnelles :</strong> entreprise, fonction (optionnel)</li>
+                                        <li><strong>Informations de connexion :</strong> mot de passe (chiffré), date de dernière connexion</li>
+                                        <li><strong>Préférences :</strong> paramètres de notification, langue, fuseau horaire</li>
+                                    </ul>
+                                </div>
+
+                                <div class="data-category">
+                                    <h3>⚡ Données d'erreur et de monitoring</h3>
+                                    <ul class="data-list">
+                                        <li><strong>Erreurs techniques :</strong> messages d'erreur, stack traces, fichiers et lignes concernés</li>
+                                        <li><strong>Contexte d'exécution :</strong> environnement, version de l'application, configuration</li>
+                                        <li><strong>Données de requête :</strong> URL, méthode HTTP, paramètres (anonymisés)</li>
+                                        <li><strong>Métriques de performance :</strong> temps d'exécution, utilisation mémoire</li>
+                                    </ul>
+                                </div>
+
+                                <div class="data-category">
+                                    <h3>📊 Données d'utilisation</h3>
+                                    <ul class="data-list">
+                                        <li><strong>Activité sur la plateforme :</strong> pages visitées, fonctionnalités utilisées</li>
+                                        <li><strong>Données de navigation :</strong> adresse IP, navigateur, système d'exploitation</li>
+                                        <li><strong>Statistiques d'usage :</strong> fréquence d'utilisation, préférences d'interface</li>
+                                    </ul>
+                                </div>
+
+                                <div class="data-category">
+                                    <h3>💳 Données de facturation</h3>
+                                    <ul class="data-list">
+                                        <li><strong>Informations de paiement :</strong> traitées par nos partenaires sécurisés (Stripe)</li>
+                                        <li><strong>Historique de facturation :</strong> factures, abonnements, changements de plan</li>
+                                        <li><strong>Adresse de facturation :</strong> si différente de l'adresse principale</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="utilisation" class="legal-section">
+                            <h2>3. Comment nous utilisons vos données</h2>
+                            <p>
+                                Nous utilisons vos données personnelles uniquement dans les buts suivants :
+                            </p>
+
+                            <div class="usage-purposes">
+                                <div class="purpose-item">
+                                    <div class="purpose-icon">🛠️</div>
+                                    <div class="purpose-content">
+                                        <h3>Fourniture du service</h3>
+                                        <p>Traiter et analyser les erreurs de vos applications, générer des rapports et statistiques,
+                                            envoyer des alertes et notifications selon vos préférences.</p>
+                                    </div>
+                                </div>
+
+                                <div class="purpose-item">
+                                    <div class="purpose-icon">👤</div>
+                                    <div class="purpose-content">
+                                        <h3>Gestion de votre compte</h3>
+                                        <p>Créer et maintenir votre compte utilisateur, gérer vos abonnements et facturation,
+                                            fournir un support technique personnalisé.</p>
+                                    </div>
+                                </div>
+
+                                <div class="purpose-item">
+                                    <div class="purpose-icon">📈</div>
+                                    <div class="purpose-content">
+                                        <h3>Amélioration du service</h3>
+                                        <p>Analyser l'utilisation pour améliorer nos fonctionnalités, développer de nouvelles capacités,
+                                            optimiser les performances et la sécurité.</p>
+                                    </div>
+                                </div>
+
+                                <div class="purpose-item">
+                                    <div class="purpose-icon">⚖️</div>
+                                    <div class="purpose-content">
+                                        <h3>Obligations légales</h3>
+                                        <p>Respecter nos obligations légales et réglementaires, prévenir la fraude et les abus,
+                                            assurer la sécurité de notre plateforme.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="base-legale" class="legal-section">
+                            <h2>4. Base légale du traitement</h2>
+                            <p>
+                                Nous traitons vos données personnelles sur les bases légales suivantes :
+                            </p>
+                            <div class="legal-bases">
+                                <div class="legal-base">
+                                    <h3>📋 Exécution du contrat</h3>
+                                    <p>Le traitement est nécessaire à l'exécution de notre contrat de service avec vous.</p>
+                                </div>
+                                <div class="legal-base">
+                                    <h3>✅ Consentement</h3>
+                                    <p>Vous avez donné votre consentement explicite pour certains traitements spécifiques.</p>
+                                </div>
+                                <div class="legal-base">
+                                    <h3>⚖️ Intérêt légitime</h3>
+                                    <p>Le traitement est nécessaire à nos intérêts légitimes (amélioration du service, sécurité).</p>
+                                </div>
+                                <div class="legal-base">
+                                    <h3>📜 Obligation légale</h3>
+                                    <p>Le traitement est nécessaire au respect de nos obligations légales.</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="partage" class="legal-section">
+                            <h2>5. Partage de vos données</h2>
+                            <p>
+                                Nous ne vendons, ne louons ni ne partageons vos données personnelles avec des tiers,
+                                sauf dans les cas suivants :
+                            </p>
+
+                            <div class="sharing-cases">
+                                <div class="sharing-case">
+                                    <h3>🔧 Prestataires de service</h3>
+                                    <p>
+                                        Nous pouvons partager vos données avec des prestataires soigneusement sélectionnés
+                                        qui nous aident à fournir notre service :
+                                    </p>
+                                    <ul class="legal-list">
+                                        <li><strong>Hébergement :</strong> OVH, AWS (serveurs européens uniquement)</li>
+                                        <li><strong>Paiement :</strong> Stripe (traitement sécurisé des paiements)</li>
+                                        <li><strong>Email :</strong> Mailgun (envoi de notifications)</li>
+                                        <li><strong>Analytics :</strong> Google Analytics (données anonymisées)</li>
+                                    </ul>
+                                    <p>
+                                        Tous nos prestataires sont liés par des accords de confidentialité stricts
+                                        et ne peuvent utiliser vos données que pour les services qu'ils nous fournissent.
+                                    </p>
+                                </div>
+
+                                <div class="sharing-case">
+                                    <h3>⚖️ Obligations légales</h3>
+                                    <p>
+                                        Nous pouvons divulguer vos données si la loi l'exige ou en cas de demande
+                                        légitime des autorités compétentes.
+                                    </p>
+                                </div>
+
+                                <div class="sharing-case">
+                                    <h3>🔒 Protection de nos droits</h3>
+                                    <p>
+                                        Nous pouvons partager des données pour protéger nos droits, notre propriété
+                                        ou notre sécurité, ou ceux de nos utilisateurs.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="conservation" class="legal-section">
+                            <h2>6. Conservation des données</h2>
+                            <p>
+                                Nous conservons vos données personnelles aussi longtemps que nécessaire
+                                pour fournir nos services et respecter nos obligations légales :
+                            </p>
+
+                            <div class="retention-periods">
+                                <div class="retention-item">
+                                    <h3>Données de compte</h3>
+                                    <p>Conservées tant que votre compte est actif, puis 1 an après la fermeture du compte
+                                        pour permettre une éventuelle réactivation.</p>
+                                </div>
+                                <div class="retention-item">
+                                    <h3>Données d'erreur</h3>
+                                    <p>Conservées selon la durée définie par votre plan d'abonnement
+                                        (30 jours à 1 an selon le plan).</p>
+                                </div>
+                                <div class="retention-item">
+                                    <h3>Données de facturation</h3>
+                                    <p>Conservées 10 ans conformément aux obligations comptables françaises.</p>
+                                </div>
+                                <div class="retention-item">
+                                    <h3>Logs de sécurité</h3>
+                                    <p>Conservées 1 an pour assurer la sécurité et détecter les activités suspectes.</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="droits" class="legal-section">
+                            <h2>7. Vos droits</h2>
+                            <p>
+                                Conformément au RGPD, vous disposez des droits suivants concernant vos données personnelles :
+                            </p>
+
+                            <div class="rights-grid">
+                                <div class="right-item">
+                                    <div class="right-icon">👁️</div>
+                                    <h3>Droit d'accès</h3>
+                                    <p>Vous pouvez demander l'accès à toutes les données personnelles que nous détenons sur vous.</p>
+                                </div>
+
+                                <div class="right-item">
+                                    <div class="right-icon">✏️</div>
+                                    <h3>Droit de rectification</h3>
+                                    <p>Vous pouvez demander la correction de données inexactes ou incomplètes.</p>
+                                </div>
+
+                                <div class="right-item">
+                                    <div class="right-icon">🗑️</div>
+                                    <h3>Droit à l'effacement</h3>
+                                    <p>Vous pouvez demander la suppression de vos données dans certaines circonstances.</p>
+                                </div>
+
+                                <div class="right-item">
+                                    <div class="right-icon">⏸️</div>
+                                    <h3>Droit à la limitation</h3>
+                                    <p>Vous pouvez demander la limitation du traitement de vos données.</p>
+                                </div>
+
+                                <div class="right-item">
+                                    <div class="right-icon">📋</div>
+                                    <h3>Droit à la portabilité</h3>
+                                    <p>Vous pouvez demander la portabilité de vos données dans un format structuré.</p>
+                                </div>
+
+                                <div class="right-item">
+                                    <div class="right-icon">🚫</div>
+                                    <h3>Droit d'opposition</h3>
+                                    <p>Vous pouvez vous opposer au traitement de vos données dans certains cas.</p>
+                                </div>
+                            </div>
+
+                            <div class="exercise-rights">
+                                <h3>Comment exercer vos droits</h3>
+                                <p>
+                                    Pour exercer ces droits, vous pouvez :
+                                </p>
+                                <ul class="legal-list">
+                                    <li>Accéder à votre espace personnel sur la plateforme</li>
+                                    <li>Nous contacter à <a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></li>
+                                    <li>Contacter notre DPO à <a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></li>
+                                </ul>
+                                <p>
+                                    Nous répondrons à votre demande dans un délai d'un mois maximum.
+                                    Si vous n'êtes pas satisfait de notre réponse, vous pouvez déposer
+                                    une plainte auprès de la CNIL.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section id="securite" class="legal-section">
+                            <h2>8. Sécurité des données</h2>
+                            <p>
+                                Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles
+                                appropriées pour protéger vos données personnelles :
+                            </p>
+
+                            <div class="security-measures">
+                                <div class="security-measure">
+                                    <div class="measure-icon">🔒</div>
+                                    <h3>Chiffrement</h3>
+                                    <p>Toutes les données sont chiffrées en transit (TLS 1.3) et au repos (AES-256).</p>
+                                </div>
+
+                                <div class="security-measure">
+                                    <div class="measure-icon">🛡️</div>
+                                    <h3>Accès contrôlé</h3>
+                                    <p>L'accès aux données est strictement contrôlé et limité au personnel autorisé.</p>
+                                </div>
+
+                                <div class="security-measure">
+                                    <div class="measure-icon">📋</div>
+                                    <h3>Audits réguliers</h3>
+                                    <p>Nous effectuons des audits de sécurité réguliers et des tests de pénétration.</p>
+                                </div>
+
+                                <div class="security-measure">
+                                    <div class="measure-icon">🔄</div>
+                                    <h3>Sauvegardes</h3>
+                                    <p>Vos données sont sauvegardées régulièrement et de manière sécurisée.</p>
+                                </div>
+
+                                <div class="security-measure">
+                                    <div class="measure-icon">🚨</div>
+                                    <h3>Surveillance</h3>
+                                    <p>Surveillance 24/7 des accès et détection des activités suspectes.</p>
+                                </div>
+
+                                <div class="security-measure">
+                                    <div class="measure-icon">📚</div>
+                                    <h3>Formation</h3>
+                                    <p>Notre personnel est régulièrement formé aux bonnes pratiques de sécurité.</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="cookies" class="legal-section">
+                            <h2>9. Cookies et technologies similaires</h2>
+                            <p>
+                                Nous utilisons des cookies et technologies similaires pour améliorer votre expérience :
+                            </p>
+
+                            <div class="cookies-types">
+                                <div class="cookie-type">
+                                    <h3>🔧 Cookies techniques</h3>
+                                    <p>Nécessaires au fonctionnement du site (session, authentification).
+                                        Ils ne nécessitent pas votre consentement.</p>
+                                </div>
+
+                                <div class="cookie-type">
+                                    <h3>📊 Cookies analytiques</h3>
+                                    <p>Nous permettent de comprendre comment vous utilisez notre site
+                                        pour l'améliorer (Google Analytics avec anonymisation IP).</p>
+                                </div>
+
+                                <div class="cookie-type">
+                                    <h3>⚙️ Cookies de préférences</h3>
+                                    <p>Mémorisent vos préférences (langue, thème, paramètres d'interface).</p>
+                                </div>
+                            </div>
+
+                            <p>
+                                Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur
+                                ou via notre bandeau de consentement.
+                            </p>
+                        </section>
+
+                        <section id="transferts" class="legal-section">
+                            <h2>10. Transferts internationaux</h2>
+                            <p>
+                                Vos données personnelles sont principalement traitées au sein de l'Union Européenne.
+                                Lorsque nous devons transférer des données vers des pays tiers, nous nous assurons
+                                qu'un niveau de protection adéquat est maintenu grâce à :
+                            </p>
+                            <ul class="legal-list">
+                                <li>Des décisions d'adéquation de la Commission européenne</li>
+                                <li>Des clauses contractuelles types</li>
+                                <li>Des certifications de protection des données</li>
+                            </ul>
+                        </section>
+
+                        <section id="mineurs" class="legal-section">
+                            <h2>11. Données des mineurs</h2>
+                            <p>
+                                Notre service n'est pas destiné aux personnes de moins de 16 ans.
+                                Nous ne collectons pas sciemment de données personnelles de mineurs.
+                                Si nous apprenons qu'un mineur nous a fourni des données personnelles,
+                                nous les supprimerons rapidement.
+                            </p>
+                        </section>
+
+                        <section id="modifications" class="legal-section">
+                            <h2>12. Modifications de cette politique</h2>
+                            <p>
+                                Nous pouvons modifier cette politique de confidentialité pour refléter
+                                les changements dans nos pratiques ou pour d'autres raisons opérationnelles,
+                                légales ou réglementaires.
+                            </p>
+                            <p>
+                                Les modifications importantes vous seront notifiées par email
+                                au moins 30 jours avant leur entrée en vigueur.
+                            </p>
+                        </section>
+
+                        <section id="contact" class="legal-section">
+                            <h2>13. Nous contacter</h2>
+                            <p>
+                                Pour toute question concernant cette politique de confidentialité
+                                ou le traitement de vos données personnelles :
+                            </p>
+
+                            <div class="contact-methods">
+                                <div class="contact-method">
+                                    <h3>📧 Email</h3>
+                                    <p><a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></p>
+                                </div>
+
+                                <div class="contact-method">
+                                    <h3>🛡️ Délégué à la Protection des Données</h3>
+                                    <p><a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></p>
+                                </div>
+
+                                <div class="contact-method">
+                                    <h3>📮 Courrier postal</h3>
+                                    <p>
+                                        Error Explorer SAS<br>
+                                        Service Protection des Données<br>
+                                        123 Avenue de la Technologie<br>
+                                        75001 Paris, France
+                                    </p>
+                                </div>
+
+                                <div class="contact-method">
+                                    <h3>📞 Téléphone</h3>
+                                    <p>+33 1 23 45 67 89</p>
+                                </div>
+                            </div>
+                        </section>
+                    </article>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <section class="legal-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Vos données sont entre de bonnes mains</h2>
+                <p>
+                    Nous nous engageons à protéger votre vie privée et à traiter vos données
+                    avec le plus grand respect et la plus grande sécurité.
+                </p>
+
+                <div class="cta-actions">
+                    <a href="mailto:dpo@errorexplorer.com" class="btn btn-primary">
+                        <span>Contacter notre DPO</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </a>
+                    <a href="{{ path('cgu') }}" class="btn btn-secondary">
+                        <span>Conditions d'utilisation</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

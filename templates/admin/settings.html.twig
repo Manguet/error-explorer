@@ -1,0 +1,715 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Paramètres - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header-modern">
+        <div class="page-header-content">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Paramètres
+            </h1>
+            <p>Configuration et gestion de votre plateforme Error Explorer</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumb-modern">
+        <a href="{{ path('admin_dashboard') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Admin
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <span class="breadcrumb-current">Paramètres</span>
+    </nav>
+
+    <div class="settings-layout">
+        <aside class="settings-nav">
+            <div class="settings-nav-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+                Sections
+            </div>
+            <ul class="settings-nav-list">
+                <li class="settings-nav-item">
+                    <a href="#general" class="active">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                        Général
+                    </a>
+                </li>
+                <li class="settings-nav-item">
+                    <a href="#email">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        Email & Notifications
+                    </a>
+                </li>
+                <li class="settings-nav-item">
+                    <a href="#api">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                        </svg>
+                        API & Intégrations
+                    </a>
+                </li>
+                <li class="settings-nav-item">
+                    <a href="#security">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <circle cx="12" cy="16" r="1"></circle>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Sécurité
+                    </a>
+                </li>
+                <li class="settings-nav-item">
+                    <a href="#storage">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                        Stockage & Rétention
+                    </a>
+                </li>
+                <li class="settings-nav-item">
+                    <a href="#maintenance">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                        Maintenance
+                    </a>
+                </li>
+            </ul>
+
+            <div class="settings-nav-actions">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="exportSettings()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Exporter
+                </button>
+                <label class="btn btn-sm btn-secondary" for="import-file">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17,10 12,5 7,10"></polyline>
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                    </svg>
+                    Importer
+                </label>
+                <input type="file" id="import-file" accept=".json" style="display:none;">
+            </div>
+        </aside>
+
+        <div class="settings-content">
+            <div id="section-general" class="settings-section">
+                <form method="post" action="{{ path('admin_settings_update') }}">
+                    <input type="hidden" name="section" value="general">
+                    <input type="hidden" name="_token" value="{{ csrf_token('settings') }}">
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                </svg>
+                                Informations générales
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Nom du site</label>
+                                    <input type="text" name="site_name" class="form-input"
+                                           value="{{ settings.general.site_name ?? 'Error Explorer' }}"
+                                           placeholder="Nom de votre plateforme">
+                                    <div class="form-help">Ce nom apparaît dans l'interface et les emails</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">URL du site</label>
+                                    <input type="url" name="site_url" class="form-input"
+                                           value="{{ settings.general.site_url ?? '' }}"
+                                           placeholder="https://votre-domaine.com">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea name="site_description" class="form-textarea" rows="3"
+                                          placeholder="Description de votre plateforme de monitoring d'erreurs">{{ settings.general.site_description ?? '' }}</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Taille maximale des fichiers (MB)</label>
+                                    <input type="text" name="max_file_size" class="form-input"
+                                           value="{{ (settings.general.max_file_size ?? '2MB')|replace({'MB': ''}) }}"
+                                           placeholder="10">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Durée de session (minutes)</label>
+                                    <input type="number" name="session_timeout" class="form-input"
+                                           value="{{ ((settings.general.session_timeout ?? 3600) / 60)|round }}"
+                                           placeholder="60">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9,11 12,14 22,4"></polyline>
+                                    <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                                </svg>
+                                Options de fonctionnement
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Mode maintenance</div>
+                                    <div class="toggle-description">Désactive temporairement l'accès au site pour maintenance</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="maintenance_mode" value="1"
+                                            {{ (settings.general.maintenance_mode ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Nouvelles inscriptions</div>
+                                    <div class="toggle-description">Permettre aux nouveaux utilisateurs de s'inscrire</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="registration_enabled" value="1"
+                                            {{ (settings.general.registration_enabled ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Notifications par email</div>
+                                    <div class="toggle-description">Envoyer des notifications par email aux utilisateurs</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="email_notifications" value="1"
+                                            {{ (settings.general.email_notifications ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="section-email" class="settings-section" style="display: none;">
+                <form method="post" action="{{ path('admin_settings_update') }}">
+                    <input type="hidden" name="section" value="email">
+                    <input type="hidden" name="_token" value="{{ csrf_token('settings') }}">
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                Configuration SMTP
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Serveur SMTP</label>
+                                    <input type="text" name="smtp_host" class="form-input"
+                                           value="{{ settings.email.smtp_host ?? '' }}"
+                                           placeholder="smtp.gmail.com">
+                                    <div class="form-help">Adresse du serveur SMTP de votre fournisseur email</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Port SMTP</label>
+                                    <select name="smtp_port" class="form-select">
+                                        <option value="25" {{ (settings.email.smtp_port ?? 587) == 25 ? 'selected' : '' }}>25 (Non sécurisé)</option>
+                                        <option value="587" {{ (settings.email.smtp_port ?? 587) == 587 ? 'selected' : '' }}>587 (STARTTLS - Recommandé)</option>
+                                        <option value="465" {{ (settings.email.smtp_port ?? 587) == 465 ? 'selected' : '' }}>465 (SSL/TLS)</option>
+                                        <option value="2525" {{ (settings.email.smtp_port ?? 587) == 2525 ? 'selected' : '' }}>2525 (Alternative)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Nom d'utilisateur SMTP</label>
+                                    <input type="email" name="smtp_username" class="form-input"
+                                           value="{{ settings.email.smtp_username ?? '' }}"
+                                           placeholder="votre-email@gmail.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Mot de passe SMTP</label>
+                                    <input type="password" name="smtp_password" class="form-input"
+                                           value="{{ settings.email.smtp_password ?? '' }}"
+                                           placeholder="••••••••••••">
+                                    <div class="form-help">
+                                        {% if settings.email.smtp_password %}
+                                            Mot de passe configuré. Laissez vide pour ne pas modifier.
+                                        {% else %}
+                                            Utilisez un mot de passe d'application pour Gmail/Outlook
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Email expéditeur</label>
+                                    <input type="email" name="mail_from_email" class="form-input"
+                                           value="{{ settings.email.mail_from_email ?? 'noreply@error-explorer.com' }}"
+                                           placeholder="noreply@error-explorer.com">
+                                    <div class="form-help">Adresse email qui apparaîtra comme expéditeur</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nom expéditeur</label>
+                                    <input type="text" name="mail_from_name" class="form-input"
+                                           value="{{ settings.email.mail_from_name ?? 'Error Explorer' }}"
+                                           placeholder="Error Explorer">
+                                    <div class="form-help">Nom qui apparaîtra comme expéditeur</div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Chiffrement TLS/SSL</div>
+                                    <div class="toggle-description">Utiliser une connexion sécurisée (fortement recommandé)</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="smtp_encryption" value="1"
+                                            {{ (settings.email.smtp_encryption ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" data-action="test-smtp">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                    </svg>
+                                    Tester la configuration
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                                Notifications automatiques
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Notifications admins</div>
+                                    <div class="toggle-description">Recevoir les notifications importantes par email</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="admin_notifications" value="1"
+                                            {{ (settings.email.admin_notifications ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Emails de bienvenue</div>
+                                    <div class="toggle-description">Envoyer un email de bienvenue aux nouveaux utilisateurs</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="welcome_emails" value="1"
+                                            {{ (settings.email.welcome_emails ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Alertes d'erreurs</div>
+                                    <div class="toggle-description">Envoyer des alertes email pour les nouvelles erreurs</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="error_alerts" value="1"
+                                            {{ (settings.email.error_alerts ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Seuil d'alerte limite (%)</label>
+                                <input type="number" name="limit_alert_threshold" class="form-input"
+                                       value="{{ settings.email.limit_alert_threshold ?? 80 }}"
+                                       min="50" max="95" step="5">
+                                <div class="form-help">Envoyer une alerte quand un utilisateur atteint ce pourcentage de sa limite</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Emails administrateurs</label>
+                                <textarea name="admin_emails" class="form-textarea" rows="3"
+                                          placeholder="admin@error-explorer.com&#10;tech@error-explorer.com">{{ settings.email.admin_emails ?? '' }}</textarea>
+                                <div class="form-help">Un email par ligne. Ces adresses recevront les notifications administratives.</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="section-api" class="settings-section" style="display: none;">
+                <form method="post" action="{{ path('admin_settings_update') }}">
+                    <input type="hidden" name="section" value="api">
+                    <input type="hidden" name="_token" value="{{ csrf_token('settings') }}">
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                </svg>
+                                Configuration API
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="form-group">
+                                <label class="form-label">URL de base de l'API</label>
+                                <div class="api-key-display">
+                                    <input type="text" class="api-key-value" value="{{ app.request.schemeAndHttpHost }}/api" readonly>
+                                    <button type="button" class="btn-copy" data-action="copy">Copier</button>
+                                </div>
+                                <div class="form-help">URL de base pour toutes les requêtes API</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Clé API principale</label>
+                                <div class="api-key-display">
+                                    <input type="text" name="main_api_key" class="api-key-value"
+                                           value="{{ settings.api.main_api_key ?? ('ee_sk_' ~ random()) }}" readonly>
+                                    <button type="button" class="btn-copy" data-action="copy">Copier</button>
+                                </div>
+                                <div class="form-help">Cette clé permet l'accès complet à l'API. <strong>Gardez-la secrète !</strong></div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">API publique activée</div>
+                                    <div class="toggle-description">Permettre l'accès à l'API externe</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="api_enabled" value="1"
+                                            {{ (settings.api.api_enabled ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Documentation API publique</div>
+                                    <div class="toggle-description">Rendre la documentation API accessible sans connexion</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="api_docs_public" value="1"
+                                            {{ (settings.api.api_docs_public ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Limite de requêtes par heure</label>
+                                    <input type="number" name="api_rate_limit" class="form-input"
+                                           value="{{ settings.api.api_rate_limit ?? 1000 }}"
+                                           min="100" max="10000" step="100">
+                                    <div class="form-help">Nombre maximum de requêtes API par heure par utilisateur</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Timeout API (secondes)</label>
+                                    <input type="number" name="api_timeout" class="form-input"
+                                           value="{{ settings.api.api_timeout ?? 30 }}"
+                                           min="10" max="300" step="5">
+                                    <div class="form-help">Durée maximale d'exécution d'une requête API</div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" data-action="generate-api-key">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                        <path d="M21 3v5h-5"></path>
+                                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                        <path d="M3 21v-5h5"></path>
+                                    </svg>
+                                    Régénérer la clé API
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Intégrations tierces
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Intégration Slack</div>
+                                    <div class="toggle-description">Envoyer les alertes vers Slack</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="slack_enabled" value="1"
+                                            {{ (settings.integrations.slack_enabled ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Webhook Slack URL</label>
+                                <input type="url" name="slack_webhook_url" class="form-input"
+                                       value="{{ settings.integrations.slack_webhook_url ?? '' }}"
+                                       placeholder="https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK">
+                                <div class="form-help">URL du webhook Slack pour recevoir les notifications</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Canal Slack par défaut</label>
+                                <input type="text" name="slack_default_channel" class="form-input"
+                                       value="{{ settings.integrations.slack_default_channel ?? '#errors' }}"
+                                       placeholder="#errors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Configuration Discord
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Intégration Discord</div>
+                                    <div class="toggle-description">Envoyer les alertes vers Discord</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="discord_enabled" value="1"
+                                            {{ (settings.integrations.discord_enabled ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Webhook Discord URL</label>
+                                <input type="url" name="discord_webhook_url" class="form-input"
+                                       value="{{ settings.integrations.discord_webhook_url ?? '' }}"
+                                       placeholder="https://discord.com/api/webhooks/YOUR/DISCORD/WEBHOOK">
+                                <div class="form-help">URL du webhook Discord pour recevoir les notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="section-security" class="settings-section" style="display: none;">
+                <form method="post" action="{{ path('admin_settings_update') }}">
+                    <input type="hidden" name="section" value="security">
+                    <input type="hidden" name="_token" value="{{ csrf_token('settings') }}">
+
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <h3 class="form-card-title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <circle cx="12" cy="16" r="1"></circle>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                Authentification et sessions
+                            </h3>
+                        </div>
+                        <div class="form-card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Durée de session (minutes)</label>
+                                    <input type="number" name="session_timeout" class="form-input"
+                                           value="{{ settings.security.session_timeout ?? 60 }}"
+                                           min="15" max="1440">
+                                    <div class="form-help">Temps avant déconnexion automatique</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tentatives de connexion max</label>
+                                    <input type="number" name="max_login_attempts" class="form-input"
+                                           value="{{ settings.security.max_login_attempts ?? 5 }}"
+                                           min="3" max="20">
+                                    <div class="form-help">Nombre de tentatives avant blocage temporaire</div>
+                                </div>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Authentification à deux facteurs</div>
+                                    <div class="toggle-description">Activer 2FA pour les administrateurs (TOTP)</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="two_factor_enabled" value="1"
+                                            {{ (settings.security.two_factor_enabled ?? false) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="toggle-group">
+                                <div class="toggle-info">
+                                    <div class="toggle-title">Mots de passe complexes obligatoires</div>
+                                    <div class="toggle-description">Exiger majuscules, minuscules, chiffres et caractères spéciaux</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="strong_passwords_required" value="1"
+                                            {{ (settings.security.strong_passwords_required ?? true) ? 'checked' : '' }}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="section-storage" class="settings-section" style="display: none;">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h3 class="form-card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            </svg>
+                            Statistiques de stockage
+                        </h3>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="stats-mini-grid">
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">{{ storage_stats.total_size }}</div>
+                                <div class="stat-mini-label">Espace utilisé</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">{{ storage_stats.error_groups|number_format }}</div>
+                                <div class="stat-mini-label">Erreurs stockées</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">{{ storage_stats.occurrences|number_format }}</div>
+                                <div class="stat-mini-label">Occurrences</div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="cleanupOldData()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"></polyline>
+                                    <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                                </svg>
+                                Nettoyer anciennes données
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-maintenance" class="settings-section" style="display: none;">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h3 class="form-card-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                            Informations système
+                        </h3>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="stats-mini-grid">
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">PHP {{ constant('PHP_VERSION') }}</div>
+                                <div class="stat-mini-label">Version PHP</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">{{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }}</div>
+                                <div class="stat-mini-label">Symfony</div>
+                            </div>
+                            <div class="stat-mini">
+                                <div class="stat-mini-value">{{ system_info.uptime ?? 'N/A' }}</div>
+                                <div class="stat-mini-label">Uptime</div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="clearCache()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                    <path d="M21 3v5h-5"></path>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                    <path d="M3 21v-5h5"></path>
+                                </svg>
+                                Vider le cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions-global">
+                <button type="button" class="btn btn-secondary" onclick="window.location.reload()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                        <path d="M3 21v-5h5"></path>
+                    </svg>
+                    Actualiser
+                </button>
+                <button type="button" class="btn btn-primary" id="save-all-settings">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                        <polyline points="7,3 7,8 15,8"></polyline>
+                    </svg>
+                    Enregistrer les modifications
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

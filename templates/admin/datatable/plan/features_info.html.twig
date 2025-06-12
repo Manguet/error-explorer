@@ -1,0 +1,20 @@
+<div class="features-list">
+    {% if row.hasEmailAlerts %}
+        <span class="feature-badge">Email</span>
+    {% endif %}
+    {% if row.hasApiAccess %}
+        <span class="feature-badge">API</span>
+    {% endif %}
+    {% if row.hasSlackIntegration %}
+        <span class="feature-badge">Slack</span>
+    {% endif %}
+    {% if row.hasAdvancedFilters %}
+        <span class="feature-badge">Filtres+</span>
+    {% endif %}
+    {% if row.hasPrioritySupport %}
+        <span class="feature-badge">Support</span>
+    {% endif %}
+    {% if row.hasCustomRetention %}
+        <span class="feature-badge">Rétention+</span>
+    {% endif %}
+</div>

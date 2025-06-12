@@ -1,0 +1,553 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Dashboard - Error Explorer{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Vue d'ensemble de vos erreurs et monitoring{% endblock %}
+
+{% block header_actions %}
+    <button class="header-btn btn-secondary" onclick="window.location.reload()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Actualiser
+    </button>
+    <label class="header-btn btn-secondary" style="background: none; border: 1px solid #e2e8f0; cursor: pointer;">
+        <input type="checkbox" id="auto-refresh-toggle" checked style="margin-right: 0.5rem;">
+        Auto-refresh
+    </label>
+{% endblock %}
+
+{% block body %}
+    {% if projects|length == 0 %}
+        <div class="dashboard-section">
+            <div class="welcome-banner">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h3 class="welcome-title">
+                            👋 Bienvenue {{ user.firstName }} {{ user.lastName }} !
+                        </h3>
+                        <p class="welcome-description">
+                            Votre dashboard de monitoring d'erreurs est prêt. Commencez par créer votre premier projet.
+                        </p>
+                    </div>
+                    <div class="welcome-actions">
+                        <a href="{{ path('projects_create') }}" class="welcome-btn">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Créer un projet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="dashboard-section">
+        <div class="dashboard-stats-grid">
+            <div class="dashboard-stat-card stat-danger">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Total Erreurs</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ stats.total_errors }}</div>
+                <div class="dashboard-stat-card-label">{{ stats.open_errors }} ouvertes</div>
+                <div class="dashboard-stat-card-trend trend-{% if stats.open_errors > (stats.total_errors * 0.7) %}up{% else %}down{% endif %}">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{% if stats.open_errors > (stats.total_errors * 0.7) %}M13 17h8m0 0V9m0 8l-8-8-4 4-6-6{% else %}M13 7h8m0 0v8m0-8l-8 8-4-4-6 6{% endif %}"/>
+                    </svg>
+                    Tous projets
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-warning">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Occurrences</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ stats.total_occurrences|number_format }}</div>
+                <div class="dashboard-stat-card-label">{{ stats.occurrences_today }} aujourd'hui</div>
+                <div class="dashboard-stat-card-trend trend-stable">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Volume total
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-success">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Résolues</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ stats.resolved_errors }}</div>
+                <div class="dashboard-stat-card-label">
+                    {% if stats.total_errors > 0 %}
+                        {{ ((stats.resolved_errors / stats.total_errors) * 100)|round }}% du total
+                    {% else %}
+                        Aucune erreur
+                    {% endif %}
+                </div>
+                <div class="dashboard-stat-card-trend trend-up">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    Excellent travail !
+                </div>
+            </div>
+
+            <div class="dashboard-stat-card stat-info">
+                <div class="dashboard-stat-card-header">
+                    <div class="dashboard-stat-card-title">Cette Semaine</div>
+                    <div class="dashboard-stat-card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="dashboard-stat-card-value">{{ stats.occurrences_this_week|number_format }}</div>
+                <div class="dashboard-stat-card-label">occurrences</div>
+                <div class="dashboard-stat-card-trend trend-stable">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    7 derniers jours
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="dashboard-section">
+        <div class="dashboard-filters">
+            <form method="GET" class="dashboard-filters-grid">
+                <div class="dashboard-filters-group">
+                    <label>Projet</label>
+                    <select name="project">
+                        <option value="">Tous les projets</option>
+                        {% for project in projects %}
+                            <option value="{{ project }}" {{ (filters.project ?? '') == project ? 'selected' : '' }}>
+                                {{ project }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="dashboard-filters-group">
+                    <label>Statut</label>
+                    <select name="status">
+                        <option value="">Tous les statuts</option>
+                        <option value="open" {{ (filters.status ?? '') == 'open' ? 'selected' : '' }}>Ouvertes</option>
+                        <option value="resolved" {{ (filters.status ?? '') == 'resolved' ? 'selected' : '' }}>Résolues</option>
+                        <option value="ignored" {{ (filters.status ?? '') == 'ignored' ? 'selected' : '' }}>Ignorées</option>
+                    </select>
+                </div>
+
+                <div class="dashboard-filters-group">
+                    <label>Code HTTP</label>
+                    <select name="http_status">
+                        <option value="">Tous les codes</option>
+                        <option value="403" {{ (filters.http_status ?? '') == 403 ? 'selected' : '' }}>403 - Forbidden</option>
+                        <option value="404" {{ (filters.http_status ?? '') == 404 ? 'selected' : '' }}>404 - Not Found</option>
+                        <option value="500" {{ (filters.http_status ?? '') == 500 ? 'selected' : '' }}>500 - Server Error</option>
+                        <option value="502" {{ (filters.http_status ?? '') == 502 ? 'selected' : '' }}>502 - Bad Gateway</option>
+                        <option value="503" {{ (filters.http_status ?? '') == 503 ? 'selected' : '' }}>503 - Service Unavailable</option>
+                    </select>
+                </div>
+
+                <div class="dashboard-filters-group">
+                    <label>Type d'erreur</label>
+                    <select name="error_type">
+                        <option value="">Tous les types</option>
+                        <option value="exception" {{ (filters.error_type ?? '') == 'exception' ? 'selected' : '' }}>Exception</option>
+                        <option value="error" {{ (filters.error_type ?? '') == 'error' ? 'selected' : '' }}>Error</option>
+                        <option value="warning" {{ (filters.error_type ?? '') == 'warning' ? 'selected' : '' }}>Warning</option>
+                        <option value="notice" {{ (filters.error_type ?? '') == 'notice' ? 'selected' : '' }}>Notice</option>
+                    </select>
+                </div>
+
+                <div class="dashboard-filters-group">
+                    <label>Période</label>
+                    <select name="days">
+                        <option value="1" {{ app.request.get('days', 7) == 1 ? 'selected' : '' }}>Dernières 24h</option>
+                        <option value="7" {{ app.request.get('days', 7) == 7 ? 'selected' : '' }}>7 derniers jours</option>
+                        <option value="30" {{ app.request.get('days', 7) == 30 ? 'selected' : '' }}>30 derniers jours</option>
+                        <option value="90" {{ app.request.get('days', 7) == 90 ? 'selected' : '' }}>90 derniers jours</option>
+                    </select>
+                </div>
+
+                <div class="dashboard-filters-group">
+                    <label>Recherche</label>
+                    <input type="text" name="search" value="{{ filters.search ?? '' }}" placeholder="Message, classe, fichier...">
+                </div>
+
+                <div class="dashboard-filters-actions">
+                    <button type="submit" class="filter-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+                        </svg>
+                        Filtrer
+                    </button>
+                    <a href="{{ path('dashboard_index') }}" class="filter-btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Top Projects Section (only if no project filter is active) -->
+    {% if filters.project is not defined and stats.top_projects %}
+        <div class="dashboard-section">
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-container-header">
+                    <h3>🏆 Top des projets</h3>
+                </div>
+                <div style="padding: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                        {% for project in stats.top_projects %}
+                            <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s ease;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">
+                                            {{ project.project }}
+                                        </div>
+                                        <div style="color: #64748b; font-size: 0.875rem;">
+                                            {{ project.total_occurrences }} occurrences
+                                        </div>
+                                    </div>
+                                    <a href="{{ path('dashboard_project', { project: project.project }) }}"
+                                       class="filter-btn btn-secondary"
+                                       style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;">
+                                        Voir →
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Errors Table -->
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div class="dashboard-table-container-header">
+                <h3>
+                    🚨 Erreurs récentes
+                    <span style="color: #64748b; font-weight: 400; font-size: 0.875rem; margin-left: 0.5rem;">
+                        ({{ pagination.total_items }} au total)
+                    </span>
+                </h3>
+                <div class="table-actions">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #64748b;">
+                        Trier par:
+                        <select id="sort-select" class="sort-select">
+                            <option value="lastSeen|DESC" {{ sort == 'lastSeen' and direction == 'DESC' ? 'selected' : '' }}>Plus récentes</option>
+                            <option value="occurrenceCount|DESC" {{ sort == 'occurrenceCount' and direction == 'DESC' ? 'selected' : '' }}>Plus fréquentes</option>
+                            <option value="firstSeen|ASC" {{ sort == 'firstSeen' and direction == 'ASC' ? 'selected' : '' }}>Plus anciennes</option>
+                            <option value="message|ASC" {{ sort == 'message' and direction == 'ASC' ? 'selected' : '' }}>Message A-Z</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            {% if error_groups|length > 0 %}
+                <table class="dashboard-table">
+                    <thead>
+                    <tr>
+                        <th>Erreur</th>
+                        <th>Projet</th>
+                        <th>Statut</th>
+                        <th>Occurrences</th>
+                        <th>Dernière vue</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for error in error_groups %}
+                        <tr data-error-id="{{ error.id }}">
+                            <td>
+                                <div class="table-cell-title">
+                                    <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
+                                        {{ error.title }}
+                                    </a>
+                                </div>
+                                <div class="table-cell-subtitle">
+                                    {{ error.message|length > 80 ? error.message|slice(0, 80) ~ '...' : error.message }}
+                                </div>
+                                <div class="table-cell-meta">
+                                    {% if error.httpStatusCode %}
+                                        <span class="status-badge badge-warning">HTTP {{ error.httpStatusCode }}</span>
+                                    {% endif %}
+                                    {% if error.environment %}
+                                        <span class="status-badge badge-ignored">{{ error.environment }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ path('dashboard_project', { project: error.project }) }}"
+                                   class="table-cell-title"
+                                   style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                                    {{ error.project }}
+                                </a>
+                            </td>
+                            <td>
+                                    <span class="status-badge badge-{{ error.status }}">
+                                        {{ error.status|title }}
+                                    </span>
+                            </td>
+                            <td>
+                                <div class="table-cell-title">{{ error.occurrenceCount }}</div>
+                                <div class="table-cell-meta">
+                                    Depuis {{ error.firstSeen|date('d/m/Y') }}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-cell-title">{{ error.lastSeen|date('d/m H:i') }}</div>
+                                <div class="table-cell-meta">{{ error.lastSeen|date('d/m/Y') }}</div>
+                            </td>
+                            <td>
+                                <div class="table-actions">
+                                    {% if error.status == 'open' %}
+                                        <button class="action-btn btn-success" onclick="resolveError({{ error.id }})" title="Résoudre">
+                                            ✓
+                                        </button>
+                                        <button class="action-btn btn-danger" onclick="ignoreError({{ error.id }})" title="Ignorer">
+                                            ✕
+                                        </button>
+                                    {% elseif error.status == 'resolved' %}
+                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
+                                            ↻
+                                        </button>
+                                    {% elseif error.status == 'ignored' %}
+                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
+                                            ↻
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="dashboard-empty-state">
+                    <div class="empty-icon">🎉</div>
+                    <h3>Aucune erreur trouvée</h3>
+                    {% if filters|length > 0 %}
+                        <p>Aucune erreur ne correspond à vos critères de recherche.</p>
+                        <a href="{{ path('dashboard_index') }}" class="empty-action">
+                            Voir toutes les erreurs
+                        </a>
+                    {% else %}
+                        <p>Félicitations ! Aucune erreur n'a été détectée. Continuez ainsi !</p>
+                        <a href="{{ path('projects_create') }}" class="empty-action">
+                            Créer un projet
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if pagination.total_pages > 1 %}
+                <div class="dashboard-pagination">
+                    {% if pagination.current_page > 1 %}
+                        <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: pagination.current_page - 1 })) }}">
+                            ← Précédent
+                        </a>
+                    {% endif %}
+
+                    {% for page in range(max(1, pagination.current_page - 2), min(pagination.total_pages, pagination.current_page + 2)) %}
+                        {% if page == pagination.current_page %}
+                            <span class="current">{{ page }}</span>
+                        {% else %}
+                            <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: page })) }}">
+                                {{ page }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pagination.current_page < pagination.total_pages %}
+                        <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: pagination.current_page + 1 })) }}">
+                            Suivant →
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_class %}dashboard-index{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du tri
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    const [sort, direction] = this.value.split('|');
+                    const url = new URL(window.location);
+                    url.searchParams.set('sort', sort);
+                    url.searchParams.set('direction', direction);
+                    url.searchParams.delete('page'); // Reset pagination
+                    window.location.href = url.toString();
+                });
+            }
+
+            // Actions sur les erreurs
+            window.resolveError = async function(errorId) {
+                if (!window.dashboard) {
+                    console.error('Dashboard not initialized');
+                    return;
+                }
+                const result = await window.dashboard.performAction(`{{ path('dashboard_error_resolve', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+                if (result) {
+                    updateErrorStatus(errorId, 'resolved');
+                }
+            };
+
+            window.ignoreError = async function(errorId) {
+                if (!window.dashboard) {
+                    console.error('Dashboard not initialized');
+                    return;
+                }
+                const result = await window.dashboard.performAction(`{{ path('dashboard_error_ignore', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+                if (result) {
+                    updateErrorStatus(errorId, 'ignored');
+                }
+            };
+
+            window.reopenError = async function(errorId) {
+                if (!window.dashboard) {
+                    console.error('Dashboard not initialized');
+                    return;
+                }
+                const result = await window.dashboard.performAction(`{{ path('dashboard_error_reopen', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+                if (result) {
+                    updateErrorStatus(errorId, 'open');
+                }
+            };
+
+            function updateErrorStatus(errorId, newStatus) {
+                const row = document.querySelector(`tr[data-error-id="${errorId}"]`);
+                if (row) {
+                    // Mettre à jour le badge de statut
+                    const statusBadge = row.querySelector('.badge-open, .badge-resolved, .badge-ignored');
+                    if (statusBadge) {
+                        statusBadge.className = `status-badge badge-${newStatus}`;
+                        statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                    }
+
+                    // Mettre à jour les boutons d'action
+                    const actionsCell = row.querySelector('.table-actions');
+                    if (actionsCell) {
+                        let buttonsHtml = '';
+                        if (newStatus === 'open') {
+                            buttonsHtml = `
+                                <button class="action-btn btn-success" onclick="resolveError(${errorId})" title="Résoudre">✓</button>
+                                <button class="action-btn btn-danger" onclick="ignoreError(${errorId})" title="Ignorer">✕</button>
+                            `;
+                        } else {
+                            buttonsHtml = `
+                                <button class="action-btn btn-warning" onclick="reopenError(${errorId})" title="Rouvrir">↻</button>
+                            `;
+                        }
+                        actionsCell.innerHTML = buttonsHtml;
+                    }
+
+                    // Animation de feedback
+                    row.style.background = '#dcfce7';
+                    row.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        row.style.background = '';
+                        row.style.transform = '';
+                    }, 1000);
+                }
+            }
+
+            // Auto-refresh toggle
+            const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
+            if (autoRefreshToggle) {
+                autoRefreshToggle.addEventListener('change', function() {
+                    if (this.checked && window.dashboard) {
+                        window.dashboard.startAutoRefresh();
+                    } else if (window.dashboard) {
+                        window.dashboard.stopAutoRefresh();
+                    }
+                });
+
+                // Store preference
+                autoRefreshToggle.addEventListener('change', function() {
+                    localStorage.setItem('dashboard-auto-refresh', this.checked);
+                });
+
+                // Restore preference
+                const savedPreference = localStorage.getItem('dashboard-auto-refresh');
+                if (savedPreference !== null) {
+                    autoRefreshToggle.checked = savedPreference === 'true';
+                }
+            }
+
+            // Auto-refresh des stats
+            document.addEventListener('dashboard:autoRefresh', async function() {
+                try {
+                    const params = new URLSearchParams();
+                    {% for key, value in filters %}
+                    {% if value %}
+                    params.append('{{ key }}', '{{ value }}');
+                    {% endif %}
+                    {% endfor %}
+
+                    const response = await fetch('{{ path('dashboard_api_stats') }}?' + params.toString());
+                    const stats = await response.json();
+
+                    // Mettre à jour les statistiques
+                    updateStatsDisplay(stats);
+                } catch (error) {
+                    console.error('Erreur lors du refresh des stats:', error);
+                }
+            });
+
+            function updateStatsDisplay(stats) {
+                const statCards = document.querySelectorAll('.dashboard-stat-card-value');
+                const values = [
+                    stats.total_errors || 0,
+                    (stats.total_occurrences || 0).toLocaleString(),
+                    stats.resolved_errors || 0,
+                    (stats.occurrences_this_week || 0).toLocaleString()
+                ];
+
+                statCards.forEach((card, index) => {
+                    if (values[index] !== undefined) {
+                        card.textContent = values[index];
+                        card.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            card.style.transform = '';
+                        }, 200);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

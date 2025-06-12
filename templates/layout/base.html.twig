@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Error Explorer - Monitoring d'erreurs nouvelle génération{% endblock %}</title>
+
+    <meta name="description"
+          content="{% block description %}Solution complète de monitoring d'erreurs pour applications web. Détectez, analysez et résolvez vos bugs plus rapidement que jamais.{% endblock %}">
+    <meta name="keywords"
+          content="{% block keywords %}monitoring erreurs, bug tracking, error tracking, surveillance application, debugging, APM, observabilité{% endblock %}">
+    <meta name="author" content="Error Explorer">
+    <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+
+    <link rel="canonical" href="{% block canonical %}{{ app.request.uri }}{% endblock %}">
+
+    {% block hreflang %}
+         <link rel="alternate" hreflang="en" href="{{ url(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
+    {% endblock %}
+
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ block('title') }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ app.request.uri }}{% endblock %}">
+    <meta property="og:site_name" content="Error Explorer">
+    <meta property="og:image"
+          content="{% block og_image %}{{ absolute_url(asset('images/logo.svg')) }}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="fr_FR">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@errorexplorer">
+    <meta name="twitter:creator" content="@errorexplorer">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ block('og_title') }}{% endblock %}">
+    <meta name="twitter:description"
+          content="{% block twitter_description %}{{ block('og_description') }}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ block('og_image') }}{% endblock %}">
+
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('android-chrome-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('android-chrome-512x512.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Error Explorer">
+
+    {% block preconnect %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    {% endblock %}
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    {% block structured_data %}
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "Error Explorer",
+                "applicationCategory": "DeveloperApplication",
+                "description": "Solution complète de monitoring d'erreurs pour applications web",
+                "url": "{{ app.request.schemeAndHttpHost }}",
+            "operatingSystem": "Web",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "description": "Essai gratuit disponible"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "Error Explorer"
+            }
+        }
+        </script>
+    {% endblock %}
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+</head>
+
+<body{% block body_attributes %}{% endblock %}>
+    {{ include('layout/header.html.twig') }}
+
+    <main class="main-content" role="main">
+        {% block body %}
+
+        {% endblock %}
+    </main>
+
+    {{ include('layout/footer.html.twig') }}
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,31 @@
+<div class="alert-config">
+    {% if row.alertsEnabled %}
+        <div class="config-item">
+            <span class="config-label">Email:</span>
+            <span class="config-value">{{ row.alertsEmail ?: row.owner.email }}</span>
+        </div>
+        <div class="config-item">
+            <span class="config-label">Seuil:</span>
+            <span class="config-value">{{ row.alertThreshold ?: 1 }} occurrence{{ row.alertThreshold > 1 ? 's' : '' }}</span>
+        </div>
+        <div class="config-item">
+            <span class="config-label">Délai:</span>
+            <span class="config-value">{{ row.alertCooldownMinutes ?: 30 }} min</span>
+        </div>
+        {% if row.alertStatusFilters %}
+            <div class="config-item">
+                <span class="config-label">Filtres:</span>
+                <span class="config-value">
+                    {% set filters = row.alertStatusFilters %}
+                    {% if filters %}
+                        {{ filters|join(', ') }}
+                    {% else %}
+                        Tous
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    {% else %}
+        <span class="text-muted">Non configuré</span>
+    {% endif %}
+</div>

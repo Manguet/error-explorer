@@ -1,0 +1,8 @@
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirection du sous-domaine vers le domaine principal (optionnel)
+RewriteCond %{HTTP_HOST} ^mabe6115\.odns\.fr$ [NC]
+RewriteRule ^(.*)$ https://error-explorer.com/$1 [L,R=301]

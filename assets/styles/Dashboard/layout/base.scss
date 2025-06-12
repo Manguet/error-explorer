@@ -1,0 +1,486 @@
+// Dashboard Layout Styles
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: $dashboard-sidebar-width 1fr;
+  min-height: 100vh;
+  background: $dashboard-bg;
+  position: relative;
+
+  // Grille tech animée comme le site principal
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridFloat 25s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Overlay pour profondeur
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    animation: particleFloat 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @include dashboard-responsive;
+}
+
+// Sidebar
+.dashboard-sidebar {
+  background: $dashboard-sidebar-bg;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid $dashboard-border;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  width: $dashboard-sidebar-width;
+
+  // Scrollbar custom
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Logo sidebar
+.dashboard-logo {
+  padding: 1.5rem;
+  border-bottom: 1px solid $dashboard-border;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: $dashboard-text;
+    font-weight: 700;
+    font-size: 1.125rem;
+    font-family: $font-heading;
+    transition: $dashboard-transition;
+
+    &:hover {
+      color: $primary-blue;
+      transform: translateX(2px);
+    }
+  }
+
+  img {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+}
+
+// Navigation sidebar
+.dashboard-nav {
+  padding: 1.5rem 0;
+
+  &-section {
+    margin-bottom: 2rem;
+
+    &-title {
+      color: $dashboard-text-light;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  &-item {
+    margin: 0.25rem 1rem;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      color: $dashboard-text-light;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: $dashboard-transition;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 3px;
+        height: 0;
+        background: $primary-blue;
+        border-radius: 0 2px 2px 0;
+        transform: translateY(-50%);
+        transition: $dashboard-transition;
+      }
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: $white;
+        transform: translateX(2px);
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+
+        &::before {
+          height: 20px;
+        }
+      }
+
+      &.active {
+        background: rgba(59, 130, 246, 0.15);
+        color: $white;
+        font-weight: 600;
+
+        &::before {
+          height: 24px;
+        }
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+        opacity: 0.8;
+        transition: $dashboard-transition;
+      }
+
+      &:hover svg,
+      &.active svg {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: $primary-blue;
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+}
+
+// User info sidebar
+.dashboard-user {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  border-top: 1px solid $dashboard-border;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+
+  &-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: $dashboard-text;
+    margin-bottom: 1rem;
+
+    img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid $dashboard-border;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .user-email {
+      font-size: 0.75rem;
+      color: $dashboard-text-light;
+    }
+  }
+
+  &-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex: 1;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: $dashboard-text-light;
+      text-decoration: none;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.8rem;
+      transition: $dashboard-transition;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: $white;
+      }
+    }
+  }
+}
+
+// Contenu principal
+.dashboard-content {
+  position: relative;
+  min-height: 100vh;
+  width: calc(100vw - 288px);
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  background: $dashboard-content-bg;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+// Header du contenu
+.dashboard-header {
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid $dashboard-border;
+  padding: 1.5rem $dashboard-content-padding;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  &-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  &-title {
+    h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: $dashboard-text;
+      margin: 0;
+      font-family: $font-heading;
+      text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    p {
+      color: $dashboard-text-light;
+      margin: 0.25rem 0 0 0;
+      font-size: 0.95rem;
+    }
+  }
+
+  &-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    .header-btn {
+      @include dashboard-button();
+
+      &.btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: $dashboard-text-light;
+        border: 1px solid $dashboard-border;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          color: $white;
+        }
+      }
+    }
+  }
+
+  // Breadcrumb
+  &-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: $dashboard-text-light;
+
+    a {
+      color: $primary-blue;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+    }
+  }
+}
+
+// Mobile menu toggle
+.dashboard-mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: $dashboard-sidebar-bg;
+  border: none;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 1024px) {
+    display: block;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Overlay mobile
+.dashboard-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity $dashboard-transition;
+
+  &.active {
+    display: block;
+    opacity: 1;
+  }
+}
+
+// Main content area
+.dashboard-main {
+  flex: 1;
+  padding: $dashboard-content-padding;
+
+  // Animations d'entrée
+  .dashboard-section {
+    animation: dashboardSlideIn 0.6s ease-out;
+
+    &:nth-child(even) {
+      animation-delay: 0.1s;
+    }
+
+    &+.dashboard-section {
+      margin-top: 2rem;
+    }
+  }
+}
+
+@keyframes dashboardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Status indicator live
+.dashboard-live-status {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: $dashboard-card-bg;
+  border: 1px solid $dashboard-border;
+  border-radius: 25px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: $dashboard-text;
+  z-index: 40;
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: $status-resolved;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes flashSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.nav-link-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}

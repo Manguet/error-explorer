@@ -1,0 +1,495 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Informations système - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header-modern">
+        <div class="page-header-content">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                Informations système
+            </h1>
+            <p>Vue d'ensemble de la configuration et des performances système</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <nav class="breadcrumb-modern">
+        <a href="{{ path('admin_dashboard') }}" class="breadcrumb-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Admin
+        </a>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+        </svg>
+        <span class="breadcrumb-current">Infos système</span>
+    </nav>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ php_info.version }}</div>
+                    <div class="stat-label">PHP</div>
+                </div>
+            </div>
+            <div class="stat-change {{ php_info.version starts with '8.' ? 'positive' : 'warning' }}">
+                {{ php_info.memory_limit }} RAM
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ symfony_info.version }}</div>
+                    <div class="stat-label">Symfony</div>
+                </div>
+            </div>
+            <div class="stat-change {{ symfony_info.debug ? 'warning' : 'positive' }}">
+                {{ symfony_info.environment|upper }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="9" cy="9" r="2"></circle>
+                        <path d="M21 15.5c-.5-1-1.5-2-3.5-2s-3 1-3.5 2"></path>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ system_info.os|split(' ')[0] }}</div>
+                    <div class="stat-label">Système</div>
+                </div>
+            </div>
+            <div class="stat-change neutral">
+                {% if system_info.uptime %}
+                    {{ system_info.uptime|split(',')[0] }}
+                {% else %}
+                    {{ system_info.architecture }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="system-info-grid">
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    Configuration PHP
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Version</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-{{ php_info.version starts with '8.' ? 'success' : 'warning' }}">
+                            {{ php_info.version }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Limite mémoire</div>
+                    <div class="stat-mini-value">{{ php_info.memory_limit }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Temps d'exécution max</div>
+                    <div class="stat-mini-value">{{ php_info.max_execution_time }}s</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Upload max</div>
+                    <div class="stat-mini-value">{{ php_info.upload_max_filesize }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">POST max</div>
+                    <div class="stat-mini-value">{{ php_info.post_max_size }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Fuseau horaire</div>
+                    <div class="stat-mini-value">{{ php_info.timezone }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                    </svg>
+                    Framework Symfony
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Version</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-info">{{ symfony_info.version }}</span>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Environnement</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-{{ symfony_info.environment == 'prod' ? 'success' : 'warning' }}">
+                            {{ symfony_info.environment|upper }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Mode debug</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-{{ symfony_info.debug ? 'danger' : 'success' }}">
+                            {{ symfony_info.debug ? 'Activé' : 'Désactivé' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Dossier cache</div>
+                    <div class="stat-mini-value small">{{ symfony_info.cache_dir|replace({(symfony_info.project_dir): '.'}) }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Dossier logs</div>
+                    <div class="stat-mini-value small">{{ symfony_info.log_dir|replace({(symfony_info.project_dir): '.'}) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    Données stockées
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Utilisateurs</div>
+                    <div class="stat-mini-value">{{ db_stats.users_count|number_format }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Plans</div>
+                    <div class="stat-mini-value">{{ db_stats.plans_count|number_format }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Projets</div>
+                    <div class="stat-mini-value">{{ db_stats.projects_count|number_format }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Groupes d'erreurs</div>
+                    <div class="stat-mini-value">{{ db_stats.error_groups_count|number_format }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Occurrences</div>
+                    <div class="stat-mini-value">{{ db_stats.error_occurrences_count|number_format }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                        <line x1="7" y1="2" x2="7" y2="22"></line>
+                        <line x1="17" y1="2" x2="17" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="7" x2="7" y2="7"></line>
+                        <line x1="2" y1="17" x2="7" y2="17"></line>
+                        <line x1="17" y1="17" x2="22" y2="17"></line>
+                        <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                    Serveur Web
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Logiciel</div>
+                    <div class="stat-mini-value">{{ server_info.server_software }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Nom</div>
+                    <div class="stat-mini-value">{{ server_info.server_name }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Port</div>
+                    <div class="stat-mini-value">{{ server_info.server_port }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">HTTPS</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-{{ server_info.https ? 'success' : 'warning' }}">
+                            {{ server_info.https ? 'Activé' : 'Désactivé' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Document root</div>
+                    <div class="stat-mini-value small">{{ server_info.document_root }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="9" cy="9" r="2"></circle>
+                        <path d="M21 15.5c-.5-1-1.5-2-3.5-2s-3 1-3.5 2"></path>
+                    </svg>
+                    Système d'exploitation
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">OS</div>
+                    <div class="stat-mini-value">{{ system_info.os }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Architecture</div>
+                    <div class="stat-mini-value">{{ system_info.architecture }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Nom d'hôte</div>
+                    <div class="stat-mini-value">{{ system_info.hostname }}</div>
+                </div>
+                {% if system_info.uptime %}
+                    <div class="stat-mini">
+                        <div class="stat-mini-label">Uptime</div>
+                        <div class="stat-mini-value">{{ system_info.uptime }}</div>
+                    </div>
+                {% endif %}
+                {% if system_info.load_average %}
+                    <div class="stat-mini">
+                        <div class="stat-mini-label">Charge moyenne</div>
+                        <div class="stat-mini-value">
+                            {{ system_info.load_average['1min'] }} /
+                            {{ system_info.load_average['5min'] }} /
+                            {{ system_info.load_average['15min'] }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                    Mémoire PHP
+                </h3>
+            </div>
+            <div class="info-table">
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Utilisation actuelle</div>
+                    <div class="stat-mini-value">{{ system_info.memory_usage.current }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Pic d'utilisation</div>
+                    <div class="stat-mini-value">{{ system_info.memory_usage.peak }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Utilisation réelle</div>
+                    <div class="stat-mini-value">{{ system_info.memory_usage.current_real }}</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-label">Pic réel</div>
+                    <div class="stat-mini-value">{{ system_info.memory_usage.peak_real }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if system_info.disk_usage %}
+            <div class="info-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 6v6l4 2"></path>
+                        </svg>
+                        Espace disque
+                    </h3>
+                </div>
+                <div class="info-table">
+                    <div class="stat-mini">
+                        <div class="stat-mini-label">Total</div>
+                        <div class="stat-mini-value">{{ system_info.disk_usage.total }}</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-label">Utilisé</div>
+                        <div class="stat-mini-value">{{ system_info.disk_usage.used }} ({{ system_info.disk_usage.percentage }}%)</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-label">Libre</div>
+                        <div class="stat-mini-value">{{ system_info.disk_usage.free }}</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="data-section">
+        <div class="section-header">
+            <h3 class="section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,11 12,14 22,4"></polyline>
+                    <path d="M21,12v7a2,2,0,0,1-2,2H5a2,2,0,0,1-2-2V5A2,2,0,0,1,5,3H16"></path>
+                </svg>
+                Extensions PHP
+            </h3>
+        </div>
+
+        <div class="extensions-grid">
+            {% for extension, loaded in extensions %}
+                <div class="stat-mini">
+                    <div class="stat-mini-label">{{ extension|upper }}</div>
+                    <div class="stat-mini-value">
+                        <span class="badge badge-{{ loaded ? 'success' : 'danger' }}">
+                            {{ loaded ? 'Installée' : 'Manquante' }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="maintenance-actions">
+        <div class="section-header">
+            <h3 class="section-title">Actions de maintenance</h3>
+        </div>
+        <div class="actions-grid">
+            <button type="button" class="action-btn btn btn-secondary" onclick="clearCache()">
+                <div class="action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                        <path d="M3 21v-5h5"></path>
+                    </svg>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">Vider le cache</div>
+                    <div class="action-description">Supprime les fichiers de cache Symfony</div>
+                </div>
+            </button>
+
+            <button type="button" class="action-btn btn btn-secondary" onclick="generateSystemReport()">
+                <div class="action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">Rapport système</div>
+                    <div class="action-description">Génère un rapport détaillé (JSON)</div>
+                </div>
+            </button>
+
+            <button type="button" class="action-btn btn btn-secondary" onclick="window.location.reload()">
+                <div class="action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,4 23,10 17,10"></polyline>
+                        <polyline points="1,20 1,14 7,14"></polyline>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                    </svg>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">Actualiser</div>
+                    <div class="action-description">Recharge les informations système</div>
+                </div>
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Fonction pour vider le cache (exemple - à adapter selon vos besoins)
+        function clearCache() {
+            if (confirm('Êtes-vous sûr de vouloir vider le cache ?')) {
+                showNotification('Cache en cours de vidage...', 'info');
+                // Ici vous pourriez faire un appel AJAX vers un endpoint dédié
+                setTimeout(() => {
+                    showNotification('Cache vidé avec succès', 'success');
+                }, 2000);
+            }
+        }
+
+        // Fonction pour générer un rapport système
+        function generateSystemReport() {
+            const systemData = {
+                php: {{ php_info|json_encode|raw }},
+                symfony: {{ symfony_info|json_encode|raw }},
+                server: {{ server_info|json_encode|raw }},
+                system: {{ system_info|json_encode|raw }},
+                extensions: {{ extensions|json_encode|raw }},
+                generated_at: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(systemData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'system-report-' + new Date().toISOString().split('T')[0] + '.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showNotification('Rapport système téléchargé', 'success');
+        }
+
+        // Fonction d'affichage des notifications (à adapter selon votre système)
+        function showNotification(message, type = 'info') {
+            // Implémentation basique - à remplacer par votre système de notifications
+            console.log(`[${type.toUpperCase()}] ${message}`);
+
+            // Exemple avec une alerte simple (à remplacer)
+            if (type === 'success') {
+                alert('✅ ' + message);
+            } else if (type === 'error') {
+                alert('❌ ' + message);
+            } else {
+                alert('ℹ️ ' + message);
+            }
+        }
+    </script>
+{% endblock %}

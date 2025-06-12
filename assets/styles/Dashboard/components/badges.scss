@@ -1,0 +1,29 @@
+.status-badge {
+  &.badge-open {
+    @include status-badge($status-open, $status-open);
+  }
+
+  &.badge-resolved {
+    @include status-badge($status-resolved, $status-resolved);
+  }
+
+  &.badge-ignored {
+    @include status-badge($status-ignored, $status-ignored);
+  }
+
+  &.badge-warning {
+    @include status-badge($status-warning, $status-warning);
+  }
+
+  &.badge-exception {
+    @include status-badge(#8b5cf6, #8b5cf6);
+  }
+
+  &.badge-error {
+    @include status-badge($status-open, $status-open);
+  }
+
+  &.badge-info {
+    @include status-badge($primary-blue, $primary-blue);
+  }
+}

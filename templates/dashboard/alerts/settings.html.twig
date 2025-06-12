@@ -1,0 +1,360 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block page_title %}Paramètres des alertes{% endblock %}
+{% block page_subtitle %}Configuration des notifications par email{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('alerts_logs') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Historique des alertes
+    </a>
+    <a href="{{ path('alerts_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+        Retour aux alertes
+    </a>
+    {% if global_settings.email_alerts_enabled and user.emailAlertsEnabled %}
+        <button class="header-btn btn-warning" onclick="testAlert()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+            Test d'alerte
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('alerts_index') }}">Alertes</a>
+    <span>Paramètres</span>
+{% endblock %}
+
+{% block body %}
+    <!-- Avertissement si les alertes sont désactivées globalement -->
+    {% if not global_settings.email_alerts_enabled %}
+        <div class="dashboard-section">
+            <div class="alert alert-warning">
+                <div class="alert-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <h4>Alertes désactivées globalement</h4>
+                    <p>Les alertes d'erreurs sont actuellement désactivées au niveau administrateur.</p>
+                    <p>Aucune alerte ne sera envoyée même si elles sont configurées ici.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="dashboard-section">
+        <div class="projects-edit-layout">
+            <div class="projects-edit-main">
+                <!-- Statut actuel des alertes -->
+                <div>
+                    <div class="projects-stats-grid">
+                        <div class="stat-card {% if global_settings.smtp_configured %}stat-success{% else %}stat-warning{% endif %}">
+                            <div class="stat-card-icon">
+                                {% if global_settings.smtp_configured %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if global_settings.smtp_configured %}CONFIGURÉ{% else %}NON CONFIGURÉ{% endif %}</div>
+                                <div class="stat-card-label">Serveur SMTP</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card {% if global_settings.email_alerts_enabled %}stat-success{% else %}stat-warning{% endif %}">
+                            <div class="stat-card-icon">
+                                {% if global_settings.email_alerts_enabled %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if global_settings.email_alerts_enabled %}ACTIVÉES{% else %}DÉSACTIVÉES{% endif %}</div>
+                                <div class="stat-card-label">Alertes globales</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card {% if user.emailAlertsEnabled %}stat-success{% else %}stat-warning{% endif %}">
+                            <div class="stat-card-icon">
+                                {% if user.emailAlertsEnabled %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if user.emailAlertsEnabled %}ACTIVÉES{% else %}DÉSACTIVÉES{% endif %}</div>
+                                <div class="stat-card-label">Vos alertes email</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card {% if user.criticalAlertsEnabled %}stat-success{% else %}stat-secondary{% endif %}">
+                            <div class="stat-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value">{% if user.criticalAlertsEnabled %}ACTIVÉES{% else %}DÉSACTIVÉES{% endif %}</div>
+                                <div class="stat-card-label">Alertes critiques</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de configuration -->
+                <div class="projects-form-card">
+                    <div class="projects-form-header">
+                        <div class="form-title">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Configuration de vos préférences
+                        </div>
+                    </div>
+                    <div class="projects-form-body">
+                        <form method="POST" class="form-grid">
+                            <!-- Configuration générale -->
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                    Notifications par email
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Alertes par email</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="email_alerts_enabled" value="1" 
+                                           {{ user.emailAlertsEnabled ? 'checked' : '' }}
+                                           {% if not global_settings.email_alerts_enabled %}disabled{% endif %}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <div class="form-help">Recevoir des notifications par email lors de nouvelles erreurs</div>
+                                {% if not global_settings.email_alerts_enabled %}
+                                    <div class="form-help" style="color: #f59e0b;">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                        </svg>
+                                        Les alertes sont désactivées par l'administrateur
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Alertes critiques</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" name="critical_alerts_enabled" value="1" 
+                                           {{ user.criticalAlertsEnabled ? 'checked' : '' }}
+                                           {% if not global_settings.email_alerts_enabled or not user.emailAlertsEnabled %}disabled{% endif %}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <div class="form-help">Notifications immédiates pour les erreurs critiques (erreurs 5xx, exceptions fatales)</div>
+                            </div>
+
+                            <!-- Adresse email -->
+                            <div class="form-group full-width">
+                                <label class="form-label">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    Adresse de réception
+                                </label>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Email de réception des alertes</label>
+                                <input type="email" class="form-input" value="{{ user.email }}" disabled>
+                                <div class="form-help">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Pour modifier votre adresse email, allez dans les paramètres de votre profil
+                                </div>
+                            </div>
+
+                            <!-- Boutons d'action -->
+                            <div class="form-actions full-width">
+                                <a href="{{ path('alerts_index') }}" class="header-btn btn-secondary">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    Annuler
+                                </a>
+                                <button type="submit" class="header-btn btn-primary"
+                                        {% if not global_settings.email_alerts_enabled %}disabled{% endif %}>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Enregistrer les paramètres
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar avec documentation -->
+            <div class="projects-preview-sidebar">
+                <!-- Documentation -->
+                <div class="projects-info-card">
+                    <div class="info-header">
+                        <div class="info-title">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Comment ça fonctionne
+                        </div>
+                    </div>
+                    <div class="info-body">
+                        <div class="info-items">
+                            <div class="info-item info-success">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    Alertes personnelles
+                                </div>
+                                <div class="info-item-text">Ces paramètres s'appliquent à votre compte et contrôlent si vous recevez des alertes email.</div>
+                            </div>
+
+                            <div class="info-item info-info">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                    </svg>
+                                    Configuration par projet
+                                </div>
+                                <div class="info-item-text">Chaque projet a ses propres règles d'alerte (seuils, fréquence, filtres). Configurez-les dans les paramètres de chaque projet.</div>
+                            </div>
+
+                            <div class="info-item info-warning">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                    Alertes critiques
+                                </div>
+                                <div class="info-item-text">Les alertes critiques contournent certaines restrictions de fréquence pour les erreurs importantes (5xx, fatales).</div>
+                            </div>
+
+                            <div class="info-item info-primary">
+                                <div class="info-item-title">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    Historique complet
+                                </div>
+                                <div class="info-item-text">Consultez l'historique de toutes les alertes envoyées dans la section "Historique des alertes".</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Enable/disable dependent fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailAlertsCheckbox = document.querySelector('input[name="email_alerts_enabled"]');
+            const criticalAlertsCheckbox = document.querySelector('input[name="critical_alerts_enabled"]');
+            
+            function updateDependentFields() {
+                if (criticalAlertsCheckbox) {
+                    criticalAlertsCheckbox.disabled = !emailAlertsCheckbox.checked || !{{ global_settings.email_alerts_enabled ? 'true' : 'false' }};
+                }
+            }
+            
+            if (emailAlertsCheckbox) {
+                emailAlertsCheckbox.addEventListener('change', updateDependentFields);
+                updateDependentFields();
+            }
+        });
+
+        async function testAlert() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/></svg> Envoi en cours...';
+            
+            try {
+                const response = await fetch('{{ path('alerts_test') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showFlashMessage('success', data.message);
+                } else {
+                    showFlashMessage('error', data.message);
+                }
+            } catch (error) {
+                showFlashMessage('error', 'Erreur lors de l\'envoi de l\'alerte de test');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function showFlashMessage(type, message) {
+            const flashContainer = document.getElementById('flash-messages') || createFlashContainer();
+            
+            const flashDiv = document.createElement('div');
+            flashDiv.className = `flash-message alert-${type}`;
+            flashDiv.innerHTML = `
+                ${message}
+                <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            flashContainer.appendChild(flashDiv);
+            
+            setTimeout(() => {
+                if (flashDiv.parentElement) {
+                    flashDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function createFlashContainer() {
+            const container = document.createElement('div');
+            container.id = 'flash-messages';
+            container.className = 'dashboard-flash-messages';
+            document.body.insertBefore(container, document.body.firstChild);
+            return container;
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,192 @@
+.dataTables_wrapper {
+  .dataTables_info,
+  .dataTables_paginate {
+    margin: 16px 0;
+  }
+
+  .dataTables_length,
+  .dataTables_filter{
+    margin-bottom: 16px;
+  }
+
+  .dataTables_length select,
+  .dataTables_filter input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  .dataTables_paginate {
+    .paginate_button {
+      padding: 8px 12px;
+      margin: 0 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: white;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+      }
+
+      &.current {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Personnalisation des boutons d'export
+  .dt-buttons {
+    margin-bottom: 16px;
+
+    .dt-button {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Styles spécifiques aux cellules du DataTable
+.dataTables_wrapper {
+  .dataTable {
+    // Réutiliser vos styles de table existants
+    @extend .table;
+
+    // Styles spécifiques aux colonnes
+    .plan-cell {
+      min-width: 200px;
+    }
+
+    .price-cell {
+      min-width: 120px;
+    }
+
+    .limits-cell {
+      min-width: 180px;
+    }
+
+    .features-cell {
+      min-width: 150px;
+    }
+
+    .user-count-cell {
+      min-width: 100px;
+    }
+
+    .status-cell {
+      min-width: 80px;
+    }
+
+    .actions-cell {
+      min-width: 120px;
+    }
+  }
+
+  .dataTables_info{
+    display: none;
+  }
+
+  .dataTables_paginate{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+
+    .paginate_button{
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151 !important;
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px !important;
+        padding: 8px 12px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+        }
+
+        &.current {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+        }
+
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+        }
+    }
+  }
+}
+
+// Responsive DataTable
+@media (max-width: 768px) {
+  .dataTables_wrapper {
+    .dataTables_length,
+    .dataTables_filter {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .dataTables_info,
+    .dataTables_paginate {
+      text-align: center;
+      margin-top: 16px;
+    }
+  }
+}
+
+td .dropdown-menu{
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  position: absolute;
+  z-index: 999;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  right: 50px;
+  gap: 8px;
+}
+
+td .dropdown-menu.show {
+  display: flex !important;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(10px);
+}
+
+td .dropdown-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  line-height: 1;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}

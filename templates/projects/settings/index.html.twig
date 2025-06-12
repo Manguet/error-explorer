@@ -1,0 +1,280 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Configuration des alertes - {{ parent() }}{% endblock %}
+
+{% block page_title %}Configuration des alertes{% endblock %}
+{% block page_subtitle %}Gérez les notifications pour tous vos projets{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('projects_index') }}">Projets</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Configuration des alertes</span>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        Tous les projets
+    </a>
+    <a href="{{ path('projects_create') }}" class="header-btn btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Nouveau projet
+    </a>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+    <style>
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert-icon {
+            color: #f59e0b;
+            flex-shrink: 0;
+        }
+
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .alert-content p {
+            margin: 0;
+            color: #92400e;
+        }
+
+        /* Styles pour les badges dans le datatable */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-secondary {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #374151;
+            border: 1px solid rgba(107, 114, 128, 0.2);
+        }
+
+        .badge-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .badge-light {
+            background-color: rgba(156, 163, 175, 0.1);
+            color: #6b7280;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+        }
+
+        /* Styles pour les cellules du datatable */
+        .project-cell .project-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .project-cell .project-name .project-link {
+            font-weight: 600;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .project-cell .project-name .project-link:hover {
+            text-decoration: underline;
+        }
+
+        .project-cell .project-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .project-cell .project-slug {
+            font-family: monospace;
+        }
+
+        .config-cell .alert-config {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .config-cell .config-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .config-cell .config-label {
+            font-weight: 600;
+            color: #6b7280;
+            min-width: 50px;
+        }
+
+        .config-cell .config-value {
+            color: #374151;
+        }
+
+        .actions-cell .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 0.375rem;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .table-container {
+            background: rgba(30, 41, 59, 0.95);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Avertissement si les alertes sont désactivées globalement -->
+    {% if not global_alerts_enabled %}
+        <div class="dashboard-section">
+            <div class="alert alert-warning">
+                <div class="alert-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                </div>
+                <div class="alert-content">
+                    <h4>Alertes désactivées globalement</h4>
+                    <p>Les alertes d'erreurs sont actuellement désactivées au niveau administrateur.</p>
+                    <p>Aucune alerte ne sera envoyée même si elles sont configurées ici.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="dashboard-section">
+        <div class="data-section">
+            <div class="section-header">
+                <div>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <h3 class="section-title">Configuration des alertes par projet</h3>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="window.location.reload()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Actualiser
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div id="table"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#table').initDataTables({{ datatable_settings(datatable) }}, {
+                searching: true,
+                dom: 'lTfgtpi',
+                order: [[0, 'asc']], // Trier par nom de projet par défaut
+                pageLength: 25,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.16/i18n/French.json'
+                }
+            }).then(function(dt) {
+                dt.on('draw', function() {
+                    // Réactiver les tooltips après chaque redraw si nécessaire
+                });
+            });
+        });
+    </script>
+{% endblock %}

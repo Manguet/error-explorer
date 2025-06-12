@@ -1,0 +1,143 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Paiement réussi - {{ parent() }}{% endblock %}
+
+{% block page_title %}Paiement réussi !{% endblock %}
+{% block page_subtitle %}Votre abonnement a été activé avec succès{% endblock %}
+
+{% block breadcrumb_items %}
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <a href="{{ path('billing_dashboard') }}">Facturation</a>
+    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+    <span>Succès</span>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+
+                    <h2 class="mb-3">Paiement réussi !</h2>
+
+                    <p class="lead mb-4">
+                        Merci ! Votre abonnement a été activé avec succès.
+                    </p>
+
+                    <div class="alert alert-success">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Un email de confirmation vous a été envoyé avec tous les détails de votre abonnement.
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="mb-2">Vous pouvez maintenant :</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Accéder à toutes les fonctionnalités de votre plan</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Créer vos projets</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Configurer vos alertes</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Commencer à monitorer vos erreurs</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-grid gap-2">
+{#                        <a href="{{ path('dashboard') }}" class="btn btn-primary btn-lg">#}
+{#                            <i class="fas fa-tachometer-alt me-2"></i>#}
+{#                            Accéder au dashboard#}
+{#                        </a>#}
+                        <a href="{{ path('billing_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Voir ma facturation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Prochaines étapes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <span class="badge badge-primary rounded-circle">1</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Créez votre premier projet</h6>
+                                    <p class="mb-0 text-muted">Configurez un projet pour commencer à recevoir les erreurs de votre application.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <span class="badge badge-primary rounded-circle">2</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Intégrez votre code</h6>
+                                    <p class="mb-0 text-muted">Utilisez notre SDK ou webhook pour envoyer vos erreurs à Error Explorer.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <span class="badge badge-primary rounded-circle">3</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Configurez vos alertes</h6>
+                                    <p class="mb-0 text-muted">Définissez comment et quand vous voulez être notifié des erreurs.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <span class="badge badge-primary rounded-circle">4</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6>Explorez les analytics</h6>
+                                    <p class="mb-0 text-muted">Analysez vos erreurs avec nos graphiques et statistiques détaillées.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if session_id %}
+            <div class="mt-4 text-center">
+                <small class="text-muted">
+                    Référence de transaction : {{ session_id }}
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Optionnel : Analytics ou tracking du succès du paiement
+        console.log('Payment successful');
+
+        // Vous pouvez ajouter ici du code pour :
+        // - Envoyer des événements analytics
+        // - Déclencher des actions post-achat
+        // - Configurer des cookies ou du stockage local
+    </script>
+{% endblock %}
