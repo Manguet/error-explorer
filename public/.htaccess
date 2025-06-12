@@ -1,12 +1,4 @@
-# Force HTTPS
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# Redirection du sous-domaine vers le domaine principal (optionnel)
-RewriteCond %{HTTP_HOST} ^mabe6115\.odns\.fr$ [NC]
-RewriteRule ^(.*)$ https://error-explorer.com/$1 [L,R=301]
-[mabe6115@barriere public_html]$ cat public/.htaccess
+# Configuration des types MIME pour les assets
 <IfModule mod_mime.c>
     AddType application/javascript .js
     AddType text/css .css
