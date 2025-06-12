@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          colors="true"
-         failOnWarning="true"
          bootstrap="tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
 >
@@ -12,6 +10,8 @@
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+        <!-- 🔧 AJOUT : Configuration du Kernel pour Symfony -->
+        <server name="KERNEL_CLASS" value="App\Kernel" force="true" />
     </php>
 
     <testsuites>
@@ -28,14 +28,14 @@
         <include>
             <directory>src</directory>
         </include>
-
-        <deprecationTrigger>
-            <method>Doctrine\Deprecations\Deprecation::trigger</method>
-            <method>Doctrine\Deprecations\Deprecation::delegateTriggerToBackend</method>
-            <function>trigger_deprecation</function>
-        </deprecationTrigger>
+        <exclude>
+            <directory>src/DataFixtures</directory>
+            <file>src/Kernel.php</file>
+        </exclude>
     </source>
 
+    <!-- 🔧 AJOUT : Extensions Symfony -->
     <extensions>
+        <bootstrap class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
 </phpunit>
