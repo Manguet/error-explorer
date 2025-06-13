@@ -35,7 +35,7 @@ class AuthControllerTest extends DatabaseTestCase
         $this->planRepository = $this->entityManager->getRepository(Plan::class);
     }
 
-    private function cleanDatabase(): void
+    protected function cleanDatabase(): void
     {
         // Supprimer tous les utilisateurs de test
         $users = $this->userRepository->findAll();
