@@ -4,7 +4,7 @@ namespace App\Tests\Unit\EventListener;
 
 use App\Entity\User;
 use App\EventListener\LoginEventListener;
-use App\Service\EmailService;
+use App\Service\Email\EmailService;
 use App\Service\Logs\MonologService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;

@@ -3,7 +3,9 @@
 namespace App\EventListener;
 
 use App\Entity\User;
-use App\Service\EmailService;
+use App\Service\Email\EmailPriority;
+use App\Service\Email\EmailQueueService;
+use App\Service\Email\EmailService;
 use App\Service\Logs\MonologService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -15,7 +17,7 @@ class LoginEventListener
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly EmailService $emailService,
+        private readonly EmailQueueService $emailQueueService,
         private readonly MonologService $monolog
     ) {}
 
@@ -35,15 +37,20 @@ class LoginEventListener
             $this->monolog->loginAttempt($user->getUserIdentifier(), true, $ip);
 
             $isFirstLogin = $user->isFirstLogin();
+            $wasUnverified = !$user->isVerified();
+
             $user->updateLastLoginAt();
 
+            // Cas spécial : première connexion d'un utilisateur vérifié
             if ($isFirstLogin && $user->isVerified()) {
-                $this->emailService->sendWelcomeEmail($user);
+                // Email de bienvenue avec délai pour éviter le spam
+                $this->emailQueueService->queueWelcomeEmail($user, delayMinutes: 1);
 
-                $this->monolog->businessEvent('welcome_email_sent', [
+                $this->monolog->businessEvent('welcome_email_queued', [
                     'user_id' => $user->getId(),
                     'email' => $user->getEmail(),
-                    'trigger' => 'first_login'
+                    'trigger' => 'first_login',
+                    'delay_minutes' => 1
                 ]);
             }
 
@@ -57,7 +64,8 @@ class LoginEventListener
                 'ip' => $ip,
                 'user_agent' => $userAgent,
                 'is_first_login' => $isFirstLogin,
-                'is_verified' => $user->isVerified()
+                'is_verified' => $user->isVerified(),
+                'was_unverified' => $wasUnverified,
             ]);
 
             $this->monolog->securityEvent('successful_login', [
@@ -66,13 +74,12 @@ class LoginEventListener
                 'ip' => $ip,
                 'user_agent' => $userAgent,
                 'session_id' => $request->getSession()->getId(),
-                'is_first_login' => $isFirstLogin
+                'is_first_login' => $isFirstLogin,
             ]);
-
 
         } catch (Exception $e) {
             $this->monolog->capture(
-                'Erreur lors de la mise à jour de lastLogin: ' . $e->getMessage(),
+                'Erreur lors du traitement de la connexion: ' . $e->getMessage(),
                 MonologService::SECURITY,
                 MonologService::ERROR,
                 [
@@ -83,5 +90,27 @@ class LoginEventListener
                 ]
             );
         }
+    }
+
+    /**
+     * Met en queue une notification de connexion
+     */
+    private function queueLoginNotification(User $user, ?string $ip, ?string $userAgent): void
+    {
+        $this->emailQueueService->queueEmail(
+            type: 'login_notification',
+            recipient: $user,
+            context: [
+                'login_ip' => $ip,
+                'login_user_agent' => $userAgent,
+                'login_time' => new \DateTimeImmutable(),
+            ],
+            metadata: [
+                'notification_type' => 'login',
+                'user_id' => $user->getId()
+            ],
+            priority: EmailPriority::LOW, // 5 minutes de délai
+            delaySeconds: 300
+        );
     }
 }

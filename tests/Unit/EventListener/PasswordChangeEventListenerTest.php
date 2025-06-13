@@ -4,7 +4,7 @@ namespace App\Tests\Unit\EventListener;
 
 use App\Entity\User;
 use App\EventListener\PasswordChangeEventListener;
-use App\Service\EmailService;
+use App\Service\Email\EmailService;
 use App\Service\Logs\MonologService;
 use PHPUnit\Framework\TestCase;
 

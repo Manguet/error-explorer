@@ -3,3 +3,8 @@ framework:
         dsn: '%env(MAILER_DSN)%'
         envelope:
             sender: '%env(MAILER_FROM_EMAIL)%'
+        headers:
+            From: '%env(MAILER_FROM_EMAIL)%'
+            'X-Mailer': 'Error Explorer v1.0'
+            'X-Priority': '3'
+        message_bus: false

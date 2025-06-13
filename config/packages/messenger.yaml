@@ -3,27 +3,51 @@ framework:
         failure_transport: failed
 
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            async:
+            # Transports pour différentes priorités d'emails
+            high_priority:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 5000
+                retry_strategy:
+                    max_retries: 5
+                    multiplier: 1.5
+
+            normal_priority:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 30000
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+
+            low_priority:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
                     use_notify: true
                     check_delayed_interval: 60000
                 retry_strategy:
-                    max_retries: 3
-                    multiplier: 2
+                    max_retries: 2
+                    multiplier: 3
+
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 10000
+                retry_strategy:
+                    max_retries: 10
+                    multiplier: 1.2
+
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
-
-        default_bus: messenger.bus.default
-
-        buses:
-            messenger.bus.default: []
 
         routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-            Symfony\Component\Notifier\Message\ChatMessage: async
-            Symfony\Component\Notifier\Message\SmsMessage: async
+            # Messages d'email personnalisés
+            App\Message\SendEmailMessage:
+                - high_priority
 
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            # Messages Symfony par défaut
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: normal_priority
+            Symfony\Component\Notifier\Message\ChatMessage: normal_priority
+            Symfony\Component\Notifier\Message\SmsMessage: high_priority

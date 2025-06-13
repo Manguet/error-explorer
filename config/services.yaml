@@ -14,18 +14,38 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    #### SERVICES D'IA ####
     App\Service\AiSuggestionService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
             $aiProvider: '%env(AI_PROVIDER)%'
             $openaiApiKey: '%env(OPENAI_API_KEY)%'
             $groqApiKey: '%env(GROQ_API_KEY)%'
+    ## SERVICES D'IA ####
 
-    App\Service\EmailService:
-        arguments:
-            $senderEmail: '%env(MAILER_FROM_EMAIL)%'
-            $senderName: '%env(MAILER_FROM_NAME)%'
-
+    #### SERVICES DE NOTIFICATIONS ####
     App\EventListener\LoginEventListener:
         tags:
             - { name: kernel.event_listener, event: security.interactive_login }
+    #### SERVICES DE NOTIFICATIONS ####
+
+    #### SERVICES D'EMAIL ####
+    App\Service\Email\EmailService:
+        arguments:
+            $senderEmail: '%env(MAILER_FROM_EMAIL)%'
+            $senderName: '%env(MAILER_FROM_NAME)%'
+            $maxRetries: '%env(MAILER_MAX_RETRIES)%'
+            $retryDelayMs: '%env(MAILER_RETRY_DELAY_MS)%'
+
+    App\Service\Email\EmailQueueService:
+        arguments:
+            $messageBus: '@messenger.bus.default'
+
+    App\MessageHandler\SendEmailMessageHandler:
+        tags:
+            - { name: messenger.message_handler }
+
+    App\Service\Email\EmailMonitoringService:
+        arguments:
+            $enableMetrics: '%env(bool:ENABLE_EMAIL_METRICS)%'
+    ## SERVICES D'EMAIL ####

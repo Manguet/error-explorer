@@ -3,10 +3,13 @@
 namespace App\Controller\Auth;
 
 use App\Entity\User;
+use App\EventListener\EmailVerificationEventListener;
+use App\EventListener\PasswordChangeEventListener;
 use App\Form\Register\RegistrationFormType;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
-use App\Service\EmailService;
+use App\Service\Email\EmailQueueService;
+use App\Service\Email\EmailPriority;
 use App\Service\Logs\MonologService;
 use App\Service\Logs\NotificationService;
 use DateTimeImmutable;
@@ -28,10 +31,12 @@ class AuthController extends AbstractController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly PlanRepository $planRepository,
         private readonly UserRepository $userRepository,
-        private readonly EmailService $emailService,
+        private readonly EmailQueueService $emailQueueService,
         private readonly MonologService $monolog,
         private readonly RequestStack $requestStack,
-        private readonly NotificationService $notificationService
+        private readonly NotificationService $notificationService,
+        private readonly EmailVerificationEventListener $emailVerificationListener,
+        private readonly PasswordChangeEventListener $passwordChangeListener
     ) {}
 
     #[Route('/login', name: 'app_login')]
@@ -135,7 +140,7 @@ class AuthController extends AbstractController
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $this->emailService->sendEmailVerification($user);
+            $this->emailVerificationListener->onEmailVerificationRequested($user, $this->getClientIp());
 
             $this->addFlash('success', sprintf(
                 'Bienvenue %s ! Un email de vérification a été envoyé à %s.',
@@ -155,7 +160,8 @@ class AuthController extends AbstractController
                     'plan_id' => $plan?->getId(),
                     'ip' => $this->getClientIp(),
                     'company' => $user->getCompany(),
-                    'registered_at' => $user->getCreatedAt()?->format('Y-m-d H:i:s')
+                    'registered_at' => $user->getCreatedAt()?->format('Y-m-d H:i:s'),
+                    'email_system' => 'queue_v2'
                 ],
                 type: NotificationService::TYPE_USER_REGISTERED
             );
@@ -230,18 +236,12 @@ class AuthController extends AbstractController
                     $user->generatePasswordResetToken();
                     $this->entityManager->flush();
 
-                    $this->emailService->sendPasswordReset($user);
-
-                    $this->monolog->businessEvent('password_reset_email_sent', [
-                        'user_id' => $user->getId(),
-                        'email' => $user->getEmail(),
-                        'ip' => $this->getClientIp()
-                    ]);
+                    $this->passwordChangeListener->onPasswordResetRequested($user, $this->getClientIp());
 
                 } catch (Exception $e) {
                     $this->notificationService->createNotification(
-                        title: 'Erreur envoi email de réinitialisation',
-                        description: "Impossible d'envoyer l'email de réinitialisation à {$user->getEmail()}: {$e->getMessage()}",
+                        title: 'Erreur mise en queue email de réinitialisation',
+                        description: "Impossible de mettre en queue l'email de réinitialisation pour {$user->getEmail()}: {$e->getMessage()}",
                         audiences: [NotificationService::AUDIENCE_ADMIN],
                         data: [
                             'user_id' => $user->getId(),
@@ -310,12 +310,15 @@ class AuthController extends AbstractController
 
                 $this->entityManager->flush();
 
+                $this->passwordChangeListener->onPasswordChanged($user, $this->getClientIp(), 'reset');
+
                 $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès. Vous pouvez maintenant vous connecter.');
 
                 $this->monolog->securityEvent('password_reset_success', [
                     'user_id' => $user->getId(),
                     'email' => $user->getEmail(),
-                    'ip' => $this->getClientIp()
+                    'ip' => $this->getClientIp(),
+                    'method' => 'reset'
                 ]);
 
                 return $this->redirectToRoute('app_login');
@@ -383,17 +386,14 @@ class AuthController extends AbstractController
             $user->markEmailAsVerified();
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'Votre email a été vérifié avec succès !');
+            $this->emailVerificationListener->onEmailVerified($user, $this->getClientIp());
+
+            $this->addFlash('success', 'Votre email a été vérifié avec succès ! Un email de bienvenue va vous être envoyé.');
 
             $this->monolog->securityEvent('email_verified', [
                 'user_id' => $user->getId(),
                 'email' => $user->getEmail(),
                 'ip' => $this->getClientIp()
-            ]);
-
-            $this->monolog->businessEvent('user_email_verified', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail()
             ]);
 
             return $this->render('auth/verify_email.html.twig', [
@@ -448,13 +448,7 @@ class AuthController extends AbstractController
                 $user->generateEmailVerificationToken();
                 $this->entityManager->flush();
 
-                $this->emailService->sendEmailVerification($user);
-
-                $this->monolog->businessEvent('email_verification_resent', [
-                    'user_id' => $user->getId(),
-                    'email' => $user->getEmail(),
-                    'ip' => $this->getClientIp()
-                ]);
+                $this->emailVerificationListener->onEmailVerificationRequested($user, $this->getClientIp());
 
             } catch (Exception $e) {
                 $this->monolog->capture(
@@ -498,6 +492,113 @@ class AuthController extends AbstractController
         return $this->json([
             'valid' => !$existingUser,
             'message' => $existingUser ? 'Un compte avec cet email existe déjà' : 'Email disponible'
+        ]);
+    }
+
+    /**
+     * Endpoint pour désabonnement des emails
+     */
+    #[Route('/unsubscribe/{token}', name: 'user_unsubscribe')]
+    public function unsubscribe(string $token): Response
+    {
+        $user = $this->userRepository->findOneBy(['unsubscribeToken' => $token]);
+
+        if (!$user) {
+            $this->addFlash('error', 'Lien de désabonnement invalide ou expiré.');
+            return $this->redirectToRoute('home');
+        }
+
+        if ($user->isUnsubscribed()) {
+            $this->addFlash('info', 'Vous êtes déjà désabonné des emails.');
+        } else {
+            $user->setIsUnsubscribed(true);
+            $user->setUpdatedAt(new DateTimeImmutable());
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Vous avez été désabonné avec succès des emails.');
+
+            $this->monolog->businessEvent('user_unsubscribed', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'ip' => $this->getClientIp()
+            ]);
+        }
+
+        return $this->render('auth/unsubscribe.html.twig', [
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * API pour vérifier le statut du système d'email
+     */
+    #[Route('/api/email/health', name: 'api_email_health', methods: ['GET'])]
+    public function emailHealthCheck(): Response
+    {
+        try {
+            // Vérifier que les services sont disponibles
+            $queueHealthy = $this->emailQueueService instanceof EmailQueueService;
+
+            return $this->json([
+                'status' => 'healthy',
+                'timestamp' => (new \DateTimeImmutable())->format('c'),
+                'checks' => [
+                    'email_queue_service' => $queueHealthy ? 'ok' : 'error',
+                    'messenger_available' => class_exists('Symfony\Component\Messenger\MessageBusInterface') ? 'ok' : 'error'
+                ],
+                'version' => '2.0', // Nouvelle version du système
+                'features' => [
+                    'queue_system' => true,
+                    'priority_routing' => true,
+                    'retry_mechanism' => true,
+                    'monitoring' => true
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->json([
+                'status' => 'unhealthy',
+                'timestamp' => (new \DateTimeImmutable())->format('c'),
+                'error' => $e->getMessage()
+            ], 503);
+        }
+    }
+
+    /**
+     * Endpoint pour traquer les ouvertures d'emails (pixel de tracking)
+     */
+    #[Route('/track/email/{data}', name: 'track_email_open', methods: ['GET'])]
+    public function trackEmailOpen(string $data): Response
+    {
+        try {
+            $decodedData = json_decode(base64_decode($data), true);
+
+            if ($decodedData && isset($decodedData['user_id'], $decodedData['email_type'])) {
+                $this->monolog->businessEvent('email_opened', [
+                    'user_id' => $decodedData['user_id'],
+                    'email_type' => $decodedData['email_type'],
+                    'opened_at' => (new \DateTimeImmutable())->format('c'),
+                    'ip' => $this->getClientIp(),
+                    'user_agent' => $this->requestStack->getCurrentRequest()?->headers->get('User-Agent'),
+                    'tracking_version' => '2.0'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            // Ignorer silencieusement les erreurs de tracking
+            $this->monolog->businessEvent('email_tracking_error', [
+                'error' => $e->getMessage(),
+                'data' => $data
+            ]);
+        }
+
+        $pixelData = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+
+        return new Response($pixelData, 200, [
+            'Content-Type' => 'image/gif',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
         ]);
     }
 

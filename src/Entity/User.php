@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -123,8 +124,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $passwordResetRequestedAt = null;
 
-
-    // Préférences d'alertes
     #[ORM\Column]
     private bool $emailAlertsEnabled = true;
 
@@ -133,6 +132,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $weeklyReportsEnabled = false;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isUnsubscribed = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $unsubscribeToken = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private bool $loginNotificationsEnabled = true;
+
+    #[ORM\Column(type: 'string', length: 45, nullable: true)]
+    private ?string $lastLoginIp = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $lastLoginUserAgent = null;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $loginCount = 0;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?DateTimeImmutable $firstLoginAt = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $emailPreferences = null;
 
     public function __construct()
     {
@@ -786,5 +809,136 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->getFullName() ?: $this->email ?: 'Utilisateur';
+    }
+
+    /**
+     * Gestion des désabonnements
+     */
+    public function isUnsubscribed(): bool
+    {
+        return $this->isUnsubscribed;
+    }
+
+    public function setIsUnsubscribed(bool $isUnsubscribed): self
+    {
+        $this->isUnsubscribed = $isUnsubscribed;
+        return $this;
+    }
+
+    public function getUnsubscribeToken(): ?string
+    {
+        return $this->unsubscribeToken;
+    }
+
+    public function generateUnsubscribeToken(): self
+    {
+        $this->unsubscribeToken = bin2hex(random_bytes(32));
+        return $this;
+    }
+
+    /**
+     * Gestion des notifications de connexion
+     */
+    public function hasLoginNotificationsEnabled(): bool
+    {
+        return $this->loginNotificationsEnabled;
+    }
+
+    public function setLoginNotificationsEnabled(bool $enabled): self
+    {
+        $this->loginNotificationsEnabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * Gestion des informations de connexion
+     */
+    public function getLastLoginIp(): ?string
+    {
+        return $this->lastLoginIp;
+    }
+
+    public function setLastLoginIp(?string $lastLoginIp): self
+    {
+        $this->lastLoginIp = $lastLoginIp;
+        return $this;
+    }
+
+    public function getLastLoginUserAgent(): ?string
+    {
+        return $this->lastLoginUserAgent;
+    }
+
+    public function setLastLoginUserAgent(?string $lastLoginUserAgent): self
+    {
+        $this->lastLoginUserAgent = $lastLoginUserAgent;
+        return $this;
+    }
+
+    public function getLoginCount(): int
+    {
+        return $this->loginCount;
+    }
+
+    public function getFirstLoginAt(): ?DateTimeImmutable
+    {
+        return $this->firstLoginAt;
+    }
+
+    /**
+     * Gestion des préférences email
+     */
+    public function getEmailPreferences(): array
+    {
+        return $this->emailPreferences ?? [
+            'marketing' => true,
+            'security_alerts' => true,
+            'login_notifications' => true,
+            'digest' => true,
+            'product_updates' => true,
+            'plan_notifications' => true
+        ];
+    }
+
+    public function setEmailPreferences(array $preferences): self
+    {
+        $this->emailPreferences = $preferences;
+        return $this;
+    }
+
+    public function updateEmailPreference(string $type, bool $enabled): self
+    {
+        $preferences = $this->getEmailPreferences();
+        $preferences[$type] = $enabled;
+        $this->emailPreferences = $preferences;
+        return $this;
+    }
+
+    public function canReceiveEmailType(string $type): bool
+    {
+        // Certains emails ne peuvent pas être désactivés (sécurité, légal)
+        $alwaysAllowed = ['email_verification', 'password_reset', 'password_changed', 'account_locked'];
+
+        if (in_array($type, $alwaysAllowed)) {
+            return true;
+        }
+
+        // Vérifier si l'utilisateur est complètement désabonné
+        if ($this->isUnsubscribed) {
+            return false;
+        }
+
+        // Vérifier les préférences spécifiques
+        $preferences = $this->getEmailPreferences();
+
+        return match($type) {
+            'welcome', 'plan_expired', 'plan_expiring_warning' => $preferences['plan_notifications'] ?? true,
+            'weekly_digest', 'monthly_report' => $preferences['digest'] ?? true,
+            'security_alert', 'suspicious_login' => $preferences['security_alerts'] ?? true,
+            'login_notification' => $preferences['login_notifications'] ?? true,
+            'marketing', 'newsletter' => $preferences['marketing'] ?? true,
+            'product_updates', 'feature_announcement' => $preferences['product_updates'] ?? true,
+            default => true
+        };
     }
 }

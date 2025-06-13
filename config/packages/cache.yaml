@@ -1,10 +1,11 @@
 framework:
     cache:
         app: cache.adapter.filesystem
-        # app: cache.adapter.redis
-        # default_redis_provider: redis://localhost
-
         pools:
-            security.rate_limiter:
-                adapter: cache.app
-                default_lifetime: 900 # 15 minutes
+            email.templates:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 3600
+
+            email.stats:
+                adapter: cache.adapter.filesystem
+                default_lifetime: 300
