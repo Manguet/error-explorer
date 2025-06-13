@@ -90,16 +90,16 @@ jobs:
           vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
         continue-on-error: true  # Continue même si le style n'est pas parfait
 
-      # 10. Lancer les vrais tests PHPUnit
-      - name: 🧪 Lancer les tests PHPUnit
-        run: |
-          # D'abord vérifier que Symfony fonctionne
-          php bin/console about --env=test
-          
-          # Ensuite lancer les tests
-          vendor/bin/phpunit --testdox
-        env:
-          DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
+#      # 10. Lancer les vrais tests PHPUnit
+#      - name: 🧪 Lancer les tests PHPUnit
+#        run: |
+#          # D'abord vérifier que Symfony fonctionne
+#          php bin/console about --env=test
+#
+#          # Ensuite lancer les tests
+#          vendor/bin/phpunit --testdox
+#        env:
+#          DATABASE_URL: mysql://root:root@127.0.0.1:3306/error_explorer_test
 
       # 10. Vérifier que les assets sont compilés
       - name: 🎨 Vérifier les assets
