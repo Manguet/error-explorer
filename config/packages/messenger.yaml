@@ -7,6 +7,7 @@ framework:
             high_priority:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
+                    queue_name: 'high_priority'
                     use_notify: true
                     check_delayed_interval: 5000
                 retry_strategy:
@@ -16,6 +17,7 @@ framework:
             normal_priority:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
+                    queue_name: 'normal_priority'
                     use_notify: true
                     check_delayed_interval: 30000
                 retry_strategy:
@@ -25,6 +27,7 @@ framework:
             low_priority:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
+                    queue_name: 'low_priority'
                     use_notify: true
                     check_delayed_interval: 60000
                 retry_strategy:
@@ -34,6 +37,7 @@ framework:
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
+                    queue_name: 'async'
                     use_notify: true
                     check_delayed_interval: 10000
                 retry_strategy:

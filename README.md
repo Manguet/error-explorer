@@ -149,3 +149,10 @@ Performance : Index BDD sur fingerprint, project, dates
 Alertes : Basées sur nombre d'occurrences
 
 Cette architecture vous donne une solution complète de monitoring d'erreurs, facilement déployable et hautement customisable ! 🎯
+
+Commandes Utiles : 
+
+~/bin/messenger-status.sh        # Vérifier le statut
+~/bin/messenger-watch.sh         # Surveillance temps réel  
+~/bin/messenger-diagnostic.sh    # Diagnostic complet
+tail -f ~/logs/messenger_worker.log  # Logs en direct

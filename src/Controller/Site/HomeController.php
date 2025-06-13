@@ -181,8 +181,8 @@ class HomeController extends AbstractController
             try {
                 // Créer l'email
                 $email = (new Email())
-                    ->from('noreply@errorexplorer.com')
-                    ->to('contact@errorexplorer.com')
+                    ->from('error.explorer.contact@gmail.com')
+                    ->to('error.explorer.contact@gmail.com')
                     ->replyTo($data['email'])
                     ->subject('[Contact] ' . $data['subject'])
                     ->html($this->renderView('emails/contact.html.twig', [
