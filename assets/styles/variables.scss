@@ -1,4 +1,4 @@
-// ===== COULEURS =====
+// ===== COLORS =====
 $primary-blue: #3b82f6;
 $primary-blue-dark: #1d4ed8;
 $primary-blue-darker: #1e40af;
@@ -25,7 +25,7 @@ $gray-700: #334155;
 $gray-800: #1e293b;
 $gray-900: #0f172a;
 
-// Transparences
+// ==== TRANSPARENTS =====
 $white-transparent: rgba(255, 255, 255, 0.08);
 $white-border: rgba(255, 255, 255, 0.1);
 $white-semi: rgba(255, 255, 255, 0.9);
@@ -37,7 +37,7 @@ $font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
 $font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 $font-mono: 'JetBrains Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
 
-// Tailles de police
+// ===== FONTS SIZES =====
 $text-xs: 0.75rem;
 $text-sm: 0.875rem;
 $text-base: 1rem;
@@ -47,7 +47,7 @@ $text-2xl: 1.5rem;
 $text-3xl: 1.875rem;
 $text-4xl: 2.25rem;
 
-// ===== ESPACEMENTS =====
+// ===== SPACING =====
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
@@ -55,6 +55,27 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 $spacing-3xl: 4rem;
+
+// ===== HEADER HEIGHT =====
+$header-height-desktop: 94px; // 920px et plus
+$header-height-mobile: 73px;  // moins de 920px
+$header-breakpoint: 920px;
+
+// ===== RAYONS DE BORDURE =====
+$radius-xs: 0.125rem;   // 2px
+$radius-sm: 0.25rem;    // 4px
+$radius-md: 0.375rem;   // 6px
+$radius-lg: 0.5rem;     // 8px
+$radius-xl: 0.75rem;    // 12px
+$radius-2xl: 1rem;      // 16px
+$radius-full: 9999px;   // Pilules
+
+// ===== Z-INDEX =====
+$z-dropdown: 1000;
+$z-header: 1000;
+$z-modal: 1050;
+$z-overlay: 1025;
+$z-tooltip: 1100;
 
 // ===== BREAKPOINTS =====
 $breakpoint-sm: 640px;
@@ -70,7 +91,13 @@ $transition-slow: 0.5s;
 $ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 $ease-out: cubic-bezier(0, 0, 0.2, 1);
 
-// ===== MIXINS CENTRALISÉS =====
+// ===== ACCESSIBILITÉ =====
+$focus-ring-width: 2px;
+$focus-ring-offset: 2px;
+$focus-ring-color: $primary-blue;
+$min-touch-target: 44px;
+
+// ===== MIXINS =====
 @mixin gradient-text($from, $to) {
   background: linear-gradient(135deg, $from 0%, $to 100%);
   -webkit-background-clip: text;
@@ -103,7 +130,9 @@ $ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
 
 @mixin responsive($breakpoint) {
-  @if $breakpoint == 'sm' {
+  @if $breakpoint == 'header' {
+    @media (max-width: #{$header-breakpoint - 1px}) { @content; }
+  } @else if $breakpoint == 'sm' {
     @media (max-width: $breakpoint-sm) { @content; }
   } @else if $breakpoint == 'md' {
     @media (max-width: $breakpoint-md) { @content; }
@@ -114,7 +143,12 @@ $ease-out: cubic-bezier(0, 0, 0.2, 1);
   }
 }
 
-// Gradients communs
+@mixin focus-ring($color: $focus-ring-color) {
+  outline: $focus-ring-width solid $color;
+  outline-offset: $focus-ring-offset;
+}
+
+// ===== GRADIENTS =====
 @mixin gradient-primary() {
   background: linear-gradient(135deg, $primary-blue, $primary-blue-dark);
 }

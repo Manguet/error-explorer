@@ -1,33 +1,53 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
-  color: #1e293b;
+  color: $gray-800;
+  font-family: $font-body;
+  line-height: 1.6;
   overflow-x: hidden;
+  background-color: $gray-900;
+}
+
+.main-content {
+  padding-top: $header-height-desktop;
+  min-height: calc(100vh - #{$header-height-desktop});
+
+  @media (max-width: #{$header-breakpoint - 1px}) {
+    padding-top: $header-height-mobile;
+    min-height: calc(100vh - #{$header-height-mobile});
+  }
 }
 
 h1, h2, h3, h4, h5, h6, .logo-text {
   font-family: $font-heading;
 }
 
-body, p, a, span, .btn {
-  font-family: $font-body;
-}
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+  ::-webkit-scrollbar-track {
+    background: $black;
+  }
 
-::-webkit-scrollbar-track {
-  background: $black;
-}
+  ::-webkit-scrollbar-thumb {
+    background: $primary-blue;
+    border-radius: 20px;
+  }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: $primary-blue;
-  border-radius: 20px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: $primary-blue-dark;
+  ::-webkit-scrollbar-thumb:hover {
+    background: $primary-blue-dark;
+  }
 }
