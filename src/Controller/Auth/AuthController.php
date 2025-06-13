@@ -8,6 +8,7 @@ use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
 use App\Service\Logs\MonologService;
+use App\Service\Logs\NotificationService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -29,7 +30,8 @@ class AuthController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly EmailService $emailService,
         private readonly MonologService $monolog,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
+        private readonly NotificationService $notificationService
     ) {}
 
     #[Route('/login', name: 'app_login')]
@@ -141,32 +143,39 @@ class AuthController extends AbstractController
                 $user->getEmail()
             ));
 
-            $this->monolog->businessEvent('user_registered', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'plan' => $plan?->getName(),
-                'ip' => $this->getClientIp()
-            ]);
-
-            $this->monolog->securityEvent('registration_success', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'ip' => $this->getClientIp()
-            ]);
+            $this->notificationService->createNotification(
+                title: 'Nouvel utilisateur inscrit',
+                description: "{$user->getFirstName()} {$user->getLastName()} ({$user->getEmail()}) vient de s'inscrire avec le plan {$plan?->getName()}.",
+                audiences: [NotificationService::AUDIENCE_ADMIN],
+                data: [
+                    'user_id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'name' => $user->getFirstName() . ' ' . $user->getLastName(),
+                    'plan' => $plan?->getName(),
+                    'plan_id' => $plan?->getId(),
+                    'ip' => $this->getClientIp(),
+                    'company' => $user->getCompany(),
+                    'registered_at' => $user->getCreatedAt()?->format('Y-m-d H:i:s')
+                ],
+                type: NotificationService::TYPE_USER_REGISTERED
+            );
 
             return $this->redirectToRoute('app_verify_email_pending');
 
         } catch (Exception $e) {
-            $this->monolog->capture(
-                'Erreur lors de l\'inscription: ' . $e->getMessage(),
-                MonologService::BUSINESS,
-                MonologService::ERROR,
-                [
+            $this->notificationService->createNotification(
+                title: 'Erreur lors d\'une inscription',
+                description: "Erreur technique lors de l'inscription de {$user->getEmail()}: {$e->getMessage()}",
+                audiences: [NotificationService::AUDIENCE_ADMIN],
+                data: [
                     'email' => $user->getEmail(),
                     'plan' => $plan?->getName(),
+                    'error' => $e->getMessage(),
                     'ip' => $this->getClientIp(),
-                    'exception' => $e->getTraceAsString()
-                ]
+                    'trace' => $e->getTraceAsString()
+                ],
+                type: 'system_error',
+                priority: NotificationService::PRIORITY_HIGH
             );
 
             $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.');
@@ -198,6 +207,22 @@ class AuthController extends AbstractController
                 'ip' => $this->getClientIp()
             ]);
 
+            if (!$user) {
+                $this->notificationService->createNotification(
+                    title: 'Tentative de réinitialisation sur email inexistant',
+                    description: "Quelqu'un a tenté de réinitialiser le mot de passe pour {$email} (compte inexistant).",
+                    audiences: [NotificationService::AUDIENCE_ADMIN],
+                    expireAfter: '+24 hours',
+                    data: [
+                        'email' => $email,
+                        'ip' => $this->getClientIp(),
+                        'user_agent' => $request->headers->get('User-Agent')
+                    ],
+                    type: 'security_alert',
+                    priority: NotificationService::PRIORITY_LOW
+                );
+            }
+
             $this->addFlash('success', 'Si un compte avec cet email existe, vous recevrez un lien de réinitialisation sous peu.');
 
             if ($user) {
@@ -214,16 +239,17 @@ class AuthController extends AbstractController
                     ]);
 
                 } catch (Exception $e) {
-                    $this->monolog->capture(
-                        'Erreur lors de l\'envoi de l\'email de réinitialisation: ' . $e->getMessage(),
-                        MonologService::BUSINESS,
-                        MonologService::ERROR,
-                        [
-                            'email' => $user->getEmail(),
+                    $this->notificationService->createNotification(
+                        title: 'Erreur envoi email de réinitialisation',
+                        description: "Impossible d'envoyer l'email de réinitialisation à {$user->getEmail()}: {$e->getMessage()}",
+                        audiences: [NotificationService::AUDIENCE_ADMIN],
+                        data: [
                             'user_id' => $user->getId(),
-                            'ip' => $this->getClientIp(),
-                            'exception' => $e->getTraceAsString()
-                        ]
+                            'email' => $user->getEmail(),
+                            'error' => $e->getMessage()
+                        ],
+                        type: 'system_error',
+                        priority: NotificationService::PRIORITY_HIGH
                     );
                 }
             }
@@ -244,11 +270,19 @@ class AuthController extends AbstractController
         $user = $this->userRepository->findOneBy(['passwordResetToken' => $token]);
 
         if (!$user || !$user->isPasswordResetTokenValid()) {
-            // Log de la tentative avec token invalide
-            $this->monolog->securityEvent('password_reset_invalid_token', [
-                'token' => $token,
-                'ip' => $this->getClientIp()
-            ]);
+
+            $this->notificationService->createNotification(
+                title: 'Tentative de réinitialisation avec token invalide',
+                description: "Quelqu'un a tenté d'utiliser un token de réinitialisation invalide ou expiré.",
+                audiences: [NotificationService::AUDIENCE_ADMIN],
+                data: [
+                    'token' => substr($token, 0, 10) . '...',
+                    'ip' => $this->getClientIp(),
+                    'user_found' => $user !== null,
+                    'token_valid' => $user?->isPasswordResetTokenValid()
+                ],
+                type: 'security_alert'
+            );
 
             $this->addFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
             return $this->redirectToRoute('app_forgot_password');
@@ -323,10 +357,17 @@ class AuthController extends AbstractController
         $user = $this->userRepository->findOneBy(['emailVerificationToken' => $token]);
 
         if (!$user) {
-            $this->monolog->securityEvent('email_verification_invalid_token', [
-                'token' => $token,
-                'ip' => $this->getClientIp()
-            ]);
+            $this->notificationService->createNotification(
+                title: 'Tentative de vérification avec token invalide',
+                description: 'Quelqu\'un a tenté de vérifier un email avec un token invalide.',
+                audiences: [NotificationService::AUDIENCE_ADMIN],
+                data: [
+                    'token' => substr($token, 0, 10) . '...',
+                    'ip' => $this->getClientIp()
+                ],
+                type: 'security_alert',
+                priority: NotificationService::PRIORITY_LOW
+            );
 
             return $this->render('auth/verify_email.html.twig', [
                 'verification_status' => 'invalid'
@@ -360,6 +401,7 @@ class AuthController extends AbstractController
             ]);
 
         } catch (Exception $e) {
+
             $this->monolog->capture(
                 'Erreur lors de la vérification d\'email: ' . $e->getMessage(),
                 MonologService::BUSINESS,

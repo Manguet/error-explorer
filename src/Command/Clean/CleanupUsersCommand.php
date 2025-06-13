@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Clean;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;

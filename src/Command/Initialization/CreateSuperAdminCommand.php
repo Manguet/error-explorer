@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Initialization;
 
 use App\Entity\Plan;
 use App\Entity\User;
