@@ -1,6 +1,9 @@
 monolog:
     channels:
-        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - deprecation
+        - security
+        - business
+        - performance
 
 when@dev:
     monolog:
@@ -10,14 +13,20 @@ when@dev:
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 channels: ["!event"]
-            # uncomment to get logging in your browser
-            # you may have to allow bigger header sizes in your Web server configuration
-            #firephp:
-            #    type: firephp
-            #    level: info
-            #chromephp:
-            #    type: chromephp
-            #    level: info
+
+            error:
+                type: stream
+                path: "%kernel.logs_dir%/errors.log"
+                level: error
+                channels: ["!event", "!deprecation"]
+
+            security:
+                type: stream
+                path: "%kernel.logs_dir%/security.log"
+                level: info
+                channels: [security]
+
+
             console:
                 type: console
                 process_psr_3_messages: false
@@ -32,10 +41,18 @@ when@test:
                 handler: nested
                 excluded_http_codes: [404, 405]
                 channels: ["!event"]
+                buffer_size: 50
+
             nested:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+
+            test_errors:
+                type: stream
+                path: "%kernel.logs_dir%/test_errors.log"
+                level: error
+                channels: ["!event", "!deprecation"]
 
 when@prod:
     monolog:
@@ -45,18 +62,39 @@ when@prod:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+                buffer_size: 50
+
             nested:
-                type: stream
-                path: php://stderr
+                type: rotating_file
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+                max_files: 30
                 formatter: monolog.formatter.json
+
+            error:
+                type: rotating_file
+                path: "%kernel.logs_dir%/errors.log"
+                level: error
+                max_files: 90
+                channels: ["!event", "!deprecation"]
+                formatter: monolog.formatter.json
+
+            security:
+                type: rotating_file
+                path: "%kernel.logs_dir%/security.log"
+                level: info
+                channels: [security]
+                max_files: 365
+                formatter: monolog.formatter.json
+
             console:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine"]
+
             deprecation:
-                type: stream
+                type: rotating_file
                 channels: [deprecation]
-                path: php://stderr
+                path: "%kernel.logs_dir%/deprecation.log"
+                max_files: 30
                 formatter: monolog.formatter.json
