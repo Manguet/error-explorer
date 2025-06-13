@@ -146,8 +146,6 @@ class AuthManager {
             this.submitBtn.style.transform = 'scale(1)';
         }, 100);
 
-        // Le formulaire se soumet naturellement
-        // En cas d'erreur, le serveur renverra la page avec l'erreur
     }
 
     /**
@@ -330,74 +328,6 @@ class AuthManager {
 }
 
 /**
- * Gestionnaire de notifications toast
- */
-class ToastManager {
-    constructor() {
-        this.container = document.getElementById('toast-container');
-        if (!this.container) {
-            this.createContainer();
-        }
-    }
-
-    createContainer() {
-        this.container = document.createElement('div');
-        this.container.id = 'toast-container';
-        this.container.className = 'toast-container';
-        document.body.appendChild(this.container);
-    }
-
-    show(message, type = 'info', duration = 5000) {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-
-        const icon = this.getIcon(type);
-        toast.innerHTML = `
-            <div class="toast-icon">${icon}</div>
-            <div class="toast-message">${message}</div>
-        `;
-
-        this.container.appendChild(toast);
-
-        // Animation d'entrée
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 100);
-
-        // Suppression automatique
-        setTimeout(() => {
-            this.remove(toast);
-        }, duration);
-
-        // Suppression au clic
-        toast.addEventListener('click', () => {
-            this.remove(toast);
-        });
-
-        return toast;
-    }
-
-    remove(toast) {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }
-
-    getIcon(type) {
-        const icons = {
-            success: '✅',
-            error: '❌',
-            warning: '⚠️',
-            info: 'ℹ️'
-        };
-        return icons[type] || icons.info;
-    }
-}
-
-/**
  * Utilitaires pour les effets visuels
  */
 class VisualEffects {
@@ -446,9 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialisation du gestionnaire d'authentification
     const authManager = new AuthManager();
 
-    // Initialisation du gestionnaire de toast
-    window.toastManager = new ToastManager();
-
     // Ajout d'effets visuels aux boutons
     document.querySelectorAll('.btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -461,11 +388,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorAlert = document.querySelector('.alert-error');
     if (errorAlert) {
         setTimeout(() => {
-            window.toastManager.show(
-                'Erreur de connexion. Vérifiez vos identifiants.',
-                'error',
-                6000
-            );
+            notify.error('Erreur de connexion. Vérifiez vos identifiants.', {
+                duration: 6000
+            });
         }, 500);
     }
 
@@ -502,5 +427,4 @@ document.addEventListener('DOMContentLoaded', () => {
  * Export pour utilisation externe
  */
 window.AuthManager = AuthManager;
-window.ToastManager = ToastManager;
 window.VisualEffects = VisualEffects;

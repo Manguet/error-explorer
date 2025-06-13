@@ -1,6 +1,8 @@
 import './Site/utils.js';
 import './Site/HeaderComponent.js';
 import './Site/FooterComponent.js';
+import './Site/NotificationSystem.js';
+
 import './Site/auth.js';
 import './Site/contact.js';
 import './Site/features.js';

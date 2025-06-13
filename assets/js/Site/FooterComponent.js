@@ -67,7 +67,6 @@ class FooterComponent {
         this.bindEvents();
         this.initComingSoonLinks();
         this.startStatusMonitoring();
-        this.initEasterEgg();
         this.observeFooterEntrance();
     }
 

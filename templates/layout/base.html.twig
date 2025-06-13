@@ -87,15 +87,19 @@
 <body{% block body_attributes %}{% endblock %}>
     {{ include('layout/header.html.twig') }}
 
-    {% block flash_messages %}
+    {# Nouveau système de notifications - remplace les anciens flash messages #}
+    <div class="notifications" id="notifications-container">
+        {# Les notifications seront injectées ici par JavaScript #}
+
+        {# Rendu des flash messages Symfony (seront automatiquement convertis en notifications modernes) #}
         {% for label, messages in app.flashes %}
-            <div class="flash-message flash-{{ label }}">
-                {% for message in messages %}
+            {% for message in messages %}
+                <div class="flash-message flash-{{ label }}" style="display: none;">
                     <p>{{ message }}</p>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         {% endfor %}
-    {% endblock %}
+    </div>
 
     <main class="main-content" role="main">
         {% block body %}
@@ -107,6 +111,16 @@
 
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.notify) {
+                    window.notify.configure({
+                        maxNotifications: 3,
+                        defaultDuration: 5000
+                    });
+                }
+            });
+        </script>
     {% endblock %}
 </body>
 </html>

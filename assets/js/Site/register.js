@@ -98,7 +98,9 @@ class RegisterManager extends AuthManager {
 
             // Toast de confirmation
             const planName = selectedOption.querySelector('.plan-name').textContent;
-            window.toastManager?.show(`Plan "${planName}" sélectionné`, 'success', 2000);
+            notify.success(`Plan "${planName}" sélectionné`, {
+                duration: 2000
+            });
         }
     }
 
@@ -375,7 +377,9 @@ class RegisterManager extends AuthManager {
     validateTerms() {
         if (!this.acceptTermsCheckbox.checked) {
             this.acceptTermsCheckbox.closest('.form-section').classList.add('error');
-            window.toastManager?.show('Vous devez accepter les conditions d\'utilisation', 'error', 4000);
+            notify.error('Vous devez accepter les conditions d\'utilisation', {
+                duration: 4000
+            });
             return false;
         }
 
@@ -390,7 +394,9 @@ class RegisterManager extends AuthManager {
         const selectedPlan = document.querySelector('input[name="plan_id"]:checked');
 
         if (!selectedPlan) {
-            window.toastManager?.show('Veuillez sélectionner un plan', 'error', 4000);
+            notify.error('Veuillez sélectionner un plan', {
+                duration: 4000
+            });
             return false;
         }
 
@@ -433,9 +439,7 @@ class RegisterManager extends AuthManager {
         }, 100);
 
         // Message de confirmation
-        window.toastManager?.show('Création de votre compte en cours...', 'info', 3000);
-
-        // Le formulaire se soumet naturellement
+        notify.loading('Création de votre compte en cours...');
     }
 }
 
@@ -935,7 +939,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             serverErrors.forEach(error => {
                 const message = error.querySelector('.alert-content span').textContent;
-                window.toastManager?.show(message, 'error', 6000);
+                notify.error(message, {
+                    duration: 6000,
+                });
             });
         }, 500);
     }
@@ -946,7 +952,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             successMessages.forEach(success => {
                 const message = success.querySelector('.alert-content span').textContent;
-                window.toastManager?.show(message, 'success', 4000);
+                notify.success(message, {
+                    duration: 4000,
+                });
             });
         }, 500);
     }
@@ -997,8 +1005,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     });
-
-                    window.toastManager?.show('Données de formulaire restaurées', 'info', 3000);
                 }
             }
         } catch (e) {

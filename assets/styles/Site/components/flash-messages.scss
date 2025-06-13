@@ -1,35 +1,455 @@
-.flash-message{
-  position: absolute;
-  top: 120px;
+// Container pour les notifications
+.notifications {
+  position: fixed;
+  top: $header-height-desktop + 20px;
   right: 20px;
-  max-width: 250px;
-  z-index: 99;
-  padding: 16px;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  @include smooth-transition(all, $transition-normal, $ease-in-out);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+  pointer-events: none;
+
+  @media (max-width: #{$header-breakpoint - 1px}) {
+    top: $header-height-mobile + 20px;
+  }
+
+  @include responsive('sm') {
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+
+  // État de chargement
+  &--loading {
+    opacity: 0.7;
+  }
+}
+
+// Notification individuelle
+.notification {
+  background: rgba($black, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: auto;
+  @include smooth-transition();
+  position: relative;
+  overflow: hidden;
+
+  // Animation d'entrée
+  &--show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  // Animation de sortie
+  &--hide {
+    transform: translateX(100%);
+    opacity: 0;
+    margin-bottom: -5rem; // Compense la hauteur pour éviter le décalage
+  }
+
+  // Barre de progression (auto-dismiss)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    border-radius: 12px 12px 0 0;
+    width: 0;
+    transition: width linear;
+  }
+
+  &--auto-dismiss::before {
+    width: 100%;
+  }
+
+  // Types de notifications avec gradients et couleurs
+  &--success {
+    border-color: rgba(16, 185, 129, 0.3);
+    @include glass-effect(0.05, 10px);
+
+    &::before {
+      @include gradient-success();
+    }
+
+    .notification__icon {
+      color: $success-green;
+      background: rgba(16, 185, 129, 0.1);
+    }
+  }
+
+  &--error {
+    border-color: rgba(239, 68, 68, 0.3);
+    @include glass-effect(0.05, 10px);
+
+    &::before {
+      @include gradient-error();
+    }
+
+    .notification__icon {
+      color: $error-red;
+      background: rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  &--warning {
+    border-color: rgba(245, 158, 11, 0.3);
+    @include glass-effect(0.05, 10px);
+
+    &::before {
+      @include gradient-warning();
+    }
+
+    .notification__icon {
+      color: $warning-yellow;
+      background: rgba(245, 158, 11, 0.1);
+    }
+  }
+
+  &--info {
+    border-color: rgba(59, 130, 246, 0.3);
+    @include glass-effect(0.05, 10px);
+
+    &::before {
+      @include gradient-info();
+    }
+
+    .notification__icon {
+      color: $primary-blue;
+      background: rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  // Notification avec action
+  &--actionable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  // Notification persistante (pas d'auto-dismiss)
+  &--persistent {
+    &::before {
+      display: none;
+    }
+  }
+
+  // Notification avec loader
+  &--loading {
+    .notification__icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+// Contenu de la notification
+.notification__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: $white;
+}
+
+// Icône de la notification
+.notification__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  @include smooth-transition();
+
+  // Icônes par défaut selon le type
+  &--success::before {
+    content: '✓';
+    font-weight: bold;
+  }
+
+  &--error::before {
+    content: '✕';
+    font-weight: bold;
+  }
+
+  &--warning::before {
+    content: '⚠';
+    font-weight: bold;
+  }
+
+  &--info::before {
+    content: 'ℹ';
+    font-weight: bold;
+  }
+
+  &--loading::before {
+    content: '○';
+    font-weight: bold;
+  }
+}
+
+// Texte de la notification
+.notification__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.notification__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: $white;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.notification__message {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+  margin: 0;
+
+  // Support du HTML dans le message
+  a {
+    color: $primary-blue;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: $font-mono;
+    font-size: 0.8rem;
+  }
+}
+
+// Actions de la notification
+.notification__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.notification__action {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: $white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  @include smooth-transition();
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &--primary {
+    background: $primary-blue;
+    border-color: $primary-blue;
+
+    &:hover {
+      background: $primary-blue-dark;
+    }
+  }
+}
+
+// Bouton de fermeture
+.notification__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  @include smooth-transition();
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: $white;
+  }
+
+  &::before {
+    content: '✕';
+  }
+}
+
+// Groupe de notifications (pour les notifications liées)
+.notification-group {
+  .notification {
+    border-radius: 0;
+    margin-bottom: -1px;
+
+    &:first-child {
+      border-radius: 12px 12px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 0;
+    }
+
+    &:only-child {
+      border-radius: 12px;
+    }
+  }
+}
+
+// Notifications toast legacy (pour compatibilité avec les flash messages Symfony)
+.flash-message {
+  // Redirection vers le nouveau système
+  @extend .notification;
 
   &.flash-success {
-      background: $success-green;
-      color: $white;
-      @include gradient-success();
+    @extend .notification--success;
   }
 
   &.flash-error {
-      background: $error-red;
-      color: $white;
-      @include gradient-error();
-  }
-
-  &.flash-info {
-      background: $primary-blue;
-      color: $white;
-      @include gradient-info();
+    @extend .notification--error;
   }
 
   &.flash-warning {
-      background: $warning-yellow;
-      color: $black;
-      @include gradient-warning();
+    @extend .notification--warning;
+  }
+
+  &.flash-info {
+    @extend .notification--info;
+  }
+
+  // Adaptation du contenu legacy
+  p {
+    @extend .notification__message;
+    margin: 0;
+  }
+}
+
+// Animations personnalisées
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Responsive
+@media (max-width: $breakpoint-sm) {
+  .notifications {
+    left: 10px;
+    right: 10px;
+    top: $header-height-mobile + 10px;
+  }
+
+  .notification {
+    padding: 0.875rem 1rem;
+
+    &__content {
+      gap: 0.5rem;
+    }
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+    }
+
+    &__title {
+      font-size: 0.9rem;
+    }
+
+    &__message {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Mode sombre forcé
+@media (prefers-color-scheme: dark) {
+  .notification {
+    background: rgba($black, 0.98);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+// Réduction des animations
+@media (prefers-reduced-motion: reduce) {
+  .notification {
+    transition: none !important;
+    animation: none !important;
+
+    &::before {
+      transition: none !important;
+    }
+
+    &__icon {
+      animation: none !important;
+    }
+  }
+}
+
+// Mode impression
+@media print {
+  .notifications,
+  .notification {
+    display: none !important;
   }
 }
