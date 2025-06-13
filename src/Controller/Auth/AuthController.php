@@ -1,22 +1,24 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use App\Entity\User;
-use App\Form\RegistrationFormType;
+use App\Form\Register\RegistrationFormType;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
+use App\Service\Logs\MonologService;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
+use Exception;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class AuthController extends AbstractController
 {
@@ -26,22 +28,23 @@ class AuthController extends AbstractController
         private readonly PlanRepository $planRepository,
         private readonly UserRepository $userRepository,
         private readonly EmailService $emailService,
-        private readonly LoggerInterface $logger
+        private readonly MonologService $monolog,
+        private readonly RequestStack $requestStack
     ) {}
 
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Si déjà connecté, rediriger
         if ($this->getUser()) {
             return $this->redirectToRoute('dashboard_index');
         }
 
-        // Récupérer l'erreur de connexion s'il y en a une
         $error = $authenticationUtils->getLastAuthenticationError();
-
-        // Dernier nom d'utilisateur entré par l'utilisateur
         $lastUsername = $authenticationUtils->getLastUsername();
+
+        if ($error) {
+            $this->monolog->loginAttempt($lastUsername, false, $this->getClientIp());
+        }
 
         return $this->render('auth/login.html.twig', [
             'last_username' => $lastUsername,
@@ -52,43 +55,42 @@ class AuthController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
     #[Route('/register', name: 'app_register')]
     public function register(Request $request): Response
     {
-        // Si déjà connecté, rediriger
         if ($this->getUser()) {
             return $this->redirectToRoute('dashboard_index');
         }
 
-        // Créer une nouvelle instance utilisateur
         $user = new User();
 
-        // Pré-sélectionner un plan basé sur l'URL
         $selectedPlanSlug = $request->query->get('plan', 'free');
         $selectedPlan = $this->planRepository->findBySlug($selectedPlanSlug);
 
-        // Si le plan n'existe pas, utiliser le plan gratuit
         if (!$selectedPlan) {
             $selectedPlan = $this->planRepository->findFreePlan();
         }
 
-        // Pré-remplir le plan sélectionné
         if ($selectedPlan) {
             $user->setPlan($selectedPlan);
         }
 
-        // Créer le formulaire
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->monolog->securityEvent('registration_attempt', [
+                'email' => $user->getEmail(),
+                'plan' => $selectedPlan?->getName(),
+                'ip' => $this->getClientIp()
+            ]);
+
             return $this->handleRegistration($form, $user);
         }
 
-        // Récupérer tous les plans pour l'affichage
         $allPlans = $this->planRepository->findActivePlans();
 
         return $this->render('auth/register.html.twig', [
@@ -100,66 +102,72 @@ class AuthController extends AbstractController
 
     private function handleRegistration($form, User $user): Response
     {
-        // Vérifier si l'email existe déjà
         $existingUser = $this->userRepository->findOneBy(['email' => $user->getEmail()]);
         if ($existingUser) {
+            $this->monolog->securityEvent('registration_duplicate_email', [
+                'email' => $user->getEmail(),
+                'ip' => $this->getClientIp()
+            ]);
+
             $this->addFlash('error', 'Un compte avec cet email existe déjà');
             return $this->redirectToRoute('app_register');
         }
 
-        // Hasher le mot de passe
         $plainPassword = $form->get('plainPassword')->getData();
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
 
-        // Définir les dates de création et modification
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
         $user->setCreatedAt($now);
         $user->setUpdatedAt($now);
-
-        // Définir un statut par défaut
         $user->setIsActive(true);
         $user->setIsVerified(false);
-
-        // Générer un token de vérification d'email
         $user->generateEmailVerificationToken();
 
-        // Pour les plans payants, définir une expiration d'un mois
         $plan = $user->getPlan();
         if ($plan && !$plan->isFree()) {
-            $user->setPlanExpiresAt(new \DateTimeImmutable('+1 month'));
+            $user->setPlanExpiresAt(new DateTimeImmutable('+1 month'));
         }
 
         try {
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            // Envoyer l'email de vérification
             $this->emailService->sendEmailVerification($user);
 
-            // Message de succès
             $this->addFlash('success', sprintf(
                 'Bienvenue %s ! Un email de vérification a été envoyé à %s.',
                 $user->getFirstName(),
                 $user->getEmail()
             ));
 
-            // Log pour debug
-            $this->logger->info('Nouvel utilisateur inscrit', [
+            $this->monolog->businessEvent('user_registered', [
                 'user_id' => $user->getId(),
                 'email' => $user->getEmail(),
                 'plan' => $plan?->getName(),
+                'ip' => $this->getClientIp()
             ]);
 
-            // Rediriger vers la page de vérification d'email
+            $this->monolog->securityEvent('registration_success', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'ip' => $this->getClientIp()
+            ]);
+
             return $this->redirectToRoute('app_verify_email_pending');
 
-        } catch (\Exception $e) {
-            // Log de l'erreur
-            $this->logger->error('Erreur lors de l\'inscription', [
-                'error' => $e->getMessage(),
-                'email' => $user->getEmail(),
-            ]);
+        } catch (Exception $e) {
+            $this->monolog->capture(
+                'Erreur lors de l\'inscription: ' . $e->getMessage(),
+                MonologService::BUSINESS,
+                MonologService::ERROR,
+                [
+                    'email' => $user->getEmail(),
+                    'plan' => $plan?->getName(),
+                    'ip' => $this->getClientIp(),
+                    'exception' => $e->getTraceAsString()
+                ]
+            );
 
             $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.');
 
@@ -184,29 +192,39 @@ class AuthController extends AbstractController
 
             $user = $this->userRepository->findOneBy(['email' => $email]);
 
-            // Toujours afficher le même message pour éviter l'énumération d'emails
+            $this->monolog->securityEvent('password_reset_requested', [
+                'email' => $email,
+                'user_exists' => $user !== null,
+                'ip' => $this->getClientIp()
+            ]);
+
             $this->addFlash('success', 'Si un compte avec cet email existe, vous recevrez un lien de réinitialisation sous peu.');
 
             if ($user) {
                 try {
-                    // Générer un nouveau token
                     $user->generatePasswordResetToken();
                     $this->entityManager->flush();
 
-                    // Envoyer l'email de réinitialisation
                     $this->emailService->sendPasswordReset($user);
 
-                    // Log pour debug
-                    $this->logger->info('Demande de réinitialisation de mot de passe', [
+                    $this->monolog->businessEvent('password_reset_email_sent', [
                         'user_id' => $user->getId(),
                         'email' => $user->getEmail(),
+                        'ip' => $this->getClientIp()
                     ]);
 
-                } catch (\Exception $e) {
-                    $this->logger->error('Erreur lors de l\'envoi de l\'email de réinitialisation', [
-                        'error' => $e->getMessage(),
-                        'email' => $user->getEmail(),
-                    ]);
+                } catch (Exception $e) {
+                    $this->monolog->capture(
+                        'Erreur lors de l\'envoi de l\'email de réinitialisation: ' . $e->getMessage(),
+                        MonologService::BUSINESS,
+                        MonologService::ERROR,
+                        [
+                            'email' => $user->getEmail(),
+                            'user_id' => $user->getId(),
+                            'ip' => $this->getClientIp(),
+                            'exception' => $e->getTraceAsString()
+                        ]
+                    );
                 }
             }
 
@@ -223,10 +241,15 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('dashboard_index');
         }
 
-        // Trouver l'utilisateur avec ce token
         $user = $this->userRepository->findOneBy(['passwordResetToken' => $token]);
 
         if (!$user || !$user->isPasswordResetTokenValid()) {
+            // Log de la tentative avec token invalide
+            $this->monolog->securityEvent('password_reset_invalid_token', [
+                'token' => $token,
+                'ip' => $this->getClientIp()
+            ]);
+
             $this->addFlash('error', 'Ce lien de réinitialisation est invalide ou a expiré.');
             return $this->redirectToRoute('app_forgot_password');
         }
@@ -235,7 +258,6 @@ class AuthController extends AbstractController
             $newPassword = $request->request->get('password');
             $confirmPassword = $request->request->get('confirm_password');
 
-            // Validation
             if (strlen($newPassword) < 8) {
                 $this->addFlash('error', 'Le mot de passe doit contenir au moins 8 caractères.');
                 return $this->render('auth/reset_password.html.twig', ['token' => $token]);
@@ -247,28 +269,35 @@ class AuthController extends AbstractController
             }
 
             try {
-                // Hasher et sauvegarder le nouveau mot de passe
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
                 $user->setPassword($hashedPassword);
                 $user->clearPasswordResetToken();
-                $user->setUpdatedAt(new \DateTimeImmutable());
+                $user->setUpdatedAt(new DateTimeImmutable());
 
                 $this->entityManager->flush();
 
                 $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès. Vous pouvez maintenant vous connecter.');
 
-                $this->logger->info('Mot de passe réinitialisé', [
+                $this->monolog->securityEvent('password_reset_success', [
                     'user_id' => $user->getId(),
                     'email' => $user->getEmail(),
+                    'ip' => $this->getClientIp()
                 ]);
 
                 return $this->redirectToRoute('app_login');
 
-            } catch (\Exception $e) {
-                $this->logger->error('Erreur lors de la réinitialisation du mot de passe', [
-                    'error' => $e->getMessage(),
-                    'user_id' => $user->getId(),
-                ]);
+            } catch (Exception $e) {
+                $this->monolog->capture(
+                    'Erreur lors de la réinitialisation du mot de passe: ' . $e->getMessage(),
+                    MonologService::SECURITY,
+                    MonologService::ERROR,
+                    [
+                        'user_id' => $user->getId(),
+                        'email' => $user->getEmail(),
+                        'ip' => $this->getClientIp(),
+                        'exception' => $e->getTraceAsString()
+                    ]
+                );
 
                 $this->addFlash('error', 'Une erreur est survenue. Veuillez réessayer.');
             }
@@ -294,6 +323,11 @@ class AuthController extends AbstractController
         $user = $this->userRepository->findOneBy(['emailVerificationToken' => $token]);
 
         if (!$user) {
+            $this->monolog->securityEvent('email_verification_invalid_token', [
+                'token' => $token,
+                'ip' => $this->getClientIp()
+            ]);
+
             return $this->render('auth/verify_email.html.twig', [
                 'verification_status' => 'invalid'
             ]);
@@ -305,26 +339,38 @@ class AuthController extends AbstractController
         }
 
         try {
-            // Marquer l'email comme vérifié
             $user->markEmailAsVerified();
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Votre email a été vérifié avec succès !');
 
-            $this->logger->info('Email vérifié', [
+            $this->monolog->securityEvent('email_verified', [
                 'user_id' => $user->getId(),
                 'email' => $user->getEmail(),
+                'ip' => $this->getClientIp()
+            ]);
+
+            $this->monolog->businessEvent('user_email_verified', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail()
             ]);
 
             return $this->render('auth/verify_email.html.twig', [
                 'verification_status' => 'success'
             ]);
 
-        } catch (\Exception $e) {
-            $this->logger->error('Erreur lors de la vérification d\'email', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->getId(),
-            ]);
+        } catch (Exception $e) {
+            $this->monolog->capture(
+                'Erreur lors de la vérification d\'email: ' . $e->getMessage(),
+                MonologService::BUSINESS,
+                MonologService::ERROR,
+                [
+                    'user_id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'ip' => $this->getClientIp(),
+                    'exception' => $e->getTraceAsString()
+                ]
+            );
 
             $this->addFlash('error', 'Une erreur est survenue lors de la vérification.');
 
@@ -346,37 +392,46 @@ class AuthController extends AbstractController
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
-        // Message générique pour éviter l'énumération
+        $this->monolog->securityEvent('email_verification_resend_requested', [
+            'email' => $email,
+            'user_exists' => $user !== null,
+            'user_verified' => $user ? $user->isVerified() : null,
+            'ip' => $this->getClientIp()
+        ]);
+
         $this->addFlash('success', 'Si un compte non vérifié existe avec cet email, un nouveau lien de vérification a été envoyé.');
 
         if ($user && !$user->isVerified()) {
             try {
-                // Générer un nouveau token
                 $user->generateEmailVerificationToken();
                 $this->entityManager->flush();
 
-                // Renvoyer l'email
                 $this->emailService->sendEmailVerification($user);
 
-                $this->logger->info('Email de vérification renvoyé', [
+                $this->monolog->businessEvent('email_verification_resent', [
                     'user_id' => $user->getId(),
                     'email' => $user->getEmail(),
+                    'ip' => $this->getClientIp()
                 ]);
 
-            } catch (\Exception $e) {
-                $this->logger->error('Erreur lors du renvoi de l\'email de vérification', [
-                    'error' => $e->getMessage(),
-                    'email' => $email,
-                ]);
+            } catch (Exception $e) {
+                $this->monolog->capture(
+                    'Erreur lors du renvoi de l\'email de vérification: ' . $e->getMessage(),
+                    MonologService::BUSINESS,
+                    MonologService::ERROR,
+                    [
+                        'email' => $email,
+                        'user_id' => $user->getId(),
+                        'ip' => $this->getClientIp(),
+                        'exception' => $e->getTraceAsString()
+                    ]
+                );
             }
         }
 
         return $this->redirectToRoute('app_verify_email_pending');
     }
 
-    /**
-     * Route AJAX pour valider l'email en temps réel
-     */
     #[Route('/api/validate-email', name: 'api_validate_email', methods: ['POST'])]
     public function validateEmail(Request $request): Response
     {
@@ -391,9 +446,49 @@ class AuthController extends AbstractController
 
         $existingUser = $this->userRepository->findOneBy(['email' => $email]);
 
+        if ($existingUser) {
+            $this->monolog->securityEvent('email_validation_duplicate', [
+                'email' => $email,
+                'ip' => $this->getClientIp()
+            ]);
+        }
+
         return $this->json([
             'valid' => !$existingUser,
             'message' => $existingUser ? 'Un compte avec cet email existe déjà' : 'Email disponible'
         ]);
+    }
+
+    private function getClientIp(): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request) {
+            return 'unknown';
+        }
+
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',     // Cloudflare
+            'HTTP_CLIENT_IP',            // Proxy
+            'HTTP_X_FORWARDED_FOR',      // Load balancer/proxy
+            'HTTP_X_FORWARDED',          // Proxy
+            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
+            'HTTP_FORWARDED_FOR',        // Proxy
+            'HTTP_FORWARDED',            // Proxy
+            'REMOTE_ADDR'                // Standard
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($_SERVER[$header])) {
+                $ips = explode(',', $_SERVER[$header]);
+                $ip = trim($ips[0]);
+
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $request->getClientIp() ?? 'unknown';
     }
 }

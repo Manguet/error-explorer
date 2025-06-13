@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
+use App\Entity\PaymentMethod;
 use App\Entity\Plan;
 use App\Entity\Subscription;
-use App\Entity\PaymentMethod;
 use App\Service\StripeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\StripeClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 

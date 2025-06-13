@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ProjectRepository;

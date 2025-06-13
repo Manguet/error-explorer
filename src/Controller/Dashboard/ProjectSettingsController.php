@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Entity\ErrorGroup;
 use App\Entity\Project;
@@ -118,7 +118,7 @@ class ProjectSettingsController extends AbstractController
 
         try {
             $data = json_decode($request->getContent(), true);
-            
+
             if (!$data || !isset($data['name'], $data['url'], $data['events'])) {
                 return new JsonResponse(['success' => false, 'message' => 'Données manquantes']);
             }
@@ -141,7 +141,7 @@ class ProjectSettingsController extends AbstractController
                 // Modification
                 $webhooks = $project->getExternalWebhooks();
                 $found = false;
-                
+
                 foreach ($webhooks as &$webhook) {
                     if ($webhook['id'] === $data['id']) {
                         $webhook['name'] = $name;
@@ -152,11 +152,11 @@ class ProjectSettingsController extends AbstractController
                         break;
                     }
                 }
-                
+
                 if (!$found) {
                     return new JsonResponse(['success' => false, 'message' => 'Webhook non trouvé']);
                 }
-                
+
                 $project->setExternalWebhooks($webhooks);
             } else {
                 // Création
@@ -184,7 +184,7 @@ class ProjectSettingsController extends AbstractController
 
         try {
             $data = json_decode($request->getContent(), true);
-            
+
             if (!$data || !isset($data['id'])) {
                 return new JsonResponse(['success' => false, 'message' => 'ID du webhook manquant']);
             }
@@ -212,14 +212,14 @@ class ProjectSettingsController extends AbstractController
 
         try {
             $data = json_decode($request->getContent(), true);
-            
+
             if (!$data || !isset($data['id'])) {
                 return new JsonResponse(['success' => false, 'message' => 'ID du webhook manquant']);
             }
 
             $webhooks = $project->getExternalWebhooks();
             $targetWebhook = null;
-            
+
             foreach ($webhooks as $webhook) {
                 if ($webhook['id'] === $data['id']) {
                     $targetWebhook = $webhook;

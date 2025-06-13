@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Entity\ErrorGroup;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
+use App\Service\AiSuggestionService;
 use App\Service\ErrorLimitService;
 use App\Service\UpgradeMessageService;
-use App\Service\AiSuggestionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,10 +45,10 @@ class DashboardController extends AbstractController
 
         // Récupérer les statistiques générales pour cet utilisateur
         $stats = $this->getGlobalStats($filters);
-        
+
         // Récupérer les statistiques d'usage des limites
         $usageStats = $this->errorLimitService->getUsageStats($user);
-        
+
         // Récupérer le message d'upgrade si nécessaire
         $upgradeMessage = $this->upgradeMessageService->getUpgradeMessage($user);
 
@@ -125,10 +125,10 @@ class DashboardController extends AbstractController
 
         // Récupérer les statistiques pour ce projet
         $stats = $this->getGlobalStats($filters);
-        
+
         // Récupérer les statistiques d'usage des limites
         $usageStats = $this->errorLimitService->getUsageStats($user);
-        
+
         // Récupérer le message d'upgrade si nécessaire
         $upgradeMessage = $this->upgradeMessageService->getUpgradeMessage($user);
 

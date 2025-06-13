@@ -4,38 +4,50 @@ namespace App\EventListener;
 
 use App\Entity\User;
 use App\Service\EmailService;
-use Psr\Log\LoggerInterface;
+use App\Service\Logs\MonologService;
 
-/**
- * Event Listener pour la vérification d'email
- */
 class EmailVerificationEventListener
 {
     public function __construct(
         private readonly EmailService $emailService,
-        private readonly LoggerInterface $logger
+        private readonly MonologService $monolog
     ) {}
 
-    /**
-     * Déclenché après qu'un utilisateur ait vérifié son email
-     */
-    public function onEmailVerified(User $user): void
+    public function onEmailVerified(User $user, ?string $ip = null): void
     {
         try {
-            // Envoyer l'email de bienvenue
-            $this->emailService->sendWelcomeEmail($user);
-
-            $this->logger->info('Email de bienvenue envoyé après vérification', [
+            $this->monolog->securityEvent('email_verification_completed', [
                 'user_id' => $user->getId(),
                 'email' => $user->getEmail(),
+                'ip' => $ip ?? 'unknown',
+                'verification_date' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->monolog->businessEvent('user_email_verified', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'account_status' => 'verified'
+            ]);
+
+            $this->emailService->sendWelcomeEmail($user);
+
+            $this->monolog->businessEvent('welcome_email_sent', [
+                'user_id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'trigger' => 'email_verification'
             ]);
 
         } catch (\Exception $e) {
-            $this->logger->error('Erreur lors de l\'envoi de l\'email de bienvenue', [
-                'user_id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'error' => $e->getMessage()
-            ]);
+            $this->monolog->capture(
+                'Erreur lors de l\'envoi de l\'email de bienvenue: ' . $e->getMessage(),
+                MonologService::BUSINESS,
+                MonologService::ERROR,
+                [
+                    'user_id' => $user->getId(),
+                    'email' => $user->getEmail(),
+                    'exception' => $e->getTraceAsString()
+                ]
+            );
         }
     }
 }

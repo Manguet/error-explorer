@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Site;
 
 use App\Entity\Plan;
 use App\Form\ContactType;
+use App\Repository\ErrorGroupRepository;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
-use App\Repository\ErrorGroupRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\DataTable\Type\ProjectDataTableType;
-use App\Entity\Project;
 use App\Entity\ErrorGroup;
-use App\Repository\ProjectRepository;
+use App\Entity\Project;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
+use App\Repository\ProjectRepository;
 use App\Service\ErrorLimitService;
 use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\DataTableFactory;

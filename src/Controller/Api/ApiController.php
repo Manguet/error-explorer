@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Entity\ErrorGroup;
-use App\Entity\ErrorOccurrence;
 use App\Entity\Project;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;

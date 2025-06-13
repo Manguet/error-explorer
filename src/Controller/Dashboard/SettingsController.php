@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Form\UserSettingsType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +22,7 @@ class SettingsController extends AbstractController
     public function index(Request $request): Response
     {
         $user = $this->getUser();
-        
+
         $form = $this->createForm(UserSettingsType::class, $user);
         $form->handleRequest($request);
 

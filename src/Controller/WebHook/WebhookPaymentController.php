@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\WebHook;
 
-use App\Entity\Subscription;
 use App\Entity\Invoice;
+use App\Entity\Subscription;
 use App\Service\StripeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Stripe\Exception\SignatureVerificationException;
+use Stripe\Webhook;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Stripe\Webhook;
-use Stripe\Exception\SignatureVerificationException;
 
 class WebhookPaymentController extends AbstractController
 {
@@ -148,7 +148,7 @@ class WebhookPaymentController extends AbstractController
             // Si l'abonnement n'est plus actif, revenir au plan gratuit
             $freePlan = $this->entityManager->getRepository(\App\Entity\Plan::class)
                 ->findOneBy(['name' => 'Free']) ?? $this->entityManager->getRepository(\App\Entity\Plan::class)->findOneBy([]);
-            
+
             if ($freePlan) {
                 $user->setPlan($freePlan)
                     ->setPlanExpiresAt(null);
@@ -187,7 +187,7 @@ class WebhookPaymentController extends AbstractController
         $user = $localSubscription->getUser();
         $freePlan = $this->entityManager->getRepository(\App\Entity\Plan::class)
             ->findOneBy(['name' => 'Free']) ?? $this->entityManager->getRepository(\App\Entity\Plan::class)->findOneBy([]);
-        
+
         if ($freePlan) {
             $user->setPlan($freePlan)
                 ->setPlanExpiresAt(null);

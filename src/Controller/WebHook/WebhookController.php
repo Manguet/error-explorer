@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\WebHook;
 
 use App\Entity\Project;
-use App\Service\ErrorProcessor;
-use App\Service\ErrorLimitService;
 use App\Repository\ProjectRepository;
+use App\Service\ErrorLimitService;
+use App\Service\ErrorProcessor;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,7 +50,7 @@ class WebhookController extends AbstractController
             if (!$this->errorLimitService->canReceiveError($project)) {
                 $owner = $project->getOwner();
                 $plan = $owner?->getPlan();
-                
+
                 if ($owner && $owner->isPlanExpired()) {
                     return $this->json([
                         'success' => false,

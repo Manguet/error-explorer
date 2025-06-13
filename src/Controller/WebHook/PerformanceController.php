@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\WebHook;
 
-use App\Entity\Project;
-use App\Service\PerformanceMonitoringService;
 use App\Repository\PerformanceMetricRepository;
-use App\Repository\UptimeCheckRepository;
 use App\Repository\ProjectRepository;
+use App\Repository\UptimeCheckRepository;
+use App\Service\PerformanceMonitoringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -155,10 +154,10 @@ class PerformanceController extends AbstractController
     {
         $user = $this->getUser();
         $projects = $this->projectRepository->findByOwner($user);
-        
+
         $selectedProject = null;
         $projectSlug = $request->query->get('project');
-        
+
         if ($projectSlug) {
             $selectedProject = $this->projectRepository->findOneBy([
                 'slug' => $projectSlug,
@@ -193,7 +192,7 @@ class PerformanceController extends AbstractController
         $projectSlug = $request->query->get('project');
         $metricType = $request->query->get('type');
         $period = (int) $request->query->get('period', 24); // heures
-        
+
         if (!$projectSlug) {
             return $this->json(['error' => 'Project parameter is required'], Response::HTTP_BAD_REQUEST);
         }
@@ -208,7 +207,7 @@ class PerformanceController extends AbstractController
         }
 
         $since = new \DateTime("-{$period} hours");
-        
+
         if ($metricType) {
             $metrics = $this->metricRepository->findByProjectAndType($project, $metricType, $since);
             $trend = $this->metricRepository->getMetricTrend($project, $metricType, 7, 'hour');
@@ -247,7 +246,7 @@ class PerformanceController extends AbstractController
         $user = $this->getUser();
         $projectSlug = $request->query->get('project');
         $period = (int) $request->query->get('period', 24); // heures
-        
+
         if (!$projectSlug) {
             return $this->json(['error' => 'Project parameter is required'], Response::HTTP_BAD_REQUEST);
         }
@@ -262,7 +261,7 @@ class PerformanceController extends AbstractController
         }
 
         $since = new \DateTime("-{$period} hours");
-        
+
         $checks = $this->uptimeRepository->findLatestByProject($project, 100);
         $stats = $this->uptimeRepository->getUptimeStats($project, $since);
         $trend = $this->uptimeRepository->getUptimeTrend($project, 7, 'hour');
@@ -308,7 +307,7 @@ class PerformanceController extends AbstractController
     {
         $user = $this->getUser();
         $projectSlug = $request->query->get('project');
-        
+
         if ($projectSlug) {
             $project = $this->projectRepository->findOneBy([
                 'slug' => $projectSlug,
@@ -408,7 +407,7 @@ class PerformanceController extends AbstractController
         }
 
         $statuses = array_column($projectsHealth, 'status');
-        
+
         if (in_array('down', $statuses)) {
             return 'critical';
         }

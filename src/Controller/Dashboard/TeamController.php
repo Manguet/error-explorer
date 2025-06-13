@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Entity\Team;
 use App\Entity\TeamMember;
-use App\Entity\User;
 use App\Form\TeamInviteType;
 use App\Form\TeamMemberType;
 use App\Form\TeamType;
@@ -36,7 +35,7 @@ class TeamController extends AbstractController
         $user = $this->getUser();
         $teams = $this->teamRepository->findByUser($user);
         $ownedTeams = $this->teamRepository->findOwnedByUser($user);
-        
+
         return $this->render('dashboard/teams/index.html.twig', [
             'teams' => $teams,
             'owned_teams' => $ownedTeams,
@@ -52,12 +51,12 @@ class TeamController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $team->setOwner($this->getUser());
-            
+
             $this->entityManager->persist($team);
             $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'équipe a été créée avec succès.');
-            
+
             return $this->redirectToRoute('team_show', ['slug' => $team->getSlug()]);
         }
 
@@ -71,13 +70,13 @@ class TeamController extends AbstractController
     public function show(string $slug): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $user = $this->getUser();
-        
+
         if (!$team->isMember($user)) {
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette équipe.');
         }
@@ -85,7 +84,7 @@ class TeamController extends AbstractController
         $members = $this->teamMemberRepository->findActiveByTeam($team);
         $stats = $this->teamRepository->getTeamStats($team);
         $memberStats = $this->teamMemberRepository->getTeamMemberStats($team);
-        
+
         return $this->render('dashboard/teams/show.html.twig', [
             'team' => $team,
             'members' => $members,
@@ -99,13 +98,13 @@ class TeamController extends AbstractController
     public function edit(Request $request, string $slug): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $user = $this->getUser();
-        
+
         if (!$team->hasPermission($user, 'manage_team')) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les permissions pour modifier cette équipe.');
         }
@@ -117,7 +116,7 @@ class TeamController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'équipe a été modifiée avec succès.');
-            
+
             return $this->redirectToRoute('team_show', ['slug' => $team->getSlug()]);
         }
 
@@ -131,13 +130,13 @@ class TeamController extends AbstractController
     public function members(string $slug): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $user = $this->getUser();
-        
+
         if (!$team->isMember($user)) {
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette équipe.');
         }
@@ -145,7 +144,7 @@ class TeamController extends AbstractController
         $members = $this->teamMemberRepository->findActiveByTeam($team);
         $recentlyActive = $this->teamMemberRepository->findRecentlyActiveByTeam($team);
         $inactive = $this->teamMemberRepository->findInactiveByTeam($team);
-        
+
         return $this->render('dashboard/teams/members.html.twig', [
             'team' => $team,
             'members' => $members,
@@ -159,13 +158,13 @@ class TeamController extends AbstractController
     public function invite(Request $request, string $slug): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $user = $this->getUser();
-        
+
         if (!$team->hasPermission($user, 'manage_members')) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les permissions pour inviter des membres.');
         }
@@ -182,10 +181,10 @@ class TeamController extends AbstractController
             $data = $form->getData();
             $email = $data['email'];
             $role = $data['role'];
-            
+
             // Check if user exists
             $invitedUser = $this->userRepository->findOneBy(['email' => $email]);
-            
+
             if (!$invitedUser) {
                 $this->addFlash('error', 'Aucun utilisateur trouvé avec cette adresse email.');
                 return $this->render('dashboard/teams/invite.html.twig', [
@@ -196,7 +195,7 @@ class TeamController extends AbstractController
 
             // Check if user is already a member
             $existingMembership = $this->teamMemberRepository->findByTeamAndUser($team, $invitedUser);
-            
+
             if ($existingMembership) {
                 $this->addFlash('error', 'Cet utilisateur est déjà membre de l\'équipe.');
                 return $this->render('dashboard/teams/invite.html.twig', [
@@ -215,8 +214,8 @@ class TeamController extends AbstractController
             $this->entityManager->persist($teamMember);
             $this->entityManager->flush();
 
-            $this->addFlash('success', sprintf('%s a été ajouté à l\'équipe avec le rôle %s.', 
-                $invitedUser->getFullName(), 
+            $this->addFlash('success', sprintf('%s a été ajouté à l\'équipe avec le rôle %s.',
+                $invitedUser->getFullName(),
                 TeamMember::ROLES[$role]
             ));
 
@@ -233,19 +232,19 @@ class TeamController extends AbstractController
     public function editMember(Request $request, string $slug, int $memberId): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $member = $this->teamMemberRepository->find($memberId);
-        
+
         if (!$member || $member->getTeam() !== $team) {
             throw $this->createNotFoundException('Membre non trouvé.');
         }
 
         $user = $this->getUser();
-        
+
         if (!$team->hasPermission($user, 'manage_members')) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les permissions pour modifier les membres.');
         }
@@ -263,7 +262,7 @@ class TeamController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'Le rôle du membre a été modifié avec succès.');
-            
+
             return $this->redirectToRoute('team_members', ['slug' => $slug]);
         }
 
@@ -278,19 +277,19 @@ class TeamController extends AbstractController
     public function removeMember(Request $request, string $slug, int $memberId): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $member = $this->teamMemberRepository->find($memberId);
-        
+
         if (!$member || $member->getTeam() !== $team) {
             throw $this->createNotFoundException('Membre non trouvé.');
         }
 
         $user = $this->getUser();
-        
+
         // Allow users to remove themselves or admins to remove others
         if ($member->getUser() !== $user && !$team->hasPermission($user, 'manage_members')) {
             throw $this->createAccessDeniedException('Vous n\'avez pas les permissions pour retirer ce membre.');
@@ -303,7 +302,7 @@ class TeamController extends AbstractController
         }
 
         $memberName = $member->getUser()->getFullName();
-        
+
         $this->entityManager->remove($member);
         $this->entityManager->flush();
 
@@ -320,20 +319,20 @@ class TeamController extends AbstractController
     public function delete(Request $request, string $slug): Response
     {
         $team = $this->teamRepository->findBySlug($slug);
-        
+
         if (!$team) {
             throw $this->createNotFoundException('Équipe non trouvée.');
         }
 
         $user = $this->getUser();
-        
+
         if ($team->getOwner() !== $user) {
             throw $this->createAccessDeniedException('Seul le propriétaire peut supprimer l\'équipe.');
         }
 
         if ($this->isCsrfTokenValid('delete'.$team->getId(), $request->request->get('_token'))) {
             $teamName = $team->getName();
-            
+
             $this->entityManager->remove($team);
             $this->entityManager->flush();
 

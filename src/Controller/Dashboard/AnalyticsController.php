@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Dashboard;
 
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,54 +28,54 @@ class AnalyticsController extends AbstractController
     public function index(Request $request): Response
     {
         $user = $this->getUser();
-        
+
         // Vérifier si l'utilisateur a accès aux analytics avancés en utilisant une requête directe
         $hasAccess = $this->checkUserHasAdvancedAnalytics($user->getId());
         $planName = $this->getUserPlanName($user->getId());
-        
+
         if (!$hasAccess) {
             return $this->render('analytics/upgrade.html.twig', [
                 'user_plan_name' => $planName
             ]);
         }
-        
+
         // Période par défaut : 30 derniers jours
         $period = $request->query->get('period', '30');
         $project = $request->query->get('project', '');
-        
+
         // Calculer les dates
         $endDate = new \DateTime();
         $startDate = new \DateTime("-{$period} days");
-        
+
         // Filtres de base
         $filters = [
             'user' => $user,
             'since' => $startDate,
             'until' => $endDate
         ];
-        
+
         if ($project) {
             $filters['project'] = $project;
         }
-        
+
         // Statistiques globales
         $globalStats = $this->getGlobalAnalytics($filters);
-        
+
         // Tendances
         $trends = $this->getTrendAnalytics($filters, $period);
-        
+
         // Top des projets
         $topProjects = $this->getTopProjects($filters);
-        
+
         // Top des erreurs
         $topErrors = $this->getTopErrors($filters);
-        
+
         // Répartition par type d'erreur
         $errorTypes = $this->getErrorTypeDistribution($filters);
-        
+
         // Liste des projets pour le filtre
         $projects = $this->projectRepository->findByOwner($user, 100);
-        
+
         return $this->render('analytics/index.html.twig', [
             'global_stats' => $globalStats,
             'trends' => $trends,
@@ -95,26 +94,26 @@ class AnalyticsController extends AbstractController
     public function apiTrends(Request $request): JsonResponse
     {
         $user = $this->getUser();
-        
+
         // Vérifier les droits d'accès
         if (!$this->checkUserHasAdvancedAnalytics($user->getId())) {
             return $this->json(['error' => 'Access denied'], 403);
         }
         $period = $request->query->get('period', '30');
         $project = $request->query->get('project', '');
-        
+
         $startDate = new \DateTime("-{$period} days");
         $filters = [
             'user' => $user,
             'since' => $startDate
         ];
-        
+
         if ($project) {
             $filters['project'] = $project;
         }
-        
+
         $trends = $this->errorOccurrenceRepository->getErrorTrend((int)$period, $filters);
-        
+
         return $this->json($trends);
     }
 
@@ -122,26 +121,26 @@ class AnalyticsController extends AbstractController
     public function apiDistribution(Request $request): JsonResponse
     {
         $user = $this->getUser();
-        
+
         // Vérifier les droits d'accès
         if (!$this->checkUserHasAdvancedAnalytics($user->getId())) {
             return $this->json(['error' => 'Access denied'], 403);
         }
         $period = $request->query->get('period', '30');
         $project = $request->query->get('project', '');
-        
+
         $startDate = new \DateTime("-{$period} days");
         $filters = [
             'user' => $user,
             'since' => $startDate
         ];
-        
+
         if ($project) {
             $filters['project'] = $project;
         }
-        
+
         $distribution = $this->getErrorTypeDistribution($filters);
-        
+
         return $this->json($distribution);
     }
 
@@ -149,29 +148,29 @@ class AnalyticsController extends AbstractController
     public function exportData(Request $request): Response
     {
         $user = $this->getUser();
-        
+
         // Vérifier les droits d'accès
         if (!$this->checkUserHasAdvancedAnalytics($user->getId())) {
             throw $this->createAccessDeniedException('Analytics avancés requis');
         }
-        
+
         $period = $request->query->get('period', '30');
         $project = $request->query->get('project', '');
         $format = $request->query->get('format', 'csv');
-        
+
         $startDate = new \DateTime("-{$period} days");
         $endDate = new \DateTime();
-        
+
         $filters = [
             'user' => $user,
             'since' => $startDate,
             'until' => $endDate
         ];
-        
+
         if ($project) {
             $filters['project'] = $project;
         }
-        
+
         // Router vers le bon format
         switch ($format) {
             case 'json':
@@ -187,18 +186,18 @@ class AnalyticsController extends AbstractController
     {
         // Récupérer les données
         $errors = $this->errorGroupRepository->findWithFilters($filters, 'lastSeen', 'DESC', 1000);
-        
+
         // Récupérer les statistiques avancées
         $advancedStats = $this->getAdvancedExportStatistics($filters);
-        
+
         // Générer le CSV avec BOM UTF-8
         $response = new Response();
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="analytics-avances-' . date('Y-m-d-H-i') . '.csv"');
-        
+
         // BOM UTF-8 pour assurer la compatibilité Excel
         $csv = "\xEF\xBB\xBF";
-        
+
         // En-têtes détaillés
         $csv .= "ID;Titre;Message;Projet;Type d'erreur;Statut;Occurrences;Première occurrence;Dernière occurrence;";
         $csv .= "Durée non résolue (heures);Jour de la semaine première occurrence;Heure première occurrence;";
@@ -206,22 +205,22 @@ class AnalyticsController extends AbstractController
         $csv .= "URL de l'erreur;Fichier source;Ligne d'erreur;Stack trace (extrait);";
         $csv .= "Fréquence par jour;Pic d'activité;Dernière activité (jours);Impact utilisateur;";
         $csv .= "Tags;Gravité estimée;Complexité résolution;Résolu par;Date résolution\n";
-        
+
         foreach ($errors as $error) {
             // Calculs avancés pour chaque erreur
-            $durationUnresolved = $error->getStatus() === 'resolved' && $error->getResolvedAt() 
+            $durationUnresolved = $error->getStatus() === 'resolved' && $error->getResolvedAt()
                 ? round((($error->getResolvedAt()->getTimestamp() - $error->getFirstSeen()->getTimestamp()) / 3600), 1)
                 : round(((time() - $error->getFirstSeen()->getTimestamp()) / 3600), 1);
-            
+
             $firstSeenDay = $error->getFirstSeen()->format('l'); // Nom du jour en anglais
             $firstSeenHour = $error->getFirstSeen()->format('H');
             $lastActivityDays = round((time() - $error->getLastSeen()->getTimestamp()) / (24 * 3600));
-            
+
             // Extraction d'informations du contexte et de la requête
             $context = $error->getLatestContext();
             $request = $error->getLatestRequest();
             $userAgent = $error->getLatestUserAgent() ?: '';
-            
+
             $environment = $error->getEnvironment() ?: 'Unknown';
             $browser = $this->extractBrowserFromUserAgent($userAgent);
             $os = $this->extractOSFromUserAgent($userAgent);
@@ -230,25 +229,25 @@ class AnalyticsController extends AbstractController
             $errorUrl = $request['url'] ?? 'Unknown';
             $sourceFile = $error->getFile() ?: 'Unknown';
             $sourceLine = $error->getLine() ?: 'Unknown';
-            
+
             // Stack trace extrait (première ligne)
             $stackTrace = $error->getStackTrace() ? explode("\n", $error->getStackTrace())[0] : 'Non disponible';
             $stackTrace = substr($stackTrace, 0, 100) . (strlen($stackTrace) > 100 ? '...' : '');
-            
+
             // Calculs de fréquence et patterns
-            $frequencyPerDay = $error->getOccurrenceCount() > 0 && $durationUnresolved > 24 
-                ? round($error->getOccurrenceCount() / ($durationUnresolved / 24), 2) 
+            $frequencyPerDay = $error->getOccurrenceCount() > 0 && $durationUnresolved > 24
+                ? round($error->getOccurrenceCount() / ($durationUnresolved / 24), 2)
                 : $error->getOccurrenceCount();
-            
+
             // Estimation de la gravité basée sur occurrences et type
             $severity = $this->estimateSeverity($error);
             $complexity = $this->estimateComplexity($error);
             $userImpact = $this->estimateUserImpact($error);
             $peakActivity = $this->calculatePeakActivity($error->getId());
-            
+
             // Tags basés sur l'analyse automatique
             $tags = $this->generateErrorTags($error);
-            
+
             $csv .= sprintf(
                 "%d;\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";%d;\"%s\";\"%s\";",
                 $error->getId(),
@@ -261,7 +260,7 @@ class AnalyticsController extends AbstractController
                 $error->getFirstSeen()->format('Y-m-d H:i:s'),
                 $error->getLastSeen()->format('Y-m-d H:i:s')
             );
-            
+
             $csv .= sprintf(
                 "%.1f;\"%s\";%s;\"%s\";\"%s\";\"%s\";\"%s\";\"%s\";",
                 $durationUnresolved,
@@ -273,7 +272,7 @@ class AnalyticsController extends AbstractController
                 $this->escapeCsvField($httpMethod),
                 $this->escapeCsvField($httpStatus)
             );
-            
+
             $csv .= sprintf(
                 "\"%s\";\"%s\";\"%s\";\"%s\";",
                 $this->escapeCsvField($errorUrl),
@@ -281,7 +280,7 @@ class AnalyticsController extends AbstractController
                 $this->escapeCsvField($sourceLine),
                 $this->escapeCsvField($stackTrace)
             );
-            
+
             $csv .= sprintf(
                 "%.2f;\"%s\";%d;\"%s\";",
                 $frequencyPerDay,
@@ -289,7 +288,7 @@ class AnalyticsController extends AbstractController
                 $lastActivityDays,
                 $this->escapeCsvField($userImpact)
             );
-            
+
             $csv .= sprintf(
                 "\"%s\";\"%s\";\"%s\";\"%s\";\"%s\"\n",
                 $this->escapeCsvField($tags),
@@ -299,10 +298,10 @@ class AnalyticsController extends AbstractController
                 $error->getResolvedAt() ? $error->getResolvedAt()->format('Y-m-d H:i:s') : 'Non résolu'
             );
         }
-        
+
         // Ajouter un résumé statistique à la fin
         $csv .= $this->generateStatsSummary($advancedStats);
-        
+
         $response->setContent($csv);
         return $response;
     }
@@ -311,27 +310,27 @@ class AnalyticsController extends AbstractController
     public function apiMetrics(int $period, Request $request): JsonResponse
     {
         $user = $this->getUser();
-        
+
         // Vérifier les droits d'accès
         if (!$this->checkUserHasAdvancedAnalytics($user->getId())) {
             return $this->json(['error' => 'Access denied'], 403);
         }
-        
+
         $project = $request->query->get('project', '');
-        
+
         $startDate = new \DateTime("-{$period} days");
         $endDate = new \DateTime();
-        
+
         $filters = [
             'user' => $user,
             'since' => $startDate,
             'until' => $endDate
         ];
-        
+
         if ($project) {
             $filters['project'] = $project;
         }
-        
+
         // Métriques avancées
         $metrics = [
             'resolution_metrics' => $this->getResolutionMetrics($filters),
@@ -339,7 +338,7 @@ class AnalyticsController extends AbstractController
             'project_health' => $this->getProjectHealthMetrics($filters),
             'time_to_resolution' => $this->getTimeToResolutionMetrics($filters)
         ];
-        
+
         return $this->json($metrics);
     }
 
@@ -352,7 +351,7 @@ class AnalyticsController extends AbstractController
         $ignoredErrors = $this->errorGroupRepository->countWithFilters(
             array_merge($filters, ['status' => 'ignored'])
         );
-        
+
         return [
             'total' => $totalErrors,
             'resolved' => $resolvedErrors,
@@ -376,31 +375,31 @@ class AnalyticsController extends AbstractController
                 AND eo.occurred_at >= :startDate
                 AND eo.occurred_at <= :endDate
         ";
-        
+
         $params = [
             'userId' => $filters['user']->getId(),
             'startDate' => $filters['since']->format('Y-m-d H:i:s'),
             'endDate' => $filters['until']->format('Y-m-d H:i:s')
         ];
-        
+
         if (isset($filters['project'])) {
             $sql .= " AND eg.project = :project";
             $params['project'] = $filters['project'];
         }
-        
+
         $sql .= " GROUP BY DAYOFWEEK(eo.occurred_at) ORDER BY day_of_week";
-        
+
         $conn = $this->errorOccurrenceRepository->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery($params);
-        
+
         $dayLabels = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
         $dayData = array_fill(0, 7, 0);
-        
+
         foreach ($result->fetchAllAssociative() as $row) {
             $dayData[$row['day_of_week'] - 1] = (int)$row['count'];
         }
-        
+
         return [
             'by_day_of_week' => array_map(function($count, $index) use ($dayLabels) {
                 return ['day' => $dayLabels[$index], 'count' => $count];
@@ -412,17 +411,17 @@ class AnalyticsController extends AbstractController
     {
         $projects = $this->projectRepository->findByOwner($filters['user'], 50);
         $healthData = [];
-        
+
         foreach ($projects as $project) {
             $projectFilters = array_merge($filters, ['project' => $project->getSlug()]);
-            
+
             $totalErrors = $this->errorGroupRepository->countWithFilters($projectFilters);
             $openErrors = $this->errorGroupRepository->countWithFilters(
                 array_merge($projectFilters, ['status' => 'open'])
             );
-            
+
             $healthScore = $totalErrors > 0 ? max(0, 100 - (($openErrors / $totalErrors) * 100)) : 100;
-            
+
             $healthData[] = [
                 'project' => $project->getName(),
                 'slug' => $project->getSlug(),
@@ -431,12 +430,12 @@ class AnalyticsController extends AbstractController
                 'health_score' => round($healthScore, 1)
             ];
         }
-        
+
         // Trier par score de santé
         usort($healthData, function($a, $b) {
             return $b['health_score'] <=> $a['health_score'];
         });
-        
+
         return array_slice($healthData, 0, 10);
     }
 
@@ -456,23 +455,23 @@ class AnalyticsController extends AbstractController
                 AND eg.last_seen >= :startDate
                 AND eg.last_seen <= :endDate
         ";
-        
+
         $params = [
             'userId' => $filters['user']->getId(),
             'startDate' => $filters['since']->format('Y-m-d H:i:s'),
             'endDate' => $filters['until']->format('Y-m-d H:i:s')
         ];
-        
+
         if (isset($filters['project'])) {
             $sql .= " AND eg.project = :project";
             $params['project'] = $filters['project'];
         }
-        
+
         $conn = $this->errorGroupRepository->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery($params);
         $data = $result->fetchAssociative();
-        
+
         return [
             'average_hours' => $data['avg_hours'] ? round((float)$data['avg_hours'], 1) : 0,
             'fastest_hours' => $data['min_hours'] ? round((float)$data['min_hours'], 1) : 0,
@@ -485,7 +484,7 @@ class AnalyticsController extends AbstractController
     {
         $totalErrors = $this->errorGroupRepository->countWithFilters($filters);
         $totalOccurrences = $this->errorOccurrenceRepository->countWithFilters($filters);
-        
+
         // Période précédente pour comparaison
         $previousFilters = $filters;
         $period = $filters['until']->diff($filters['since'])->days;
@@ -493,14 +492,14 @@ class AnalyticsController extends AbstractController
         $previousEndDate = new \DateTime("-{$period} days");
         $previousFilters['since'] = $previousStartDate;
         $previousFilters['until'] = $previousEndDate;
-        
+
         $previousErrors = $this->errorGroupRepository->countWithFilters($previousFilters);
         $previousOccurrences = $this->errorOccurrenceRepository->countWithFilters($previousFilters);
-        
+
         // Calcul des variations
         $errorGrowth = $previousErrors > 0 ? (($totalErrors - $previousErrors) / $previousErrors) * 100 : 0;
         $occurrenceGrowth = $previousOccurrences > 0 ? (($totalOccurrences - $previousOccurrences) / $previousOccurrences) * 100 : 0;
-        
+
         // Répartition par statut
         $openErrors = $this->errorGroupRepository->countWithFilters(
             array_merge($filters, ['status' => 'open'])
@@ -511,7 +510,7 @@ class AnalyticsController extends AbstractController
         $ignoredErrors = $this->errorGroupRepository->countWithFilters(
             array_merge($filters, ['status' => 'ignored'])
         );
-        
+
         return [
             'total_errors' => $totalErrors,
             'total_occurrences' => $totalOccurrences,
@@ -528,22 +527,22 @@ class AnalyticsController extends AbstractController
     private function getTrendAnalytics(array $filters, string $period): array
     {
         $days = (int)$period;
-        
+
         // Obtenir les tendances des occurrences
         $occurrencesTrend = $this->errorOccurrenceRepository->getErrorTrend($days, $filters);
-        
+
         // Obtenir les tendances des erreurs (groupes d'erreurs uniques par jour)
         $errorsTrend = $this->getErrorsTrend($days, $filters);
-        
+
         // Fusionner les deux datasets
         $result = [];
         $errorsMap = [];
-        
+
         // Créer un map des erreurs par date
         foreach ($errorsTrend as $errorData) {
             $errorsMap[$errorData['date']] = (int)$errorData['count'];
         }
-        
+
         // Combiner avec les occurrences
         foreach ($occurrencesTrend as $occurrenceData) {
             $result[] = [
@@ -552,14 +551,14 @@ class AnalyticsController extends AbstractController
                 'errors' => $errorsMap[$occurrenceData['date']] ?? 0
             ];
         }
-        
+
         return $result;
     }
 
     private function getTopProjects(array $filters): array
     {
         $topProjects = $this->errorGroupRepository->getTopProjectsByOccurrences(10, $filters);
-        
+
         // Normaliser les clés pour le template
         $result = [];
         foreach ($topProjects as $project) {
@@ -569,7 +568,7 @@ class AnalyticsController extends AbstractController
                 'occurrence_count' => $project['total_occurrences']
             ];
         }
-        
+
         return $result;
     }
 
@@ -581,7 +580,7 @@ class AnalyticsController extends AbstractController
             'DESC',
             10
         );
-        
+
         $result = [];
         foreach ($errors as $error) {
             $result[] = [
@@ -594,7 +593,7 @@ class AnalyticsController extends AbstractController
                 'last_seen' => $error->getLastSeen()
             ];
         }
-        
+
         return $result;
     }
 
@@ -602,35 +601,35 @@ class AnalyticsController extends AbstractController
     {
         // Requête personnalisée pour obtenir la distribution par type d'erreur
         $qb = $this->errorGroupRepository->createQueryBuilder('eg');
-        
+
         // Appliquer les filtres manuellement
         if (isset($filters['user'])) {
             $qb->join('eg.projectEntity', 'p')
                ->andWhere('p.owner = :user')
                ->setParameter('user', $filters['user']);
         }
-        
+
         if (isset($filters['project'])) {
             $qb->andWhere('eg.project = :project')
                ->setParameter('project', $filters['project']);
         }
-        
+
         if (isset($filters['since'])) {
             $qb->andWhere('eg.lastSeen >= :since')
                ->setParameter('since', $filters['since']);
         }
-        
+
         if (isset($filters['until'])) {
             $qb->andWhere('eg.lastSeen <= :until')
                ->setParameter('until', $filters['until']);
         }
-        
+
         $result = $qb->select('eg.errorType, COUNT(eg.id) as count, SUM(eg.occurrenceCount) as occurrences')
             ->groupBy('eg.errorType')
             ->orderBy('count', 'DESC')
             ->getQuery()
             ->getResult();
-        
+
         $distribution = [];
         foreach ($result as $row) {
             $distribution[] = [
@@ -639,7 +638,7 @@ class AnalyticsController extends AbstractController
                 'occurrences' => (int)$row['occurrences']
             ];
         }
-        
+
         return $distribution;
     }
 
@@ -725,12 +724,12 @@ class AnalyticsController extends AbstractController
             JOIN plans p ON u.plan_id = p.id 
             WHERE u.id = :userId
         ";
-        
+
         $conn = $this->entityManager->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['userId' => $userId]);
         $data = $result->fetchAssociative();
-        
+
         return $data && (bool)$data['has_advanced_analytics'];
     }
 
@@ -742,12 +741,12 @@ class AnalyticsController extends AbstractController
             JOIN plans p ON u.plan_id = p.id 
             WHERE u.id = :userId
         ";
-        
+
         $conn = $this->entityManager->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['userId' => $userId]);
         $data = $result->fetchAssociative();
-        
+
         return $data ? $data['name'] : null;
     }
 
@@ -764,7 +763,7 @@ class AnalyticsController extends AbstractController
         if (strpos($userAgent, 'Safari') !== false) return 'Safari';
         if (strpos($userAgent, 'Edge') !== false) return 'Edge';
         if (strpos($userAgent, 'Opera') !== false) return 'Opera';
-        
+
         return 'Unknown';
     }
 
@@ -775,7 +774,7 @@ class AnalyticsController extends AbstractController
         if (strpos($userAgent, 'Linux') !== false) return 'Linux';
         if (strpos($userAgent, 'Android') !== false) return 'Android';
         if (strpos($userAgent, 'iOS') !== false) return 'iOS';
-        
+
         return 'Unknown';
     }
 
@@ -796,19 +795,19 @@ class AnalyticsController extends AbstractController
     {
         $occurrences = $error->getOccurrenceCount();
         $errorType = strtolower($error->getErrorType() ?: '');
-        
+
         // Erreurs critiques
-        if (strpos($errorType, 'fatal') !== false || 
+        if (strpos($errorType, 'fatal') !== false ||
             strpos($errorType, 'critical') !== false ||
             strpos($errorType, 'security') !== false) {
             return 'Critique';
         }
-        
+
         // Basé sur la fréquence
         if ($occurrences > 100) return 'Haute';
         if ($occurrences > 20) return 'Moyenne';
         if ($occurrences > 5) return 'Faible';
-        
+
         return 'Très faible';
     }
 
@@ -816,17 +815,17 @@ class AnalyticsController extends AbstractController
     {
         $stackTrace = $error->getStackTrace() ?: '';
         $message = $error->getMessage() ?: '';
-        
+
         // Analyse de la complexité basée sur la stack trace et le message
         $stackLines = substr_count($stackTrace, "\n");
         $hasDatabase = strpos($message, 'SQL') !== false || strpos($message, 'database') !== false;
         $hasNetwork = strpos($message, 'curl') !== false || strpos($message, 'network') !== false;
         $hasMemory = strpos($message, 'memory') !== false || strpos($message, 'allocation') !== false;
-        
+
         if ($stackLines > 20 || $hasDatabase || $hasNetwork) return 'Complexe';
         if ($stackLines > 10 || $hasMemory) return 'Moyenne';
         if ($stackLines > 5) return 'Simple';
-        
+
         return 'Très simple';
     }
 
@@ -835,25 +834,25 @@ class AnalyticsController extends AbstractController
         $occurrences = $error->getOccurrenceCount();
         $errorType = strtolower($error->getErrorType() ?: '');
         $message = strtolower($error->getMessage() ?: '');
-        
+
         // Erreurs bloquantes
-        if (strpos($errorType, 'fatal') !== false || 
+        if (strpos($errorType, 'fatal') !== false ||
             strpos($message, '500') !== false ||
             strpos($message, 'unavailable') !== false) {
             return 'Bloquant';
         }
-        
+
         // Erreurs dégradantes
-        if (strpos($message, '404') !== false || 
+        if (strpos($message, '404') !== false ||
             strpos($message, 'timeout') !== false ||
             $occurrences > 50) {
             return 'Dégradant';
         }
-        
+
         // Basé sur la fréquence
         if ($occurrences > 20) return 'Modéré';
         if ($occurrences > 5) return 'Faible';
-        
+
         return 'Minimal';
     }
 
@@ -869,18 +868,18 @@ class AnalyticsController extends AbstractController
             ORDER BY count DESC
             LIMIT 1
         ";
-        
+
         $conn = $this->entityManager->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery(['errorId' => $errorId]);
         $data = $result->fetchAssociative();
-        
+
         if ($data) {
             $hour = (int)$data['hour'];
             $count = (int)$data['count'];
             return sprintf("%02d:00 (%d occurrences)", $hour, $count);
         }
-        
+
         return 'Non déterminé';
     }
 
@@ -890,13 +889,13 @@ class AnalyticsController extends AbstractController
         $message = strtolower($error->getMessage() ?: '');
         $errorType = strtolower($error->getErrorType() ?: '');
         $file = strtolower($error->getFile() ?: '');
-        
+
         // Tags basés sur le type d'erreur
         if (strpos($errorType, 'syntax') !== false) $tags[] = 'syntaxe';
         if (strpos($errorType, 'fatal') !== false) $tags[] = 'fatal';
         if (strpos($errorType, 'warning') !== false) $tags[] = 'avertissement';
         if (strpos($errorType, 'notice') !== false) $tags[] = 'notice';
-        
+
         // Tags basés sur le message
         if (strpos($message, 'sql') !== false || strpos($message, 'database') !== false) $tags[] = 'base-de-données';
         if (strpos($message, 'curl') !== false || strpos($message, 'network') !== false) $tags[] = 'réseau';
@@ -905,23 +904,23 @@ class AnalyticsController extends AbstractController
         if (strpos($message, 'timeout') !== false) $tags[] = 'timeout';
         if (strpos($message, '404') !== false) $tags[] = 'page-introuvable';
         if (strpos($message, '500') !== false) $tags[] = 'erreur-serveur';
-        
+
         // Tags basés sur le fichier
         if (strpos($file, 'vendor') !== false) $tags[] = 'dépendance';
         if (strpos($file, 'config') !== false) $tags[] = 'configuration';
         if (strpos($file, 'controller') !== false) $tags[] = 'contrôleur';
         if (strpos($file, 'model') !== false) $tags[] = 'modèle';
         if (strpos($file, 'view') !== false || strpos($file, 'template') !== false) $tags[] = 'vue';
-        
+
         // Tags basés sur la fréquence
         if ($error->getOccurrenceCount() > 100) $tags[] = 'fréquent';
         if ($error->getOccurrenceCount() < 5) $tags[] = 'rare';
-        
+
         // Tags basés sur l'âge
         $ageInDays = (time() - $error->getFirstSeen()->getTimestamp()) / (24 * 3600);
         if ($ageInDays > 30) $tags[] = 'ancien';
         if ($ageInDays < 1) $tags[] = 'nouveau';
-        
+
         return implode(', ', $tags);
     }
 
@@ -944,28 +943,28 @@ class AnalyticsController extends AbstractController
             JOIN projects p ON eg.project_id = p.id
             WHERE p.owner_id = :userId
         ";
-        
+
         $params = ['userId' => $filters['user']->getId()];
-        
+
         if (isset($filters['since'])) {
             $sql .= " AND eg.last_seen >= :since";
             $params['since'] = $filters['since']->format('Y-m-d H:i:s');
         }
-        
+
         if (isset($filters['until'])) {
             $sql .= " AND eg.last_seen <= :until";
             $params['until'] = $filters['until']->format('Y-m-d H:i:s');
         }
-        
+
         if (isset($filters['project'])) {
             $sql .= " AND eg.project = :project";
             $params['project'] = $filters['project'];
         }
-        
+
         $conn = $this->entityManager->getConnection();
         $stmt = $conn->prepare($sql);
         $result = $stmt->executeQuery($params);
-        
+
         return $result->fetchAssociative() ?: [];
     }
 
@@ -974,7 +973,7 @@ class AnalyticsController extends AbstractController
         if (empty($stats)) {
             return "\n\n;Résumé Statistique;Aucune donnée disponible\n";
         }
-        
+
         $summary = "\n\n;=== RÉSUMÉ STATISTIQUE ===;\n";
         $summary .= ";Métrique;Valeur\n";
         $summary .= sprintf(";Total des erreurs;%d\n", $stats['total_errors'] ?? 0);
@@ -984,25 +983,25 @@ class AnalyticsController extends AbstractController
         $summary .= sprintf(";Erreurs ouvertes;%d\n", $stats['open_errors'] ?? 0);
         $summary .= sprintf(";Erreurs résolues;%d\n", $stats['resolved_errors'] ?? 0);
         $summary .= sprintf(";Erreurs ignorées;%d\n", $stats['ignored_errors'] ?? 0);
-        
+
         if ($stats['total_errors'] > 0) {
             $resolutionRate = ($stats['resolved_errors'] / $stats['total_errors']) * 100;
             $summary .= sprintf(";Taux de résolution;%.1f%%\n", $resolutionRate);
         }
-        
+
         $summary .= sprintf(";Nouvelles erreurs (24h);%d\n", $stats['new_errors_24h'] ?? 0);
         $summary .= sprintf(";Erreurs actives (24h);%d\n", $stats['active_errors_24h'] ?? 0);
-        
+
         if ($stats['earliest_error']) {
             $summary .= sprintf(";Première erreur;%s\n", $stats['earliest_error']);
         }
-        
+
         if ($stats['latest_error']) {
             $summary .= sprintf(";Dernière erreur;%s\n", $stats['latest_error']);
         }
-        
+
         $summary .= sprintf(";Rapport généré le;%s\n", date('Y-m-d H:i:s'));
-        
+
         return $summary;
     }
 
@@ -1010,7 +1009,7 @@ class AnalyticsController extends AbstractController
     {
         $errors = $this->errorGroupRepository->findWithFilters($filters, 'lastSeen', 'DESC', 1000);
         $advancedStats = $this->getAdvancedExportStatistics($filters);
-        
+
         $data = [
             'export_info' => [
                 'generated_at' => date('Y-m-d H:i:s'),
@@ -1024,12 +1023,12 @@ class AnalyticsController extends AbstractController
             'statistics' => $advancedStats,
             'errors' => []
         ];
-        
+
         foreach ($errors as $error) {
             $context = $error->getLatestContext();
             $request = $error->getLatestRequest();
             $userAgent = $error->getLatestUserAgent() ?: '';
-            
+
             $data['errors'][] = [
                 'id' => $error->getId(),
                 'title' => $error->getTitle(),
@@ -1061,12 +1060,12 @@ class AnalyticsController extends AbstractController
                 ]
             ];
         }
-        
+
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="analytics-data-' . date('Y-m-d-H-i') . '.json"');
         $response->setContent(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        
+
         return $response;
     }
 
@@ -1074,15 +1073,15 @@ class AnalyticsController extends AbstractController
     {
         $advancedStats = $this->getAdvancedExportStatistics($filters);
         $errors = $this->errorGroupRepository->findWithFilters($filters, 'lastSeen', 'DESC', 10);
-        
+
         // Générer un rapport HTML
         $html = $this->generateExecutiveSummaryHtml($advancedStats, $errors, $filters);
-        
+
         $response = new Response();
         $response->headers->set('Content-Type', 'text/html; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="resume-executif-' . date('Y-m-d-H-i') . '.html"');
         $response->setContent($html);
-        
+
         return $response;
     }
 
@@ -1090,7 +1089,7 @@ class AnalyticsController extends AbstractController
     {
         $projectFilter = $filters['project'] ?? 'Tous les projets';
         $period = $filters['until']->diff($filters['since'])->days;
-        
+
         $html = '<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1148,11 +1147,11 @@ class AnalyticsController extends AbstractController
 
         if ($stats['total_errors'] > 0) {
             $resolutionRate = ($stats['resolved_errors'] / $stats['total_errors']) * 100;
-            
+
             $html .= '
     <div class="section">
         <h2>💡 Insights Clés</h2>';
-            
+
             if ($resolutionRate >= 80) {
                 $html .= '<div class="insight">✅ <strong>Excellent taux de résolution (' . round($resolutionRate, 1) . '%)</strong> - Votre équipe gère efficacement les erreurs.</div>';
             } elseif ($resolutionRate >= 60) {
@@ -1160,15 +1159,15 @@ class AnalyticsController extends AbstractController
             } else {
                 $html .= '<div class="insight">🚨 <strong>Taux de résolution faible (' . round($resolutionRate, 1) . '%)</strong> - Action prioritaire requise.</div>';
             }
-            
+
             if (($stats['new_errors_24h'] ?? 0) > 0) {
                 $html .= '<div class="insight">🆕 <strong>' . $stats['new_errors_24h'] . ' nouvelles erreurs</strong> détectées dans les dernières 24h.</div>';
             }
-            
+
             if (($stats['active_errors_24h'] ?? 0) > ($stats['total_errors'] * 0.5)) {
                 $html .= '<div class="insight">⚡ <strong>Activité élevée</strong> - Plus de 50% des erreurs ont été actives récemment.</div>';
             }
-            
+
             $html .= '</div>';
         }
 
@@ -1190,7 +1189,7 @@ class AnalyticsController extends AbstractController
         foreach ($topErrors as $error) {
             $daysSinceLastSeen = round((time() - $error->getLastSeen()->getTimestamp()) / (24 * 3600));
             $statusClass = 'status-' . $error->getStatus();
-            
+
             $html .= '
                 <tr>
                     <td>' . htmlspecialchars(substr($error->getTitle(), 0, 60)) . '...</td>
@@ -1208,26 +1207,26 @@ class AnalyticsController extends AbstractController
 
     <div class="section">
         <h2>📊 Recommandations</h2>';
-        
+
         $recommendations = [];
-        
+
         if (($stats['open_errors'] ?? 0) > ($stats['total_errors'] * 0.3)) {
             $recommendations[] = 'Prioriser la résolution des erreurs ouvertes (' . $stats['open_errors'] . ' en attente)';
         }
-        
+
         if (($stats['new_errors_24h'] ?? 0) > 5) {
             $recommendations[] = 'Investiguer la cause de l\'augmentation récente des nouvelles erreurs';
         }
-        
+
         if (($stats['avg_occurrences_per_error'] ?? 0) > 10) {
             $recommendations[] = 'Analyser les erreurs récurrentes pour identifier des patterns systémiques';
         }
-        
+
         if (empty($recommendations)) {
             $recommendations[] = 'Maintenir les bonnes pratiques actuelles de gestion des erreurs';
             $recommendations[] = 'Continuer le monitoring proactif pour détecter les tendances';
         }
-        
+
         foreach ($recommendations as $recommendation) {
             $html .= '<div class="insight">• ' . $recommendation . '</div>';
         }
