@@ -7,53 +7,47 @@ use App\Entity\User;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailService;
-use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\DatabaseTestCase;
+use App\Tests\TestFixtures;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * Tests d'intégration pour AuthController
  */
-class AuthControllerTest extends WebTestCase
+class AuthControllerTest extends DatabaseTestCase
 {
+    use TestFixtures;
+
     private $client;
-    private ?EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
     private PlanRepository $planRepository;
 
     protected function setUp(): void
     {
+        // D'abord initialiser la base de données
+        parent::setUp();
+
+        // Ensuite créer le client
         $this->client = static::createClient();
-        $container = static::getContainer();
-        $this->entityManager = $container->get('doctrine')->getManager();
+
         $this->userRepository = $this->entityManager->getRepository(User::class);
         $this->planRepository = $this->entityManager->getRepository(Plan::class);
-
-        $this->cleanDatabase();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanDatabase();
-        $this->entityManager->close();
-        $this->entityManager = null;
-        parent::tearDown();
     }
 
     private function cleanDatabase(): void
     {
-        // Désactiver les contraintes de clés étrangères pour SQLite
-        $this->entityManager->getConnection()->executeStatement('PRAGMA foreign_keys = OFF');
-
-        // Supprimer tous les utilisateurs
-        $this->entityManager->getConnection()->executeStatement('DELETE FROM user');
-        $this->entityManager->getConnection()->executeStatement('DELETE FROM plan');
-
-        // Réactiver les contraintes
-        $this->entityManager->getConnection()->executeStatement('PRAGMA foreign_keys = ON');
+        // Supprimer tous les utilisateurs de test
+        $users = $this->userRepository->findAll();
+        foreach ($users as $user) {
+            $this->entityManager->remove($user);
+        }
+        $this->entityManager->flush();
     }
 
+    /**
+     * Test d'affichage de la page de connexion
+     */
     public function testLoginPageDisplay(): void
     {
         $this->client->request('GET', '/login');
@@ -74,7 +68,7 @@ class AuthControllerTest extends WebTestCase
 
         $this->client->request('GET', '/login');
 
-        self::assertResponseRedirects();
+        self::assertResponseRedirects('/dashboard');
     }
 
     /**
@@ -85,7 +79,9 @@ class AuthControllerTest extends WebTestCase
         $this->client->request('GET', '/register');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('form');
+        self::assertSelectorExists('form.register-form');
+        self::assertSelectorExists('input[name="registration_form[firstName]"]');
+        self::assertSelectorExists('input[name="registration_form[email]"]');
     }
 
     /**
@@ -94,6 +90,7 @@ class AuthControllerTest extends WebTestCase
     public function testSuccessfulRegistration(): void
     {
         $freePlan = $this->createTestPlan('Free', 0);
+        $this->persistAndFlush($freePlan);
 
         $this->client->request('POST', '/register', [
             'registration_form' => [
@@ -122,9 +119,8 @@ class AuthControllerTest extends WebTestCase
      */
     public function testRegistrationWithExistingEmail(): void
     {
-        // Créer un utilisateur existant
         $this->createTestUser('existing@example.com');
-        $freePlan = $this->createTestPlan();
+        $freePlan = $this->createTestPlan('Free', 0);
 
         $this->client->request('POST', '/register', [
             'registration_form' => [
@@ -137,12 +133,13 @@ class AuthControllerTest extends WebTestCase
                 ],
                 'plan' => $freePlan->getId(),
                 'acceptTerms' => true,
-                '_token' => $this->generateCsrfToken()
+                '_token' => $this->generateCsrfToken('registration_form')
             ]
         ]);
 
         self::assertResponseRedirects('/register');
 
+        // Suivre la redirection et vérifier le message d'erreur
         $crawler = $this->client->followRedirect();
         $this->assertStringContainsString('Un compte avec cet email existe déjà', $crawler->text());
     }
@@ -162,7 +159,7 @@ class AuthControllerTest extends WebTestCase
                     'second' => '456'  // Différent
                 ],
                 'acceptTerms' => false, // Non coché
-                '_token' => $this->generateCsrfToken()
+                '_token' => $this->generateCsrfToken('registration_form')
             ]
         ]);
 
@@ -178,7 +175,7 @@ class AuthControllerTest extends WebTestCase
      */
     public function testForgotPasswordWithExistingUser(): void
     {
-        $user = $this->createTestUser();
+        $user = $this->createTestUser('test@example.com');
 
         // Mocker le service d'email
         $emailService = $this->createMock(EmailService::class);
@@ -232,7 +229,7 @@ class AuthControllerTest extends WebTestCase
 
         $token = $user->getPasswordResetToken();
 
-        $this->client->request('POST', "/reset-password/$token", [
+        $this->client->request('POST', "/reset-password/{$token}", [
             'password' => 'NewPassword123!',
             'confirm_password' => 'NewPassword123!'
         ]);
@@ -268,7 +265,7 @@ class AuthControllerTest extends WebTestCase
 
         $token = $user->getEmailVerificationToken();
 
-        $this->client->request('GET', "/verify-email/$token");
+        $this->client->request('GET', "/verify-email/{$token}");
 
         self::assertResponseIsSuccessful();
 
@@ -306,7 +303,7 @@ class AuthControllerTest extends WebTestCase
      */
     public function testResendVerificationEmail(): void
     {
-        $user = $this->createTestUser();
+        $user = $this->createTestUser('test@example.com');
         $user->setIsVerified(false);
         $this->entityManager->flush();
 
@@ -332,11 +329,11 @@ class AuthControllerTest extends WebTestCase
         $user->setEmail($email);
         $user->setFirstName('Test');
         $user->setLastName('User');
-        $user->setPassword('$2y$10$test'); // Hash fictif
+        $user->setPassword('hashed_password');
         $user->setIsActive(true);
         $user->setIsVerified(true);
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->setUpdatedAt(new DateTimeImmutable());
+        $user->setCreatedAt(new \DateTimeImmutable());
+        $user->setUpdatedAt(new \DateTimeImmutable());
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -344,12 +341,12 @@ class AuthControllerTest extends WebTestCase
         return $user;
     }
 
-    private function createTestPlan(): Plan
+    private function createTestPlan(string $name, float $price): Plan
     {
         $plan = new Plan();
-        $plan->setName('Free');
-        $plan->setSlug(strtolower('Free'));
-        $plan->setPriceMonthly(0);
+        $plan->setName($name);
+        $plan->setSlug(strtolower($name));
+        $plan->setPriceMonthly($price);
         $plan->setIsActive(true);
         $plan->setIsBuyable(true);
         $plan->setMaxProjects(5);
@@ -361,11 +358,11 @@ class AuthControllerTest extends WebTestCase
         return $plan;
     }
 
-    private function generateCsrfToken(): string
+    private function generateCsrfToken(string $tokenId): string
     {
         return static::getContainer()
             ->get('security.csrf.token_manager')
-            ->getToken('registration_form')
+            ->getToken($tokenId)
             ->getValue();
     }
 }
