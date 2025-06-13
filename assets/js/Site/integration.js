@@ -341,35 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== GESTION DES ERREURS =====
-    window.addEventListener('error', function(e) {
-        console.warn('Erreur capturée sur la page intégrations:', e.error);
-        // Ne pas afficher de toast d'erreur pour ne pas perturber l'UX
-    });
-
-    // ===== ANALYTICS ET TRACKING =====
-    function trackEvent(action, tech = null) {
-        // Ici vous pouvez ajouter votre code d'analytics
-        // Par exemple : gtag('event', action, { tech: tech });
-        console.log('Event tracked:', action, tech ? `for ${tech}` : '');
-    }
-
-    // Tracker les changements d'onglets
-    techTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            trackEvent('tech_tab_clicked', this.dataset.tech);
-        });
-    });
-
-    // Tracker les copies de code
-    copyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const activeTab = document.querySelector('.tech-tab.active');
-            const tech = activeTab ? activeTab.dataset.tech : 'unknown';
-            trackEvent('code_copied', tech);
-        });
-    });
-
     // ===== OPTIMISATIONS PERFORMANCES =====
 
     // Lazy loading des icônes de technologies
@@ -394,8 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ===== INITIALISATION =====
-    console.log('🚀 Page intégrations chargée avec succès');
-
     // Charger l'onglet par défaut si aucun n'est actif
     const activeTab = document.querySelector('.tech-tab.active');
     if (activeTab) {

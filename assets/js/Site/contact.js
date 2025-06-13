@@ -247,11 +247,6 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(item, { attributes: true });
     });
 
-    // ===== GESTION DES ERREURS =====
-    window.addEventListener('error', function(e) {
-        console.warn('Erreur capturée sur la page contact:', e.error);
-    });
-
     // ===== FONCTIONS UTILITAIRES =====
 
     // Fonction pour smooth scroll vers un élément

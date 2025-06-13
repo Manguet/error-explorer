@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                const headerHeight = document.querySelector('.header')?.offsetHeight || 80;
+                const headerHeight = window.headerComponent?.header?.offsetHeight || 80;
                 const targetPosition = target.offsetTop - headerHeight - 20;
 
                 window.scrollTo({
