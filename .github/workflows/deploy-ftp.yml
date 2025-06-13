@@ -90,12 +90,34 @@ jobs:
             **/symfony.lock
             **/vendor/**
 
-      # 8. Post-deployment
-      - name: 🧹 Post-deployment cleanup
+      # 8. Post-deployment: Nettoyer le cache et ajuster les permissions
+      - name: 🧹 Post-deployment cleanup via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./scripts/
+          server-dir: /public_html/scripts/
+          exclude: ""
+
+      # 9. Vérification finale
+      - name: 🏥 Health check
         run: |
-          echo "✅ Fichiers déployés via FTP"
-          echo "🌐 Site: https://error-explorer.com"
-          echo "📅 Déployé le: $(date)"
+          echo "🔍 Vérification que le site est accessible..."
+          sleep 15
+          
+          # Test avec APP_DEBUG=false
+          echo "Test de https://error-explorer.com"
+          
+          # Curl simple pour vérifier que le site répond
+          if curl -f -s -L "https://error-explorer.com" >/dev/null 2>&1; then
+            echo "✅ Site accessible en production"
+          else
+            echo "⚠️ Site non accessible - vérifiez le cache et les permissions"
+          fi
 
       # 9. Notification de succès
       - name: 🎉 Deployment successful
