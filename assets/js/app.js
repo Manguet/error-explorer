@@ -1,6 +1,6 @@
 import './Site/utils.js';
 import './Site/HeaderComponent.js';
-import './Site/footer.js';
+import './Site/FooterComponent.js';
 import './Site/auth.js';
 import './Site/contact.js';
 import './Site/features.js';
