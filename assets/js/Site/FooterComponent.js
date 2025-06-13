@@ -331,7 +331,6 @@ class FooterComponent {
 
         // Message dans la console
         console.log('🎉 Félicitations ! Vous avez trouvé l\'easter egg d\'Error Explorer !');
-        console.log('🚀 Voici un code promo secret : KONAMI2024');
 
         // Notification spéciale
         this.showEasterEggNotification();

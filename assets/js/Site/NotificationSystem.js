@@ -116,25 +116,13 @@ class NotificationSystem {
      */
     async clearServerFlashMessages() {
         try {
-            const response = await fetch('/api/clear-flash', {
+            await fetch('/api/clear-flash', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
-
-            if (response.ok) {
-                // Flash messages vidés côté serveur avec succès
-                console.log('Flash messages cleared on server');
-
-                // Nettoyer les données persistantes locales
-                this.cleanupLocalStorageData();
-
-            } else {
-                console.warn('Failed to clear flash messages on server');
-            }
-
         } catch (error) {
             console.debug('Could not clear server flash messages:', error);
         }

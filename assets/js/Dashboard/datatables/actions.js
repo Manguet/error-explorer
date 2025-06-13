@@ -74,7 +74,7 @@ class ProjectActions {
             });
 
             const data = await response.json();
-            
+
             if (!response.ok) {
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
@@ -97,7 +97,6 @@ class ProjectActions {
             window.showNotification(message, type);
         } else {
             // Fallback simple
-            console.log(`[${type.toUpperCase()}] ${message}`);
             alert(message);
         }
     }

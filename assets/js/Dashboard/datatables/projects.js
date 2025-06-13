@@ -24,8 +24,6 @@ class ProjectsDataTable {
     }
 
     onTableDraw() {
-        // Actions à effectuer après chaque redraw de la table
-        console.log('Table redrawn');
     }
 
     reloadTable() {

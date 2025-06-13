@@ -69,6 +69,5 @@ async function getNotificationsCount() {
 
 // Actions utilisateur
 function editProfile() {
-    console.log('Édition du profil...');
     closeUserMenu();
 }

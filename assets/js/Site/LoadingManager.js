@@ -627,7 +627,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Test en mode debug
     if (window.location.search.includes('debug=loading')) {
-        console.log('Loading Manager initialized');
 
         // Démonstration
         setTimeout(() => {

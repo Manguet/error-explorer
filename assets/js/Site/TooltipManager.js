@@ -604,11 +604,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Dispatcher un événement
     document.dispatchEvent(new CustomEvent('tooltip:ready'));
-
-    // Test en mode debug
-    if (window.location.search.includes('debug=tooltip')) {
-        console.log('Tooltip system ready');
-    }
 });
 
 // Exposition globale
