@@ -3,6 +3,7 @@ import './Site/HeaderComponent.js';
 import './Site/FooterComponent.js';
 import './Site/NotificationSystem.js';
 import './Site/LoadingManager.js';
+import './Site/TooltipManager.js';
 
 import './Site/auth.js';
 import './Site/contact.js';
