@@ -1,77 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue sur Error Explorer !</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
-        .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2rem; text-align: center; }
-        .content { padding: 2rem; }
-        .button { display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 1rem 0; }
-        .footer { background: #f8fafc; padding: 2rem; text-align: center; font-size: 0.875rem; color: #64748b; }
-        .feature { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #f8fafc; border-radius: 8px; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>Bienvenue sur Error Explorer !</h1>
-        <p>Votre compte est maintenant actif</p>
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Bienvenue sur Error Explorer !{% endblock %}
+
+{% block header_class %}email-header--success{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">
+        🎉 COMPTE ACTIVÉ
+    </div>
+{% endblock %}
+
+{% block email_title %}Bienvenue sur Error Explorer !{% endblock %}
+
+{% block email_subtitle %}Votre compte est maintenant actif et prêt à l'emploi{% endblock %}
+
+{% block body %}
+    <h2>Félicitations {{ user.firstName }} ! 🎉</h2>
+
+    <p>Votre email a été vérifié avec succès. Vous pouvez maintenant profiter de toutes les fonctionnalités d'Error Explorer pour surveiller vos applications.</p>
+
+    <!-- Bouton principal -->
+    <div class="btn-center">
+        <a href="{{ dashboard_url }}" class="btn btn-primary">
+            🚀 Accéder à mon dashboard
+        </a>
     </div>
 
-    <div class="content">
-        <h2>Félicitations {{ user.firstName }} !</h2>
+    <!-- Détails du plan -->
+    <h3>📊 Votre plan : {{ plan.name }}</h3>
 
-        <p>Votre email a été vérifié avec succès. Vous pouvez maintenant profiter de toutes les fonctionnalités d'Error Explorer.</p>
-
-        <div style="text-align: center; margin: 2rem 0;">
-            <a href="{{ dashboard_url }}" class="button">Accéder à mon dashboard</a>
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="detail-label">Projets</div>
+            <div class="detail-value">{{ plan.maxProjectsLabel }}</div>
         </div>
-
-        <h3>Votre plan : {{ plan.name }}</h3>
-        <div class="feature">
-            <span>📊</span>
-            <div>
-                <strong>{{ plan.maxProjectsLabel }} projets</strong><br>
-                <small>Surveillez vos applications</small>
-            </div>
+        <div class="detail-item">
+            <div class="detail-label">Erreurs/mois</div>
+            <div class="detail-value">{{ plan.maxMonthlyErrorsLabel }}</div>
         </div>
-
-        <div class="feature">
-            <span>🚨</span>
-            <div>
-                <strong>{{ plan.maxMonthlyErrorsLabel }} erreurs/mois</strong><br>
-                <small>Détection automatique</small>
-            </div>
+        <div class="detail-item">
+            <div class="detail-label">Rétention</div>
+            <div class="detail-value">{{ plan.dataRetentionDays }} jours</div>
         </div>
-
-        <div class="feature">
-            <span>⚡</span>
-            <div>
-                <strong>Alertes en temps réel</strong><br>
-                <small>Soyez notifié instantanément</small>
-            </div>
+        <div class="detail-item">
+            <div class="detail-label">Support</div>
+            <div class="detail-value">Prioritaire</div>
         </div>
-
-        <h3>Prochaines étapes :</h3>
-        <ol>
-            <li>Créez votre premier projet</li>
-            <li>Intégrez Error Explorer dans votre application</li>
-            <li>Configurez vos alertes</li>
-            <li>Commencez à surveiller vos erreurs !</li>
-        </ol>
-
-        <p>Si vous avez des questions, n'hésitez pas à nous contacter. Notre équipe est là pour vous aider.</p>
-
-        <p>Cordialement,<br>L'équipe Error Explorer</p>
     </div>
 
-    <div class="footer">
-        <p>Error Explorer - Monitoring intelligent d'applications</p>
-        <p>Cet email a été envoyé à {{ user.email }}</p>
+    <!-- Fonctionnalités -->
+    <h3>⚡ Ce qui vous attend</h3>
+    <div class="success-card">
+        <div class="card-title">
+            🎯 Fonctionnalités incluses
+        </div>
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Surveillance d'erreurs en temps réel</li>
+                <li>Alertes instantanées par email</li>
+                <li>Analytics détaillés et graphiques</li>
+                <li>Intégrations Slack et Discord</li>
+                <li>API complète pour vos workflows</li>
+                <li>Support technique prioritaire</li>
+            </ul>
+        </div>
     </div>
-</div>
-</body>
-</html>
+
+    <!-- Prochaines étapes -->
+    <h3>📋 Prochaines étapes</h3>
+    <div class="info-card">
+        <div class="card-title">
+            🛠️ Pour bien commencer
+        </div>
+        <div class="card-content">
+            <ol style="padding-left: 20px; margin: 0;">
+                <li><strong>Créez votre premier projet</strong> depuis le dashboard</li>
+                <li><strong>Intégrez notre SDK</strong> dans votre application</li>
+                <li><strong>Configurez vos alertes</strong> personnalisées</li>
+                <li><strong>Explorez les analytics</strong> de vos erreurs</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="btn-center">
+        <a href="{{ dashboard_url }}" class="btn btn-primary">
+            🚀 Commencer maintenant
+        </a>
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="btn btn-secondary">
+            📚 Guide d'intégration
+        </a>
+    </div>
+
+    <!-- Message de fin -->
+    <div class="info-card">
+        <div class="card-title">
+            💬 Besoin d'aide ?
+        </div>
+        <div class="card-content">
+            Notre équipe est là pour vous accompagner ! N'hésitez pas à nous contacter si vous avez des questions ou besoin d'assistance pour configurer votre monitoring.
+        </div>
+    </div>
+
+    <p class="text-center">
+        <strong>Bienvenue dans l'équipe Error Explorer !</strong><br>
+        L'équipe Error Explorer
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="footer-link">Intégration</a>
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('features') }}" class="footer-link">Fonctionnalités</a>
+{% endblock %}

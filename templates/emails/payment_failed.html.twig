@@ -1,242 +1,150 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Échec du paiement - Error Explorer</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 0;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-        }
-        .content {
-            padding: 30px;
-        }
-        .warning-icon {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .warning-icon .icon {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            background-color: #dc3545;
-            border-radius: 50%;
-            line-height: 60px;
-            color: white;
-            font-size: 24px;
-        }
-        .payment-details {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .payment-details h3 {
-            margin-top: 0;
-            color: #495057;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .detail-row:last-child {
-            margin-bottom: 0;
-        }
-        .button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .button-secondary {
-            display: inline-block;
-            background: #6c757d;
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        .alert {
-            border-radius: 5px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .alert-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-        }
-        .alert-info {
-            background-color: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-        }
-        @media (max-width: 600px) {
-            .content {
-                padding: 20px 15px;
-            }
-            .detail-row {
-                flex-direction: column;
-            }
-            .button, .button-secondary {
-                display: block;
-                margin: 10px 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Error Explorer</h1>
-        </div>
-        
-        <div class="content">
-            <div class="warning-icon">
-                <div class="icon">⚠</div>
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Échec du paiement - Error Explorer{% endblock %}
+
+{% block header_class %}email-header--error{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">
+        ⚠️ PAIEMENT ÉCHOUÉ
+    </div>
+{% endblock %}
+
+{% block email_title %}Échec du paiement{% endblock %}
+
+{% block email_subtitle %}Action requise pour maintenir votre abonnement{% endblock %}
+
+{% block body %}
+    <h2>Bonjour {{ user.firstName }},</h2>
+
+    <p>Nous n'avons pas pu traiter votre paiement pour votre abonnement Error Explorer. Ne vous inquiétez pas, c'est un problème courant et facilement résolvable.</p>
+
+    {% if invoice %}
+        <!-- Détails de la facture -->
+        <h3>💳 Détails de la facture</h3>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Facture</div>
+                <div class="detail-value">#{{ invoice.number }}</div>
             </div>
-            
-            <h2 style="text-align: center; color: #dc3545; margin-bottom: 10px;">Échec du paiement</h2>
-            <p style="text-align: center; font-size: 18px; color: #6c757d; margin-bottom: 30px;">
-                Bonjour {{ user.firstName }}, nous n'avons pas pu traiter votre paiement.
-            </p>
-            
-            {% if invoice %}
-            <div class="payment-details">
-                <h3>Détails de la facture</h3>
-                <div class="detail-row">
-                    <span>Facture :</span>
-                    <span><strong>#{{ invoice.number }}</strong></span>
+            <div class="detail-item">
+                <div class="detail-label">Montant</div>
+                <div class="detail-value">{{ invoice.formattedTotal }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Plan</div>
+                <div class="detail-value">{{ invoice.subscription.plan.name }}</div>
+            </div>
+            {% if invoice.dueDate %}
+                <div class="detail-item">
+                    <div class="detail-label">Échéance</div>
+                    <div class="detail-value">{{ invoice.dueDate | date('d/m/Y') }}</div>
                 </div>
-                <div class="detail-row">
-                    <span>Montant :</span>
-                    <span>{{ invoice.formattedTotal }}</span>
-                </div>
-                <div class="detail-row">
-                    <span>Plan :</span>
-                    <span>{{ invoice.subscription.plan.name }}</span>
-                </div>
-                <div class="detail-row">
-                    <span>Période :</span>
-                    <span>{{ invoice.periodLabel }}</span>
-                </div>
-                {% if invoice.dueDate %}
-                <div class="detail-row">
-                    <span>Date d'échéance :</span>
-                    <span>{{ invoice.dueDate | date('d/m/Y') }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
-            
-            <div class="alert alert-warning">
-                <strong>Que se passe-t-il maintenant ?</strong>
-                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-                    <li>Votre abonnement reste actif pendant quelques jours</li>
-                    <li>Nous réessaierons automatiquement le paiement</li>
-                    <li>Vous pouvez mettre à jour votre méthode de paiement à tout moment</li>
-                </ul>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="button">
-                    Mettre à jour ma méthode de paiement
-                </a>
-            </div>
-            
-            <div class="alert alert-info">
-                <h4 style="margin-top: 0;">Causes possibles de l'échec :</h4>
-                <ul style="margin: 0; padding-left: 20px;">
-                    <li><strong>Fonds insuffisants</strong> - Vérifiez le solde de votre compte</li>
-                    <li><strong>Carte expirée</strong> - Mettez à jour vos informations de paiement</li>
-                    <li><strong>Limite dépassée</strong> - Contactez votre banque pour autoriser le paiement</li>
-                    <li><strong>Données incorrectes</strong> - Vérifiez les informations de votre carte</li>
-                </ul>
-            </div>
-            
-            <div style="background-color: #f8f9fa; border-radius: 5px; padding: 20px; margin: 20px 0;">
-                <h4 style="margin-top: 0;">Actions recommandées :</h4>
-                <ol style="margin: 0; padding-left: 20px;">
-                    <li>Vérifiez les informations de votre carte bancaire</li>
-                    <li>Assurez-vous que votre carte n'est pas expirée</li>
-                    <li>Contactez votre banque si nécessaire</li>
-                    <li>Ajoutez une nouvelle méthode de paiement si besoin</li>
-                </ol>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <p style="margin-bottom: 15px;">Besoin d'aide ?</p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="button-secondary">
-                    Contacter le support
-                </a>
-            </div>
-            
-            {% if subscription and subscription.isActive %}
-            <div style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin: 20px 0;">
-                <strong style="color: #155724;">ℹ️ Votre service reste actif</strong>
-                <p style="margin: 5px 0 0 0; color: #155724;">
-                    Votre abonnement Error Explorer continue de fonctionner normalement. 
-                    Vous avez quelques jours pour résoudre ce problème de paiement.
-                </p>
-            </div>
             {% endif %}
         </div>
-        
-        <div class="footer">
-            <p>
-                <strong>Error Explorer</strong><br>
-                Surveillance d'erreurs pour développeurs
-            </p>
-            <p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}">Gérer mon abonnement</a> | 
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}">Support</a> | 
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('legal_privacy') }}">Confidentialité</a>
-            </p>
-            <p style="font-size: 12px; margin-top: 15px;">
-                Ce message vous informe d'un problème de paiement sur votre compte Error Explorer.<br>
-                Si vous pensez qu'il s'agit d'une erreur, contactez-nous immédiatement.
-            </p>
+    {% endif %}
+
+    <!-- Que se passe-t-il maintenant -->
+    <div class="warning-card">
+        <div class="card-title">
+            📅 Que se passe-t-il maintenant ?
+        </div>
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Votre abonnement reste actif pendant quelques jours</li>
+                <li>Nous réessaierons automatiquement le paiement</li>
+                <li>Vous pouvez mettre à jour votre méthode de paiement à tout moment</li>
+                <li>Aucune interruption de service pour l'instant</li>
+            </ul>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Bouton d'action principal -->
+    <div class="btn-center">
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="btn btn-primary" style="font-size: 18px; padding: 16px 32px;">
+            💳 Mettre à jour ma méthode de paiement
+        </a>
+    </div>
+
+    <!-- Causes possibles -->
+    <h3>🔍 Causes possibles de l'échec</h3>
+    <div class="info-card">
+        <div class="card-content">
+            <ul class="styled-list">
+                <li><strong>Fonds insuffisants</strong> - Vérifiez le solde de votre compte</li>
+                <li><strong>Carte expirée</strong> - Mettez à jour vos informations de paiement</li>
+                <li><strong>Limite dépassée</strong> - Contactez votre banque pour autoriser le paiement</li>
+                <li><strong>Données incorrectes</strong> - Vérifiez les informations de votre carte</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Actions recommandées -->
+    <h3>✅ Actions recommandées</h3>
+    <div class="success-card">
+        <div class="card-title">
+            🛠️ Étapes à suivre
+        </div>
+        <div class="card-content">
+            <ol style="padding-left: 20px; margin: 0;">
+                <li>Vérifiez les informations de votre carte bancaire</li>
+                <li>Assurez-vous que votre carte n'est pas expirée</li>
+                <li>Contactez votre banque si nécessaire</li>
+                <li>Ajoutez une nouvelle méthode de paiement si besoin</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Service reste actif -->
+    {% if subscription and subscription.isActive %}
+        <div class="success-card">
+            <div class="card-title">
+                ℹ️ Votre service reste actif
+            </div>
+            <div class="card-content">
+                Votre abonnement Error Explorer continue de fonctionner normalement.
+                Vous avez quelques jours pour résoudre ce problème de paiement sans interruption de service.
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Boutons secondaires -->
+    <div class="btn-center">
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="btn btn-secondary">
+            💬 Contacter le support
+        </a>
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="btn btn-secondary">
+            📊 Voir ma facturation
+        </a>
+    </div>
+
+    <!-- Que se passe-t-il si pas de résolution -->
+    <div class="info-card">
+        <div class="card-title">
+            ❓ Que se passe-t-il si je n'active pas mon abonnement ?
+        </div>
+        <div class="card-content">
+            <ul style="margin: 0; padding-left: 20px;">
+                <li>Votre compte passera automatiquement au plan gratuit</li>
+                <li>Vos projets et données seront conservés selon les limites gratuites</li>
+                <li>Vous pourrez réactiver votre abonnement à tout moment</li>
+                <li>Aucun frais supplémentaire ne sera prélevé</li>
+            </ul>
+        </div>
+    </div>
+
+    <p class="text-center">
+        Nous sommes là pour vous aider à résoudre ce problème rapidement.<br>
+        <strong>L'équipe Error Explorer</strong>
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="footer-link">Gérer mon abonnement</a>
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="footer-link">Support</a>
+{% endblock %}
+
+{% block footer_legal %}
+    Notification d'échec de paiement pour Error Explorer<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Si vous pensez qu'il s'agit d'une erreur, contactez-nous
+{% endblock %}

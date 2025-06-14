@@ -1,261 +1,147 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abonnement annulé - Error Explorer</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 0;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-        }
-        .content {
-            padding: 30px;
-        }
-        .info-icon {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .info-icon .icon {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            background-color: #6c757d;
-            border-radius: 50%;
-            line-height: 60px;
-            color: white;
-            font-size: 24px;
-        }
-        .subscription-details {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .subscription-details h3 {
-            margin-top: 0;
-            color: #495057;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .detail-row:last-child {
-            margin-bottom: 0;
-        }
-        .button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .button-secondary {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #6c757d;
-        }
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        .alert {
-            border-radius: 5px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .alert-info {
-            background-color: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-        }
-        .alert-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-        }
-        .feedback-box {
-            background-color: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        @media (max-width: 600px) {
-            .content {
-                padding: 20px 15px;
-            }
-            .detail-row {
-                flex-direction: column;
-            }
-            .button, .button-secondary {
-                display: block;
-                margin: 10px 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Error Explorer</h1>
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Abonnement annulé - Error Explorer{% endblock %}
+
+{% block header_class %}email-header--warning{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">
+        📋 ABONNEMENT ANNULÉ
+    </div>
+{% endblock %}
+
+{% block email_title %}Abonnement annulé{% endblock %}
+
+{% block email_subtitle %}Confirmation d'annulation de votre abonnement{% endblock %}
+
+{% block body %}
+    <h2>Bonjour {{ user.firstName }},</h2>
+
+    <p>Nous confirmons l'annulation de votre abonnement Error Explorer. Nous espérons vous revoir bientôt !</p>
+
+    <!-- Détails de l'annulation -->
+    <h3>📋 Détails de l'annulation</h3>
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="detail-label">Plan annulé</div>
+            <div class="detail-value">{{ subscription.plan.name }}</div>
         </div>
-        
-        <div class="content">
-            <div class="info-icon">
-                <div class="icon">📋</div>
-            </div>
-            
-            <h2 style="text-align: center; color: #6c757d; margin-bottom: 10px;">Abonnement annulé</h2>
-            <p style="text-align: center; font-size: 18px; color: #6c757d; margin-bottom: 30px;">
-                Bonjour {{ user.firstName }}, nous confirmons l'annulation de votre abonnement.
-            </p>
-            
-            <div class="subscription-details">
-                <h3>Détails de l'annulation</h3>
-                <div class="detail-row">
-                    <span>Plan annulé :</span>
-                    <span><strong>{{ subscription.plan.name }}</strong></span>
-                </div>
-                <div class="detail-row">
-                    <span>Date d'annulation :</span>
-                    <span>{{ subscription.canceledAt | date('d/m/Y à H:i') }}</span>
-                </div>
-                {% if subscription.cancelAt and subscription.cancelAt > subscription.canceledAt %}
-                    <div class="detail-row">
-                        <span>Fin de service :</span>
-                        <span>{{ subscription.cancelAt | date('d/m/Y') }}</span>
-                    </div>
-                {% else %}
-                    <div class="detail-row">
-                        <span>Fin de service :</span>
-                        <span>Immédiate</span>
-                    </div>
-                {% endif %}
-                <div class="detail-row">
-                    <span>Dernier montant facturé :</span>
-                    <span>{{ subscription.formattedAmount }}</span>
-                </div>
-            </div>
-            
-            {% if subscription.cancelAt and subscription.cancelAt > subscription.canceledAt %}
-                <div class="alert alert-info">
-                    <strong>📅 Accès maintenu jusqu'au {{ subscription.cancelAt | date('d/m/Y') }}</strong>
-                    <p style="margin: 10px 0 0 0;">
-                        Votre abonnement reste actif jusqu'à la fin de votre période de facturation. 
-                        Vous continuez à bénéficier de toutes les fonctionnalités de votre plan.
-                    </p>
-                </div>
-            {% else %}
-                <div class="alert alert-warning">
-                    <strong>⚠️ Accès immédiatement suspendu</strong>
-                    <p style="margin: 10px 0 0 0;">
-                        Votre abonnement a été annulé immédiatement. 
-                        Votre compte est maintenant limité aux fonctionnalités du plan gratuit.
-                    </p>
-                </div>
-            {% endif %}
-            
-            <div style="background-color: #f8f9fa; border-radius: 5px; padding: 20px; margin: 20px 0;">
-                <h4 style="margin-top: 0;">Ce qui change maintenant :</h4>
-                <ul style="margin: 0; padding-left: 20px;">
-                    <li>Retour aux limites du plan gratuit</li>
-                    <li>Conservation des données existantes selon la rétention gratuite</li>
-                    <li>Accès limité aux fonctionnalités avancées</li>
-                    <li>Support technique standard uniquement</li>
-                </ul>
-            </div>
-            
-            <div class="feedback-box">
-                <h4 style="margin-top: 0; color: #495057;">Aidez-nous à nous améliorer</h4>
-                <p style="margin-bottom: 15px; color: #6c757d;">
-                    Votre avis nous intéresse ! Dites-nous pourquoi vous avez annulé votre abonnement.
-                </p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}?subject=Feedback annulation" class="button-secondary">
-                    Donner mon avis
-                </a>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <h4>Vous changez d'avis ?</h4>
-                <p style="color: #6c757d; margin-bottom: 20px;">
-                    Vous pouvez réactiver votre abonnement à tout moment et retrouver immédiatement 
-                    toutes vos données et configurations.
-                </p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="button">
-                    Réactiver mon abonnement
-                </a>
-            </div>
-            
-            <div style="background-color: #e9ecef; border-radius: 5px; padding: 20px; margin: 20px 0;">
-                <h4 style="margin-top: 0;">Vos données sont préservées</h4>
-                <p style="margin: 0;">
-                    Même avec l'annulation, nous conservons vos projets et données selon notre politique de rétention. 
-                    Si vous réactivez votre abonnement, vous retrouverez tout comme avant.
-                </p>
-            </div>
-            
-            <div style="text-align: center; margin: 30px 0; font-size: 14px; color: #6c757d;">
-                <p>Une question ? Notre équipe reste disponible pour vous aider.</p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" style="color: #667eea;">
-                    Contactez le support
-                </a>
-            </div>
+        <div class="detail-item">
+            <div class="detail-label">Date d'annulation</div>
+            <div class="detail-value">{{ subscription.canceledAt | date('d/m/Y H:i') }}</div>
         </div>
-        
-        <div class="footer">
-            <p>
-                <strong>Error Explorer</strong><br>
-                Surveillance d'erreurs pour développeurs
-            </p>
-            <p>
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}">Mon dashboard</a> | 
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}">Voir les plans</a> | 
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}">Support</a>
-            </p>
-            <p style="font-size: 12px; margin-top: 15px;">
-                Cet email confirme l'annulation de votre abonnement Error Explorer.<br>
-                Nous espérons vous revoir bientôt !
-            </p>
+        {% if subscription.cancelAt and subscription.cancelAt > subscription.canceledAt %}
+            <div class="detail-item">
+                <div class="detail-label">Fin de service</div>
+                <div class="detail-value">{{ subscription.cancelAt | date('d/m/Y') }}</div>
+            </div>
+        {% else %}
+            <div class="detail-item">
+                <div class="detail-label">Fin de service</div>
+                <div class="detail-value">Immédiate</div>
+            </div>
+        {% endif %}
+        <div class="detail-item">
+            <div class="detail-label">Dernier montant</div>
+            <div class="detail-value">{{ subscription.formattedAmount }}</div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Statut du service -->
+    {% if subscription.cancelAt and subscription.cancelAt > subscription.canceledAt %}
+        <div class="info-card">
+            <div class="card-title">
+                📅 Accès maintenu jusqu'au {{ subscription.cancelAt | date('d/m/Y') }}
+            </div>
+            <div class="card-content">
+                Votre abonnement reste actif jusqu'à la fin de votre période de facturation.
+                Vous continuez à bénéficier de toutes les fonctionnalités de votre plan.
+            </div>
+        </div>
+    {% else %}
+        <div class="warning-card">
+            <div class="card-title">
+                ⚠️ Accès immédiatement suspendu
+            </div>
+            <div class="card-content">
+                Votre abonnement a été annulé immédiatement.
+                Votre compte est maintenant limité aux fonctionnalités du plan gratuit.
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Ce qui change -->
+    <h3>🔄 Ce qui change maintenant</h3>
+    <div class="info-card">
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Retour aux limites du plan gratuit</li>
+                <li>Conservation des données existantes selon la rétention gratuite</li>
+                <li>Accès limité aux fonctionnalités avancées</li>
+                <li>Support technique standard uniquement</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Données préservées -->
+    <div class="success-card">
+        <div class="card-title">
+            🔒 Vos données sont préservées
+        </div>
+        <div class="card-content">
+            Même avec l'annulation, nous conservons vos projets et données selon notre politique de rétention.
+            Si vous réactivez votre abonnement, vous retrouverez tout comme avant.
+        </div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="info-card text-center" style="border: 2px dashed #e2e8f0;">
+        <div class="card-title">
+            💬 Aidez-nous à nous améliorer
+        </div>
+        <div class="card-content">
+            <p>Votre avis nous intéresse ! Dites-nous pourquoi vous avez annulé votre abonnement.</p>
+            <div style="margin-top: 15px;">
+                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}?subject=Feedback annulation" class="btn btn-success">
+                    💬 Donner mon avis
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vous changez d'avis -->
+    <div class="btn-center">
+        <h3>Vous changez d'avis ?</h3>
+        <p>Vous pouvez réactiver votre abonnement à tout moment et retrouver immédiatement toutes vos données et configurations.</p>
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="btn btn-primary">
+            🚀 Réactiver mon abonnement
+        </a>
+    </div>
+
+    <!-- Support disponible -->
+    <div class="info-card">
+        <div class="card-title">
+            💬 Nous restons disponibles
+        </div>
+        <div class="card-content">
+            Une question ? Notre équipe reste disponible pour vous aider, même après l'annulation.
+            N'hésitez pas à nous contacter si vous avez besoin d'assistance.
+        </div>
+    </div>
+
+    <p class="text-center">
+        Merci d'avoir fait confiance à Error Explorer.<br>
+        Nous espérons vous revoir bientôt !<br>
+        <strong>L'équipe Error Explorer</strong>
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="footer-link">Mon dashboard</a>
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="footer-link">Voir les plans</a>
+{% endblock %}
+
+{% block footer_legal %}
+    Confirmation d'annulation d'abonnement Error Explorer<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Nous espérons vous revoir bientôt !
+{% endblock %}

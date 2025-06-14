@@ -1,572 +1,250 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Résumé quotidien - {{ project.name }} - Error Explorer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'emails/base_email.html.twig' %}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #374151;
-            background-color: #f8fafc;
-            padding: 20px;
-        }
+{% block title %}Résumé quotidien - {{ project.name }} - Error Explorer{% endblock %}
 
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
+{% block header_class %}email-header--{% if summary.hasErrors %}warning{% else %}success{% endif %}{% endblock %}
 
-        .email-header {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
+{% block status_badge %}
+    <div class="status-badge">
+        📊 RÉSUMÉ QUOTIDIEN
+    </div>
+{% endblock %}
 
-        .date-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
+{% block email_title %}Résumé quotidien{% endblock %}
 
-        .email-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+{% block email_subtitle %}{{ project.name }} - {{ date|date('d/m/Y') }}{% endblock %}
 
-        .email-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
+{% block body %}
+    <h2>Bonjour {{ user.firstName }},</h2>
 
-        .email-body {
-            padding: 40px 30px;
-        }
+    <p>Voici le résumé quotidien de l'activité de votre projet <strong>{{ project.name }}</strong> pour la journée du {{ date|date('d/m/Y') }}.</p>
 
-        .summary-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border-left: 4px solid #3b82f6;
-        }
-
-        .stat-card.danger {
-            border-left-color: #ef4444;
-            background: #fef2f2;
-        }
-
-        .stat-card.warning {
-            border-left-color: #f59e0b;
-            background: #fffbeb;
-        }
-
-        .stat-card.success {
-            border-left-color: #10b981;
-            background: #f0fdf4;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
-        .stat-card.danger .stat-value {
-            color: #dc2626;
-        }
-
-        .stat-card.warning .stat-value {
-            color: #d97706;
-        }
-
-        .stat-card.success .stat-value {
-            color: #059669;
-        }
-
-        .stat-card.info .stat-value {
-            color: #2563eb;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .section {
-            margin: 30px 0;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .trend-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 12px;
-            margin-top: 5px;
-        }
-
-        .trend-up {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-
-        .trend-down {
-            background: #f0fdf4;
-            color: #059669;
-        }
-
-        .trend-stable {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        .top-errors {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .error-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .error-item:last-child {
-            border-bottom: none;
-        }
-
-        .error-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .error-status.open {
-            background: #ef4444;
-        }
-
-        .error-status.resolved {
-            background: #10b981;
-        }
-
-        .error-status.ignored {
-            background: #64748b;
-        }
-
-        .error-details {
-            flex: 1;
-        }
-
-        .error-title {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .error-meta {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .error-count {
-            background: #3b82f6;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            min-width: 24px;
-            text-align: center;
-        }
-
-        .health-score {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            margin: 25px 0;
-        }
-
-        .score-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 800;
-            color: white;
-        }
-
-        .score-excellent {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .score-good {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-
-        .score-warning {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .score-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .score-label {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-
-        .score-description {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .recommendations {
-            background: #fffbeb;
-            border: 1px solid #fed7aa;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-        }
-
-        .recommendations-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #92400e;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .recommendations-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .recommendations-list li {
-            padding: 5px 0;
-            color: #78350f;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-            justify-content: center;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-        }
-
-        .email-footer {
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 30px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .footer-text {
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .footer-link {
-            color: #60a5fa;
-            text-decoration: none;
-        }
-
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-
-        .unsubscribe {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .unsubscribe a {
-            color: #9ca3af;
-            text-decoration: none;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .email-header {
-                padding: 30px 20px;
-            }
-
-            .email-body {
-                padding: 30px 20px;
-            }
-
-            .summary-stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .error-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-<div class="email-container">
-    <div class="email-header">
-        <div class="date-badge">
-            📅 {{ "now"|date('d/m/Y') }}
+    <!-- Métriques principales -->
+    <h3>📊 Métriques de la journée</h3>
+    <div class="details-grid">
+        <div class="detail-item" style="border-left-color: {% if summary.errorCount > 0 %}#ef4444{% else %}#10b981{% endif %};">
+            <div class="detail-label">Nouvelles erreurs</div>
+            <div class="detail-value" style="color: {% if summary.errorCount > 0 %}#dc2626{% else %}#059669{% endif %};">
+                {{ summary.errorCount }}
+            </div>
         </div>
-        <h1 class="email-title">Résumé quotidien</h1>
-        <p class="email-subtitle">{{ project.name }} - Monitoring des dernières 24h</p>
+        <div class="detail-item" style="border-left-color: #3b82f6;">
+            <div class="detail-label">Occurrences totales</div>
+            <div class="detail-value">{{ summary.totalOccurrences }}</div>
+        </div>
+        <div class="detail-item" style="border-left-color: #f59e0b;">
+            <div class="detail-label">Erreurs résolues</div>
+            <div class="detail-value">{{ summary.resolvedCount }}</div>
+        </div>
+        <div class="detail-item" style="border-left-color: #8b5cf6;">
+            <div class="detail-label">Utilisateurs affectés</div>
+            <div class="detail-value">{{ summary.affectedUsers }}</div>
+        </div>
     </div>
 
-    <div class="email-body">
-        <!-- Statistiques globales -->
-        <div class="summary-stats">
-            <div class="stat-card {% if stats.new_errors > 0 %}danger{% else %}success{% endif %}">
-                <div class="stat-value">{{ stats.new_errors ?? 0 }}</div>
-                <div class="stat-label">Nouvelles erreurs</div>
-                {% if stats.new_errors_trend is defined %}
-                <div class="trend-indicator trend-{% if stats.new_errors_trend > 0 %}up{% elseif stats.new_errors_trend < 0 %}down{% else %}stable{% endif %}">
-                    {% if stats.new_errors_trend > 0 %}↗️ +{{ stats.new_errors_trend }}{% elseif stats.new_errors_trend < 0 %}↘️ {{ stats.new_errors_trend }}{% else %}→ Stable{% endif %}
-                </div>
-                {% endif %}
+    <!-- Statut global -->
+    {% if summary.errorCount == 0 %}
+        <div class="success-card">
+            <div class="card-title">
+                🎉 Excellente journée !
             </div>
-
-            <div class="stat-card warning">
-                <div class="stat-value">{{ stats.total_occurrences ?? 0 }}</div>
-                <div class="stat-label">Occurrences</div>
-                {% if stats.occurrences_trend is defined %}
-                <div class="trend-indicator trend-{% if stats.occurrences_trend > 0 %}up{% elseif stats.occurrences_trend < 0 %}down{% else %}stable{% endif %}">
-                    {% if stats.occurrences_trend > 0 %}↗️ +{{ stats.occurrences_trend }}{% elseif stats.occurrences_trend < 0 %}↘️ {{ stats.occurrences_trend }}{% else %}→ Stable{% endif %}
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="stat-card success">
-                <div class="stat-value">{{ stats.resolved_errors ?? 0 }}</div>
-                <div class="stat-label">Résolues</div>
-            </div>
-
-            <div class="stat-card info">
-                <div class="stat-value">{{ stats.uptime ?? '99.9' }}%</div>
-                <div class="stat-label">Disponibilité</div>
+            <div class="card-content">
+                Aucune nouvelle erreur détectée aujourd'hui. Votre application fonctionne parfaitement !
             </div>
         </div>
-
-        <!-- Score de santé du projet -->
-        <div class="health-score">
-            {% set score = stats.health_score ?? 85 %}
-            <div class="score-circle {% if score >= 90 %}score-excellent{% elseif score >= 75 %}score-good{% elseif score >= 50 %}score-warning{% else %}score-danger{% endif %}">
-                {{ score }}
-            </div>
-            <div class="score-label">Score de santé</div>
-            <div class="score-description">
-                {% if score >= 90 %}
-                    Excellent ! Votre application fonctionne parfaitement.
-                {% elseif score >= 75 %}
-                    Bonne santé. Quelques points d'attention à surveiller.
-                {% elseif score >= 50 %}
-                    Attention requise. Plusieurs erreurs nécessitent votre intervention.
+    {% else %}
+        <div class="{% if summary.errorCount > 10 %}error-card{% else %}warning-card{% endif %}">
+            <div class="card-title">
+                {% if summary.errorCount > 10 %}
+                    🚨 Journée avec beaucoup d'erreurs
                 {% else %}
-                    Action urgente nécessaire. Nombreuses erreurs critiques.
+                    ⚠️ Quelques erreurs détectées
+                {% endif %}
+            </div>
+            <div class="card-content">
+                {{ summary.errorCount }} {% if summary.errorCount == 1 %}nouvelle erreur a été détectée{% else %}nouvelles erreurs ont été détectées{% endif %} aujourd'hui.
+                {% if summary.errorCount > 10 %}
+                    Nous recommandons une attention particulière.
                 {% endif %}
             </div>
         </div>
+    {% endif %}
 
-        <!-- Top des erreurs -->
-        {% if stats.top_errors is defined and stats.top_errors|length > 0 %}
-        <div class="section">
-            <h2 class="section-title">🏆 Top des erreurs (24h)</h2>
-            <div class="top-errors">
-                {% for error in stats.top_errors|slice(0, 5) %}
-                <div class="error-item">
-                    <div class="error-status {{ error.status }}"></div>
-                    <div class="error-details">
-                        <div class="error-title">{{ error.title|length > 50 ? error.title|slice(0, 50) ~ '...' : error.title }}</div>
-                        <div class="error-meta">
-                            {{ error.file|split('/')|last }} : {{ error.line }}
-                            {% if error.environment %} • {{ error.environment }}{% endif %}
-                        </div>
-                    </div>
-                    <div class="error-count">{{ error.count }}</div>
+    <!-- Top des erreurs -->
+    {% if summary.topErrors and summary.topErrors|length > 0 %}
+        <h3>🔝 Top des erreurs</h3>
+        {% for error in summary.topErrors|slice(0, 5) %}
+            <div class="{% if loop.index <= 2 %}error-card{% else %}warning-card{% endif %}" style="margin-bottom: 15px;">
+                <div class="card-title" style="font-size: 16px;">
+                    {{ error.exceptionClass }}
                 </div>
+                <div class="card-content">
+                    <div style="font-size: 14px; margin-bottom: 10px;">
+                        {{ error.message|slice(0, 100) }}{% if error.message|length > 100 %}...{% endif %}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b;">
+                        <span>{{ error.occurrenceCount }} occurrence{{ error.occurrenceCount > 1 ? 's' : '' }}</span>
+                        <span>{{ error.file|split('/')|last }}:{{ error.line }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Comparaison avec hier -->
+    {% if summary.yesterdayComparison %}
+        <h3>📈 Comparaison avec hier</h3>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Erreurs</div>
+                <div class="detail-value">
+                    {% if summary.yesterdayComparison.errorsDiff > 0 %}
+                        <span style="color: #dc2626;">+{{ summary.yesterdayComparison.errorsDiff }}</span>
+                    {% elseif summary.yesterdayComparison.errorsDiff < 0 %}
+                        <span style="color: #059669;">{{ summary.yesterdayComparison.errorsDiff }}</span>
+                    {% else %}
+                        <span style="color: #64748b;">= 0</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Occurrences</div>
+                <div class="detail-value">
+                    {% if summary.yesterdayComparison.occurrencesDiff > 0 %}
+                        <span style="color: #dc2626;">+{{ summary.yesterdayComparison.occurrencesDiff }}</span>
+                    {% elseif summary.yesterdayComparison.occurrencesDiff < 0 %}
+                        <span style="color: #059669;">{{ summary.yesterdayComparison.occurrencesDiff }}</span>
+                    {% else %}
+                        <span style="color: #64748b;">= 0</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Utilisateurs</div>
+                <div class="detail-value">
+                    {% if summary.yesterdayComparison.usersDiff > 0 %}
+                        <span style="color: #dc2626;">+{{ summary.yesterdayComparison.usersDiff }}</span>
+                    {% elseif summary.yesterdayComparison.usersDiff < 0 %}
+                        <span style="color: #059669;">{{ summary.yesterdayComparison.usersDiff }}</span>
+                    {% else %}
+                        <span style="color: #64748b;">= 0</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Tendance</div>
+                <div class="detail-value">
+                    {% if summary.yesterdayComparison.trend == 'up' %}
+                        <span style="color: #dc2626;">📈 Hausse</span>
+                    {% elseif summary.yesterdayComparison.trend == 'down' %}
+                        <span style="color: #059669;">📉 Baisse</span>
+                    {% else %}
+                        <span style="color: #64748b;">➡️ Stable</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Environnements -->
+    {% if summary.environmentStats and summary.environmentStats|length > 1 %}
+        <h3>🌍 Répartition par environnement</h3>
+        <div class="info-card">
+            <div class="card-content">
+                {% for env, stats in summary.environmentStats %}
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; {% if not loop.last %}border-bottom: 1px solid #e2e8f0;{% endif %}">
+                        <strong>{{ env|title }}:</strong>
+                        <span>{{ stats.errors }} erreur{{ stats.errors > 1 ? 's' : '' }} ({{ stats.occurrences }} occurrence{{ stats.occurrences > 1 ? 's' : '' }})</span>
+                    </div>
                 {% endfor %}
             </div>
         </div>
-        {% endif %}
+    {% endif %}
 
-        <!-- Recommandations -->
-        <div class="recommendations">
-            <div class="recommendations-title">
-                💡 Recommandations
+    <!-- Bouton dashboard -->
+    <div class="btn-center">
+        <a href="{{ dashboard_url }}" class="btn btn-primary">
+            📊 Voir le dashboard complet
+        </a>
+    </div>
+
+    <!-- Résumé de la semaine -->
+    {% if summary.weekSummary %}
+        <h3>📅 Cette semaine ({{ summary.weekSummary.startDate|date('d/m') }} - {{ summary.weekSummary.endDate|date('d/m') }})</h3>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Total erreurs</div>
+                <div class="detail-value">{{ summary.weekSummary.totalErrors }}</div>
             </div>
-            <ul class="recommendations-list">
-                {% if stats.new_errors > 5 %}
-                <li>🚨 Nombre élevé de nouvelles erreurs détectées. Vérifiez les derniers déploiements.</li>
-                {% endif %}
-                {% if stats.critical_errors > 0 %}
-                <li>⚠️ {{ stats.critical_errors }} erreur(s) critique(s) nécessitent une attention immédiate.</li>
-                {% endif %}
-                {% if stats.resolved_errors > 0 %}
-                <li>✅ Excellent travail ! {{ stats.resolved_errors }} erreur(s) ont été résolues.</li>
-                {% endif %}
-                {% if stats.new_errors == 0 %}
-                <li>🎉 Aucune nouvelle erreur détectée. Continuez ainsi !</li>
-                {% endif %}
-                <li>📊 Consultez le dashboard pour une analyse complète.</li>
-                <li>🔧 Activez les alertes critiques pour être notifié en temps réel.</li>
-            </ul>
-        </div>
-
-        <!-- Boutons d'action -->
-        <div class="action-buttons">
-            <a href="{{ dashboardUrl }}" class="btn btn-primary">
-                📊 Voir le dashboard
-            </a>
-            <a href="{{ dashboardUrl }}/settings" class="btn btn-secondary">
-                ⚙️ Gérer les alertes
-            </a>
-        </div>
-
-        <!-- Informations complémentaires -->
-        <div class="section">
-            <h2 class="section-title">📈 Évolution sur 7 jours</h2>
-            <div class="summary-stats">
-                <div class="stat-card info">
-                    <div class="stat-value">{{ stats.weekly_errors ?? 0 }}</div>
-                    <div class="stat-label">Erreurs cette semaine</div>
-                </div>
-                <div class="stat-card info">
-                    <div class="stat-value">{{ stats.weekly_occurrences ?? 0 }}</div>
-                    <div class="stat-label">Occurrences</div>
-                </div>
-                <div class="stat-card success">
-                    <div class="stat-value">{{ stats.weekly_resolved ?? 0 }}</div>
-                    <div class="stat-label">Résolues</div>
-                </div>
-                <div class="stat-card info">
-                    <div class="stat-value">{{ ((stats.weekly_resolved ?? 0) / (stats.weekly_errors ?? 1) * 100)|round }}%</div>
-                    <div class="stat-label">Taux résolution</div>
-                </div>
+            <div class="detail-item">
+                <div class="detail-label">Jours sans erreur</div>
+                <div class="detail-value">{{ summary.weekSummary.errorFreeDays }}/7</div>
             </div>
+            <div class="detail-item">
+                <div class="detail-label">Pic d'erreurs</div>
+                <div class="detail-value">{{ summary.weekSummary.peakDay|date('d/m') }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Taux de résolution</div>
+                <div class="detail-value">{{ summary.weekSummary.resolutionRate }}%</div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Actions recommandées -->
+    {% if summary.recommendations and summary.recommendations|length > 0 %}
+        <h3>💡 Actions recommandées</h3>
+        <div class="info-card">
+            <div class="card-content">
+                <ul class="styled-list">
+                    {% for recommendation in summary.recommendations %}
+                        <li>{{ recommendation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Boutons d'action -->
+    <div class="btn-center">
+        <a href="{{ dashboard_url }}/errors" class="btn btn-secondary">
+            🔍 Voir toutes les erreurs
+        </a>
+        <a href="{{ dashboard_url }}/analytics" class="btn btn-secondary">
+            📈 Analytics détaillés
+        </a>
+    </div>
+
+    <!-- Performance générale -->
+    <div class="{% if summary.errorCount == 0 %}success-card{% elseif summary.errorCount <= 5 %}info-card{% else %}warning-card{% endif %}">
+        <div class="card-title">
+            📊 Performance générale
+        </div>
+        <div class="card-content">
+            {% if summary.errorCount == 0 %}
+                🎯 <strong>Excellent !</strong> Aucune erreur détectée aujourd'hui.
+            {% elseif summary.errorCount <= 5 %}
+                ✅ <strong>Bon</strong> - Quelques erreurs mineures détectées.
+            {% elseif summary.errorCount <= 15 %}
+                ⚠️ <strong>Attention</strong> - Plusieurs erreurs nécessitent votre attention.
+            {% else %}
+                🚨 <strong>Critique</strong> - Beaucoup d'erreurs détectées, intervention recommandée.
+            {% endif %}
         </div>
     </div>
 
-    <div class="email-footer">
-        <div class="footer-text">
-            <strong>Error Explorer</strong><br>
-            Résumé quotidien généré automatiquement pour {{ project.name }}<br>
-            {{ "now"|date('d/m/Y à H:i') }}
-        </div>
-        <div class="footer-links">
-            <a href="{{ dashboardUrl }}" class="footer-link">Dashboard complet</a>
-            <a href="{{ dashboardUrl }}/settings" class="footer-link">Paramètres</a>
-        </div>
-        
-        <div class="unsubscribe">
-            <a href="{{ unsubscribeUrl }}">Se désabonner des résumés</a> | 
-            <a href="{{ dashboardUrl }}/notifications">Gérer les notifications</a>
-        </div>
-    </div>
-</div>
-</body>
-</html>
+    <p class="text-center">
+        Continuez à surveiller vos applications avec Error Explorer !<br>
+        <strong>L'équipe Error Explorer</strong>
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ dashboard_url }}" class="footer-link">Dashboard</a>
+    <a href="{{ dashboard_url }}/settings/notifications" class="footer-link">Gérer les notifications</a>
+{% endblock %}
+
+{% block footer_legal %}
+    Résumé quotidien Error Explorer pour {{ project.name }}<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Données du {{ date|date('d/m/Y') }}
+{% endblock %}

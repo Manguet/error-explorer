@@ -1,89 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerte Performance - {{ project.name }}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .container {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: #dc3545;
-            color: white;
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-            margin: -30px -30px 30px -30px;
-        }
-        .header.warning {
-            background: #fd7e14;
-        }
-        .header.medium {
-            background: #ffc107;
-            color: #333;
-        }
-        .metric-card {
-            background: #f8f9fa;
-            border-left: 4px solid #dc3545;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .metric-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #dc3545;
-        }
-        .button {
-            display: inline-block;
-            background: #007bff;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #dee2e6;
-            font-size: 12px;
-            color: #6c757d;
-        }
-        .recommendations {
-            background: #e7f3ff;
-            border-left: 4px solid #007bff;
-            padding: 15px;
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header {{ metric.severityLevel }}">
-            <h1>🚨 Alerte Performance</h1>
-            <p>Une métrique de performance critique a été détectée sur votre projet <strong>{{ project.name }}</strong></p>
-        </div>
+{% extends 'emails/base_email.html.twig' %}
 
-        <h2>Détails de la métrique</h2>
-        
-        <div class="metric-card">
-            <h3>{{ metric.description }}</h3>
-            <div class="metric-value">{{ metric.valueAsFloat }} {{ metric.unit }}</div>
-            <p><strong>Type:</strong> {{ metric.metricType }}</p>
-            <p><strong>Sévérité:</strong> 
+{% block title %}Alerte Performance - {{ project.name }}{% endblock %}
+
+{% block header_class %}email-header--{% if metric.severityLevel == 'critical' %}error{% elseif metric.severityLevel == 'high' %}warning{% else %}info{% endif %}{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">
+        {% if metric.severityLevel == 'critical' %}
+            🔴 PERFORMANCE CRITIQUE
+        {% elseif metric.severityLevel == 'high' %}
+            🟠 PERFORMANCE DÉGRADÉE
+        {% else %}
+            🟡 ALERTE PERFORMANCE
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block email_title %}Alerte Performance{% endblock %}
+
+{% block email_subtitle %}{{ project.name }} - Métrique critique détectée{% endblock %}
+
+{% block body %}
+    <p>Une métrique de performance {{ metric.severityLevel == 'critical' ? 'critique' : (metric.severityLevel == 'high' ? 'élevée' : 'importante') }} a été détectée sur votre projet <strong>{{ project.name }}</strong>.</p>
+
+    <!-- Détails de la métrique -->
+    <h2>📊 Détails de la métrique</h2>
+
+    <div class="{% if metric.severityLevel == 'critical' %}error-card{% elseif metric.severityLevel == 'high' %}warning-card{% else %}info-card{% endif %}">
+        <div class="card-title">
+            {{ metric.description }}
+        </div>
+        <div class="card-content">
+            <div style="font-size: 32px; font-weight: 800; color: {% if metric.severityLevel == 'critical' %}#dc2626{% elseif metric.severityLevel == 'high' %}#d97706{% else %}#2563eb{% endif %}; margin: 15px 0;">
+                {{ metric.valueAsFloat }} {{ metric.unit }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations détaillées -->
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="detail-label">Type de métrique</div>
+            <div class="detail-value">{{ metric.metricType|title }}</div>
+        </div>
+        <div class="detail-item" style="border-left-color: {% if metric.severityLevel == 'critical' %}#ef4444{% elseif metric.severityLevel == 'high' %}#f59e0b{% else %}#3b82f6{% endif %};">
+            <div class="detail-label">Sévérité</div>
+            <div class="detail-value">
                 {% if metric.severityLevel == 'critical' %}
                     🔴 Critique
                 {% elseif metric.severityLevel == 'high' %}
@@ -93,78 +55,134 @@
                 {% else %}
                     🟢 Normale
                 {% endif %}
-            </p>
-            <p><strong>Enregistrée le:</strong> {{ metric.recordedAt|date('d/m/Y à H:i:s') }}</p>
-            {% if metric.source %}
-            <p><strong>Source:</strong> {{ metric.source }}</p>
-            {% endif %}
-            {% if metric.environment %}
-            <p><strong>Environnement:</strong> {{ metric.environment }}</p>
-            {% endif %}
+            </div>
         </div>
-
-        {% if metric.metadata and metric.metadata|length > 0 %}
-        <h3>Informations supplémentaires</h3>
-        <ul>
-            {% for key, value in metric.metadata %}
-            <li><strong>{{ key|title }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
+        <div class="detail-item">
+            <div class="detail-label">Enregistrée le</div>
+            <div class="detail-value">{{ metric.recordedAt|date('d/m/Y H:i:s') }}</div>
+        </div>
+        {% if metric.environment %}
+            <div class="detail-item">
+                <div class="detail-label">Environnement</div>
+                <div class="detail-value">{{ metric.environment }}</div>
+            </div>
         {% endif %}
+    </div>
 
-        <div class="recommendations">
-            <h3>📋 Recommandations</h3>
+    <!-- Source si disponible -->
+    {% if metric.source %}
+        <div class="info-card">
+            <div class="card-title">
+                📍 Source
+            </div>
+            <div class="card-content">
+                {{ metric.source }}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Métadonnées supplémentaires -->
+    {% if metric.metadata and metric.metadata|length > 0 %}
+        <h3>🔍 Informations supplémentaires</h3>
+        <div class="info-card">
+            <div class="card-content">
+                {% for key, value in metric.metadata %}
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; {% if not loop.last %}border-bottom: 1px solid #e2e8f0;{% endif %}">
+                        <strong>{{ key|title }}:</strong>
+                        <span>{{ value }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Recommandations spécifiques -->
+    <h3>💡 Recommandations</h3>
+    <div class="{% if metric.severityLevel == 'critical' %}error-card{% else %}warning-card{% endif %}">
+        <div class="card-content">
             {% if metric.metricType == 'response_time' %}
-                <ul>
+                <ul class="styled-list">
                     <li>Vérifiez la charge du serveur et les ressources disponibles</li>
                     <li>Analysez les requêtes de base de données lentes</li>
                     <li>Considérez l'activation du cache ou l'optimisation du code</li>
+                    <li>Surveillez l'utilisation du CPU et de la mémoire</li>
                 </ul>
             {% elseif metric.metricType == 'error_rate' %}
-                <ul>
+                <ul class="styled-list">
                     <li>Consultez immédiatement le dashboard des erreurs</li>
                     <li>Vérifiez les logs applicatifs récents</li>
                     <li>Surveillez l'impact sur les utilisateurs</li>
+                    <li>Analysez les patterns d'erreurs récurrentes</li>
                 </ul>
             {% elseif metric.metricType == 'cpu_usage' %}
-                <ul>
+                <ul class="styled-list">
                     <li>Vérifiez les processus consommant le plus de CPU</li>
                     <li>Considérez l'augmentation des ressources serveur</li>
                     <li>Optimisez le code gourmand en calcul</li>
+                    <li>Analysez les pics d'utilisation</li>
                 </ul>
             {% elseif metric.metricType == 'memory_usage' %}
-                <ul>
+                <ul class="styled-list">
                     <li>Recherchez les fuites mémoire potentielles</li>
                     <li>Vérifiez la configuration des limites PHP/applicatives</li>
                     <li>Optimisez l'utilisation des variables et objets</li>
+                    <li>Surveillez la garbage collection</li>
                 </ul>
             {% else %}
-                <ul>
+                <ul class="styled-list">
                     <li>Consultez votre dashboard de monitoring pour plus de détails</li>
                     <li>Vérifiez les logs applicatifs et serveur</li>
                     <li>Surveillez l'évolution de cette métrique</li>
+                    <li>Comparez avec les métriques historiques</li>
                 </ul>
             {% endif %}
         </div>
+    </div>
 
-        <div style="text-align: center;">
-            <a href="{{ dashboardUrl }}" class="button">
-                📊 Voir le Dashboard
-            </a>
+    <!-- Actions urgentes si critique -->
+    {% if metric.severityLevel == 'critical' %}
+        <div class="error-card">
+            <div class="card-title">
+                🚨 Actions urgentes recommandées
+            </div>
+            <div class="card-content">
+                Cette métrique critique nécessite une attention immédiate.
+                Les performances dégradées peuvent impacter sérieusement l'expérience utilisateur.
+            </div>
         </div>
+    {% endif %}
 
-        <div class="footer">
-            <p>
-                Cette alerte a été générée automatiquement par Error Explorer.<br>
-                Projet: <strong>{{ project.name }}</strong> | 
-                Date: {{ "now"|date('d/m/Y à H:i:s') }}
-            </p>
-            {% if unsubscribeUrl %}
-            <p>
-                <a href="{{ unsubscribeUrl }}">Se désabonner des alertes</a>
-            </p>
-            {% endif %}
+    <!-- Bouton d'action -->
+    <div class="btn-center">
+        <a href="{{ dashboardUrl }}" class="btn {% if metric.severityLevel == 'critical' %}btn-danger{% else %}btn-primary{% endif %}" style="{% if metric.severityLevel == 'critical' %}font-size: 18px; padding: 16px 32px;{% endif %}">
+            📊 Voir le Dashboard
+        </a>
+    </div>
+
+    <!-- Conseils de monitoring -->
+    <div class="info-card">
+        <div class="card-title">
+            📈 Conseils de monitoring
+        </div>
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Surveillez régulièrement vos métriques de performance</li>
+                <li>Configurez des seuils d'alerte adaptés à votre application</li>
+                <li>Analysez les tendances sur plusieurs périodes</li>
+                <li>Mettez en place des actions automatiques si possible</li>
+            </ul>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ dashboardUrl }}/metrics" class="footer-link">Métriques détaillées</a>
+    {% if unsubscribeUrl %}
+        <a href="{{ unsubscribeUrl }}" class="footer-link">Se désabonner</a>
+    {% endif %}
+{% endblock %}
+
+{% block footer_legal %}
+    Alerte performance générée par Error Explorer<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Projet: {{ project.name }}
+{% endblock %}

@@ -1,196 +1,140 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test d'alerte - Error Explorer</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8fafc;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-            color: #374151;
-        }
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .email-header {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .email-header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        .email-header p {
-            margin: 8px 0 0;
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        .email-body {
-            padding: 30px;
-        }
-        .test-badge {
-            display: inline-block;
-            background-color: #10b981;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 20px;
-        }
-        .message-content {
-            background-color: #f9fafb;
-            border-left: 4px solid #3b82f6;
-            padding: 20px;
-            border-radius: 0 6px 6px 0;
-            margin: 20px 0;
-        }
-        .message-content h2 {
-            margin: 0 0 10px;
-            color: #1f2937;
-            font-size: 18px;
-        }
-        .message-content p {
-            margin: 0;
-            color: #6b7280;
-        }
-        .info-section {
-            margin: 25px 0;
-        }
-        .info-item {
-            display: flex;
-            align-items: center;
-            margin: 12px 0;
-            padding: 12px;
-            background-color: #f8fafc;
-            border-radius: 6px;
-        }
-        .info-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            color: #3b82f6;
-        }
-        .info-label {
-            font-weight: 600;
-            color: #374151;
-            min-width: 120px;
-        }
-        .info-value {
-            color: #6b7280;
-        }
-        .email-footer {
-            background-color: #f9fafb;
-            border-top: 1px solid #e5e7eb;
-            padding: 25px 30px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-        }
-        .email-footer a {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-        .success-icon {
-            display: inline-block;
-            width: 48px;
-            height: 48px;
-            background-color: #10b981;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            position: relative;
-        }
-        .success-icon::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <h1>🧪 Test d'alerte Error Explorer</h1>
-            <p>Votre configuration d'alertes fonctionne parfaitement !</p>
-        </div>
+{% extends 'emails/base_email.html.twig' %}
 
-        <div class="email-body">
-            <div class="test-badge">EMAIL DE TEST</div>
-            
-            <div class="success-icon"></div>
+{% block title %}Test d'alerte - Error Explorer{% endblock %}
 
-            <div class="message-content">
-                <h2>Félicitations ! Votre test est réussi</h2>
-                <p>Cet email confirme que votre configuration d'alertes est fonctionnelle et que vous recevrez bien les notifications d'erreurs de vos projets.</p>
-            </div>
+{% block header_class %}email-header--success{% endblock %}
 
-            <div class="info-section">
-                <h3 style="margin-bottom: 15px; color: #1f2937;">Informations de test</h3>
-                
-                <div class="info-item">
-                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span class="info-label">Destinataire :</span>
-                    <span class="info-value">{{ user.fullName }} ({{ user.email }})</span>
-                </div>
+{% block status_badge %}
+    <div class="status-badge">
+        🧪 EMAIL DE TEST
+    </div>
+{% endblock %}
 
-                <div class="info-item">
-                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="info-label">Date d'envoi :</span>
-                    <span class="info-value">{{ "now"|date('d/m/Y à H:i') }}</span>
-                </div>
+{% block email_title %}Test d'alerte Error Explorer{% endblock %}
 
-                <div class="info-item">
-                    <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="info-label">Statut :</span>
-                    <span class="info-value">Configuration validée ✅</span>
-                </div>
-            </div>
+{% block email_subtitle %}Votre configuration d'alertes fonctionne parfaitement !{% endblock %}
 
-            <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 16px; margin: 20px 0;">
-                <h4 style="margin: 0 0 8px; color: #1e40af; font-size: 16px;">
-                    <svg style="width: 16px; height: 16px; display: inline-block; margin-right: 6px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    À propos des alertes
-                </h4>
-                <p style="margin: 0; color: #1e40af; font-size: 14px;">
-                    Les vraies alertes d'erreurs contiendront des informations détaillées sur l'erreur, 
-                    le projet concerné, et des liens directs vers votre tableau de bord pour résoudre le problème rapidement.
-                </p>
-            </div>
-        </div>
-
-        <div class="email-footer">
-            <p>
-                Cet email a été envoyé depuis <strong>Error Explorer</strong><br>
-                <a href="mailto:support@errorexplorer.com">Besoin d'aide ?</a>
-            </p>
+{% block body %}
+    <!-- Icône de succès -->
+    <div class="text-center mb-3">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white;">
+            ✓
         </div>
     </div>
-</body>
-</html>
+
+    <h2 class="text-center">Félicitations ! Votre test est réussi 🎉</h2>
+
+    <p class="text-center">Cet email confirme que votre configuration d'alertes est fonctionnelle et que vous recevrez bien les notifications d'erreurs de vos projets.</p>
+
+    <!-- Informations de test -->
+    <h3>🔍 Informations de test</h3>
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="detail-label">Destinataire</div>
+            <div class="detail-value">{{ user.fullName }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">{{ user.email }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Date d'envoi</div>
+            <div class="detail-value">{{ "now"|date('d/m/Y H:i') }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Statut</div>
+            <div class="detail-value">✅ Validé</div>
+        </div>
+    </div>
+
+    <!-- Configuration validée -->
+    <div class="success-card">
+        <div class="card-title">
+            ✅ Configuration validée
+        </div>
+        <div class="card-content">
+            Votre système d'alertes Error Explorer est correctement configuré.
+            Vous recevrez désormais toutes les notifications importantes concernant vos projets.
+        </div>
+    </div>
+
+    <!-- À propos des vraies alertes -->
+    <div class="info-card">
+        <div class="card-title">
+            📋 À propos des alertes réelles
+        </div>
+        <div class="card-content">
+            Les vraies alertes d'erreurs contiendront :
+            <ul class="styled-list">
+                <li>Informations détaillées sur l'erreur détectée</li>
+                <li>Le projet et l'environnement concerné</li>
+                <li>Stack trace et contexte de l'erreur</li>
+                <li>Liens directs vers votre dashboard</li>
+                <li>Actions recommandées pour résoudre le problème</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Fonctionnalités des alertes -->
+    <h3>⚡ Fonctionnalités des alertes</h3>
+    <div class="details-grid">
+        <div class="detail-item" style="text-align: left; padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">🚨</div>
+            <div class="detail-label">Temps réel</div>
+            <div style="font-size: 14px; color: #64748b;">Notifications instantanées</div>
+        </div>
+        <div class="detail-item" style="text-align: left; padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">🎯</div>
+            <div class="detail-label">Personnalisées</div>
+            <div style="font-size: 14px; color: #64748b;">Selon vos critères</div>
+        </div>
+        <div class="detail-item" style="text-align: left; padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">📊</div>
+            <div class="detail-label">Détaillées</div>
+            <div style="font-size: 14px; color: #64748b;">Contexte complet</div>
+        </div>
+        <div class="detail-item" style="text-align: left; padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 10px;">🔗</div>
+            <div class="detail-label">Actionables</div>
+            <div style="font-size: 14px; color: #64748b;">Liens directs dashboard</div>
+        </div>
+    </div>
+
+    <!-- Prochaines étapes -->
+    <div class="info-card">
+        <div class="card-title">
+            🚀 Prochaines étapes
+        </div>
+        <div class="card-content">
+            Maintenant que vos alertes sont configurées :
+            <ol style="padding-left: 20px; margin: 0;">
+                <li>Continuez à utiliser vos applications normalement</li>
+                <li>Les erreurs seront automatiquement détectées</li>
+                <li>Vous recevrez des alertes selon vos paramètres</li>
+                <li>Consultez le dashboard pour plus de détails</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Bouton dashboard -->
+    <div class="btn-center">
+        <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="btn btn-primary">
+            📊 Accéder au dashboard
+        </a>
+    </div>
+
+    <p class="text-center">
+        Votre monitoring Error Explorer est maintenant opérationnel !<br>
+        <strong>L'équipe Error Explorer</strong>
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="footer-link">Dashboard</a>
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="footer-link">Support</a>
+{% endblock %}
+
+{% block footer_legal %}
+    Email de test envoyé depuis Error Explorer<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Configuration validée ✅
+{% endblock %}

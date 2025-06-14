@@ -1,417 +1,132 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 ALERTE CRITIQUE - {{ project.name }} - Error Explorer</title>
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}🚨 ALERTE CRITIQUE - {{ project.name }} - Error Explorer{% endblock %}
+
+{% block header_class %}email-header--error{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge" style="background: rgba(255, 255, 255, 0.3); animation: pulse 2s infinite;">
+        🚨 ALERTE CRITIQUE
+    </div>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #374151;
-            background-color: #fef2f2;
-            padding: 20px;
-        }
-
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
-            border: 2px solid #fca5a5;
-        }
-
-        .email-header {
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-            animation: pulse 2s infinite;
-        }
-
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.9; }
-        }
-
-        .critical-badge {
-            display: inline-block;
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            border: 2px solid #fca5a5;
-        }
-
-        .email-title {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .email-subtitle {
-            font-size: 18px;
-            opacity: 0.95;
-            font-weight: 500;
-        }
-
-        .email-body {
-            padding: 40px 30px;
-        }
-
-        .critical-warning {
-            background: linear-gradient(135deg, #fef2f2, #fee2e2);
-            border: 2px solid #fca5a5;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .warning-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .warning-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #dc2626;
-            margin-bottom: 10px;
-        }
-
-        .warning-text {
-            font-size: 16px;
-            color: #7f1d1d;
-            line-height: 1.6;
-        }
-
-        .error-details {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 25px;
-            border-radius: 12px;
-            margin: 25px 0;
-        }
-
-        .error-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fca5a5;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error-message {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            word-break: break-all;
-            margin-bottom: 20px;
-        }
-
-        .error-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-item {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #60a5fa;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .immediate-actions {
-            background: #fffbeb;
-            border: 2px solid #fbbf24;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-
-        .actions-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #92400e;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .actions-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .actions-list li {
-            padding: 8px 0;
-            color: #78350f;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin: 30px 0;
-            justify-content: center;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 700;
-            text-align: center;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-critical {
-            background: linear-gradient(135deg, #dc2626, #991b1b);
-            color: white;
-            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f8fafc;
-            color: #475569;
-            border: 2px solid #cbd5e1;
-        }
-
-        .file-location {
-            background: #f1f5f9;
-            border-left: 4px solid #3b82f6;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .location-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-
-        .location-details {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .email-footer {
-            background: #7f1d1d;
-            color: #fca5a5;
-            padding: 30px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .footer-warning {
-            font-weight: 600;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-text {
-            line-height: 1.6;
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .footer-link {
-            color: #fef2f2;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .email-header {
-                padding: 30px 20px;
-            }
-
-            .email-body {
-                padding: 30px 20px;
-            }
-
-            .email-title {
-                font-size: 26px;
-            }
-
-            .error-stats {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 10px;
-            }
+            50% { opacity: 0.7; }
         }
     </style>
-</head>
-<body>
-<div class="email-container">
-    <div class="email-header">
-        <div class="critical-badge">
-            🚨 ALERTE CRITIQUE
+{% endblock %}
+
+{% block email_title %}ERREUR SERVEUR DÉTECTÉE{% endblock %}
+
+{% block email_subtitle %}{{ project.name }} - Action immédiate requise{% endblock %}
+
+{% block body %}
+    <!-- Alerte critique -->
+    <div class="error-card" style="border: 2px solid #ef4444; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));">
+        <div class="card-title" style="font-size: 18px; color: #dc2626;">
+            ⚠️ INTERVENTION IMMÉDIATE REQUISE
         </div>
-        <h1 class="email-title">ERREUR SERVEUR DÉTECTÉE</h1>
-        <p class="email-subtitle">{{ project.name }} - Action immédiate requise</p>
+        <div class="card-content" style="font-size: 16px; color: #7f1d1d;">
+            Une erreur critique a été détectée sur votre application.
+            Cette erreur peut affecter l'expérience de vos utilisateurs.
+        </div>
     </div>
 
-    <div class="email-body">
-        <div class="critical-warning">
-            <div class="warning-icon">⚠️</div>
-            <div class="warning-title">INTERVENTION IMMÉDIATE REQUISE</div>
-            <div class="warning-text">
-                Une erreur critique a été détectée sur votre application. 
-                Cette erreur peut affecter l'expérience de vos utilisateurs.
-            </div>
-        </div>
+    <!-- Détails de l'erreur -->
+    <h2>🔴 Détails de l'erreur</h2>
 
-        <div class="error-details">
-            <div class="error-title">
-                🔴 {{ errorGroup.exceptionClass }}
-            </div>
-            <div class="error-message">{{ errorGroup.message }}</div>
-            
-            <div class="error-stats">
-                <div class="stat-item">
-                    <div class="stat-value">{{ errorGroup.occurrenceCount }}</div>
-                    <div class="stat-label">Occurrences</div>
-                </div>
-                {% if errorGroup.httpStatusCode %}
-                <div class="stat-item">
-                    <div class="stat-value">{{ errorGroup.httpStatusCode }}</div>
-                    <div class="stat-label">Code HTTP</div>
-                </div>
-                {% endif %}
-                <div class="stat-item">
-                    <div class="stat-value">{{ errorGroup.lastSeen|date('H:i') }}</div>
-                    <div class="stat-label">Dernière fois</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">{{ errorGroup.environment ?: 'PROD' }}</div>
-                    <div class="stat-label">Environnement</div>
-                </div>
-            </div>
+    <div class="error-card">
+        <div class="card-title">
+            {{ errorGroup.exceptionClass }}
         </div>
+        <div class="card-content">
+            <div class="code-block">{{ errorGroup.message }}</div>
+        </div>
+    </div>
 
-        <div class="file-location">
-            <div class="location-title">📁 Localisation de l'erreur</div>
-            <div class="location-details">
+    <!-- Statistiques critiques -->
+    <div class="details-grid">
+        <div class="detail-item" style="border-left-color: #ef4444;">
+            <div class="detail-label">Occurrences</div>
+            <div class="detail-value" style="color: #dc2626;">{{ errorGroup.occurrenceCount }}</div>
+        </div>
+        {% if errorGroup.httpStatusCode %}
+            <div class="detail-item" style="border-left-color: #f59e0b;">
+                <div class="detail-label">Code HTTP</div>
+                <div class="detail-value" style="color: #d97706;">{{ errorGroup.httpStatusCode }}</div>
+            </div>
+        {% endif %}
+        <div class="detail-item" style="border-left-color: #3b82f6;">
+            <div class="detail-label">Dernière fois</div>
+            <div class="detail-value">{{ errorGroup.lastSeen|date('H:i') }}</div>
+        </div>
+        <div class="detail-item" style="border-left-color: #10b981;">
+            <div class="detail-label">Environnement</div>
+            <div class="detail-value">{{ errorGroup.environment ?: 'PROD' }}</div>
+        </div>
+    </div>
+
+    <!-- Localisation -->
+    <h3>📁 Localisation de l'erreur</h3>
+    <div class="info-card">
+        <div class="card-content">
+            <div class="code-block">
                 <strong>Fichier:</strong> {{ errorGroup.file }}<br>
                 <strong>Ligne:</strong> {{ errorGroup.line }}
             </div>
         </div>
+    </div>
 
-        <div class="immediate-actions">
-            <div class="actions-title">
-                ⚡ Actions immédiates recommandées
-            </div>
-            <ul class="actions-list">
-                <li>🔍 Examiner l'erreur dans le dashboard immédiatement</li>
-                <li>📊 Vérifier les logs serveur pour plus de contexte</li>
-                <li>👥 Informer l'équipe technique si nécessaire</li>
-                <li>🚀 Appliquer un correctif en urgence si possible</li>
-                <li>📱 Surveiller les nouvelles occurrences</li>
+    <!-- Actions immédiates -->
+    <div class="warning-card">
+        <div class="card-title">
+            ⚡ Actions immédiates recommandées
+        </div>
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Examiner l'erreur dans le dashboard immédiatement</li>
+                <li>Vérifier les logs serveur pour plus de contexte</li>
+                <li>Informer l'équipe technique si nécessaire</li>
+                <li>Appliquer un correctif en urgence si possible</li>
+                <li>Surveiller les nouvelles occurrences</li>
             </ul>
         </div>
-
-        <div class="action-buttons">
-            <a href="{{ dashboardUrl }}" class="btn btn-critical">
-                🔍 VOIR MAINTENANT
-            </a>
-            <a href="{{ dashboardUrl }}" class="btn btn-secondary">
-                📊 Dashboard
-            </a>
-        </div>
-
-        {% if errorGroup.stackTracePreview %}
-        <div class="error-details">
-            <div class="error-title">
-                📋 Aperçu Stack Trace
-            </div>
-            <div class="error-message">{{ errorGroup.stackTracePreview|slice(0, 400) }}{% if errorGroup.stackTracePreview|length > 400 %}...{% endif %}</div>
-        </div>
-        {% endif %}
     </div>
 
-    <div class="email-footer">
-        <div class="footer-warning">
+    <!-- Boutons d'urgence -->
+    <div class="btn-center">
+        <a href="{{ dashboardUrl }}" class="btn btn-danger" style="font-size: 18px; padding: 16px 32px;">
+            🔍 VOIR MAINTENANT
+        </a>
+        <a href="{{ dashboardUrl }}/logs" class="btn btn-secondary">
+            📊 Logs détaillés
+        </a>
+    </div>
+
+    <!-- Stack trace preview -->
+    {% if errorGroup.stackTracePreview %}
+        <h3>📋 Aperçu Stack Trace</h3>
+        <div class="code-block">{{ errorGroup.stackTracePreview|slice(0, 400) }}{% if errorGroup.stackTracePreview|length > 400 %}...{% endif %}</div>
+    {% endif %}
+
+    <!-- Conseils urgents -->
+    <div class="error-card">
+        <div class="card-title">
             🚨 Cette alerte nécessite une attention immédiate
         </div>
-        <div class="footer-text">
-            <strong>Error Explorer</strong> - Monitoring critique pour {{ project.name }}<br>
-            Envoyé le {{ "now"|date('d/m/Y à H:i:s') }}
-        </div>
-        <div class="footer-links">
-            <a href="{{ dashboardUrl }}" class="footer-link">Dashboard d'urgence</a>
-            <a href="{{ dashboardUrl }}" class="footer-link">Gérer les alertes</a>
+        <div class="card-content">
+            Les erreurs critiques peuvent impacter sérieusement vos utilisateurs.
+            Consultez immédiatement votre dashboard pour évaluer la situation et prendre les mesures appropriées.
         </div>
     </div>
-</div>
-</body>
-</html>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ dashboardUrl }}" class="footer-link">Dashboard d'urgence</a>
+    <a href="{{ dashboardUrl }}/alerts" class="footer-link">Gérer les alertes</a>
+{% endblock %}
+
+{% block footer_legal %}
+    🚨 Cette alerte critique a été envoyée depuis Error Explorer<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Projet: {{ project.name }}
+{% endblock %}

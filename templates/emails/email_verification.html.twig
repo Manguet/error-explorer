@@ -1,48 +1,89 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vérifiez votre adresse email - Error Explorer</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8fafc; }
-        .container { max-width: 600px; margin: 0 auto; background: white; }
-        .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 2rem; text-align: center; }
-        .content { padding: 2rem; }
-        .button { display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 1rem 0; }
-        .footer { background: #f8fafc; padding: 2rem; text-align: center; font-size: 0.875rem; color: #64748b; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <h1>🐛 Error Explorer</h1>
-        <p>Vérifiez votre adresse email</p>
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Vérifiez votre adresse email - Error Explorer{% endblock %}
+
+{% block header_class %}email-header--info{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">
+        ✉️ VÉRIFICATION EMAIL
+    </div>
+{% endblock %}
+
+{% block email_title %}Vérifiez votre adresse email{% endblock %}
+
+{% block email_subtitle %}Dernière étape pour activer votre compte{% endblock %}
+
+{% block body %}
+    <h2>Bonjour {{ user.firstName }} ! 👋</h2>
+
+    <p>Merci de vous être inscrit sur Error Explorer. Pour activer votre compte et commencer à surveiller vos applications, il ne vous reste plus qu'à vérifier votre adresse email.</p>
+
+    <!-- Bouton principal de vérification -->
+    <div class="btn-center">
+        <a href="{{ verification_url }}" class="btn btn-primary" style="font-size: 18px; padding: 16px 32px;">
+            ✅ Vérifier mon adresse email
+        </a>
     </div>
 
-    <div class="content">
-        <h2>Bonjour {{ user.firstName }} !</h2>
-
-        <p>Merci de vous être inscrit sur Error Explorer. Pour activer votre compte et commencer à surveiller vos applications, veuillez cliquer sur le bouton ci-dessous :</p>
-
-        <div style="text-align: center; margin: 2rem 0;">
-            <a href="{{ verification_url }}" class="button">Vérifier mon adresse email</a>
+    <!-- Information sur l'expiration -->
+    <div class="warning-card">
+        <div class="card-title">
+            ⏰ Important : Lien temporaire
         </div>
-
-        <p>Si le bouton ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :</p>
-        <p style="word-break: break-all; background: #f1f5f9; padding: 1rem; border-radius: 4px; font-family: monospace;">{{ verification_url }}</p>
-
-        <p><strong>Important :</strong> Ce lien expire le {{ expires_at|date('d/m/Y à H:i') }}.</p>
-
-        <p>Si vous n'avez pas créé de compte sur Error Explorer, vous pouvez ignorer cet email.</p>
-
-        <p>Cordialement,<br>L'équipe Error Explorer</p>
+        <div class="card-content">
+            Ce lien expire le <strong>{{ expires_at|date('d/m/Y à H:i') }}</strong>.<br>
+            Vérifiez votre email rapidement pour ne pas manquer cette étape.
+        </div>
     </div>
 
-    <div class="footer">
-        <p>Error Explorer - Monitoring intelligent d'applications</p>
-        <p>Cet email a été envoyé à {{ user.email }}</p>
+    <!-- Lien de secours -->
+    <h3>🔗 Lien de secours</h3>
+    <div class="info-card">
+        <div class="card-title">Si le bouton ne fonctionne pas</div>
+        <div class="card-content">
+            <p>Vous pouvez copier et coller ce lien dans votre navigateur :</p>
+            <div class="code-block" style="word-break: break-all; font-size: 12px;">{{ verification_url }}</div>
+        </div>
     </div>
-</div>
-</body>
-</html>
+
+    <!-- Ce qui vous attend -->
+    <h3>🚀 Ce qui vous attend après vérification</h3>
+    <div class="success-card">
+        <div class="card-content">
+            <ul class="styled-list">
+                <li>Accès complet à votre dashboard Error Explorer</li>
+                <li>Création de vos premiers projets de monitoring</li>
+                <li>Configuration des alertes personnalisées</li>
+                <li>Intégration rapide avec vos applications</li>
+                <li>Support technique pour vous accompagner</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="info-card">
+        <div class="card-title">
+            🔒 Sécurité
+        </div>
+        <div class="card-content">
+            Si vous n'avez pas créé de compte sur Error Explorer, vous pouvez ignorer cet email en toute sécurité.
+            Aucune action ne sera entreprise sur votre adresse email.
+        </div>
+    </div>
+
+    <p class="text-center">
+        Nous avons hâte de vous voir découvrir Error Explorer !<br>
+        <strong>L'équipe Error Explorer</strong>
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_features') }}" class="footer-link">Fonctionnalités</a>
+    <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="footer-link">Guide d'intégration</a>
+{% endblock %}
+
+{% block footer_legal %}
+    Cet email de vérification a été envoyé à {{ user.email }}<br>
+    {{ "now"|date('d/m/Y à H:i') }} | Expire le {{ expires_at|date('d/m/Y à H:i') }}
+{% endblock %}
