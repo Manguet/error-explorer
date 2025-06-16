@@ -8,6 +8,7 @@ import './Site/NotificationSystem.js';
 import './Site/LoadingManager.js';
 import './Site/ModalManager.js';
 import './Site/PricingComponent.js';
+import './Site/PricingPage.js';
 import './Site/StatsComponent.js';
 import './Site/TooltipManager.js';
 
@@ -15,5 +16,4 @@ import './Site/auth.js';
 import './Site/contact.js';
 import './Site/features.js';
 import './Site/integration.js';
-import './Site/pricing.js';
 import './Site/register.js';

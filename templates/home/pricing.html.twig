@@ -4,202 +4,225 @@
 {% block description %}Découvrez nos plans de monitoring d'erreurs : gratuit, professionnel ou entreprise. Tarifs transparents, sans engagement, avec toutes les fonctionnalités essentielles.{% endblock %}
 
 {% block body %}
+    <!-- Hero Section -->
     <section class="pricing-hero">
-        <div class="pricing-hero-content">
-            <div class="hero-badge">
-                <div class="badge-dot"></div>
-                <span>Tarifs transparents</span>
-            </div>
-
-            <h1>
-                Choisissez le plan qui
-                <span class="highlight">correspond à vos besoins</span>
-            </h1>
-
-            <p>
-                Commencez gratuitement et évoluez à votre rythme.
-                Pas de frais cachés, pas d'engagement, annulation possible à tout moment.
-            </p>
-
-            <div class="billing-toggle" id="billing-toggle">
-                <div class="billing-option active" data-period="monthly">
-                    Mensuel
+        <div class="pricing-hero__container">
+            <div class="pricing-hero__content">
+                <div class="pricing-hero__badge">
+                    <div class="pricing-hero__badge-dot"></div>
+                    <span class="pricing-hero__badge-text">Tarifs transparents</span>
                 </div>
-                <div class="billing-option" data-period="yearly">
-                    Annuel
+
+                <h1 class="pricing-hero__title">
+                    Choisissez le plan qui
+                    <span class="pricing-hero__title-highlight">correspond à vos besoins</span>
+                </h1>
+
+                <p class="pricing-hero__description">
+                    Commencez gratuitement et évoluez à votre rythme.
+                    Pas de frais cachés, pas d'engagement, annulation possible à tout moment.
+                </p>
+
+                <div class="pricing-hero__billing-toggle" id="billing-toggle">
+                    <div class="pricing-hero__billing-option pricing-hero__billing-option--active" data-period="monthly">
+                        <span>Mensuel</span>
+                    </div>
+                    <div class="pricing-hero__billing-option" data-period="yearly">
+                        <span>Annuel</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="pricing-hero__background-effects">
+            <div class="pricing-hero__background-grid"></div>
+            <div class="pricing-hero__background-particles"></div>
+        </div>
     </section>
 
-    <section class="pricing-section">
-        <div class="container">
-            <div class="pricing-grid">
+    <!-- Plans Section -->
+    <section class="pricing-plans">
+        <div class="pricing-plans__container">
+            <div class="pricing-plans__grid">
                 {% for plan in plans %}
-                    <div class="pricing-card {{ plan.isPopular ? 'popular' : '' }}">
+                    <div class="pricing-plan {{ plan.isPopular ? 'pricing-plan--popular' : '' }}" data-plan="{{ plan.slug }}">
                         {% if plan.isPopular %}
-                            <div class="popular-badge">Plus populaire</div>
+                            <div class="pricing-plan__popular-badge">
+                                <span class="pricing-plan__badge-text">Plus populaire</span>
+                            </div>
                         {% endif %}
 
-                        <div class="plan-header">
-                            <h3 class="plan-name">{{ plan.name }}</h3>
-
-                            <div class="monthly-price">
-                                <div class="plan-price">
-                                    {% if plan.isFree %}
-                                        Gratuit
-                                    {% else %}
-                                        {{ plan.priceMonthly|number_format(2, ',', ' ') }}€
-                                    {% endif %}
-                                </div>
-                                {% if not plan.isFree %}
-                                    <div class="plan-price-period">par mois</div>
-                                {% else %}
-                                    <div class="plan-price-period">à vie</div>
+                        <div class="pricing-plan__header">
+                            <div class="pricing-plan__info">
+                                <h3 class="pricing-plan__name">{{ plan.name }}</h3>
+                                {% if plan.description %}
+                                    <p class="pricing-plan__description">{{ plan.description }}</p>
                                 {% endif %}
                             </div>
 
-                            {% if not plan.isFree and plan.priceYearly %}
-                                <div class="yearly-price" style="display: none;">
-                                    <div class="plan-price">
-                                        {{ plan.priceYearly|number_format(2, ',', ' ') }}€
-                                    </div>
-                                    <div class="plan-price-period">par an</div>
+                            <div class="pricing-plan__price-container">
+                                <div class="pricing-plan__price pricing-plan__price--monthly">
+                                    {% if plan.isFree %}
+                                        <span class="pricing-plan__price-value pricing-plan__price-value--free">Gratuit</span>
+                                    {% else %}
+                                        <span class="pricing-plan__price-currency">€</span>
+                                        <span class="pricing-plan__price-value">{{ plan.priceMonthly|number_format(2, ',', ' ') }}</span>
+                                        <span class="pricing-plan__price-unit">par mois</span>
+                                    {% endif %}
                                 </div>
-                            {% elseif plan.isFree %}
-                                <div class="yearly-price" style="display: none;">
-                                    <div class="plan-price">
-                                        Gratuit
+
+                                {% if not plan.isFree and plan.priceYearly %}
+                                    <div class="pricing-plan__price pricing-plan__price--yearly">
+                                        <span class="pricing-plan__price-currency">€</span>
+                                        <span class="pricing-plan__price-value">{{ plan.priceYearly|number_format(2, ',', ' ') }}</span>
+                                        <span class="pricing-plan__price-unit">par an</span>
+                                        <div class="pricing-plan__price-savings">
+                                            Soit {{ (plan.priceYearly / 12)|number_format(2, ',', ' ') }}€/mois
+                                        </div>
                                     </div>
-                                    <div class="plan-price-period">à vie</div>
-                                </div>
-                            {% endif %}
+                                {% elseif plan.isFree %}
+                                    <div class="pricing-plan__price pricing-plan__price--yearly">
+                                        <span class="pricing-plan__price-value pricing-plan__price-value--free">Gratuit</span>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <p class="plan-description">{{ plan.description }}</p>
+                        <div class="pricing-plan__metrics">
+                            <div class="pricing-plan__metric {{ plan.isPopular ? 'pricing-plan__metric--highlighted' : '' }}">
+                                <div class="pricing-plan__metric-value">{{ plan.maxProjectsLabel }}</div>
+                                <div class="pricing-plan__metric-label">Projets</div>
+                                <div class="pricing-plan__metric-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                    </svg>
+                                </div>
+                            </div>
 
-                        <div class="plan-features">
-                            <div class="features-title">Ce qui est inclus :</div>
-                            <ul class="features-list">
-                                <li class="feature-item">
-                                    <span class="feature-check">{{ plan.maxProjectsLabel }}</span>
-                                    <span>Projets {{ plan.maxProjects == -1 ? 'illimités' : 'maximum' }}</span>
+                            <div class="pricing-plan__metric {{ plan.isPopular ? 'pricing-plan__metric--highlighted' : '' }}">
+                                <div class="pricing-plan__metric-value">{{ plan.maxMonthlyErrorsLabel }}</div>
+                                <div class="pricing-plan__metric-label">Erreurs/mois</div>
+                                <div class="pricing-plan__metric-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="pricing-plan__metric {{ plan.isPopular ? 'pricing-plan__metric--highlighted' : '' }}">
+                                <div class="pricing-plan__metric-value">{{ plan.dataRetentionDays }}</div>
+                                <div class="pricing-plan__metric-label">Jours rétention</div>
+                                <div class="pricing-plan__metric-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12,6 12,12 16,14"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="pricing-plan__metric {{ plan.isPopular ? 'pricing-plan__metric--highlighted' : '' }}">
+                                <div class="pricing-plan__metric-value">
+                                    {% if plan.hasPrioritySupport %}
+                                        1h
+                                    {% elseif plan.hasEmailAlerts %}
+                                        4h
+                                    {% else %}
+                                        24h
+                                    {% endif %}
+                                </div>
+                                <div class="pricing-plan__metric-label">Support</div>
+                                <div class="pricing-plan__metric-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 12l2 2 4-4"/>
+                                        <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pricing-plan__features">
+                            <div class="pricing-plan__features-title">Fonctionnalités incluses</div>
+                            <ul class="pricing-plan__features-list">
+                                <li class="pricing-plan__feature">
+                                    <span class="pricing-plan__feature-check">✓</span>
+                                    <span class="pricing-plan__feature-text">Dashboard temps réel</span>
                                 </li>
-                                <li class="feature-item">
-                                    <span class="feature-check">{{ plan.maxMonthlyErrorsLabel }}</span>
-                                    <span>Erreurs par mois</span>
-                                </li>
-                                <li class="feature-item">
-                                    <span class="feature-check">{{ plan.dataRetentionDays }}</span>
-                                    <span>Jours de rétention des données</span>
-                                </li>
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Dashboard temps réel</span>
-                                </li>
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Stack trace détaillé</span>
-                                </li>
+
                                 {% if plan.hasEmailAlerts %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Alertes email</span>
-                                    </li>
-                                {% else %}
-                                    <li class="feature-item disabled">
-                                        <span class="feature-check">✗</span>
-                                        <span>Alertes email</span>
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Alertes email</span>
                                     </li>
                                 {% endif %}
+
                                 {% if plan.hasSlackIntegration %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Intégration Slack</span>
-                                    </li>
-                                {% else %}
-                                    <li class="feature-item disabled">
-                                        <span class="feature-check">✗</span>
-                                        <span>Intégration Slack</span>
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Intégration Slack</span>
                                     </li>
                                 {% endif %}
+
                                 {% if plan.hasApiAccess %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Accès API complet</span>
-                                    </li>
-                                {% else %}
-                                    <li class="feature-item disabled">
-                                        <span class="feature-check">✗</span>
-                                        <span>Accès API complet</span>
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Accès API complet</span>
                                     </li>
                                 {% endif %}
+
                                 {% if plan.hasAdvancedFilters %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Filtres avancés</span>
-                                    </li>
-                                {% else %}
-                                    <li class="feature-item disabled">
-                                        <span class="feature-check">✗</span>
-                                        <span>Filtres avancés</span>
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Filtres avancés</span>
                                     </li>
                                 {% endif %}
+
+                                {% if plan.hasCustomRetention %}
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Rétention personnalisée</span>
+                                    </li>
+                                {% endif %}
+
                                 {% if plan.hasPrioritySupport %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Support prioritaire (1h)</span>
-                                    </li>
-                                {% elseif plan.hasEmailAlerts %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Support standard (4h)</span>
-                                    </li>
-                                {% else %}
-                                    <li class="feature-item">
-                                        <span class="feature-check">✓</span>
-                                        <span>Support communautaire (24h)</span>
+                                    <li class="pricing-plan__feature">
+                                        <span class="pricing-plan__feature-check">✓</span>
+                                        <span class="pricing-plan__feature-text">Support prioritaire</span>
                                     </li>
                                 {% endif %}
                             </ul>
                         </div>
 
-                        <div class="plan-cta">
-                            {% if app.user %}
-                                {# Utilisateur connecté #}
-                                {% if plan.priceMonthly == 0 %}
-                                    <a href="{{ path('dashboard_index') }}"
-                                       class="cta-btn cta-btn-secondary">
-                                        Accéder au dashboard
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('billing_checkout', {planId: plan.id}) }}"
-                                       class="cta-btn {{ plan.isPopular ? 'cta-btn-primary' : 'cta-btn-secondary' }}">
-                                        Choisir {{ plan.name }}
-                                    </a>
-                                {% endif %}
-                            {% else %}
-                                {# Utilisateur non connecté #}
-                                {% if plan.priceMonthly == 0 %}
-                                    <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
-                                       class="cta-btn cta-btn-secondary">
-                                        Commencer gratuitement
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
-                                       class="cta-btn {{ plan.isPopular ? 'cta-btn-primary' : 'cta-btn-secondary' }}">
-                                        Commencer avec {{ plan.name }}
-                                    </a>
-                                {% endif %}
-                            {% endif %}
+                        {% if not plan.isFree and plan.maxMonthlyErrors != -1 %}
+                            <div class="pricing-plan__usage">
+                                <div class="pricing-plan__usage-header">
+                                    <span class="pricing-plan__usage-label">Capacité mensuelle</span>
+                                    <span class="pricing-plan__usage-value">{{ plan.maxMonthlyErrorsLabel }}</span>
+                                </div>
+                                <div class="pricing-plan__usage-bar">
+                                    <div class="pricing-plan__usage-fill" data-width="0"></div>
+                                </div>
+                            </div>
+                        {% endif %}
 
-                            {% if plan.priceMonthly != 0 %}
-                                <div class="plan-note">
-                                    {% if plan.trialDays %}
-                                        Essai gratuit {{ plan.trialDays }} jours • Sans engagement
-                                    {% else %}
-                                        Sans engagement • Annulation à tout moment
-                                    {% endif %}
+                        <div class="pricing-plan__action">
+                            <a href="{{ app.user ? (plan.priceMonthly == 0 ? path('dashboard_index') : path('billing_checkout', {planId: plan.id})) : path('app_register') }}?plan={{ plan.slug }}"
+                               class="pricing-plan__cta {{ plan.isPopular ? 'pricing-plan__cta--primary' : 'pricing-plan__cta--secondary' }}"
+                               data-plan="{{ plan.slug }}">
+                                {% if plan.isFree %}
+                                    <span class="pricing-plan__cta-text">Commencer gratuitement</span>
+                                {% else %}
+                                    <span class="pricing-plan__cta-text">Choisir {{ plan.name }}</span>
+                                {% endif %}
+                                <svg class="pricing-plan__cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+
+                            {% if not plan.isFree %}
+                                <div class="pricing-plan__note">
+                                    Sans engagement • Annulation à tout moment
                                 </div>
                             {% endif %}
                         </div>
@@ -207,54 +230,45 @@
                 {% endfor %}
             </div>
         </div>
+
+        <div class="pricing-plans__background-effects">
+            <div class="pricing-plans__background-gradient"></div>
+            <div class="pricing-plans__background-pattern"></div>
+        </div>
     </section>
 
-    <section class="pricing" id="comparison">
-        <div class="container">
-            <div class="section-title">
-                <h2>Comparaison détaillée des plans</h2>
-                <p>Comparez toutes les fonctionnalités de nos différents plans</p>
+    <!-- Comparison Section -->
+    <section class="pricing-comparison">
+        <div class="pricing-comparison__container">
+            <div class="pricing-comparison__header">
+                <h2 class="pricing-comparison__title">Comparaison détaillée</h2>
+                <p class="pricing-comparison__description">
+                    Comparez toutes les fonctionnalités de nos différents plans pour faire le meilleur choix
+                </p>
             </div>
 
-            <div class="pricing-comparison">
-                <table class="comparison-table">
+            <div class="pricing-comparison__table-wrapper">
+                <table class="pricing-comparison__table">
                     <thead>
                     <tr>
-                        <th class="feature-column">Fonctionnalités</th>
+                        <th class="pricing-comparison__feature-column">Fonctionnalités</th>
                         {% for plan in plans %}
-                            <th class="plan-column {{ plan.isPopular ? 'popular' : '' }}">
-                                <div class="plan-info">
-                                    <h3 class="plan-name">{{ plan.name }}</h3>
+                            <th class="pricing-comparison__plan-column {{ plan.isPopular ? 'pricing-comparison__plan-column--popular' : '' }}">
+                                <div class="pricing-comparison__plan-header">
+                                    <h3 class="pricing-comparison__plan-name">{{ plan.name }}</h3>
                                     {% if plan.isPopular %}
-                                        <div class="popular-badge">
-                                            <span class="badge-icon">⭐</span>
+                                        <div class="pricing-comparison__popular-badge">
+                                            <span class="pricing-comparison__badge-icon">⭐</span>
                                             <span>Plus populaire</span>
                                         </div>
                                     {% endif %}
-                                </div>
-                                <div class="plan-price-container">
-                                    <div class="plan-price">
+                                    <div class="pricing-comparison__plan-price">
                                         {% if plan.isFree %}
                                             Gratuit
                                         {% else %}
-                                            {{ plan.priceMonthly|number_format(2, ',', ' ') }}€
+                                            {{ plan.priceMonthly|number_format(2, ',', ' ') }}€/mois
                                         {% endif %}
                                     </div>
-                                    {% if not plan.isFree %}
-                                        <div class="plan-price-unit">par mois</div>
-                                    {% else %}
-                                        <div class="plan-price-unit">à vie</div>
-                                    {% endif %}
-                                </div>
-                                <div class="plan-action">
-                                    <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
-                                       class="btn {{ plan.isPopular ? 'btn-primary' : 'btn-secondary' }}">
-                                        {% if plan.isFree %}
-                                            <span>Commencer</span>
-                                        {% else %}
-                                            <span>Choisir</span>
-                                        {% endif %}
-                                    </a>
                                 </div>
                             </th>
                         {% endfor %}
@@ -262,240 +276,137 @@
                     </thead>
                     <tbody>
                     <!-- Limites et quotas -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
+                    <tr class="pricing-comparison__category-row">
+                        <td colspan="{{ plans|length + 1 }}" class="pricing-comparison__category-header">
                             <h4>Limites et quotas</h4>
                         </td>
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Projets maximum</div>
-                            <div class="feature-description">Nombre de projets que vous pouvez monitorer</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Projets maximum</div>
+                            <div class="pricing-comparison__feature-description">Nombre de projets que vous pouvez monitorer</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                <div class="metric-value">{{ plan.maxProjectsLabel }}</div>
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
+                                <div class="pricing-comparison__metric-value">{{ plan.maxProjectsLabel }}</div>
                             </td>
                         {% endfor %}
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Erreurs par mois</div>
-                            <div class="feature-description">Nombre d'erreurs trackées mensuellement</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Erreurs par mois</div>
+                            <div class="pricing-comparison__feature-description">Nombre d'erreurs trackées mensuellement</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                <div class="metric-value">{{ plan.maxMonthlyErrorsLabel }}</div>
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
+                                <div class="pricing-comparison__metric-value">{{ plan.maxMonthlyErrorsLabel }}</div>
                             </td>
                         {% endfor %}
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Rétention des données</div>
-                            <div class="feature-description">Durée de conservation des erreurs</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Rétention des données</div>
+                            <div class="pricing-comparison__feature-description">Durée de conservation des erreurs</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                <div class="metric-value">{{ plan.dataRetentionDays }} jours</div>
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
+                                <div class="pricing-comparison__metric-value">{{ plan.dataRetentionDays }} jours</div>
                             </td>
                         {% endfor %}
                     </tr>
 
-                    <!-- Fonctionnalités de base -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
+                    <!-- Fonctionnalités -->
+                    <tr class="pricing-comparison__category-row">
+                        <td colspan="{{ plans|length + 1 }}" class="pricing-comparison__category-header">
                             <h4>Fonctionnalités de base</h4>
                         </td>
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Dashboard temps réel</div>
-                            <div class="feature-description">Interface de monitoring en temps réel</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Dashboard temps réel</div>
+                            <div class="pricing-comparison__feature-description">Interface de monitoring en temps réel</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                <span class="feature-check">✓</span>
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
+                                <span class="pricing-comparison__feature-check">✓</span>
                             </td>
                         {% endfor %}
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Alertes email</div>
-                            <div class="feature-description">Notifications par email des erreurs critiques</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Alertes email</div>
+                            <div class="pricing-comparison__feature-description">Notifications par email des erreurs critiques</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
                                 {% if plan.hasEmailAlerts %}
-                                    <span class="feature-check">✓</span>
+                                    <span class="pricing-comparison__feature-check">✓</span>
                                 {% else %}
-                                    <span class="feature-cross">✗</span>
+                                    <span class="pricing-comparison__feature-cross">✗</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
 
                     <!-- Intégrations -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
+                    <tr class="pricing-comparison__category-row">
+                        <td colspan="{{ plans|length + 1 }}" class="pricing-comparison__category-header">
                             <h4>Intégrations</h4>
                         </td>
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Intégration Slack</div>
-                            <div class="feature-description">Notifications directement dans Slack</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Intégration Slack</div>
+                            <div class="pricing-comparison__feature-description">Notifications directement dans Slack</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
                                 {% if plan.hasSlackIntegration %}
-                                    <span class="feature-check">✓</span>
+                                    <span class="pricing-comparison__feature-check">✓</span>
                                 {% else %}
-                                    <span class="feature-cross">✗</span>
+                                    <span class="pricing-comparison__feature-cross">✗</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Accès API complet</div>
-                            <div class="feature-description">API REST pour intégrations personnalisées</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Accès API complet</div>
+                            <div class="pricing-comparison__feature-description">API REST pour intégrations personnalisées</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
                                 {% if plan.hasApiAccess %}
-                                    <span class="feature-check">✓</span>
+                                    <span class="pricing-comparison__feature-check">✓</span>
                                 {% else %}
-                                    <span class="feature-cross">✗</span>
+                                    <span class="pricing-comparison__feature-cross">✗</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
-
-                    <!-- Fonctionnalités avancées -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
-                            <h4>Fonctionnalités avancées</h4>
-                        </td>
-                    </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Filtres avancés</div>
-                            <div class="feature-description">Filtrage et recherche avancée des erreurs</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.hasAdvancedFilters %}
-                                    <span class="feature-check">✓</span>
-                                {% else %}
-                                    <span class="feature-cross">✗</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Analytics avancées</div>
-                            <div class="feature-description">Rapports détaillés et métriques avancées</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.hasAdvancedAnalytics %}
-                                    <span class="feature-check">✓</span>
-                                {% else %}
-                                    <span class="feature-cross">✗</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Rétention personnalisée</div>
-                            <div class="feature-description">Configuration personnalisée de la rétention</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.hasCustomRetention %}
-                                    <span class="feature-check">✓</span>
-                                {% else %}
-                                    <span class="feature-cross">✗</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-
-                    <!-- Intelligence Artificielle -->
-                    {% set hasAiFeatures = false %}
-                    {% for plan in plans %}
-                        {% if plan.hasAiSuggestions %}
-                            {% set hasAiFeatures = true %}
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if hasAiFeatures %}
-                        <tr class="category-row">
-                            <td colspan="{{ plans|length + 1 }}" class="category-header">
-                                <h4>Intelligence Artificielle</h4>
-                            </td>
-                        </tr>
-
-                        <tr class="feature-row">
-                            <td class="feature-name">
-                                <div class="feature-title">Suggestions IA</div>
-                                <div class="feature-description">Suggestions automatiques pour résoudre les erreurs</div>
-                            </td>
-                            {% for plan in plans %}
-                                <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                    {% if plan.hasAiSuggestions %}
-                                        <span class="feature-check">✓</span>
-                                    {% else %}
-                                        <span class="feature-cross">✗</span>
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-
-                        <tr class="feature-row">
-                            <td class="feature-name">
-                                <div class="feature-title">Suggestions IA par mois</div>
-                                <div class="feature-description">Nombre de suggestions IA disponibles</div>
-                            </td>
-                            {% for plan in plans %}
-                                <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                    {% if plan.hasAiSuggestions %}
-                                        <div class="metric-value">{{ plan.maxMonthlyAiSuggestionsLabel }}</div>
-                                    {% else %}
-                                        <span class="feature-cross">✗</span>
-                                    {% endif %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endif %}
 
                     <!-- Support -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
+                    <tr class="pricing-comparison__category-row">
+                        <td colspan="{{ plans|length + 1 }}" class="pricing-comparison__category-header">
                             <h4>Support</h4>
                         </td>
                     </tr>
 
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Temps de réponse</div>
-                            <div class="feature-description">Délai moyen de réponse du support</div>
+                    <tr class="pricing-comparison__feature-row">
+                        <td class="pricing-comparison__feature-name">
+                            <div class="pricing-comparison__feature-title">Temps de réponse</div>
+                            <div class="pricing-comparison__feature-description">Délai moyen de réponse du support</div>
                         </td>
                         {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                <div class="metric-value">
+                            <td class="pricing-comparison__feature-value {{ plan.isPopular ? 'pricing-comparison__feature-value--popular' : '' }}">
+                                <div class="pricing-comparison__metric-value">
                                     {% if plan.hasPrioritySupport %}
                                         1h
                                     {% elseif plan.hasEmailAlerts %}
@@ -507,204 +418,181 @@
                             </td>
                         {% endfor %}
                     </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Support prioritaire</div>
-                            <div class="feature-description">Accès au support premium avec priorité</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.hasPrioritySupport %}
-                                    <span class="feature-check">✓</span>
-                                {% else %}
-                                    <span class="feature-cross">✗</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-
-                    <!-- Tarification annuelle -->
-                    <tr class="category-row">
-                        <td colspan="{{ plans|length + 1 }}" class="category-header">
-                            <h4>Tarification annuelle</h4>
-                        </td>
-                    </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Prix annuel</div>
-                            <div class="feature-description">Tarif avec engagement annuel</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.isFree %}
-                                    <div class="metric-value">Gratuit</div>
-                                {% elseif plan.priceYearly %}
-                                    <div class="metric-value">{{ plan.formattedPriceYearly }}</div>
-                                {% else %}
-                                    <span class="feature-cross">N/A</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-
-                    <tr class="feature-row">
-                        <td class="feature-name">
-                            <div class="feature-title">Économies annuelles</div>
-                            <div class="feature-description">Montant économisé avec l'abonnement annuel</div>
-                        </td>
-                        {% for plan in plans %}
-                            <td class="feature-value {{ plan.isPopular ? 'popular' : '' }}">
-                                {% if plan.priceYearly and plan.priceYearly > 0 %}
-                                    <div class="yearly-savings">
-                                        <div class="savings-badge">
-                                            <span class="metric-value">{{ ((plan.priceMonthly * 12) - (plan.priceYearly))|number_format(2, ',', ' ') }} €</span>
-                                        </div>
-                                    </div>
-                                {% else %}
-                                    <span class="feature-cross">N/A</span>
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <!-- Actions finales -->
-            <div class="pricing-grid">
-                {% for plan in plans %}
-                    <div class="pricing-card {{ plan.isPopular ? 'popular' : '' }}">
-                        <div class="plan-header">
-                            <div class="plan-info">
-                                <h3 class="plan-name">{{ plan.name }}</h3>
-                            </div>
-                            <div class="plan-price-container">
-                                <div class="plan-price">
-                                    {% if plan.isFree %}
-                                        Gratuit
-                                    {% else %}
-                                        {{ plan.priceMonthly|number_format(2, ',', ' ') }}€
-                                    {% endif %}
-                                </div>
-                                {% if not plan.isFree %}
-                                    <div class="plan-price-unit">par mois</div>
-                                {% else %}
-                                    <div class="plan-price-unit">à vie</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        <div class="pricing-comparison__background-effects">
+            <div class="pricing-comparison__background-pattern"></div>
+        </div>
+    </section>
 
-                        <div class="plan-action">
-                            <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
-                               class="btn {{ plan.isPopular ? 'btn-primary' : 'btn-secondary' }} plan-cta-btn"
-                               data-plan="{{ plan.slug }}">
-                                {% if plan.isFree %}
-                                    <span>Commencer gratuitement</span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                {% else %}
-                                    <span>Choisir {{ plan.name }}</span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                                    </svg>
-                                {% endif %}
-                            </a>
+    <!-- FAQ Section -->
+    <section class="pricing-faq">
+        <div class="pricing-faq__container">
+            <div class="pricing-faq__header">
+                <h2 class="pricing-faq__title">Questions fréquentes</h2>
+                <p class="pricing-faq__description">
+                    Tout ce que vous devez savoir sur nos tarifs et fonctionnalités
+                </p>
+            </div>
 
-                            {% if not plan.isFree %}
-                                <div class="plan-note">
-                                    Sans engagement • Annulation à tout moment
-                                </div>
-                            {% endif %}
+            <div class="pricing-faq__grid">
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Puis-je changer de plan à tout moment ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
                         </div>
                     </div>
-                {% endfor %}
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment.
+                            Les changements prennent effet immédiatement et nous ajustons votre facturation au prorata.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Que se passe-t-il si je dépasse mes limites ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Nous vous prévenons par email lorsque vous atteignez 80% de vos limites.
+                            Au-delà, les nouvelles erreurs ne seront plus traitées jusqu'au mois suivant ou jusqu'à votre upgrade.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Y a-t-il des frais de configuration ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Aucun frais caché ! Le prix affiché est tout compris.
+                            L'installation se fait en moins de 5 minutes avec notre documentation complète.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Proposez-vous des remises pour les non-profits ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Oui, nous offrons 50% de réduction sur tous nos plans payants pour les organisations à but non lucratif.
+                            Contactez-nous avec vos justificatifs.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Puis-je annuler à tout moment ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Absolument. Pas d'engagement, pas de frais d'annulation.
+                            Vous gardez accès à vos données pendant 30 jours après l'annulation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pricing-faq__item" data-faq-item>
+                    <div class="pricing-faq__question" data-faq-trigger>
+                        <h3>Mes données sont-elles sécurisées ?</h3>
+                        <div class="pricing-faq__toggle">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pricing-faq__answer">
+                        <p>
+                            Toutes vos données sont chiffrées en transit et au repos.
+                            Nous sommes conformes RGPD et effectuons des audits de sécurité réguliers.
+                        </p>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="pricing-faq__background-effects">
+            <div class="pricing-faq__background-pattern"></div>
         </div>
     </section>
 
-    <section class="faq-section">
-        <div class="container">
-            <div class="section-title">
-                <h2>Questions fréquentes</h2>
-                <p>Tout ce que vous devez savoir sur nos tarifs</p>
-            </div>
-
-            <div class="faq-grid">
-                <div class="faq-item">
-                    <h3 class="faq-question">Puis-je changer de plan à tout moment ?</h3>
-                    <p class="faq-answer">
-                        Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment.
-                        Les changements prennent effet immédiatement et nous ajustons votre facturation au prorata.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3 class="faq-question">Que se passe-t-il si je dépasse mes limites ?</h3>
-                    <p class="faq-answer">
-                        Nous vous prévenons par email lorsque vous atteignez 80% de vos limites.
-                        Au-delà, les nouvelles erreurs ne seront plus traitées jusqu'au mois suivant ou jusqu'à votre upgrade.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3 class="faq-question">Y a-t-il des frais de configuration ?</h3>
-                    <p class="faq-answer">
-                        Aucun frais caché ! Le prix affiché est tout compris.
-                        L'installation se fait en moins de 5 minutes avec notre documentation complète.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3 class="faq-question">Proposez-vous des remises pour les non-profits ?</h3>
-                    <p class="faq-answer">
-                        Oui, nous offrons 50% de réduction sur tous nos plans payants pour les organisations à but non lucratif.
-                        Contactez-nous avec vos justificatifs.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3 class="faq-question">Puis-je annuler à tout moment ?</h3>
-                    <p class="faq-answer">
-                        Absolument. Pas d'engagement, pas de frais d'annulation.
-                        Vous gardez accès à vos données pendant 30 jours après l'annulation.
-                    </p>
-                </div>
-
-                <div class="faq-item">
-                    <h3 class="faq-question">Mes données sont-elles sécurisées ?</h3>
-                    <p class="faq-answer">
-                        Toutes vos données sont chiffrées en transit et au repos.
-                        Nous sommes conformes RGPD et effectuons des audits de sécurité réguliers.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Prêt à commencer ?</h2>
-                <p>
+    <!-- CTA Section -->
+    <section class="pricing-cta">
+        <div class="pricing-cta__container">
+            <div class="pricing-cta__content">
+                <h2 class="pricing-cta__title">Prêt à protéger vos applications ?</h2>
+                <p class="pricing-cta__description">
                     Rejoignez des milliers de développeurs qui font confiance à Error Explorer
                     pour maintenir leurs applications en parfaite santé.
                 </p>
 
-                <div class="cta-actions">
-                    <a href="{{ path('app_register') }}" class="btn btn-primary">
-                        <span>Commencer gratuitement</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="pricing-cta__actions">
+                    <a href="{{ path('app_register') }}" class="pricing-cta__button pricing-cta__button--primary">
+                        <span class="pricing-cta__button-text">Commencer gratuitement</span>
+                        <svg class="pricing-cta__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     </a>
-                    <a href="{{ path('contact') }}" class="btn btn-secondary">
-                        <span>Nous contacter</span>
+                    <a href="{{ path('contact') }}" class="pricing-cta__button pricing-cta__button--secondary">
+                        <svg class="pricing-cta__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="pricing-cta__button-text">Nous contacter</span>
                     </a>
                 </div>
+
+                <div class="pricing-cta__features">
+                    <div class="pricing-cta__feature">
+                        <span class="pricing-cta__feature-check">✓</span>
+                        <span>Installation en 5 minutes</span>
+                    </div>
+                    <div class="pricing-cta__feature">
+                        <span class="pricing-cta__feature-check">✓</span>
+                        <span>Aucune carte de crédit requise</span>
+                    </div>
+                    <div class="pricing-cta__feature">
+                        <span class="pricing-cta__feature-check">✓</span>
+                        <span>Support inclus</span>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="pricing-cta__background-effects">
+            <div class="pricing-cta__background-gradient"></div>
+            <div class="pricing-cta__background-particles"></div>
         </div>
     </section>
 {% endblock %}

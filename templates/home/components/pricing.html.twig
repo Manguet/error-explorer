@@ -40,7 +40,7 @@
                                     <span class="pricing__price-value pricing__price-value--free">Gratuit</span>
                                 {% else %}
                                     <span class="pricing__price-currency">€</span>
-                                    <span class="pricing__price-value">{{ plan.priceMonthly|number_format(0, ',', ' ') }}</span>
+                                    <span class="pricing__price-value">{{ plan.priceMonthly|number_format(2, ',', ' ') }}</span>
                                     <span class="pricing__price-unit">par mois</span>
                                 {% endif %}
                             </div>
