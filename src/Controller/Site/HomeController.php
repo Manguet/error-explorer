@@ -33,7 +33,7 @@ class HomeController extends AbstractController
 
         $currentStats  = [
             'total_users' => $this->userRepository->countActiveUsers(),
-            'total_errors_tracked' => $this->errorGroupRepository->count([]),
+            'total_errors_tracked' => $this->errorGroupRepository->count(),
             'total_projects' => $this->userRepository->createQueryBuilder('u')
                 ->select('SUM(u.currentProjectsCount)')
                 ->getQuery()
@@ -153,7 +153,9 @@ class HomeController extends AbstractController
     #[Route('/features', name: 'features')]
     public function features(): Response
     {
-        return $this->render('home/features.html.twig');
+        return $this->render('home/features.html.twig', [
+            'total_errors_tracked' => $this->errorGroupRepository->count(),
+        ]);
     }
 
     #[Route('/about', name: 'about')]
