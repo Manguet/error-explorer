@@ -161,7 +161,25 @@ class HomeController extends AbstractController
     #[Route('/about', name: 'about')]
     public function about(): Response
     {
-        return $this->render('home/about.html.twig');
+        // Réutilisation de la même logique que pour la page d'accueil
+        $currentStats = [
+            'total_users' => $this->userRepository->countActiveUsers(),
+            'total_errors_tracked' => $this->errorGroupRepository->count(),
+            'total_projects' => $this->userRepository->createQueryBuilder('u')
+                ->select('SUM(u.currentProjectsCount)')
+                ->getQuery()
+                ->getSingleScalarResult() ?: 0
+        ];
+
+        $trends = $this->calculateTrends();
+
+        $stats = array_merge($currentStats, [
+            'trends' => $trends
+        ]);
+
+        return $this->render('home/about.html.twig', [
+            'stats' => $stats
+        ]);
     }
 
     #[Route('/contact', name: 'contact')]

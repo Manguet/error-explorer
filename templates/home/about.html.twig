@@ -5,92 +5,120 @@
 
 {% block body %}
     <section class="about-hero">
-        <div class="container">
-            <div class="about-hero-content">
-                <div class="hero-badge fade-in-up">
-                    <div class="badge-dot"></div>
+        <div class="about-hero__container">
+            <div class="about-hero__content">
+                <div class="about-hero__badge">
+                    <div class="about-hero__badge-dot"></div>
                     <span>Notre histoire</span>
                 </div>
 
-                <h1 class="fade-in-up">
+                <h1 class="about-hero__title">
                     Nous révolutionnons le
-                    <span class="highlight">monitoring d'erreurs</span>
+                    <span class="about-hero__highlight">monitoring d'erreurs</span>
                 </h1>
 
-                <p class="hero-subtitle fade-in-up">
+                <p class="about-hero__subtitle">
                     Error Explorer est né de la frustration de développeurs face à des solutions
                     coûteuses et complexes. Nous construisons l'avenir du debugging.
                 </p>
 
-                <div class="hero-stats fade-in-up">
-                    <div class="stat">
-                        <div class="stat-number" data-count="5000">0</div>
-                        <div class="stat-label">Développeurs</div>
+                <div class="about-hero__stats">
+                    <div class="about-hero__stat">
+                        <div class="about-hero__stat-number js-counter" data-count="{{ stats.total_users }}">0</div>
+                        <div class="about-hero__stat-label">Développeurs</div>
+                        <div class="about-hero__stat-trend about-hero__stat-trend--{{ stats.trends.users.direction }}">
+                            {% if stats.trends.users.direction == 'up' %}
+                                +{{ stats.trends.users.percentage }}%
+                            {% elseif stats.trends.users.direction == 'down' %}
+                                -{{ stats.trends.users.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number" data-count="500000">0</div>
-                        <div class="stat-label">Erreurs détectées</div>
+                    <div class="about-hero__stat">
+                        <div class="about-hero__stat-number js-counter" data-count="{{ stats.total_errors_tracked }}">0</div>
+                        <div class="about-hero__stat-label">Erreurs détectées</div>
+                        <div class="about-hero__stat-trend about-hero__stat-trend--{{ stats.trends.errors.direction }}">
+                            {% if stats.trends.errors.direction == 'up' %}
+                                +{{ stats.trends.errors.percentage }}%
+                            {% elseif stats.trends.errors.direction == 'down' %}
+                                -{{ stats.trends.errors.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number" data-count="99">0</div>
-                        <div class="stat-label">% Uptime</div>
+                    <div class="about-hero__stat">
+                        <div class="about-hero__stat-number js-counter" data-count="99">0</div>
+                        <div class="about-hero__stat-label">% Uptime</div>
+                        <div class="about-hero__stat-trend about-hero__stat-trend--{{ stats.trends.uptime.direction }}">
+                            {% if stats.trends.uptime.direction == 'up' %}
+                                +{{ stats.trends.uptime.percentage }}%
+                            {% elseif stats.trends.uptime.direction == 'down' %}
+                                -{{ stats.trends.uptime.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="about-hero__background">
+            <div class="about-hero__grid"></div>
+            <div class="about-hero__gradient-1"></div>
+            <div class="about-hero__gradient-2"></div>
+        </div>
     </section>
 
-    <section class="mission-section">
-        <div class="container">
-            <div class="mission-grid">
-                <div class="mission-content fade-in-up">
-                    <h2>Notre mission</h2>
-                    <p class="mission-text">
+    <section class="about-mission">
+        <div class="about-mission__container">
+            <div class="about-mission__grid">
+                <div class="about-mission__content">
+                    <h2 class="about-mission__title">Notre mission</h2>
+                    <p class="about-mission__text">
                         <strong>Démocratiser le monitoring d'erreurs</strong> et rendre les outils de qualité
                         accessibles à tous, des startups aux grandes entreprises.
                     </p>
 
-                    <div class="mission-points">
-                        <div class="mission-point">
-                            <div class="point-icon">
-                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="48" height="48" rx="12" fill="#3b82f6" opacity="0.1"></rect>
-                                    <path d="M24 14a10 10 0 1 0 10 10A10 10 0 0 0 24 14zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" fill="#3b82f6"></path>
-                                    <path d="M24 18a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z" fill="#3b82f6"></path>
-                                    <circle cx="24" cy="24" r="2" fill="#3b82f6"></circle>
+                    <div class="about-mission__points">
+                        <div class="about-mission__point">
+                            <div class="about-mission__point-icon about-mission__point-icon--blue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="6"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
                                 </svg>
                             </div>
-                            <div class="point-content">
+                            <div class="about-mission__point-content">
                                 <h3>Simplicité</h3>
                                 <p>Une configuration en 5 minutes, une interface intuitive</p>
                             </div>
                         </div>
 
-                        <div class="mission-point">
-                            <div class="point-icon">
-                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="48" height="48" rx="12" fill="#10b981" opacity="0.1"></rect>
-                                    <path d="M32 16H16c-2.2 0-4 1.8-4 4v8c0 2.2 1.8 4 4 4h16c2.2 0 4-1.8 4-4v-8c0-2.2-1.8-4-4-4z" fill="#10b981" opacity="0.2"></path>
-                                    <path d="M30 18H18c-1.1 0-2 0.9-2 2v8c0 1.1 0.9 2 2 2h12c1.1 0 2-0.9 2-2v-8c0-1.1-0.9-2-2-2z" fill="#10b981"></path>
-                                    <text x="24" y="26" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="bold" fill="white">€</text>
+                        <div class="about-mission__point">
+                            <div class="about-mission__point-icon about-mission__point-icon--green">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
                                 </svg>
                             </div>
-                            <div class="point-content">
+                            <div class="about-mission__point-content">
                                 <h3>Accessibilité</h3>
                                 <p>Des tarifs transparents, pas de coûts cachés</p>
                             </div>
                         </div>
 
-                        <div class="mission-point">
-                            <div class="point-icon">
-                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="48" height="48" rx="12" fill="#f59e0b" opacity="0.1"></rect>
-                                    <path d="M24 12l8 6v10c0 7-8 13-8 13s-8-6-8-13V18l8-6z" fill="#f59e0b" opacity="0.2"></path>
-                                    <path d="M24 14l6 4.5v8.5c0 5-6 9-6 9s-6-4-6-9v-8.5l6-4.5z" fill="#f59e0b"></path>
-                                    <path d="M20 22l3 3 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                        <div class="about-mission__point">
+                            <div class="about-mission__point-icon about-mission__point-icon--orange">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                                 </svg>
                             </div>
-                            <div class="point-content">
+                            <div class="about-mission__point-content">
                                 <h3>Performance</h3>
                                 <p>Détection en temps réel, alertes instantanées</p>
                             </div>
@@ -98,37 +126,37 @@
                     </div>
                 </div>
 
-                <div class="mission-visual fade-in-up">
-                    <div class="visual-card">
-                        <div class="card-header">
-                            <div class="card-dots">
-                                <div class="dot red"></div>
-                                <div class="dot yellow"></div>
-                                <div class="dot green"></div>
+                <div class="about-mission__visual">
+                    <div class="about-mission__code-card">
+                        <div class="about-mission__code-header">
+                            <div class="about-mission__code-dots">
+                                <div class="about-mission__code-dot about-mission__code-dot--red"></div>
+                                <div class="about-mission__code-dot about-mission__code-dot--yellow"></div>
+                                <div class="about-mission__code-dot about-mission__code-dot--green"></div>
                             </div>
-                            <span class="card-title">error-explorer.js</span>
+                            <span class="about-mission__code-title">error-explorer.js</span>
                         </div>
-                        <div class="card-content">
-                            <div class="code-line">
-                                <span class="comment">// Simple integration</span>
+                        <div class="about-mission__code-content">
+                            <div class="about-mission__code-line">
+                                <span class="about-mission__code-comment">// Simple integration</span>
                             </div>
-                            <div class="code-line">
-                                <span class="keyword">import</span> ErrorExplorer <span class="keyword">from</span> <span class="string">'@error-explorer/client'</span>;
+                            <div class="about-mission__code-line">
+                                <span class="about-mission__code-keyword">import</span> ErrorExplorer <span class="about-mission__code-keyword">from</span> <span class="about-mission__code-string">'@error-explorer/client'</span>;
                             </div>
-                            <div class="code-line">&nbsp;</div>
-                            <div class="code-line">
-                                ErrorExplorer.<span class="method">init</span>({
+                            <div class="about-mission__code-line">&nbsp;</div>
+                            <div class="about-mission__code-line">
+                                ErrorExplorer.<span class="about-mission__code-method">init</span>({
                             </div>
-                            <div class="code-line">
-                                &nbsp;&nbsp;token: <span class="string">'your-project-token'</span>,
+                            <div class="about-mission__code-line">
+                                &nbsp;&nbsp;token: <span class="about-mission__code-string">'your-project-token'</span>,
                             </div>
-                            <div class="code-line">
-                                &nbsp;&nbsp;environment: <span class="string">'production'</span>
+                            <div class="about-mission__code-line">
+                                &nbsp;&nbsp;environment: <span class="about-mission__code-string">'production'</span>
                             </div>
-                            <div class="code-line">});
+                            <div class="about-mission__code-line">});
                             </div>
-                            <div class="code-line success">
-                                <span class="comment">// ✅ Prêt en 30 secondes !</span>
+                            <div class="about-mission__code-line about-mission__code-line--success">
+                                <span class="about-mission__code-comment">// ✅ Prêt en 30 secondes !</span>
                             </div>
                         </div>
                     </div>
@@ -137,117 +165,92 @@
         </div>
     </section>
 
-    <section class="values-section">
-        <div class="container">
-            <div class="section-header fade-in-up">
-                <h2>Nos valeurs</h2>
-                <p>Les principes qui guident chacune de nos décisions</p>
+    <section class="about-values">
+        <div class="about-values__container">
+            <div class="about-values__header">
+                <h2 class="about-values__title">Nos valeurs</h2>
+                <p class="about-values__description">Les principes qui guident chacune de nos décisions</p>
             </div>
 
-            <div class="values-grid">
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="32" cy="32" r="30" fill="none" stroke="#3b82f6" stroke-width="2" opacity="0.3"></circle>
-                            <circle cx="32" cy="32" r="20" fill="none" stroke="#3b82f6" stroke-width="2"></circle>
-                            <circle cx="32" cy="32" r="10" fill="none" stroke="#3b82f6" stroke-width="2"></circle>
-                            <circle cx="32" cy="32" r="3" fill="#3b82f6"></circle>
-                            <path d="m20 20 24 24" stroke="#3b82f6" stroke-width="2" opacity="0.6"></path>
-                            <path d="m44 20-24 24" stroke="#3b82f6" stroke-width="2" opacity="0.6"></path>
+            <div class="about-values__grid">
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--blue">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m9 12 2 2 4-4"></path>
                         </svg>
                     </div>
-                    <h3>Transparence</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Transparence</h3>
+                    <p class="about-values__item-text">
                         Tarifs clairs, code open-source, communication ouverte.
                         Pas de surprise, que de la confiance.
                     </p>
                 </div>
 
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 32h12l4-16 8 32 8-16 4 8h12" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                <animate attributeName="stroke-dasharray" values="0,200;100,200;0,200" dur="3s" repeatCount="indefinite"></animate>
-                            </path>
-                            <circle cx="32" cy="20" r="3" fill="#ef4444">
-                                <animate attributeName="r" values="3;5;3" dur="1s" repeatCount="indefinite"></animate>
-                            </circle>
-                            <circle cx="24" cy="28" r="2" fill="#ef4444" opacity="0.7"></circle>
-                            <circle cx="40" cy="24" r="2" fill="#ef4444" opacity="0.7"></circle>
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--red">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                         </svg>
                     </div>
-                    <h3>Performance</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Performance</h3>
+                    <p class="about-values__item-text">
                         Chaque milliseconde compte. Nos systèmes sont optimisés
                         pour une réactivité maximale.
                     </p>
                 </div>
 
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M32 16c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16z" fill="#06b6d4" opacity="0.2"></path>
-                            <path d="M32 20c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12-5.4-12-12-12z" fill="#06b6d4"></path>
-                            <path d="M24 32l4 4 8-8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                            <circle cx="20" cy="20" r="6" fill="#06b6d4" opacity="0.6"></circle>
-                            <circle cx="44" cy="20" r="6" fill="#06b6d4" opacity="0.6"></circle>
-                            <circle cx="20" cy="44" r="6" fill="#06b6d4" opacity="0.6"></circle>
-                            <circle cx="44" cy="44" r="6" fill="#06b6d4" opacity="0.6"></circle>
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--teal">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </div>
-                    <h3>Communauté</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Communauté</h3>
+                    <p class="about-values__item-text">
                         Nous écoutons nos utilisateurs et évoluons grâce à leurs
                         retours et suggestions.
                     </p>
                 </div>
 
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M32 8L48 16v12c0 14-16 24-16 24S16 42 16 28V16L32 8z" fill="#10b981" opacity="0.2"></path>
-                            <path d="M32 12L44 18v10c0 10-12 18-12 18S20 38 20 28V18L32 12z" fill="#10b981"></path>
-                            <path d="M26 28l4 4 8-8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                            <animateTransform attributeName="transform" type="scale" values="1;1.05;1" dur="2s" repeatCount="indefinite"></animateTransform>
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--green">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="m9 12 2 2 4-4"></path>
                         </svg>
                     </div>
-                    <h3>Sécurité</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Sécurité</h3>
+                    <p class="about-values__item-text">
                         Vos données sont précieuses. Chiffrement, conformité RGPD,
                         sécurité by design.
                     </p>
                 </div>
 
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="12" y="20" width="40" height="28" rx="4" fill="#8b5cf6" opacity="0.2"></rect>
-                            <rect x="16" y="24" width="32" height="20" rx="2" fill="#8b5cf6"></rect>
-                            <circle cx="32" cy="34" r="6" fill="white"></circle>
-                            <path d="M29 34l2 2 4-4" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
-                            <rect x="20" y="12" width="24" height="12" rx="2" fill="none" stroke="#8b5cf6" stroke-width="2"></rect>
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--purple">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="9" cy="9" r="2"></circle>
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
                         </svg>
                     </div>
-                    <h3>Simplicité</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Simplicité</h3>
+                    <p class="about-values__item-text">
                         La complexité est notre problème, pas le vôtre.
                         Interface simple, intégration facile.
                     </p>
                 </div>
 
-                <div class="value-item fade-in-up">
-                    <div class="value-icon">
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M32 8l6 18h18l-14 11 6 18-16-12-16 12 6-18L8 26h18L32 8z" fill="#f59e0b"></path>
-                            <path d="M32 8l6 18h18l-14 11 6 18-16-12-16 12 6-18L8 26h18L32 8z" fill="#fbbf24" opacity="0.5">
-                                <animateTransform attributeName="transform" type="rotate" values="0 32 32;360 32 32" dur="20s" repeatCount="indefinite"></animateTransform>
-                            </path>
-                            <circle cx="32" cy="32" r="8" fill="white" opacity="0.9"></circle>
-                            <path d="M28 32l3 3 6-6" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+                <div class="about-values__item">
+                    <div class="about-values__icon about-values__icon--amber">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9 8.91 8.26 12 2"></polygon>
                         </svg>
                     </div>
-                    <h3>Innovation</h3>
-                    <p>
+                    <h3 class="about-values__item-title">Innovation</h3>
+                    <p class="about-values__item-text">
                         Nous repoussons constamment les limites pour offrir
                         les meilleurs outils aux développeurs.
                     </p>
@@ -256,27 +259,129 @@
         </div>
     </section>
 
+    <section class="about-metrics">
+        <div class="about-metrics__container">
+            <div class="about-metrics__header">
+                <div class="about-metrics__badge">
+                    <div class="about-metrics__badge-dot"></div>
+                    <span>Données en temps réel</span>
+                </div>
+                <h2 class="about-metrics__title">Performance de notre plateforme</h2>
+                <p class="about-metrics__description">Indicateurs clés et métriques de performance actuelles</p>
+            </div>
+
+            <div class="about-metrics__grid">
+                <div class="about-metrics__item about-metrics__item--primary">
+                    <div class="about-metrics__item-header">
+                        <div class="about-metrics__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <div class="about-metrics__trend about-metrics__trend--{{ stats.trends.projects.direction }}">
+                            {% if stats.trends.projects.direction == 'up' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                </svg>
+                                +{{ stats.trends.projects.percentage }}%
+                            {% elseif stats.trends.projects.direction == 'down' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                </svg>
+                                -{{ stats.trends.projects.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="about-metrics__number js-counter" data-count="{{ stats.total_projects }}">0</div>
+                    <div class="about-metrics__label">Projets Protégés</div>
+                    <div class="about-metrics__description-text">Applications sous monitoring actif</div>
+                </div>
+
+                <div class="about-metrics__item about-metrics__item--success">
+                    <div class="about-metrics__item-header">
+                        <div class="about-metrics__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="about-metrics__trend about-metrics__trend--{{ stats.trends.response_time.direction }}">
+                            {% if stats.trends.response_time.direction == 'up' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                </svg>
+                                +{{ stats.trends.response_time.percentage }}%
+                            {% elseif stats.trends.response_time.direction == 'down' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                </svg>
+                                -{{ stats.trends.response_time.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="about-metrics__number">&lt; 50ms</div>
+                    <div class="about-metrics__label">Temps de Réponse</div>
+                    <div class="about-metrics__description-text">Latence moyenne de détection</div>
+                </div>
+
+                <div class="about-metrics__item about-metrics__item--warning">
+                    <div class="about-metrics__item-header">
+                        <div class="about-metrics__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="about-metrics__trend about-metrics__trend--{{ stats.trends.resolution_time.direction }}">
+                            {% if stats.trends.resolution_time.direction == 'up' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                </svg>
+                                +{{ stats.trends.resolution_time.percentage }}%
+                            {% elseif stats.trends.resolution_time.direction == 'down' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                </svg>
+                                -{{ stats.trends.resolution_time.percentage }}%
+                            {% else %}
+                                Stable
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="about-metrics__number">2.3h</div>
+                    <div class="about-metrics__label">Résolution Moyenne</div>
+                    <div class="about-metrics__description-text">Temps moyen pour bugs critiques</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="about-cta">
-        <div class="container">
-            <div class="cta-content fade-in-up">
-                <h2>Rejoignez l'aventure</h2>
-                <p>
+        <div class="about-cta__container">
+            <div class="about-cta__content">
+                <h2 class="about-cta__title">Rejoignez l'aventure</h2>
+                <p class="about-cta__description">
                     Prêt à révolutionner votre façon de gérer les erreurs ?
                     Commencez gratuitement dès aujourd'hui.
                 </p>
 
-                <div class="cta-actions">
-                    <a href="{{ path('app_register') }}" class="btn btn-primary">
+                <div class="about-cta__actions">
+                    <a href="{{ path('app_register') }}" class="about-cta__btn about-cta__btn--primary">
                         <span>Démarrer gratuitement</span>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     </a>
-                    <a href="{{ path('contact') }}" class="btn btn-secondary">
+                    <a href="{{ path('contact') }}" class="about-cta__btn about-cta__btn--secondary">
                         <span>Nous contacter</span>
                     </a>
                 </div>
             </div>
         </div>
+
+        <div class="about-cta__background"></div>
     </section>
 {% endblock %}
