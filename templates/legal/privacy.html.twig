@@ -5,70 +5,136 @@
 
 {% block body %}
     <section class="legal-hero">
-        <div class="container">
-            <div class="legal-hero-content">
-                <div class="hero-badge fade-in-up">
-                    <div class="badge-dot"></div>
-                    <span>Protection des données</span>
+        <div class="legal-hero__container">
+            <div class="legal-hero__content">
+                <div class="legal-hero__badge">
+                    <div class="legal-hero__badge-dot"></div>
+                    <span class="legal-hero__badge-text">Protection des données</span>
                 </div>
 
-                <h1 class="fade-in-up">
+                <h1 class="legal-hero__title">
                     Politique de
-                    <span class="highlight">Confidentialité</span>
+                    <span class="legal-hero__title-highlight">Confidentialité</span>
                 </h1>
 
-                <p class="hero-subtitle fade-in-up">
-                    Dernière mise à jour : {{ 'now'|date('d/m/Y') }}
+                <p class="legal-hero__subtitle">
+                    Votre vie privée est notre priorité. Découvrez comment nous protégeons vos données.
                 </p>
 
-                <div class="legal-nav fade-in-up">
-                    <a href="#collecte" class="legal-nav-link">Collecte</a>
-                    <a href="#utilisation" class="legal-nav-link">Utilisation</a>
-                    <a href="#partage" class="legal-nav-link">Partage</a>
-                    <a href="#droits" class="legal-nav-link">Vos droits</a>
-                    <a href="#securite" class="legal-nav-link">Sécurité</a>
+                <div class="legal-hero__meta">
+                    <span class="legal-hero__date">Dernière mise à jour : {{ 'now'|date('d/m/Y') }}</span>
+                </div>
+
+                <div class="legal-hero__nav">
+                    <a href="#collecte" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Collecte</span>
+                    </a>
+                    <a href="#utilisation" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"></path>
+                            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"></path>
+                        </svg>
+                        <span>Utilisation</span>
+                    </a>
+                    <a href="#droits" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"></path>
+                            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Vos droits</span>
+                    </a>
+                    <a href="#securite" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <circle cx="12" cy="16" r="1"></circle>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span>Sécurité</span>
+                    </a>
                 </div>
             </div>
+        </div>
+
+        <div class="legal-hero__background-effects">
+            <div class="legal-hero__background-grid"></div>
+            <div class="legal-hero__background-particles"></div>
         </div>
     </section>
 
     <section class="legal-content">
-        <div class="container">
-            <div class="legal-layout">
-                <aside class="legal-sidebar">
-                    <div class="sidebar-sticky">
-                        <h3>Sommaire</h3>
-                        <nav class="legal-toc">
-                            <ul>
-                                <li><a href="#introduction" class="toc-link">Introduction</a></li>
-                                <li><a href="#responsable" class="toc-link">Responsable de traitement</a></li>
-                                <li><a href="#collecte" class="toc-link">Données collectées</a></li>
-                                <li><a href="#utilisation" class="toc-link">Utilisation des données</a></li>
-                                <li><a href="#base-legale" class="toc-link">Base légale</a></li>
-                                <li><a href="#partage" class="toc-link">Partage des données</a></li>
-                                <li><a href="#conservation" class="toc-link">Conservation</a></li>
-                                <li><a href="#droits" class="toc-link">Vos droits</a></li>
-                                <li><a href="#securite" class="toc-link">Sécurité</a></li>
-                                <li><a href="#cookies" class="toc-link">Cookies</a></li>
-                                <li><a href="#transferts" class="toc-link">Transferts internationaux</a></li>
-                                <li><a href="#mineurs" class="toc-link">Données des mineurs</a></li>
-                                <li><a href="#modifications" class="toc-link">Modifications</a></li>
-                                <li><a href="#contact" class="toc-link">Contact</a></li>
-                            </ul>
-                        </nav>
+        <div class="legal-content__container">
+            <div class="legal-content__layout">
 
-                        <div class="privacy-badge">
-                            <div class="badge-icon">🔒</div>
-                            <div class="badge-content">
-                                <h4>Conformité RGPD</h4>
-                                <p>Nous respectons scrupuleusement le RGPD et vos droits à la protection des données.</p>
+                <aside class="legal-sidebar">
+                    <div class="legal-sidebar__sticky">
+                        <div class="legal-toc">
+                            <h3 class="legal-toc__title">Sommaire</h3>
+                            <nav class="legal-toc__nav">
+                                <ul class="legal-toc__list">
+                                    <li class="legal-toc__item">
+                                        <a href="#introduction" class="legal-toc__link">Introduction</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#responsable" class="legal-toc__link">Responsable de traitement</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#collecte" class="legal-toc__link">Données collectées</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#utilisation" class="legal-toc__link">Utilisation des données</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#partage" class="legal-toc__link">Partage des données</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#conservation" class="legal-toc__link">Conservation</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#droits" class="legal-toc__link">Vos droits</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#securite" class="legal-toc__link">Sécurité</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#cookies" class="legal-toc__link">Cookies</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#contact" class="legal-toc__link">Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="legal-badge">
+                            <div class="legal-badge__icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <circle cx="12" cy="16" r="1"></circle>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <div class="legal-badge__content">
+                                <h4 class="legal-badge__title">Conformité RGPD</h4>
+                                <p class="legal-badge__description">
+                                    Nous respectons scrupuleusement le RGPD et vos droits à la protection des données.
+                                </p>
                             </div>
                         </div>
 
-                        <div class="sidebar-cta">
-                            <h4>Délégué à la protection des données</h4>
-                            <p>Contactez notre DPO pour toute question relative à vos données</p>
-                            <a href="mailto:dpo@errorexplorer.com" class="btn btn-primary btn-sm">
+                        <div class="legal-cta-sidebar">
+                            <h4 class="legal-cta-sidebar__title">Délégué à la protection des données</h4>
+                            <p class="legal-cta-sidebar__description">
+                                Contactez notre DPO pour toute question relative à vos données
+                            </p>
+                            <a href="mailto:error.explorer.contact@gmail.com" class="legal-cta-sidebar__button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
                                 <span>Contacter le DPO</span>
                             </a>
                         </div>
@@ -77,443 +143,665 @@
 
                 <main class="legal-main">
                     <article class="legal-article">
-                        <section id="introduction" class="legal-section">
-                            <h2>Introduction</h2>
-                            <p>
-                                Error Explorer s'engage à protéger votre vie privée et vos données personnelles.
-                                Cette politique de confidentialité explique comment nous collectons, utilisons,
-                                stockons et protégeons vos informations lorsque vous utilisez notre service de
-                                monitoring d'erreurs.
-                            </p>
-                            <p>
-                                Nous respectons le Règlement Général sur la Protection des Données (RGPD)
-                                et nous nous engageons à traiter vos données de manière transparente,
-                                sécurisée et conforme à la réglementation en vigueur.
-                            </p>
+
+                        <section id="introduction" class="legal-section legal-section--introduction">
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">Introduction</h2>
+                                <div class="legal-section__decorator"></div>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__lead">
+                                    Error Explorer s'engage à protéger votre vie privée et vos données personnelles.
+                                    Cette politique de confidentialité explique comment nous collectons, utilisons,
+                                    stockons et protégeons vos informations lorsque vous utilisez notre service de
+                                    monitoring d'erreurs.
+                                </p>
+                                <p>
+                                    Nous respectons le Règlement Général sur la Protection des Données (RGPD)
+                                    et nous nous engageons à traiter vos données de manière transparente,
+                                    sécurisée et conforme à la réglementation en vigueur.
+                                </p>
+                            </div>
                         </section>
 
                         <section id="responsable" class="legal-section">
-                            <h2>1. Responsable de traitement</h2>
-                            <div class="company-info">
-                                <h3>Error Explorer SAS</h3>
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <h4>Adresse</h4>
-                                        <p>123 Avenue de la Technologie<br>75001 Paris, France</p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">1. Responsable de traitement</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <div class="company-info">
+                                    <div class="company-info__header">
+                                        <h3 class="company-info__name">Error Explorer</h3>
                                     </div>
-                                    <div class="info-item">
-                                        <h4>Email</h4>
-                                        <p><a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>Téléphone</h4>
-                                        <p>+33 1 23 45 67 89</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>DPO</h4>
-                                        <p><a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></p>
+                                    <div class="company-info__grid">
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                    <circle cx="12" cy="10" r="3"></circle>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Adresse</h4>
+                                                <p class="company-info__item-value">4, rue Jean Nogues<br>33110 Le Bouscat, France</p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                    <polyline points="22,6 12,13 2,6"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Email</h4>
+                                                <p class="company-info__item-value">
+                                                    <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Téléphone</h4>
+                                                <p class="company-info__item-value">+33 6 37 50 50 98</p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 12l2 2 4-4"></path>
+                                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">DPO</h4>
+                                                <p class="company-info__item-value">
+                                                    <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
                         <section id="collecte" class="legal-section">
-                            <h2>2. Données que nous collectons</h2>
-                            <p>
-                                Nous collectons différents types de données selon votre utilisation de notre service :
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">2. Données que nous collectons</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Nous collectons différents types de données selon votre utilisation de notre service :
+                                </p>
 
-                            <div class="data-categories">
-                                <div class="data-category">
-                                    <h3>🔐 Données de compte</h3>
-                                    <ul class="data-list">
-                                        <li><strong>Informations d'identification :</strong> nom, prénom, adresse email</li>
-                                        <li><strong>Informations professionnelles :</strong> entreprise, fonction (optionnel)</li>
-                                        <li><strong>Informations de connexion :</strong> mot de passe (chiffré), date de dernière connexion</li>
-                                        <li><strong>Préférences :</strong> paramètres de notification, langue, fuseau horaire</li>
-                                    </ul>
-                                </div>
+                                <div class="data-categories">
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Données de compte</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Informations d'identification :</strong> nom, prénom, adresse email
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Informations professionnelles :</strong> entreprise, fonction (optionnel)
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Informations de connexion :</strong> mot de passe (chiffré), date de dernière connexion
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Préférences :</strong> paramètres de notification, langue, fuseau horaire
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <div class="data-category">
-                                    <h3>⚡ Données d'erreur et de monitoring</h3>
-                                    <ul class="data-list">
-                                        <li><strong>Erreurs techniques :</strong> messages d'erreur, stack traces, fichiers et lignes concernés</li>
-                                        <li><strong>Contexte d'exécution :</strong> environnement, version de l'application, configuration</li>
-                                        <li><strong>Données de requête :</strong> URL, méthode HTTP, paramètres (anonymisés)</li>
-                                        <li><strong>Métriques de performance :</strong> temps d'exécution, utilisation mémoire</li>
-                                    </ul>
-                                </div>
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Données d'erreur et de monitoring</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Erreurs techniques :</strong> messages d'erreur, stack traces, fichiers et lignes concernés
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Contexte d'exécution :</strong> environnement, version de l'application, configuration
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Données de requête :</strong> URL, méthode HTTP, paramètres (anonymisés)
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Métriques de performance :</strong> temps d'exécution, utilisation mémoire
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <div class="data-category">
-                                    <h3>📊 Données d'utilisation</h3>
-                                    <ul class="data-list">
-                                        <li><strong>Activité sur la plateforme :</strong> pages visitées, fonctionnalités utilisées</li>
-                                        <li><strong>Données de navigation :</strong> adresse IP, navigateur, système d'exploitation</li>
-                                        <li><strong>Statistiques d'usage :</strong> fréquence d'utilisation, préférences d'interface</li>
-                                    </ul>
-                                </div>
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 3v18h18"></path>
+                                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Données d'utilisation</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Activité sur la plateforme :</strong> pages visitées, fonctionnalités utilisées
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Données de navigation :</strong> adresse IP, navigateur, système d'exploitation
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Statistiques d'usage :</strong> fréquence d'utilisation, préférences d'interface
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <div class="data-category">
-                                    <h3>💳 Données de facturation</h3>
-                                    <ul class="data-list">
-                                        <li><strong>Informations de paiement :</strong> traitées par nos partenaires sécurisés (Stripe)</li>
-                                        <li><strong>Historique de facturation :</strong> factures, abonnements, changements de plan</li>
-                                        <li><strong>Adresse de facturation :</strong> si différente de l'adresse principale</li>
-                                    </ul>
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Données de facturation</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Informations de paiement :</strong> traitées par nos partenaires sécurisés (Stripe)
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Historique de facturation :</strong> factures, abonnements, changements de plan
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Adresse de facturation :</strong> si différente de l'adresse principale
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </section>
 
                         <section id="utilisation" class="legal-section">
-                            <h2>3. Comment nous utilisons vos données</h2>
-                            <p>
-                                Nous utilisons vos données personnelles uniquement dans les buts suivants :
-                            </p>
-
-                            <div class="usage-purposes">
-                                <div class="purpose-item">
-                                    <div class="purpose-icon">🛠️</div>
-                                    <div class="purpose-content">
-                                        <h3>Fourniture du service</h3>
-                                        <p>Traiter et analyser les erreurs de vos applications, générer des rapports et statistiques,
-                                            envoyer des alertes et notifications selon vos préférences.</p>
-                                    </div>
-                                </div>
-
-                                <div class="purpose-item">
-                                    <div class="purpose-icon">👤</div>
-                                    <div class="purpose-content">
-                                        <h3>Gestion de votre compte</h3>
-                                        <p>Créer et maintenir votre compte utilisateur, gérer vos abonnements et facturation,
-                                            fournir un support technique personnalisé.</p>
-                                    </div>
-                                </div>
-
-                                <div class="purpose-item">
-                                    <div class="purpose-icon">📈</div>
-                                    <div class="purpose-content">
-                                        <h3>Amélioration du service</h3>
-                                        <p>Analyser l'utilisation pour améliorer nos fonctionnalités, développer de nouvelles capacités,
-                                            optimiser les performances et la sécurité.</p>
-                                    </div>
-                                </div>
-
-                                <div class="purpose-item">
-                                    <div class="purpose-icon">⚖️</div>
-                                    <div class="purpose-content">
-                                        <h3>Obligations légales</h3>
-                                        <p>Respecter nos obligations légales et réglementaires, prévenir la fraude et les abus,
-                                            assurer la sécurité de notre plateforme.</p>
-                                    </div>
-                                </div>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">3. Comment nous utilisons vos données ?</h2>
                             </div>
-                        </section>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Nous utilisons vos données personnelles uniquement dans les buts suivants :
+                                </p>
 
-                        <section id="base-legale" class="legal-section">
-                            <h2>4. Base légale du traitement</h2>
-                            <p>
-                                Nous traitons vos données personnelles sur les bases légales suivantes :
-                            </p>
-                            <div class="legal-bases">
-                                <div class="legal-base">
-                                    <h3>📋 Exécution du contrat</h3>
-                                    <p>Le traitement est nécessaire à l'exécution de notre contrat de service avec vous.</p>
-                                </div>
-                                <div class="legal-base">
-                                    <h3>✅ Consentement</h3>
-                                    <p>Vous avez donné votre consentement explicite pour certains traitements spécifiques.</p>
-                                </div>
-                                <div class="legal-base">
-                                    <h3>⚖️ Intérêt légitime</h3>
-                                    <p>Le traitement est nécessaire à nos intérêts légitimes (amélioration du service, sécurité).</p>
-                                </div>
-                                <div class="legal-base">
-                                    <h3>📜 Obligation légale</h3>
-                                    <p>Le traitement est nécessaire au respect de nos obligations légales.</p>
-                                </div>
-                            </div>
-                        </section>
+                                <div class="usage-purposes">
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Fourniture du service</h3>
+                                            <p class="usage-purpose__description">
+                                                Traiter et analyser les erreurs de vos applications, générer des rapports et statistiques,
+                                                envoyer des alertes et notifications selon vos préférences.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                        <section id="partage" class="legal-section">
-                            <h2>5. Partage de vos données</h2>
-                            <p>
-                                Nous ne vendons, ne louons ni ne partageons vos données personnelles avec des tiers,
-                                sauf dans les cas suivants :
-                            </p>
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Gestion de votre compte</h3>
+                                            <p class="usage-purpose__description">
+                                                Créer et maintenir votre compte utilisateur, gérer vos abonnements et facturation,
+                                                fournir un support technique personnalisé.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <div class="sharing-cases">
-                                <div class="sharing-case">
-                                    <h3>🔧 Prestataires de service</h3>
-                                    <p>
-                                        Nous pouvons partager vos données avec des prestataires soigneusement sélectionnés
-                                        qui nous aident à fournir notre service :
-                                    </p>
-                                    <ul class="legal-list">
-                                        <li><strong>Hébergement :</strong> OVH, AWS (serveurs européens uniquement)</li>
-                                        <li><strong>Paiement :</strong> Stripe (traitement sécurisé des paiements)</li>
-                                        <li><strong>Email :</strong> Mailgun (envoi de notifications)</li>
-                                        <li><strong>Analytics :</strong> Google Analytics (données anonymisées)</li>
-                                    </ul>
-                                    <p>
-                                        Tous nos prestataires sont liés par des accords de confidentialité stricts
-                                        et ne peuvent utiliser vos données que pour les services qu'ils nous fournissent.
-                                    </p>
-                                </div>
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 3v18h18"></path>
+                                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Amélioration du service</h3>
+                                            <p class="usage-purpose__description">
+                                                Analyser l'utilisation pour améliorer nos fonctionnalités, développer de nouvelles capacités,
+                                                optimiser les performances et la sécurité.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="sharing-case">
-                                    <h3>⚖️ Obligations légales</h3>
-                                    <p>
-                                        Nous pouvons divulguer vos données si la loi l'exige ou en cas de demande
-                                        légitime des autorités compétentes.
-                                    </p>
-                                </div>
-
-                                <div class="sharing-case">
-                                    <h3>🔒 Protection de nos droits</h3>
-                                    <p>
-                                        Nous pouvons partager des données pour protéger nos droits, notre propriété
-                                        ou notre sécurité, ou ceux de nos utilisateurs.
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section id="conservation" class="legal-section">
-                            <h2>6. Conservation des données</h2>
-                            <p>
-                                Nous conservons vos données personnelles aussi longtemps que nécessaire
-                                pour fournir nos services et respecter nos obligations légales :
-                            </p>
-
-                            <div class="retention-periods">
-                                <div class="retention-item">
-                                    <h3>Données de compte</h3>
-                                    <p>Conservées tant que votre compte est actif, puis 1 an après la fermeture du compte
-                                        pour permettre une éventuelle réactivation.</p>
-                                </div>
-                                <div class="retention-item">
-                                    <h3>Données d'erreur</h3>
-                                    <p>Conservées selon la durée définie par votre plan d'abonnement
-                                        (30 jours à 1 an selon le plan).</p>
-                                </div>
-                                <div class="retention-item">
-                                    <h3>Données de facturation</h3>
-                                    <p>Conservées 10 ans conformément aux obligations comptables françaises.</p>
-                                </div>
-                                <div class="retention-item">
-                                    <h3>Logs de sécurité</h3>
-                                    <p>Conservées 1 an pour assurer la sécurité et détecter les activités suspectes.</p>
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Obligations légales</h3>
+                                            <p class="usage-purpose__description">
+                                                Respecter nos obligations légales et réglementaires, prévenir la fraude et les abus,
+                                                assurer la sécurité de notre plateforme.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
 
                         <section id="droits" class="legal-section">
-                            <h2>7. Vos droits</h2>
-                            <p>
-                                Conformément au RGPD, vous disposez des droits suivants concernant vos données personnelles :
-                            </p>
-
-                            <div class="rights-grid">
-                                <div class="right-item">
-                                    <div class="right-icon">👁️</div>
-                                    <h3>Droit d'accès</h3>
-                                    <p>Vous pouvez demander l'accès à toutes les données personnelles que nous détenons sur vous.</p>
-                                </div>
-
-                                <div class="right-item">
-                                    <div class="right-icon">✏️</div>
-                                    <h3>Droit de rectification</h3>
-                                    <p>Vous pouvez demander la correction de données inexactes ou incomplètes.</p>
-                                </div>
-
-                                <div class="right-item">
-                                    <div class="right-icon">🗑️</div>
-                                    <h3>Droit à l'effacement</h3>
-                                    <p>Vous pouvez demander la suppression de vos données dans certaines circonstances.</p>
-                                </div>
-
-                                <div class="right-item">
-                                    <div class="right-icon">⏸️</div>
-                                    <h3>Droit à la limitation</h3>
-                                    <p>Vous pouvez demander la limitation du traitement de vos données.</p>
-                                </div>
-
-                                <div class="right-item">
-                                    <div class="right-icon">📋</div>
-                                    <h3>Droit à la portabilité</h3>
-                                    <p>Vous pouvez demander la portabilité de vos données dans un format structuré.</p>
-                                </div>
-
-                                <div class="right-item">
-                                    <div class="right-icon">🚫</div>
-                                    <h3>Droit d'opposition</h3>
-                                    <p>Vous pouvez vous opposer au traitement de vos données dans certains cas.</p>
-                                </div>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">4. Vos droits</h2>
                             </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Conformément au RGPD, vous disposez des droits suivants concernant vos données personnelles :
+                                </p>
 
-                            <div class="exercise-rights">
-                                <h3>Comment exercer vos droits</h3>
-                                <p>
-                                    Pour exercer ces droits, vous pouvez :
-                                </p>
-                                <ul class="legal-list">
-                                    <li>Accéder à votre espace personnel sur la plateforme</li>
-                                    <li>Nous contacter à <a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></li>
-                                    <li>Contacter notre DPO à <a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></li>
-                                </ul>
-                                <p>
-                                    Nous répondrons à votre demande dans un délai d'un mois maximum.
-                                    Si vous n'êtes pas satisfait de notre réponse, vous pouvez déposer
-                                    une plainte auprès de la CNIL.
-                                </p>
+                                <div class="rights-grid">
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit d'accès</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez demander l'accès à toutes les données personnelles que nous détenons sur vous.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit de rectification</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez demander la correction de données inexactes ou incomplètes.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3,6 5,6 21,6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit à l'effacement</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez demander la suppression de vos données dans certaines circonstances.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="6" y="4" width="4" height="16"/>
+                                                <rect x="14" y="4" width="4" height="16"/>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit à la limitation</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez demander la limitation du traitement de vos données.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5c-.55 0-1-.45-1-1H9c-.55 0-1-.45-1-1H6c-.55 0-1-.45-1-1V6a2 2 0 0 1 2-2h2"/>
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit à la portabilité</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez demander la portabilité de vos données dans un format structuré.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="right-item">
+                                        <div class="right-item__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                                <line x1="9" y1="9" x2="15" y2="15"/>
+                                            </svg>
+                                        </div>
+                                        <div class="right-item__content">
+                                            <h3 class="right-item__title">Droit d'opposition</h3>
+                                            <p class="right-item__description">
+                                                Vous pouvez vous opposer au traitement de vos données dans certains cas.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="exercise-rights">
+                                    <div class="exercise-rights__header">
+                                        <h3 class="exercise-rights__title">Comment exercer vos droits</h3>
+                                    </div>
+                                    <div class="exercise-rights__content">
+                                        <p>Pour exercer ces droits, vous pouvez :</p>
+                                        <ul class="exercise-rights__list">
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 12l2 2 4-4"/>
+                                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                                </svg>
+                                                Accéder à votre espace personnel sur la plateforme
+                                            </li>
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                    <polyline points="22,6 12,13 2,6"/>
+                                                </svg>
+                                                Nous contacter à <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                            </li>
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                                    <circle cx="12" cy="16" r="1"/>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                                </svg>
+                                                Contacter notre DPO à <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                            </li>
+                                        </ul>
+                                        <p class="exercise-rights__note">
+                                            Nous répondrons à votre demande dans un délai d'un mois maximum.
+                                            Si vous n'êtes pas satisfait de notre réponse, vous pouvez déposer
+                                            une plainte auprès de la CNIL.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
                         <section id="securite" class="legal-section">
-                            <h2>8. Sécurité des données</h2>
-                            <p>
-                                Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles
-                                appropriées pour protéger vos données personnelles :
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">5. Sécurité des données</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles
+                                    appropriées pour protéger vos données personnelles :
+                                </p>
 
-                            <div class="security-measures">
-                                <div class="security-measure">
-                                    <div class="measure-icon">🔒</div>
-                                    <h3>Chiffrement</h3>
-                                    <p>Toutes les données sont chiffrées en transit (TLS 1.3) et au repos (AES-256).</p>
-                                </div>
+                                <div class="security-measures">
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                                <circle cx="12" cy="16" r="1"/>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Chiffrement</h3>
+                                            <p class="security-measure__description">
+                                                Toutes les données sont chiffrées en transit (TLS 1.3) et au repos (AES-256).
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="security-measure">
-                                    <div class="measure-icon">🛡️</div>
-                                    <h3>Accès contrôlé</h3>
-                                    <p>L'accès aux données est strictement contrôlé et limité au personnel autorisé.</p>
-                                </div>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Accès contrôlé</h3>
+                                            <p class="security-measure__description">
+                                                L'accès aux données est strictement contrôlé et limité au personnel autorisé.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="security-measure">
-                                    <div class="measure-icon">📋</div>
-                                    <h3>Audits réguliers</h3>
-                                    <p>Nous effectuons des audits de sécurité réguliers et des tests de pénétration.</p>
-                                </div>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Audits réguliers</h3>
+                                            <p class="security-measure__description">
+                                                Nous effectuons des audits de sécurité réguliers et des tests de pénétration.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="security-measure">
-                                    <div class="measure-icon">🔄</div>
-                                    <h3>Sauvegardes</h3>
-                                    <p>Vos données sont sauvegardées régulièrement et de manière sécurisée.</p>
-                                </div>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                                <polyline points="9,22 9,12 15,12 15,22"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Sauvegardes</h3>
+                                            <p class="security-measure__description">
+                                                Vos données sont sauvegardées régulièrement et de manière sécurisée.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="security-measure">
-                                    <div class="measure-icon">🚨</div>
-                                    <h3>Surveillance</h3>
-                                    <p>Surveillance 24/7 des accès et détection des activités suspectes.</p>
-                                </div>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Surveillance</h3>
+                                            <p class="security-measure__description">
+                                                Surveillance 24/7 des accès et détection des activités suspectes.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                <div class="security-measure">
-                                    <div class="measure-icon">📚</div>
-                                    <h3>Formation</h3>
-                                    <p>Notre personnel est régulièrement formé aux bonnes pratiques de sécurité.</p>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Formation</h3>
+                                            <p class="security-measure__description">
+                                                Notre personnel est régulièrement formé aux bonnes pratiques de sécurité.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
 
                         <section id="cookies" class="legal-section">
-                            <h2>9. Cookies et technologies similaires</h2>
-                            <p>
-                                Nous utilisons des cookies et technologies similaires pour améliorer votre expérience :
-                            </p>
-
-                            <div class="cookies-types">
-                                <div class="cookie-type">
-                                    <h3>🔧 Cookies techniques</h3>
-                                    <p>Nécessaires au fonctionnement du site (session, authentification).
-                                        Ils ne nécessitent pas votre consentement.</p>
-                                </div>
-
-                                <div class="cookie-type">
-                                    <h3>📊 Cookies analytiques</h3>
-                                    <p>Nous permettent de comprendre comment vous utilisez notre site
-                                        pour l'améliorer (Google Analytics avec anonymisation IP).</p>
-                                </div>
-
-                                <div class="cookie-type">
-                                    <h3>⚙️ Cookies de préférences</h3>
-                                    <p>Mémorisent vos préférences (langue, thème, paramètres d'interface).</p>
-                                </div>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">6. Cookies et technologies similaires</h2>
                             </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Nous utilisons des cookies et technologies similaires pour améliorer votre expérience :
+                                </p>
 
-                            <p>
-                                Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur
-                                ou via notre bandeau de consentement.
-                            </p>
-                        </section>
+                                <div class="cookies-types">
+                                    <div class="cookie-type">
+                                        <div class="cookie-type__header">
+                                            <div class="cookie-type__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="cookie-type__title">Cookies techniques</h3>
+                                        </div>
+                                        <p class="cookie-type__description">
+                                            Nécessaires au fonctionnement du site (session, authentification).
+                                            Ils ne nécessitent pas votre consentement.
+                                        </p>
+                                    </div>
 
-                        <section id="transferts" class="legal-section">
-                            <h2>10. Transferts internationaux</h2>
-                            <p>
-                                Vos données personnelles sont principalement traitées au sein de l'Union Européenne.
-                                Lorsque nous devons transférer des données vers des pays tiers, nous nous assurons
-                                qu'un niveau de protection adéquat est maintenu grâce à :
-                            </p>
-                            <ul class="legal-list">
-                                <li>Des décisions d'adéquation de la Commission européenne</li>
-                                <li>Des clauses contractuelles types</li>
-                                <li>Des certifications de protection des données</li>
-                            </ul>
-                        </section>
+                                    <div class="cookie-type">
+                                        <div class="cookie-type__header">
+                                            <div class="cookie-type__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 3v18h18"></path>
+                                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                                </svg>
+                                            </div>
+                                            <h3 class="cookie-type__title">Cookies analytiques</h3>
+                                        </div>
+                                        <p class="cookie-type__description">
+                                            Nous permettent de comprendre comment vous utilisez notre site
+                                            pour l'améliorer (Google Analytics avec anonymisation IP).
+                                        </p>
+                                    </div>
 
-                        <section id="mineurs" class="legal-section">
-                            <h2>11. Données des mineurs</h2>
-                            <p>
-                                Notre service n'est pas destiné aux personnes de moins de 16 ans.
-                                Nous ne collectons pas sciemment de données personnelles de mineurs.
-                                Si nous apprenons qu'un mineur nous a fourni des données personnelles,
-                                nous les supprimerons rapidement.
-                            </p>
-                        </section>
-
-                        <section id="modifications" class="legal-section">
-                            <h2>12. Modifications de cette politique</h2>
-                            <p>
-                                Nous pouvons modifier cette politique de confidentialité pour refléter
-                                les changements dans nos pratiques ou pour d'autres raisons opérationnelles,
-                                légales ou réglementaires.
-                            </p>
-                            <p>
-                                Les modifications importantes vous seront notifiées par email
-                                au moins 30 jours avant leur entrée en vigueur.
-                            </p>
-                        </section>
-
-                        <section id="contact" class="legal-section">
-                            <h2>13. Nous contacter</h2>
-                            <p>
-                                Pour toute question concernant cette politique de confidentialité
-                                ou le traitement de vos données personnelles :
-                            </p>
-
-                            <div class="contact-methods">
-                                <div class="contact-method">
-                                    <h3>📧 Email</h3>
-                                    <p><a href="mailto:privacy@errorexplorer.com">privacy@errorexplorer.com</a></p>
+                                    <div class="cookie-type">
+                                        <div class="cookie-type__header">
+                                            <div class="cookie-type__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.06 1.56V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.56-1.06H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1.06-1.56V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.06 1.56 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.56 1.06H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.56 1.06z"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="cookie-type__title">Cookies de préférences</h3>
+                                        </div>
+                                        <p class="cookie-type__description">
+                                            Mémorisent vos préférences (langue, thème, paramètres d'interface).
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <div class="contact-method">
-                                    <h3>🛡️ Délégué à la Protection des Données</h3>
-                                    <p><a href="mailto:dpo@errorexplorer.com">dpo@errorexplorer.com</a></p>
-                                </div>
-
-                                <div class="contact-method">
-                                    <h3>📮 Courrier postal</h3>
+                                <div class="cookies-note">
                                     <p>
-                                        Error Explorer SAS<br>
-                                        Service Protection des Données<br>
-                                        123 Avenue de la Technologie<br>
-                                        75001 Paris, France
+                                        Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur
+                                        ou via notre bandeau de consentement.
                                     </p>
                                 </div>
+                            </div>
+                        </section>
 
-                                <div class="contact-method">
-                                    <h3>📞 Téléphone</h3>
-                                    <p>+33 1 23 45 67 89</p>
+                        <section id="contact" class="legal-section legal-section--contact">
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">7. Nous contacter</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Pour toute question concernant cette politique de confidentialité
+                                    ou le traitement de vos données personnelles :
+                                </p>
+
+                                <div class="contact-methods">
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                <polyline points="22,6 12,13 2,6"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Email</h3>
+                                            <p class="contact-method__value">
+                                                <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                                <circle cx="12" cy="16" r="1"/>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Délégué à la Protection des Données</h3>
+                                            <p class="contact-method__value">
+                                                <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                                <circle cx="12" cy="10" r="3"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Courrier postal</h3>
+                                            <p class="contact-method__value">
+                                                Error Explorer<br>
+                                                Mr Manguet<br>
+                                                4, Rue Jean Nogues<br>
+                                                33 110 Le Bouscat, France
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Téléphone</h3>
+                                            <p class="contact-method__value">+33 6 37 50 50 98</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -524,27 +812,72 @@
     </section>
 
     <section class="legal-cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Vos données sont entre de bonnes mains</h2>
-                <p>
-                    Nous nous engageons à protéger votre vie privée et à traiter vos données
-                    avec le plus grand respect et la plus grande sécurité.
-                </p>
+        <div class="legal-cta__container">
+            <div class="legal-cta__content">
+                <div class="legal-cta__header">
+                    <div class="legal-cta__icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <circle cx="12" cy="16" r="1"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h2 class="legal-cta__title">Vos données sont entre de bonnes mains</h2>
+                    <p class="legal-cta__description">
+                        Nous nous engageons à protéger votre vie privée et à traiter vos données
+                        avec le plus grand respect et la plus grande sécurité.
+                    </p>
+                </div>
 
-                <div class="cta-actions">
-                    <a href="mailto:dpo@errorexplorer.com" class="btn btn-primary">
-                        <span>Contacter notre DPO</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="legal-cta__actions">
+                    <a href="mailto:error.explorer.contact@gmail.com" class="legal-cta__button legal-cta__button--primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
+                        <span>Contacter notre DPO</span>
                     </a>
-                    <a href="{{ path('cgu') }}" class="btn btn-secondary">
+                    <a href="{{ path('cgu') }}" class="legal-cta__button legal-cta__button--secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
                         <span>Conditions d'utilisation</span>
                     </a>
                 </div>
+
+                <div class="legal-cta__features">
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                        </svg>
+                        <span>Conformité RGPD</span>
+                    </div>
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <circle cx="12" cy="16" r="1"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <span>Données sécurisées</span>
+                    </div>
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Transparence totale</span>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="legal-cta__background-effects">
+            <div class="legal-cta__background-pattern"></div>
         </div>
     </section>
 {% endblock %}

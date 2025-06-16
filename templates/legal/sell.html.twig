@@ -5,72 +5,137 @@
 
 {% block body %}
     <section class="legal-hero">
-        <div class="container">
-            <div class="legal-hero-content">
-                <div class="hero-badge fade-in-up">
-                    <div class="badge-dot"></div>
-                    <span>Conditions commerciales</span>
+        <div class="legal-hero__container">
+            <div class="legal-hero__content">
+                <div class="legal-hero__badge">
+                    <div class="legal-hero__badge-dot"></div>
+                    <span class="legal-hero__badge-text">Conditions commerciales</span>
                 </div>
 
-                <h1 class="fade-in-up">
+                <h1 class="legal-hero__title">
                     Conditions Générales
-                    <span class="highlight">de Vente</span>
+                    <span class="legal-hero__title-highlight">de Vente</span>
                 </h1>
 
-                <p class="hero-subtitle fade-in-up">
-                    Dernière mise à jour : {{ 'now'|date('d/m/Y') }}
+                <p class="legal-hero__subtitle">
+                    Nos modalités commerciales, tarifs et conditions d'abonnement en toute transparence.
                 </p>
 
-                <div class="legal-nav fade-in-up">
-                    <a href="#offres" class="legal-nav-link">Offres</a>
-                    <a href="#commande" class="legal-nav-link">Commande</a>
-                    <a href="#paiement" class="legal-nav-link">Paiement</a>
-                    <a href="#livraison" class="legal-nav-link">Livraison</a>
-                    <a href="#remboursement" class="legal-nav-link">Remboursement</a>
+                <div class="legal-hero__meta">
+                    <span class="legal-hero__date">Dernière mise à jour : {{ 'now'|date('d/m/Y') }}</span>
+                </div>
+
+                <div class="legal-hero__nav">
+                    <a href="#offres" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        <span>Offres</span>
+                    </a>
+                    <a href="#commande" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                        </svg>
+                        <span>Commande</span>
+                    </a>
+                    <a href="#paiement" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        <span>Paiement</span>
+                    </a>
+                    <a href="#garanties" class="legal-hero__nav-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                        </svg>
+                        <span>Garanties</span>
+                    </a>
                 </div>
             </div>
+        </div>
+
+        <div class="legal-hero__background-effects">
+            <div class="legal-hero__background-grid"></div>
+            <div class="legal-hero__background-particles"></div>
         </div>
     </section>
 
     <section class="legal-content">
-        <div class="container">
-            <div class="legal-layout">
-                <aside class="legal-sidebar">
-                    <div class="sidebar-sticky">
-                        <h3>Sommaire</h3>
-                        <nav class="legal-toc">
-                            <ul>
-                                <li><a href="#preambule" class="toc-link">Préambule</a></li>
-                                <li><a href="#definitions" class="toc-link">Définitions</a></li>
-                                <li><a href="#vendeur" class="toc-link">Informations vendeur</a></li>
-                                <li><a href="#offres" class="toc-link">Offres et services</a></li>
-                                <li><a href="#commande" class="toc-link">Processus de commande</a></li>
-                                <li><a href="#prix" class="toc-link">Prix et tarification</a></li>
-                                <li><a href="#paiement" class="toc-link">Modalités de paiement</a></li>
-                                <li><a href="#livraison" class="toc-link">Livraison du service</a></li>
-                                <li><a href="#retractation" class="toc-link">Droit de rétractation</a></li>
-                                <li><a href="#remboursement" class="toc-link">Remboursement</a></li>
-                                <li><a href="#garanties" class="toc-link">Garanties</a></li>
-                                <li><a href="#facturation" class="toc-link">Facturation</a></li>
-                                <li><a href="#modification" class="toc-link">Modification d'abonnement</a></li>
-                                <li><a href="#resiliation" class="toc-link">Résiliation</a></li>
-                                <li><a href="#litige" class="toc-link">Règlement des litiges</a></li>
-                            </ul>
-                        </nav>
+        <div class="legal-content__container">
+            <div class="legal-content__layout">
 
-                        <div class="pricing-badge">
-                            <div class="badge-icon">💰</div>
-                            <div class="badge-content">
-                                <h4>Tarification transparente</h4>
-                                <p>Pas de coûts cachés, pas d'engagement long terme pour débuter.</p>
+                <aside class="legal-sidebar">
+                    <div class="legal-sidebar__sticky">
+                        <div class="legal-toc">
+                            <h3 class="legal-toc__title">Sommaire</h3>
+                            <nav class="legal-toc__nav">
+                                <ul class="legal-toc__list">
+                                    <li class="legal-toc__item">
+                                        <a href="#introduction" class="legal-toc__link">Introduction</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#vendeur" class="legal-toc__link">Informations vendeur</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#offres" class="legal-toc__link">Offres et services</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#commande" class="legal-toc__link">Processus de commande</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#prix" class="legal-toc__link">Prix et tarification</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#paiement" class="legal-toc__link">Modalités de paiement</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#livraison" class="legal-toc__link">Livraison du service</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#retractation" class="legal-toc__link">Droit de rétractation</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#garanties" class="legal-toc__link">Garanties</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#resiliation" class="legal-toc__link">Résiliation</a>
+                                    </li>
+                                    <li class="legal-toc__item">
+                                        <a href="#litige" class="legal-toc__link">Règlement des litiges</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="legal-badge">
+                            <div class="legal-badge__icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                            </div>
+                            <div class="legal-badge__content">
+                                <h4 class="legal-badge__title">Paiements sécurisés</h4>
+                                <p class="legal-badge__description">
+                                    Tous nos paiements sont sécurisés via Stripe, certifié PCI DSS Level 1.
+                                </p>
                             </div>
                         </div>
 
-                        <div class="sidebar-cta">
-                            <h4>Questions commerciales</h4>
-                            <p>Notre équipe commerciale est à votre écoute</p>
-                            <a href="mailto:sales@errorexplorer.com" class="btn btn-primary btn-sm">
-                                <span>Nous contacter</span>
+                        <div class="legal-cta-sidebar">
+                            <h4 class="legal-cta-sidebar__title">Questions commerciales</h4>
+                            <p class="legal-cta-sidebar__description">
+                                Notre équipe commerciale est à votre écoute pour répondre à vos questions
+                            </p>
+                            <a href="mailto:error.explorer.contact@gmail.com" class="legal-cta-sidebar__button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <span>Contact commercial</span>
                             </a>
                         </div>
                     </div>
@@ -78,411 +143,650 @@
 
                 <main class="legal-main">
                     <article class="legal-article">
-                        <section id="preambule" class="legal-section">
-                            <h2>Préambule</h2>
-                            <p>
-                                Les présentes Conditions Générales de Vente (ci-après "CGV") s'appliquent à tous les
-                                achats de services effectués sur la plateforme Error Explorer. Elles complètent nos
-                                Conditions Générales d'Utilisation et définissent les modalités commerciales de nos
-                                offres d'abonnement.
-                            </p>
-                            <p>
-                                Toute commande implique l'acceptation pleine et entière des présentes CGV.
-                                Ces conditions prévalent sur tout autre document commercial.
-                            </p>
-                        </section>
 
-                        <section id="definitions" class="legal-section">
-                            <h2>1. Définitions</h2>
-                            <div class="definitions-list">
-                                <div class="definition-item">
-                                    <h3>"Vendeur"</h3>
-                                    <p>Désigne Error Explorer SAS, société éditrice de la plateforme de monitoring d'erreurs.</p>
-                                </div>
-                                <div class="definition-item">
-                                    <h3>"Client" ou "Acheteur"</h3>
-                                    <p>Désigne toute personne physique ou morale effectuant un achat sur la plateforme.</p>
-                                </div>
-                                <div class="definition-item">
-                                    <h3>"Service"</h3>
-                                    <p>Désigne l'ensemble des fonctionnalités de monitoring d'erreurs fournies selon le plan d'abonnement choisi.</p>
-                                </div>
-                                <div class="definition-item">
-                                    <h3>"Abonnement"</h3>
-                                    <p>Désigne le contrat de fourniture de service à durée déterminée ou indéterminée selon la formule choisie.</p>
-                                </div>
-                                <div class="definition-item">
-                                    <h3>"Commande"</h3>
-                                    <p>Désigne l'acte par lequel le Client demande l'activation d'un abonnement au Service.</p>
-                                </div>
+                        <section id="introduction" class="legal-section legal-section--introduction">
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">Introduction</h2>
+                                <div class="legal-section__decorator"></div>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__lead">
+                                    Les présentes Conditions Générales de Vente (CGV) régissent les relations
+                                    commerciales entre Error Explorer et ses clients pour l'achat de services
+                                    de monitoring d'erreurs.
+                                </p>
+                                <p>
+                                    Ces conditions s'appliquent à tous les achats effectués sur notre plateforme
+                                    et complètent nos Conditions Générales d'Utilisation. Elles prévalent sur
+                                    tout autre document commercial sauf accord écrit contraire.
+                                </p>
                             </div>
                         </section>
 
                         <section id="vendeur" class="legal-section">
-                            <h2>2. Informations sur le vendeur</h2>
-                            <div class="company-info">
-                                <h3>Error Explorer SAS</h3>
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <h4>Siège social</h4>
-                                        <p>123 Avenue de la Technologie<br>75001 Paris, France</p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">1. Informations sur le vendeur</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <div class="company-info">
+                                    <div class="company-info__header">
+                                        <h3 class="company-info__name">Error Explorer</h3>
+                                        <div class="company-info__badge">Entreprise</div>
                                     </div>
-                                    <div class="info-item">
-                                        <h4>SIRET</h4>
-                                        <p>123 456 789 00012</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>TVA intracommunautaire</h4>
-                                        <p>FR12345678901</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>Capital social</h4>
-                                        <p>100 000 €</p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>Email commercial</h4>
-                                        <p><a href="mailto:sales@errorexplorer.com">sales@errorexplorer.com</a></p>
-                                    </div>
-                                    <div class="info-item">
-                                        <h4>Téléphone</h4>
-                                        <p>+33 1 23 45 67 89</p>
+                                    <div class="company-info__grid">
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                                    <circle cx="12" cy="10" r="3"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Siège social</h4>
+                                                <p class="company-info__item-value">4, rue Jean Nogues<br>33110 Le Bouscat, France</p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                    <polyline points="22,6 12,13 2,6"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Email commercial</h4>
+                                                <p class="company-info__item-value">
+                                                    <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">Téléphone</h4>
+                                                <p class="company-info__item-value">+33 6 37 50 50 98</p>
+                                            </div>
+                                        </div>
+                                        <div class="company-info__item">
+                                            <div class="company-info__item-icon">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="company-info__item-title">SIRET</h4>
+                                                <p class="company-info__item-value">83956423400038</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
                         <section id="offres" class="legal-section">
-                            <h2>3. Offres et services</h2>
-                            <p>Error Explorer propose plusieurs formules d'abonnement adaptées aux besoins de chaque type d'utilisateur :</p>
-                            <p class="service-note">
-                                Les fonctionnalités et limites de chaque plan sont détaillées sur notre page tarifs
-                                et peuvent évoluer. Les améliorations sont généralement incluses sans surcoût.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">2. Offres et services</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    Error Explorer propose plusieurs formules d'abonnement adaptées aux besoins
+                                    de chaque type d'utilisateur (liste non exhaustive) :
+                                </p>
+
+                                <div class="usage-purposes">
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Plan Gratuit</h3>
+                                            <p class="usage-purpose__description">
+                                                Idéal pour découvrir notre service avec des fonctionnalités de base
+                                                et un volume d'erreurs limité pour les petits projets.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Plan Pro</h3>
+                                            <p class="usage-purpose__description">
+                                                Pour les équipes professionnelles avec alertes avancées,
+                                                intégrations et support prioritaire.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="9" cy="7" r="4"/>
+                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Plan Enterprise</h3>
+                                            <p class="usage-purpose__description">
+                                                Solution sur mesure pour les grandes entreprises avec SLA garantis,
+                                                support dédié et fonctionnalités avancées.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p>
+                                    Les fonctionnalités détaillées de chaque plan sont disponibles sur notre
+                                    <a href="{{ path('pricing') }}">page tarifs</a>. Les améliorations du service
+                                    sont généralement incluses sans surcoût.
+                                </p>
+                            </div>
                         </section>
 
                         <section id="commande" class="legal-section">
-                            <h2>4. Processus de commande</h2>
-                            <h3>4.1 Sélection de l'offre</h3>
-                            <p>
-                                Le Client choisit son plan d'abonnement sur notre site web ou via notre équipe commerciale
-                                pour les plans Enterprise. Chaque offre est clairement décrite avec ses fonctionnalités et limitations.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">3. Processus de commande</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <p class="legal-section__intro">
+                                    La commande s'effectue entièrement en ligne via notre interface sécurisée :
+                                </p>
 
-                            <h3>4.2 Validation de la commande</h3>
-                            <div class="order-steps">
-                                <div class="step-item">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">
-                                        <h4>Sélection du plan</h4>
-                                        <p>Choix du plan d'abonnement et de la périodicité (mensuel/annuel)</p>
+                                <div class="usage-purposes">
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">1. Sélection du plan</h3>
+                                            <p class="usage-purpose__description">
+                                                Choisissez le plan d'abonnement qui correspond à vos besoins
+                                                et à la périodicité souhaitée (mensuel ou annuel).
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">
-                                        <h4>Informations de facturation</h4>
-                                        <p>Saisie des coordonnées de facturation et informations de paiement</p>
+
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                                <line x1="1" y1="10" x2="23" y2="10"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">2. Informations de facturation</h3>
+                                            <p class="usage-purpose__description">
+                                                Saisissez vos coordonnées de facturation et informations
+                                                de paiement via notre interface sécurisée.
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">
-                                        <h4>Confirmation</h4>
-                                        <p>Vérification et validation définitive de la commande</p>
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-number">4</div>
-                                    <div class="step-content">
-                                        <h4>Activation</h4>
-                                        <p>Activation immédiate du service après validation du paiement</p>
+
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                                <polyline points="22,4 12,14.01 9,11.01"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">3. Confirmation et activation</h3>
+                                            <p class="usage-purpose__description">
+                                                Validation de la commande et activation immédiate du service
+                                                avec envoi des informations d'accès par email.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <h3>4.3 Confirmation de commande</h3>
-                            <p>
-                                Une confirmation de commande est envoyée par email avec les détails de l'abonnement,
-                                la facture et les informations d'accès au service.
-                            </p>
                         </section>
 
                         <section id="prix" class="legal-section">
-                            <h2>5. Prix et tarification</h2>
-                            <h3>5.1 Prix affichés</h3>
-                            <p>
-                                Tous les prix sont affichés en euros (EUR) et s'entendent toutes taxes comprises (TTC)
-                                pour les clients particuliers français, et hors taxes (HT) pour les clients professionnels
-                                avec numéro de TVA valide.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">4. Prix et tarification</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <h3>4.1 Prix affichés</h3>
+                                <p>
+                                    Tous les prix sont affichés en euros (EUR) et s'entendent toutes taxes comprises (TTC)
+                                    pour les clients.
+                                </p>
 
-                            <h3>5.2 TVA</h3>
-                            <p>
-                                La TVA applicable est celle en vigueur au moment de la commande selon la localisation
-                                du Client et la réglementation européenne :
-                            </p>
-                            <ul class="legal-list">
-                                <li><strong>France :</strong> TVA à 20%</li>
-                                <li><strong>Union Européenne (B2B) :</strong> Auto-liquidation de la TVA</li>
-                                <li><strong>Union Européenne (B2C) :</strong> TVA du pays de résidence</li>
-                                <li><strong>Hors UE :</strong> Exonération de TVA française</li>
-                            </ul>
+                                <h3>4.2 TVA applicable</h3>
+                                <div class="data-categories">
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                                    <circle cx="12" cy="10" r="3"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">France</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Particuliers :</strong> TVA à 20% incluse
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Professionnels :</strong> TVA à 20% incluse
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                            <h3>5.3 Évolution des prix</h3>
-                            <p>
-                                Les prix peuvent être modifiés à tout moment. Pour les abonnements en cours,
-                                toute augmentation sera notifiée 30 jours à l'avance et ne s'appliquera qu'au
-                                renouvellement suivant.
-                            </p>
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                    <path d="M2 12h20"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Union Européenne</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>B2C :</strong> TVA du pays de résidence
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>B2B :</strong> Auto-liquidation de la TVA
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                            <h3>5.4 Promotions</h3>
-                            <p>
-                                Les offres promotionnelles sont valables dans la limite des stocks disponibles
-                                et selon les conditions spécifiques de chaque promotion.
-                            </p>
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 3v18h18"/>
+                                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Hors UE</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Tous clients :</strong> Exonération de TVA française
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Taxes locales :</strong> À la charge du client
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <h3>4.3 Évolution des prix</h3>
+                                <p>
+                                    Les prix peuvent être modifiés à tout moment. Pour les abonnements en cours,
+                                    toute augmentation sera notifiée 30 jours à l'avance par email et ne s'appliquera
+                                    qu'au renouvellement suivant.
+                                </p>
+                            </div>
                         </section>
 
                         <section id="paiement" class="legal-section">
-                            <h2>6. Modalités de paiement</h2>
-                            <h3>6.1 Moyens de paiement acceptés</h3>
-                            <div class="payment-methods">
-                                <div class="payment-method">
-                                    <h4>💳 Cartes bancaires</h4>
-                                    <p>Visa, Mastercard, American Express (via Stripe sécurisé)</p>
-                                </div>
-                                <div class="payment-method">
-                                    <h4>🏦 Virement bancaire</h4>
-                                    <p>Pour les plans Enterprise sur facturation (paiement sous 30 jours)</p>
-                                </div>
-                                <div class="payment-method">
-                                    <h4>💰 Prélèvement SEPA</h4>
-                                    <p>Pour les abonnements annuels (sur demande)</p>
-                                </div>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">5. Modalités de paiement</h2>
                             </div>
+                            <div class="legal-section__content">
+                                <h3>5.1 Moyens de paiement acceptés</h3>
+                                <div class="security-measures">
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                                <line x1="1" y1="10" x2="23" y2="10"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Cartes bancaires</h3>
+                                            <p class="security-measure__description">
+                                                Visa, Mastercard, American Express via notre partenaire sécurisé Stripe.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <h3>6.2 Périodicité de facturation</h3>
-                            <ul class="legal-list">
-                                <li><strong>Mensuel :</strong> Prélèvement automatique chaque mois</li>
-                                <li><strong>Annuel :</strong> Prélèvement automatique chaque année (avec remise)</li>
-                                <li><strong>Enterprise :</strong> Facturation selon accord commercial</li>
-                            </ul>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                                <polyline points="9,22 9,12 15,12 15,22"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Virement bancaire</h3>
+                                            <p class="security-measure__description">
+                                                Pour les plans Enterprise sur facturation avec paiement sous 30 jours.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <h3>6.3 Échec de paiement</h3>
-                            <p>
-                                En cas d'échec de paiement, le service est suspendu après un délai de grâce de 3 jours.
-                                Des tentatives de prélèvement automatique sont effectuées. Si le paiement n'est pas
-                                régularisé sous 7 jours, l'abonnement peut être résilié.
-                            </p>
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                                <polyline points="22,4 12,14.01 9,11.01"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Prélèvement SEPA</h3>
+                                            <p class="security-measure__description">
+                                                Disponible pour les abonnements annuels sur demande spécifique.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <h3>6.4 Sécurité des paiements</h3>
-                            <p>
-                                Tous les paiements sont sécurisés via notre partenaire Stripe, certifié PCI DSS Level 1.
-                                Aucune donnée bancaire n'est stockée sur nos serveurs.
-                            </p>
+                                <h3>5.2 Périodicité et sécurité</h3>
+                                <p>
+                                    Le paiement s'effectue par prélèvement automatique selon la périodicité choisie
+                                    (mensuel ou annuel). Tous les paiements sont sécurisés via Stripe, certifié PCI DSS Level 1.
+                                    Aucune donnée bancaire n'est stockée sur nos serveurs.
+                                </p>
+
+                                <h3>5.3 Échec de paiement</h3>
+                                <p>
+                                    En cas d'échec de paiement, le service est suspendu après un délai de grâce de 3 jours.
+                                    Des tentatives de prélèvement automatique sont effectuées. Si le paiement n'est pas
+                                    régularisé sous 7 jours, l'abonnement peut être résilié.
+                                </p>
+                            </div>
                         </section>
 
                         <section id="livraison" class="legal-section">
-                            <h2>7. Livraison du service</h2>
-                            <h3>7.1 Activation immédiate</h3>
-                            <p>
-                                Le service est activé immédiatement après validation du paiement. Les identifiants
-                                d'accès sont envoyés par email dans les minutes suivant la commande.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">6. Livraison du service</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <div class="usage-purposes">
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Activation immédiate</h3>
+                                            <p class="usage-purpose__description">
+                                                Le service est activé immédiatement après validation du paiement.
+                                                Vous recevez vos identifiants d'accès par email dans les minutes suivantes.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <h3>7.2 Accès au service</h3>
-                            <p>
-                                L'accès au service s'effectue via notre interface web sécurisée et nos API.
-                                La documentation d'intégration est fournie avec l'activation du compte.
-                            </p>
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                                <circle cx="12" cy="16" r="1"/>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Accès sécurisé</h3>
+                                            <p class="usage-purpose__description">
+                                                L'accès au service s'effectue via notre interface web sécurisée
+                                                et nos API. La documentation d'intégration est fournie avec l'activation.
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <h3>7.3 Support à l'intégration</h3>
-                            <p>
-                                Un support à l'intégration est inclus selon le plan choisi :
-                            </p>
-                            <ul class="legal-list">
-                                <li><strong>Plan Pro :</strong> Documentation et support email</li>
-                                <li><strong>Plan Enterprise :</strong> Accompagnement personnalisé et support dédié</li>
-                            </ul>
+                                    <div class="usage-purpose">
+                                        <div class="usage-purpose__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="usage-purpose__content">
+                                            <h3 class="usage-purpose__title">Support à l'intégration</h3>
+                                            <p class="usage-purpose__description">
+                                                Support inclus selon votre plan : documentation et support email pour Pro,
+                                                accompagnement personnalisé pour Enterprise.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </section>
 
                         <section id="retractation" class="legal-section">
-                            <h2>8. Droit de rétractation</h2>
-                            <h3>8.1 Délai de rétractation</h3>
-                            <p>
-                                Conformément au Code de la consommation, vous disposez d'un délai de 14 jours
-                                pour exercer votre droit de rétractation sans avoir à justifier de motifs ni à payer de pénalités.
-                            </p>
-
-                            <h3>8.2 Point de départ du délai</h3>
-                            <p>
-                                Le délai de rétractation court à compter de la date de souscription à l'abonnement.
-                            </p>
-
-                            <h3>8.3 Exercice du droit</h3>
-                            <p>
-                                Pour exercer votre droit de rétractation, vous devez nous notifier votre décision
-                                par email à <a href="mailto:support@errorexplorer.com">support@errorexplorer.com</a>
-                                ou via votre espace client.
-                            </p>
-
-                            <h3>8.4 Exception</h3>
-                            <p>
-                                Si vous avez expressément demandé que la prestation commence avant la fin
-                                du délai de rétractation, ce droit ne s'applique que pour la partie non encore fournie.
-                            </p>
-                        </section>
-
-                        <section id="remboursement" class="legal-section">
-                            <h2>9. Remboursement</h2>
-                            <h3>9.1 Remboursement en cas de rétractation</h3>
-                            <p>
-                                En cas d'exercice du droit de rétractation, nous vous rembourserons tous les paiements
-                                reçus dans un délai de 14 jours à compter de la notification de rétractation.
-                            </p>
-
-                            <h3>9.2 Modalités de remboursement</h3>
-                            <p>
-                                Le remboursement s'effectue par le même moyen de paiement que celui utilisé
-                                pour la transaction initiale, sauf accord exprès contraire.
-                            </p>
-
-                            <h3>9.3 Remboursement partiel</h3>
-                            <p>
-                                Si le service a été partiellement consommé, le remboursement sera calculé
-                                au prorata de la période non utilisée.
-                            </p>
-
-                            <h3>9.4 Garantie satisfait ou remboursé</h3>
-                            <p>
-                                Nous offrons une garantie satisfait ou remboursé de 30 jours sur tous nos plans payants.
-                                Si vous n'êtes pas satisfait du service, contactez-nous pour un remboursement intégral.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">7. Droit de rétractation</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <div class="exercise-rights">
+                                    <div class="exercise-rights__header">
+                                        <h3 class="exercise-rights__title">Délai de 14 jours</h3>
+                                    </div>
+                                    <div class="exercise-rights__content">
+                                        <p>
+                                            Conformément au Code de la consommation, vous disposez d'un délai de 14 jours
+                                            pour exercer votre droit de rétractation sans justification ni pénalités.
+                                        </p>
+                                        <ul class="exercise-rights__list">
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                                </svg>
+                                                Le délai court à compter de la souscription
+                                            </li>
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                    <polyline points="22,6 12,13 2,6"/>
+                                                </svg>
+                                                Notification par email à <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a>
+                                            </li>
+                                            <li class="exercise-rights__item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 12l2 2 4-4"/>
+                                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                                </svg>
+                                                Ou depuis votre espace client
+                                            </li>
+                                        </ul>
+                                        <p class="exercise-rights__note">
+                                            Si vous avez expressément demandé que la prestation commence avant la fin
+                                            du délai, ce droit ne s'applique que pour la partie non encore fournie.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </section>
 
                         <section id="garanties" class="legal-section">
-                            <h2>10. Garanties</h2>
-                            <h3>10.1 Garantie de disponibilité</h3>
-                            <div class="sla-guarantees">
-                                <div class="sla-item">
-                                    <h4>Plan Pro</h4>
-                                    <p>Disponibilité garantie de 99,5%</p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">8. Garanties et niveaux de service</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <h3>8.1 Garanties de disponibilité</h3>
+                                <div class="data-categories">
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 12l2 2 4-4"/>
+                                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Plan Pro</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Disponibilité :</strong> 99,5% garantie
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Support :</strong> Email sous 4h ouvrées
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="data-category">
+                                        <div class="data-category__header">
+                                            <div class="data-category__icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                                    <circle cx="9" cy="7" r="4"/>
+                                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="data-category__title">Plan Enterprise</h3>
+                                        </div>
+                                        <ul class="data-category__list">
+                                            <li class="data-category__item">
+                                                <strong>Disponibilité :</strong> 99,9% avec SLA contractuel
+                                            </li>
+                                            <li class="data-category__item">
+                                                <strong>Support :</strong> Prioritaire sous 1h
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div class="sla-item">
-                                    <h4>Plan Enterprise</h4>
-                                    <p>Disponibilité garantie de 99,9% avec SLA contractuel</p>
+
+                                <h3>8.2 Garantie satisfait ou remboursé</h3>
+                                <div class="security-measures">
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">30 jours satisfait ou remboursé</h3>
+                                            <p class="security-measure__description">
+                                                Si vous n'êtes pas satisfait de notre service, nous vous remboursons
+                                                intégralement sous 30 jours.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="security-measure">
+                                        <div class="security-measure__icon">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                                <polyline points="22,4 12,14.01 9,11.01"/>
+                                            </svg>
+                                        </div>
+                                        <div class="security-measure__content">
+                                            <h3 class="security-measure__title">Compensations SLA</h3>
+                                            <p class="security-measure__description">
+                                                Crédits automatiques en cas de non-respect des niveaux de service garantis.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <h3>10.2 Compensation en cas d'indisponibilité</h3>
-                            <p>
-                                En cas de non-respect des niveaux de service garantis, des crédits de service
-                                sont accordés selon notre politique SLA :
-                            </p>
-                            <ul class="legal-list">
-                                <li>Indisponibilité > 1h : crédit de 5% du montant mensuel</li>
-                                <li>Indisponibilité > 4h : crédit de 15% du montant mensuel</li>
-                                <li>Indisponibilité > 12h : crédit de 50% du montant mensuel</li>
-                            </ul>
-
-                            <h3>10.3 Exclusions</h3>
-                            <p>Les garanties ne s'appliquent pas en cas de :</p>
-                            <ul class="legal-list">
-                                <li>Maintenance programmée (notifiée 48h à l'avance)</li>
-                                <li>Force majeure ou cas fortuit</li>
-                                <li>Défaillance imputable au Client ou à un tiers</li>
-                                <li>Utilisation non conforme du service</li>
-                            </ul>
-                        </section>
-
-                        <section id="facturation" class="legal-section">
-                            <h2>11. Facturation</h2>
-                            <h3>11.1 Émission des factures</h3>
-                            <p>
-                                Les factures sont émises automatiquement et envoyées par email à chaque échéance.
-                                Elles sont également disponibles dans votre espace client.
-                            </p>
-
-                            <h3>11.2 Informations de facturation</h3>
-                            <p>
-                                Il est de votre responsabilité de maintenir à jour vos informations de facturation.
-                                Toute modification doit être effectuée avant la prochaine échéance.
-                            </p>
-
-                            <h3>11.3 Contestation</h3>
-                            <p>
-                                Toute contestation de facture doit être effectuée dans un délai de 30 jours
-                                suivant l'émission de la facture.
-                            </p>
-                        </section>
-
-                        <section id="modification" class="legal-section">
-                            <h2>12. Modification d'abonnement</h2>
-                            <h3>12.1 Changement de plan</h3>
-                            <p>
-                                Vous pouvez modifier votre plan d'abonnement à tout moment depuis votre espace client :
-                            </p>
-                            <ul class="legal-list">
-                                <li><strong>Upgrade :</strong> Prise d'effet immédiate avec facturation prorata</li>
-                                <li><strong>Downgrade :</strong> Prise d'effet au prochain cycle de facturation</li>
-                            </ul>
-
-                            <h3>12.2 Changement de périodicité</h3>
-                            <p>
-                                Le passage d'un abonnement mensuel à annuel (ou inversement) prend effet
-                                à la prochaine échéance de facturation.
-                            </p>
                         </section>
 
                         <section id="resiliation" class="legal-section">
-                            <h2>13. Résiliation</h2>
-                            <h3>13.1 Résiliation par le Client</h3>
-                            <p>
-                                L'abonnement peut être résilié à tout moment sans préavis depuis l'espace client.
-                                La résiliation prend effet à la fin de la période de facturation en cours.
-                            </p>
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">9. Résiliation</h2>
+                            </div>
+                            <div class="legal-section__content">
+                                <h3>9.1 Résiliation par le client</h3>
+                                <p>
+                                    L'abonnement peut être résilié à tout moment sans préavis depuis votre espace client.
+                                    La résiliation prend effet à la fin de la période de facturation en cours.
+                                </p>
 
-                            <h3>13.2 Résiliation par Error Explorer</h3>
-                            <p>
-                                Nous nous réservons le droit de résilier un abonnement en cas de :
-                            </p>
-                            <ul class="legal-list">
-                                <li>Non-paiement après mise en demeure</li>
-                                <li>Violation des conditions d'utilisation</li>
-                                <li>Usage frauduleux ou abusif du service</li>
-                            </ul>
+                                <h3>9.2 Résiliation par Error Explorer</h3>
+                                <p>Nous pouvons résilier un abonnement en cas de :</p>
+                                <ul>
+                                    <li>Non-paiement après mise en demeure</li>
+                                    <li>Violation des conditions d'utilisation</li>
+                                    <li>Usage frauduleux ou abusif du service</li>
+                                </ul>
 
-                            <h3>13.3 Conséquences de la résiliation</h3>
-                            <p>
-                                À la résiliation, l'accès au service est maintenu jusqu'à la fin de la période payée,
-                                puis l'account passe en mode lecture seule pendant 30 jours avant suppression définitive.
-                            </p>
+                                <h3>9.3 Conséquences</h3>
+                                <p>
+                                    À la résiliation, l'accès au service est maintenu jusqu'à la fin de la période payée,
+                                    puis le compte passe en mode lecture seule pendant 30 jours avant suppression définitive.
+                                </p>
+                            </div>
                         </section>
 
-                        <section id="litige" class="legal-section">
-                            <h2>14. Règlement des litiges</h2>
-                            <h3>14.1 Réclamations</h3>
-                            <p>
-                                Pour toute réclamation, contactez notre service client à
-                                <a href="mailto:support@errorexplorer.com">support@errorexplorer.com</a>.
-                                Nous nous engageons à répondre sous 48h ouvrées.
-                            </p>
-
-                            <h3>14.2 Médiation</h3>
-                            <p>
-                                En cas de litige non résolu à l'amiable, vous pouvez recourir à la médiation
-                                de la consommation. Notre médiateur est :
-                            </p>
-                            <div class="mediator-info">
-                                <p><strong>Médiateur du e-commerce de la FEVAD</strong></p>
-                                <p>60 rue la Boétie - 75008 Paris</p>
-                                <p><a href="http://www.mediateurfevad.fr">www.mediateurfevad.fr</a></p>
+                        <section id="litige" class="legal-section legal-section--contact">
+                            <div class="legal-section__header">
+                                <h2 class="legal-section__title">10. Règlement des litiges</h2>
                             </div>
+                            <div class="legal-section__content">
+                                <div class="contact-methods">
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                <polyline points="22,6 12,13 2,6"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Réclamations</h3>
+                                            <p class="contact-method__value">
+                                                <a href="mailto:error.explorer.contact@gmail.com">error.explorer.contact@gmail.com</a><br>
+                                                Réponse sous 48h ouvrées
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <h3>14.3 Droit applicable</h3>
-                            <p>
-                                Les présentes CGV sont régies par le droit français. En cas de litige,
-                                les tribunaux français seront seuls compétents.
-                            </p>
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 12l2 2 4-4"/>
+                                                <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Médiation</h3>
+                                            <p class="contact-method__value">
+                                                Médiateur du e-commerce de la FEVAD<br>
+                                                <a href="http://www.mediateurfevad.fr">www.mediateurfevad.fr</a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-method">
+                                        <div class="contact-method__icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                            </svg>
+                                        </div>
+                                        <div class="contact-method__content">
+                                            <h3 class="contact-method__title">Droit applicable</h3>
+                                            <p class="contact-method__value">
+                                                Droit français<br>
+                                                Tribunaux de Bordeaux compétents
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </section>
                     </article>
                 </main>
@@ -491,26 +795,66 @@
     </section>
 
     <section class="legal-cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Prêt à commencer ?</h2>
-                <p>
-                    Choisissez le plan qui correspond à vos besoins et commencez à monitorer
-                    vos erreurs dès aujourd'hui avec notre garantie satisfait ou remboursé.
-                </p>
-
-                <div class="cta-actions">
-                    <a href="{{ path('pricing') }}" class="btn btn-primary">
-                        <span>Voir nos tarifs</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
+        <div class="legal-cta__container">
+            <div class="legal-cta__content">
+                <div class="legal-cta__header">
+                    <div class="legal-cta__icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                         </svg>
+                    </div>
+                    <h2 class="legal-cta__title">Prêt à commencer ?</h2>
+                    <p class="legal-cta__description">
+                        Choisissez le plan qui correspond à vos besoins et commencez à monitorer
+                        vos erreurs dès aujourd'hui avec notre garantie satisfait ou remboursé.
+                    </p>
+                </div>
+
+                <div class="legal-cta__actions">
+                    <a href="{{ path('pricing') }}" class="legal-cta__button legal-cta__button--primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        <span>Voir nos tarifs</span>
                     </a>
-                    <a href="mailto:sales@errorexplorer.com" class="btn btn-secondary">
+                    <a href="mailto:error.explorer.contact@gmail.com" class="legal-cta__button legal-cta__button--secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
                         <span>Contact commercial</span>
                     </a>
                 </div>
+
+                <div class="legal-cta__features">
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                        </svg>
+                        <span>Garantie 30 jours</span>
+                    </div>
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        <span>Paiements sécurisés</span>
+                    </div>
+                    <div class="legal-cta__feature">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        <span>Sans engagement</span>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="legal-cta__background-effects">
+            <div class="legal-cta__background-pattern"></div>
         </div>
     </section>
 {% endblock %}
