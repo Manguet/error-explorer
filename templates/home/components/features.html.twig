@@ -1,47 +1,142 @@
 <section class="features" id="features">
-    <div class="container">
-        <div class="section-title">
-            <h2>Pourquoi choisir Error Explorer ?</h2>
-            <p>Une solution complète pour une expérience développeur optimale</p>
+    <div class="features__container">
+        <div class="features__header">
+            <h2 class="features__title">Pourquoi choisir Error Explorer ?</h2>
+            <p class="features__description">Une solution complète pour une expérience développeur optimale</p>
         </div>
 
-        <div class="feature-section-v2">
-            <div class="feature-content-v2">
-                <h3>Détection instantanée</h3>
-                <p>Recevez des alertes en temps réel dès qu'une erreur survient dans votre application. Intégration en moins de 5 minutes.</p>
-                <ul class="feature-benefits-v2">
-                    <li><span class="check-icon-v2">✓</span> Alertes en moins de 30 secondes</li>
-                    <li><span class="check-icon-v2">✓</span> Dashboard temps réel</li>
-                    <li><span class="check-icon-v2">✓</span> Intégrations Slack/Email</li>
-                </ul>
+        <div class="features__list">
+            <div class="features__item features__item--detection">
+                <div class="features__content">
+                    <div class="features__content-header">
+                        <div class="features__icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </div>
+                        <h3 class="features__content-title">Détection instantanée</h3>
+                    </div>
+
+                    <p class="features__content-description">
+                        Recevez des alertes en temps réel dès qu'une erreur survient dans votre application.
+                        Intégration en moins de 5 minutes.
+                    </p>
+
+                    <ul class="features__benefits">
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Alertes en moins de 30 secondes</span>
+                        </li>
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Dashboard temps réel</span>
+                        </li>
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Intégrations Slack/Email</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="features__visual">
+                    <div class="features__mock-interface">
+                        <div class="features__mock-header">
+                            <div class="features__mock-dots">
+                                <span class="features__mock-dot features__mock-dot--red"></span>
+                                <span class="features__mock-dot features__mock-dot--yellow"></span>
+                                <span class="features__mock-dot features__mock-dot--green"></span>
+                            </div>
+                            <span class="features__mock-title">Error Alert</span>
+                        </div>
+                        <div class="features__mock-content">
+                            <div class="features__mock-line features__mock-line--alert" data-delay="0">
+                                🚨 <span class="features__mock-highlight">Nouvelle erreur détectée</span>
+                            </div>
+                            <div class="features__mock-line" data-delay="500">
+                                📍 UserController.php:45
+                            </div>
+                            <div class="features__mock-line" data-delay="1000">
+                                ⏰ Il y a 12 secondes
+                            </div>
+                            <div class="features__mock-line features__mock-line--success" data-delay="1500">
+                                ✅ <span class="features__mock-success">Équipe notifiée</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="feature-visual-v2">
-                <div class="mock-interface-v2">
-                    <div class="mock-line-v2">🚨 <span class="highlight-v2">Nouvelle erreur détectée</span></div>
-                    <div class="mock-line-v2">📍 UserController.php:45</div>
-                    <div class="mock-line-v2">⏰ Il y a 12 secondes</div>
-                    <div class="mock-line-v2">✅ <span class="success-v2">Équipe notifiée</span></div>
+
+            <div class="features__item features__item--grouping">
+                <div class="features__content">
+                    <div class="features__content-header">
+                        <div class="features__icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 19c-5 0-8-3-8-8s3-8 8-8 8 3 8 8-3 8-8 8z"/>
+                                <path d="M17 19c2.5 0 4.5-2 4.5-4.5S19.5 10 17 10s-4.5 2-4.5 4.5S14.5 19 17 19z"/>
+                                <path d="M12 12h.01"/>
+                                <path d="M12 8h.01"/>
+                                <path d="M12 16h.01"/>
+                            </svg>
+                        </div>
+                        <h3 class="features__content-title">Groupement intelligent</h3>
+                    </div>
+
+                    <p class="features__content-description">
+                        Notre IA groupe automatiquement les erreurs similaires pour éviter le spam
+                        et vous concentrer sur l'essentiel.
+                    </p>
+
+                    <ul class="features__benefits">
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Code context automatique</span>
+                        </li>
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Suggestions de fix</span>
+                        </li>
+                        <li class="features__benefit">
+                            <span class="features__benefit-icon">✓</span>
+                            <span class="features__benefit-text">Historique des erreurs</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="features__visual">
+                    <div class="features__mock-interface">
+                        <div class="features__mock-header">
+                            <div class="features__mock-dots">
+                                <span class="features__mock-dot features__mock-dot--red"></span>
+                                <span class="features__mock-dot features__mock-dot--yellow"></span>
+                                <span class="features__mock-dot features__mock-dot--green"></span>
+                            </div>
+                            <span class="features__mock-title">Code Analysis</span>
+                        </div>
+                        <div class="features__mock-content">
+                            <div class="features__mock-line" data-delay="0">
+                                <span class="features__mock-highlight">#0</span> /var/www/src/Controller/UserController.php(45)
+                            </div>
+                            <div class="features__mock-line features__mock-line--error" data-delay="500">
+                                <span class="features__mock-highlight">#1</span> User->getEmaill() // Typo détectée!
+                            </div>
+                            <div class="features__mock-line features__mock-line--suggestion" data-delay="1000">
+                                💡 <span class="features__mock-success">Suggestion: getEmail()</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="feature-section-v2">
-            <div class="feature-content-v2">
-                <h3>Groupement intelligent</h3>
-                <p>Notre IA groupe automatiquement les erreurs similaires pour éviter le spam et vous concentrer sur l'essentiel.</p>
-                <ul class="feature-benefits-v2">
-                    <li><span class="check-icon-v2">✓</span> Code context automatique</li>
-                    <li><span class="check-icon-v2">✓</span> Suggestions de fix</li>
-                    <li><span class="check-icon-v2">✓</span> Historique des erreurs</li>
-                </ul>
-            </div>
-            <div class="feature-visual-v2">
-                <div class="mock-interface-v2">
-                    <div class="mock-line-v2"><span class="highlight-v2">#0</span> /var/www/src/Controller/UserController.php(45)</div>
-                    <div class="mock-line-v2"><span class="highlight-v2">#1</span> User->getEmaill() // Typo détectée!</div>
-                    <div class="mock-line-v2">💡 <span class="success-v2">Suggestion: getEmail()</span></div>
-                </div>
-            </div>
+    <div class="features__background-effects">
+        <div class="features__background-pattern"></div>
+        <div class="features__background-shapes">
+            <div class="features__shape features__shape--circle"></div>
+            <div class="features__shape features__shape--triangle"></div>
+            <div class="features__shape features__shape--square"></div>
         </div>
     </div>
 </section>

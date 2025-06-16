@@ -1,67 +1,88 @@
 <section class="pricing" id="pricing">
-    <div class="container">
-        <div class="section-title">
-            <h2>Tarifs transparents</h2>
-            <p>Choisissez le plan qui correspond à vos besoins</p>
+    <div class="pricing-bg"></div>
+
+    <div class="pricing__container">
+        <div class="pricing__header">
+            <div class="floating-elements">
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+                <div class="floating-element"></div>
+            </div>
+
+            <h2 class="pricing__title">Tarifs transparents</h2>
+            <p class="pricing__description">
+                Choisissez le plan qui correspond parfaitement à vos besoins.
+                Commencez gratuitement, évoluez sans limite.
+            </p>
         </div>
 
-        <div class="pricing-grid">
+        <div class="pricing__grid">
             {% for plan in plans %}
-                <div class="pricing-card {{ plan.isPopular ? 'popular' : '' }}">
-                    <div class="plan-header">
-                        <div class="plan-info">
-                            <h3 class="plan-name">{{ plan.name }}</h3>
-                            {% if plan.isPopular %}
-                                <div class="popular-badge">
-                                    <span class="badge-icon">⭐</span>
-                                    <span>Plus populaire</span>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="plan-price-container">
-                            <div class="plan-price">
-                                {% if plan.isFree %}
-                                    Gratuit
-                                {% else %}
-                                    {{ plan.priceMonthly|number_format(2, ',', ' ') }}€
-                                {% endif %}
-                            </div>
-                            {% if not plan.isFree %}
-                                <div class="plan-price-unit">par mois</div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    {% if plan.description %}
-                        <div class="plan-description">
-                            {{ plan.description }}
+                <div class="pricing__card {{ plan.isPopular ? 'pricing__card--popular' : '' }}" data-plan="{{ plan.slug }}">
+                    {% if plan.isPopular %}
+                        <div class="pricing__popular-badge">
+                            <span class="pricing__badge-text">Plus populaire</span>
                         </div>
                     {% endif %}
 
-                    <div class="plan-metrics">
-                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
-                            <div class="metric-value">
-                                {{ plan.maxProjectsLabel }}
-                            </div>
-                            <div class="metric-label">Projets</div>
+                    <div class="pricing__card-header">
+                        <div class="pricing__plan-info">
+                            <h3 class="pricing__plan-name">{{ plan.name }}</h3>
+                            {% if plan.description %}
+                                <p class="pricing__plan-description">{{ plan.description }}</p>
+                            {% endif %}
                         </div>
 
-                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
-                            <div class="metric-value">
-                                {{ plan.maxMonthlyErrorsLabel }}
+                        <div class="pricing__price-container">
+                            <div class="pricing__price">
+                                {% if plan.isFree %}
+                                    <span class="pricing__price-value pricing__price-value--free">Gratuit</span>
+                                {% else %}
+                                    <span class="pricing__price-currency">€</span>
+                                    <span class="pricing__price-value">{{ plan.priceMonthly|number_format(0, ',', ' ') }}</span>
+                                    <span class="pricing__price-unit">par mois</span>
+                                {% endif %}
                             </div>
-                            <div class="metric-label">Erreurs/mois</div>
+                        </div>
+                    </div>
+
+                    <div class="pricing__metrics">
+                        <div class="pricing__metric {{ plan.isPopular ? 'pricing__metric--highlighted' : '' }}">
+                            <div class="pricing__metric-value">{{ plan.maxProjectsLabel }}</div>
+                            <div class="pricing__metric-label">Projets</div>
+                            <div class="pricing__metric-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                            </div>
                         </div>
 
-                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
-                            <div class="metric-value">
-                                {{ plan.dataRetentionDays }}
+                        <div class="pricing__metric {{ plan.isPopular ? 'pricing__metric--highlighted' : '' }}">
+                            <div class="pricing__metric-value">{{ plan.maxMonthlyErrorsLabel }}</div>
+                            <div class="pricing__metric-label">Erreurs/mois</div>
+                            <div class="pricing__metric-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
                             </div>
-                            <div class="metric-label">Jours rétention</div>
                         </div>
 
-                        <div class="metric {{ plan.isPopular ? 'metric-highlighted' : '' }}">
-                            <div class="metric-value">
+                        <div class="pricing__metric {{ plan.isPopular ? 'pricing__metric--highlighted' : '' }}">
+                            <div class="pricing__metric-value">{{ plan.dataRetentionDays }}</div>
+                            <div class="pricing__metric-label">Jours rétention</div>
+                            <div class="pricing__metric-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1.06 1.56V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.56-1.06H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1.06-1.56V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.06 1.56 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.56 1.06H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.56 1.06z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="pricing__metric {{ plan.isPopular ? 'pricing__metric--highlighted' : '' }}">
+                            <div class="pricing__metric-value">
                                 {% if plan.hasPrioritySupport %}
                                     1h
                                 {% elseif plan.hasEmailAlerts %}
@@ -70,101 +91,96 @@
                                     24h
                                 {% endif %}
                             </div>
-                            <div class="metric-label">Support</div>
+                            <div class="pricing__metric-label">Support</div>
+                            <div class="pricing__metric-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h9l4 4-1-4z"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="plan-features">
-                        <div class="features-title">Fonctionnalités incluses :</div>
-                        <ul class="features-list">
-                            <li class="feature-item">
-                                <span class="feature-check">✓</span>
-                                <span>Dashboard temps réel</span>
+                    <div class="pricing__features">
+                        <div class="pricing__features-title">Fonctionnalités incluses</div>
+                        <ul class="pricing__features-list">
+                            <li class="pricing__feature">
+                                <span class="pricing__feature-check">✓</span>
+                                <span class="pricing__feature-text">Dashboard temps réel</span>
                             </li>
 
                             {% if plan.hasEmailAlerts %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Alertes email</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Alertes email</span>
                                 </li>
                             {% endif %}
 
                             {% if plan.hasSlackIntegration %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Intégration Slack</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Intégration Slack</span>
                                 </li>
                             {% endif %}
 
                             {% if plan.hasApiAccess %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Accès API complet</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Accès API complet</span>
                                 </li>
                             {% endif %}
 
                             {% if plan.hasAdvancedFilters %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Filtres avancés</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Filtres avancés</span>
                                 </li>
                             {% endif %}
 
                             {% if plan.hasCustomRetention %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Rétention personnalisée</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Rétention personnalisée</span>
                                 </li>
                             {% endif %}
 
                             {% if plan.hasPrioritySupport %}
-                                <li class="feature-item">
-                                    <span class="feature-check">✓</span>
-                                    <span>Support prioritaire</span>
+                                <li class="pricing__feature">
+                                    <span class="pricing__feature-check">✓</span>
+                                    <span class="pricing__feature-text">Support prioritaire</span>
                                 </li>
                             {% endif %}
                         </ul>
                     </div>
+
                     {% if not plan.isFree and plan.maxMonthlyErrors != -1 %}
-                        <div class="usage-indicator">
-                            <div class="usage-bar">
-                                <div class="usage-fill" style="width: 0%;"></div>
+                        <div class="pricing__usage">
+                            <div class="pricing__usage-header">
+                                <span class="pricing__usage-label">Capacité mensuelle</span>
+                                <span class="pricing__usage-value">{{ plan.maxMonthlyErrorsLabel }}</span>
                             </div>
-                            <div class="usage-text">
-                                <span>Capacité mensuelle</span>
-                                <span>{{ plan.maxMonthlyErrorsLabel }}</span>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if plan.yearlySavings and plan.yearlySavings > 0 %}
-                        <div class="yearly-savings">
-                            <div class="savings-badge">
-                                <span class="savings-icon">💰</span>
-                                <span>Économisez {{ plan.yearlySavings|number_format(0, ',', ' ') }}€ par an</span>
+                            <div class="pricing__usage-bar">
+                                <div class="pricing__usage-fill" data-width="0"></div>
                             </div>
                         </div>
                     {% endif %}
 
-                    <div class="plan-action">
+                    <div class="pricing__action">
                         <a href="{{ path('app_register') }}?plan={{ plan.slug }}"
-                           class="btn {{ plan.isPopular ? 'btn-primary' : 'btn-secondary' }} plan-cta-btn"
+                           class="pricing__cta {{ plan.isPopular ? 'pricing__cta--primary' : 'pricing__cta--secondary' }}"
                            data-plan="{{ plan.slug }}">
                             {% if plan.isFree %}
-                                <span>Commencer gratuitement</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
+                                <span class="pricing__cta-text">Commencer gratuitement</span>
                             {% else %}
-                                <span>Choisir {{ plan.name }}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
+                                <span class="pricing__cta-text">Choisir {{ plan.name }}</span>
                             {% endif %}
+                            <svg class="pricing__cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
                         </a>
 
                         {% if not plan.isFree %}
-                            <div class="plan-note">
+                            <div class="pricing__note">
                                 Sans engagement • Annulation à tout moment
                             </div>
                         {% endif %}
@@ -172,5 +188,10 @@
                 </div>
             {% endfor %}
         </div>
+    </div>
+
+    <div class="pricing__background-effects">
+        <div class="pricing__background-gradient"></div>
+        <div class="pricing__background-pattern"></div>
     </div>
 </section>

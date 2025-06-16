@@ -1,91 +1,98 @@
-<section class="hero" id="hero">
-    <div class="hero-content">
-        <div class="hero-text">
-            <div class="hero-badge">
-                <div class="badge-dot"></div>
-                <span>Monitoring intelligent</span>
-            </div>
-
-            <h1>
-                Éliminez les bugs
-                <br>
-                <span class="highlight">avant vos utilisateurs</span>
-            </h1>
-
-            <p>
-                Surveillez vos applications 24/7 avec notre solution de monitoring avancée.
-                Détection automatique, alertes instantanées, résolution accélérée.
-            </p>
-
-            <div class="hero-actions">
-                <a href="{{ path('app_register') }}" class="btn btn-primary">
-                    <span>Démarrer maintenant</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-                <a href="{{ path('features') }}" class="btn btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>Fonctionnalités</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="hero-visual">
-            <div class="code-window">
-                <div class="code-header">
-                    <div class="code-dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                    </div>
-                    <span class="code-title">error-monitor.php</span>
+<section class="hero">
+    <div class="hero__container">
+        <div class="hero__content">
+            <div class="hero__text">
+                <div class="hero__badge">
+                    <div class="hero__badge-dot"></div>
+                    <span class="hero__badge-text">Monitoring intelligent</span>
                 </div>
 
-                <div class="code-content">
-                    <div class="code-line">
-                        <span class="keyword">try</span> {
+                <h1 class="hero__title">
+                    Éliminez les bugs
+                    <br>
+                    <span class="hero__title-highlight">avant vos utilisateurs</span>
+                </h1>
+
+                <p class="hero__description">
+                    Surveillez vos applications 24/7 avec notre solution de monitoring avancée.
+                    Détection automatique, alertes instantanées, résolution accélérée.
+                </p>
+
+                <div class="hero__actions">
+                    <a href="{{ path('app_register') }}" class="hero__cta hero__cta--primary">
+                        <span class="hero__cta-text">Démarrer maintenant</span>
+                        <svg class="hero__cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="{{ path('features') }}" class="hero__cta hero__cta--secondary">
+                        <svg class="hero__cta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="hero__cta-text">Fonctionnalités</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero__visual">
+                <div class="hero__code-window">
+                    <div class="hero__code-header">
+                        <div class="hero__code-dots">
+                            <div class="hero__code-dot hero__code-dot--red"></div>
+                            <div class="hero__code-dot hero__code-dot--yellow"></div>
+                            <div class="hero__code-dot hero__code-dot--green"></div>
+                        </div>
+                        <span class="hero__code-title">error-monitor.php</span>
                     </div>
-                    <div class="code-line">
-                        &nbsp;&nbsp;<span class="comment">// Votre code métier</span>
-                    </div>
-                    <div class="code-line">
-                        &nbsp;&nbsp;$user = User::<span class="keyword">find</span>($id);
-                    </div>
-                    <div class="code-line">
-                        &nbsp;&nbsp;$user-><span class="keyword">getEmaill</span>();
-                    </div>
-                    <div class="code-line">
-                        } <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) {
-                    </div>
-                    <div class="code-line error">
-                        &nbsp;&nbsp;🚨 <span class="string">"Call to undefined method User::getEmaill()"</span>
-                    </div>
-                    <div class="code-line">
-                        &nbsp;&nbsp;ErrorExplorer::<span class="keyword">report</span>($e);
-                    </div>
-                    <div class="code-line">
-                        }
-                    </div>
-                    <div class="code-line" style="margin-top: 1rem;">
-                        <span class="comment">// Résultat automatique :</span>
-                    </div>
-                    <div class="code-line success">
-                        ✅ <span class="string">Erreur automatiquement remontée</span>
-                    </div>
-                    <div class="code-line info">
-                        📊 <span class="string">Dashboard mis à jour en temps réel</span>
-                    </div>
-                    <div class="code-line warning">
-                        📧 <span class="string">Équipe notifiée instantanément</span>
-                    </div>
-                    <div class="code-line success">
-                        🔧 <span class="string">Bug identifié et localisé</span>
+
+                    <div class="hero__code-content">
+                        <div class="hero__code-line" data-line="1">
+                            <span class="hero__code-keyword">try</span> {
+                        </div>
+                        <div class="hero__code-line" data-line="2">
+                            &nbsp;&nbsp;<span class="hero__code-comment">// Votre code métier</span>
+                        </div>
+                        <div class="hero__code-line" data-line="3">
+                            &nbsp;&nbsp;$user = User::<span class="hero__code-keyword">find</span>($id);
+                        </div>
+                        <div class="hero__code-line" data-line="4">
+                            &nbsp;&nbsp;$user-><span class="hero__code-keyword">getEmaill</span>();
+                        </div>
+                        <div class="hero__code-line" data-line="5">
+                            } <span class="hero__code-keyword">catch</span> (<span class="hero__code-keyword">Exception</span> $e) {
+                        </div>
+                        <div class="hero__code-line hero__code-line--error" data-line="6">
+                            &nbsp;&nbsp;<span class="hero__code-string">"Call to undefined method User::getEmaill()"</span>
+                        </div>
+                        <div class="hero__code-line" data-line="7">
+                            &nbsp;&nbsp;ErrorExplorer::<span class="hero__code-keyword">report</span>($e);
+                        </div>
+                        <div class="hero__code-line" data-line="8">
+                            }
+                        </div>
+                        <div class="hero__code-line hero__code-line--spacer" data-line="9">
+                            <span class="hero__code-comment">// Résultat automatique :</span>
+                        </div>
+                        <div class="hero__code-line hero__code-line--success" data-line="10">
+                            ✅ <span class="hero__code-string">Erreur automatiquement remontée</span>
+                        </div>
+                        <div class="hero__code-line hero__code-line--info" data-line="11">
+                            📊 <span class="hero__code-string">Dashboard mis à jour en temps réel</span>
+                        </div>
+                        <div class="hero__code-line hero__code-line--warning" data-line="12">
+                            📧 <span class="hero__code-string">Équipe notifiée instantanément</span>
+                        </div>
+                        <div class="hero__code-line hero__code-line--success" data-line="13">
+                            🔧 <span class="hero__code-string">Bug identifié et localisé</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="hero__background-effects">
+        <div class="hero__background-grid"></div>
+        <div class="hero__background-particles"></div>
     </div>
 </section>

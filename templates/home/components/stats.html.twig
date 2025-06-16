@@ -1,116 +1,256 @@
 <section class="stats" id="stats">
-    <div class="container">
-        <div class="stats-header">
-            <div class="live-badge">
-                <span>Données en temps réel</span>
+    <div class="stats__container">
+        <div class="stats__header">
+            <div class="stats__live-badge">
+                <div class="stats__live-dot"></div>
+                <span class="stats__live-text">Données en temps réel</span>
             </div>
 
-            <h2>Tableau de bord de notre plateforme</h2>
-            <p>Statistiques live et indicateurs de performance de Error Explorer</p>
+            <h2 class="stats__title">Tableau de bord de notre plateforme</h2>
+            <p class="stats__description">Statistiques live et indicateurs de performance de Error Explorer</p>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-item primary">
-                <div class="stat-header">
-                    <div class="stat-title">Utilisateurs Actifs</div>
-                    <div class="trend-indicator {{ stats.trends.users.class }}">
-                        {% if stats.trends.users.direction == 'up' %}
-                            +{{ stats.trends.users.percentage }}%
-                        {% elseif stats.trends.users.direction == 'down' %}
-                            -{{ stats.trends.users.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+        <div class="stats__grid">
+            <div class="stats__item stats__item--primary">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        Utilisateurs Actifs
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.users.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.users.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.users.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.users.direction == 'up' %}
+                                +{{ stats.trends.users.percentage }}%
+                            {% elseif stats.trends.users.direction == 'down' %}
+                                -{{ stats.trends.users.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number" data-count="{{ stats.total_users }}">0</div>
-                <div class="stat-description">Développeurs connectés ce mois</div>
+                <div class="stats__number" data-count="{{ stats.total_users }}">0</div>
+                <div class="stats__item-description">Développeurs connectés ce mois</div>
             </div>
 
-            <div class="stat-item success">
-                <div class="stat-header">
-                    <div class="stat-title">Erreurs Détectées</div>
-                    <div class="trend-indicator {{ stats.trends.errors.class }}">
-                        {% if stats.trends.errors.direction == 'up' %}
-                            +{{ stats.trends.errors.percentage }}%
-                        {% elseif stats.trends.errors.direction == 'down' %}
-                            -{{ stats.trends.errors.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+            <div class="stats__item stats__item--success">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 9v4M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                            </svg>
+                        </div>
+                        Erreurs Détectées
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.errors.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.errors.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.errors.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.errors.direction == 'up' %}
+                                +{{ stats.trends.errors.percentage }}%
+                            {% elseif stats.trends.errors.direction == 'down' %}
+                                -{{ stats.trends.errors.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number" data-count="{{ stats.total_errors_tracked }}">0</div>
-                <div class="stat-description">Bugs détectés et analysés automatiquement</div>
+                <div class="stats__number" data-count="{{ stats.total_errors_tracked }}">0</div>
+                <div class="stats__item-description">Bugs détectés et analysés automatiquement</div>
             </div>
 
-            <div class="stat-item info">
-                <div class="stat-header">
-                    <div class="stat-title">Projets Protégés</div>
-                    <div class="trend-indicator {{ stats.trends.projects.class }}">
-                        {% if stats.trends.projects.direction == 'up' %}
-                            +{{ stats.trends.projects.percentage }}%
-                        {% elseif stats.trends.projects.direction == 'down' %}
-                            -{{ stats.trends.projects.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+            <div class="stats__item stats__item--info">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        Projets Protégés
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.projects.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.projects.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.projects.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.projects.direction == 'up' %}
+                                +{{ stats.trends.projects.percentage }}%
+                            {% elseif stats.trends.projects.direction == 'down' %}
+                                -{{ stats.trends.projects.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number" data-count="{{ stats.total_projects }}">0</div>
-                <div class="stat-description">Applications sous monitoring actif</div>
+                <div class="stats__number" data-count="{{ stats.total_projects }}">0</div>
+                <div class="stats__item-description">Applications sous monitoring actif</div>
             </div>
 
-            <div class="stat-item warning">
-                <div class="stat-header">
-                    <div class="stat-title">Disponibilité Système</div>
-                    <div class="trend-indicator {{ stats.trends.uptime.class }}">
-                        {% if stats.trends.uptime.direction == 'up' %}
-                            +{{ stats.trends.uptime.percentage }}%
-                        {% elseif stats.trends.uptime.direction == 'down' %}
-                            -{{ stats.trends.uptime.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+            <div class="stats__item stats__item--warning">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                        </div>
+                        Disponibilité Système
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.uptime.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.uptime.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.uptime.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.uptime.direction == 'up' %}
+                                +{{ stats.trends.uptime.percentage }}%
+                            {% elseif stats.trends.uptime.direction == 'down' %}
+                                -{{ stats.trends.uptime.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number">99.9%</div>
-                <div class="stat-description">Uptime garanti sur les 30 derniers jours</div>
+                <div class="stats__number">99.9%</div>
+                <div class="stats__item-description">Uptime garanti sur les 30 derniers jours</div>
             </div>
 
-            <div class="stat-item success">
-                <div class="stat-header">
-                    <div class="stat-title">Temps de Réponse</div>
-                    <div class="trend-indicator {{ stats.trends.response_time.class }}">
-                        {% if stats.trends.response_time.direction == 'up' %}
-                            +{{ stats.trends.response_time.percentage }}%
-                        {% elseif stats.trends.response_time.direction == 'down' %}
-                            -{{ stats.trends.response_time.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+            <div class="stats__item stats__item--success">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                            </svg>
+                        </div>
+                        Temps de Réponse
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.response_time.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.response_time.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.response_time.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.response_time.direction == 'up' %}
+                                +{{ stats.trends.response_time.percentage }}%
+                            {% elseif stats.trends.response_time.direction == 'down' %}
+                                -{{ stats.trends.response_time.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number">< 50ms</div>
-                <div class="stat-description">Latence moyenne de détection des erreurs</div>
+                <div class="stats__number">&lt; 50ms</div>
+                <div class="stats__item-description">Latence moyenne de détection des erreurs</div>
             </div>
 
-            <div class="stat-item primary">
-                <div class="stat-header">
-                    <div class="stat-title">Résolution Moyenne</div>
-                    <div class="trend-indicator {{ stats.trends.resolution_time.class }}">
-                        {% if stats.trends.resolution_time.direction == 'up' %}
-                            +{{ stats.trends.resolution_time.percentage }}%
-                        {% elseif stats.trends.resolution_time.direction == 'down' %}
-                            -{{ stats.trends.resolution_time.percentage }}%
-                        {% else %}
-                            stable
-                        {% endif %}
+            <div class="stats__item stats__item--primary">
+                <div class="stats__item-header">
+                    <div class="stats__item-title">
+                        <div class="stats__item-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                            </svg>
+                        </div>
+                        Résolution Moyenne
+                    </div>
+                    <div class="stats__trend stats__trend--{{ stats.trends.resolution_time.direction }}">
+                        <svg class="stats__trend-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            {% if stats.trends.resolution_time.direction == 'up' %}
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            {% elseif stats.trends.resolution_time.direction == 'down' %}
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            {% else %}
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            {% endif %}
+                        </svg>
+                        <span class="stats__trend-value">
+                            {% if stats.trends.resolution_time.direction == 'up' %}
+                                +{{ stats.trends.resolution_time.percentage }}%
+                            {% elseif stats.trends.resolution_time.direction == 'down' %}
+                                -{{ stats.trends.resolution_time.percentage }}%
+                            {% else %}
+                                stable
+                            {% endif %}
+                        </span>
                     </div>
                 </div>
-                <div class="stat-number">2.3h</div>
-                <div class="stat-description">Temps moyen de résolution des bugs critiques</div>
+                <div class="stats__number">2.3h</div>
+                <div class="stats__item-description">Temps moyen de résolution des bugs critiques</div>
             </div>
         </div>
+    </div>
+
+    <div class="stats__background-effects">
+        <div class="stats__background-pattern"></div>
     </div>
 </section>
