@@ -1,0 +1,231 @@
+<div id="cookieBanner" class="cookie-banner" data-consent-banner>
+    <div class="cookie-banner__content">
+        <div class="cookie-banner__text">
+            <div class="cookie-banner__title">
+                <span class="cookie-banner__icon">🍪</span>
+                Gestion des cookies
+            </div>
+            <div class="cookie-banner__description">
+                Nous utilisons des cookies pour améliorer votre expérience sur Error Explorer.
+                Vous pouvez accepter tous les cookies ou personnaliser vos préférences selon vos besoins.
+            </div>
+        </div>
+        <div class="cookie-banner__actions">
+            <button type="button"
+                    class="cookie-btn cookie-btn--accept"
+                    data-cookie-action="accept-all"
+                    aria-label="Accepter tous les cookies">
+                <span class="cookie-btn__icon">✓</span>
+                Accepter tout
+            </button>
+            <button type="button"
+                    class="cookie-btn cookie-btn--customize"
+                    data-cookie-action="customize"
+                    aria-label="Personnaliser les cookies">
+                <span class="cookie-btn__icon">⚙️</span>
+                Personnaliser
+            </button>
+            <button type="button"
+                    class="cookie-btn cookie-btn--reject"
+                    data-cookie-action="reject-all"
+                    aria-label="Refuser tous les cookies optionnels">
+                <span class="cookie-btn__icon">✕</span>
+                Refuser
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="cookieModal" class="cookie-modal" data-cookie-modal aria-hidden="true" role="dialog" aria-labelledby="cookieModalTitle">
+    <div class="cookie-modal__backdrop" data-cookie-action="close-modal" aria-hidden="true"></div>
+    <div class="cookie-modal__content">
+        <div class="cookie-modal__header">
+            <h2 id="cookieModalTitle" class="cookie-modal__title">
+                Préférences des cookies
+            </h2>
+            <button type="button"
+                    class="cookie-modal__close"
+                    data-cookie-action="close-modal"
+                    aria-label="Fermer la modal des préférences">
+                &times;
+            </button>
+        </div>
+
+        <div class="cookie-modal__body">
+            <div class="cookie-modal__intro">
+                <p>
+                    Nous utilisons différents types de cookies pour améliorer votre expérience sur Error Explorer.
+                    Vous pouvez choisir quels cookies accepter ou refuser ci-dessous.
+                </p>
+            </div>
+
+            <div class="cookie-category cookie-category--essential">
+                <div class="cookie-category__header">
+                    <h3 class="cookie-category__title">
+                        <span class="cookie-category__icon">🔒</span>
+                        Cookies essentiels
+                    </h3>
+                    <span class="cookie-category__required" aria-label="Cookies obligatoires">
+                        Obligatoire
+                    </span>
+                </div>
+                <div class="cookie-category__body">
+                    <p class="cookie-category__description">
+                        Ces cookies sont nécessaires au fonctionnement du site et ne peuvent pas être désactivés.
+                        Ils sont essentiels pour votre sécurité et l'utilisation des fonctionnalités de base.
+                    </p>
+                    <div class="cookie-category__details">
+                        <strong>Exemples :</strong>
+                        Session utilisateur, authentification, protection CSRF, préférences de langue, panier
+                    </div>
+                    <div class="cookie-category__storage">
+                        <strong>Conservation :</strong> Session ou 1 an maximum
+                    </div>
+                </div>
+            </div>
+
+            <div class="cookie-category cookie-category--performance">
+                <div class="cookie-category__header">
+                    <h3 class="cookie-category__title">
+                        <span class="cookie-category__icon">📊</span>
+                        Cookies de performance
+                    </h3>
+                    <label class="cookie-toggle" for="performance-cookies">
+                        <input type="checkbox"
+                               id="performance-cookies"
+                               data-cookie-category="performance"
+                               aria-describedby="performance-description">
+                        <span class="cookie-toggle__slider" aria-hidden="true"></span>
+                        <span class="sr-only">Activer les cookies de performance</span>
+                    </label>
+                </div>
+                <div class="cookie-category__body">
+                    <p id="performance-description" class="cookie-category__description">
+                        Ces cookies nous aident à comprendre comment vous utilisez notre site pour l'améliorer.
+                        Ils collectent des informations anonymes sur votre navigation.
+                    </p>
+                    <div class="cookie-category__details">
+                        <strong>Exemples :</strong>
+                        Google Analytics, métriques de performance, temps de chargement, erreurs techniques
+                    </div>
+                    <div class="cookie-category__storage">
+                        <strong>Conservation :</strong> 2 ans maximum
+                    </div>
+                </div>
+            </div>
+
+            <div class="cookie-category cookie-category--functional">
+                <div class="cookie-category__header">
+                    <h3 class="cookie-category__title">
+                        <span class="cookie-category__icon">⚡</span>
+                        Cookies de fonctionnalité
+                    </h3>
+                    <label class="cookie-toggle" for="functional-cookies">
+                        <input type="checkbox"
+                               id="functional-cookies"
+                               data-cookie-category="functional"
+                               aria-describedby="functional-description">
+                        <span class="cookie-toggle__slider" aria-hidden="true"></span>
+                        <span class="sr-only">Activer les cookies de fonctionnalité</span>
+                    </label>
+                </div>
+                <div class="cookie-category__body">
+                    <p id="functional-description" class="cookie-category__description">
+                        Ces cookies permettent des fonctionnalités avancées et une expérience personnalisée
+                        sur notre plateforme de monitoring d'erreurs.
+                    </p>
+                    <div class="cookie-category__details">
+                        <strong>Exemples :</strong>
+                        Chat support, cartes interactives, préférences d'affichage, contenu personnalisé
+                    </div>
+                    <div class="cookie-category__storage">
+                        <strong>Conservation :</strong> 1 an maximum
+                    </div>
+                </div>
+            </div>
+
+            <div class="cookie-category cookie-category--marketing">
+                <div class="cookie-category__header">
+                    <h3 class="cookie-category__title">
+                        <span class="cookie-category__icon">🎯</span>
+                        Cookies marketing
+                    </h3>
+                    <label class="cookie-toggle" for="marketing-cookies">
+                        <input type="checkbox"
+                               id="marketing-cookies"
+                               data-cookie-category="marketing"
+                               aria-describedby="marketing-description">
+                        <span class="cookie-toggle__slider" aria-hidden="true"></span>
+                        <span class="sr-only">Activer les cookies marketing</span>
+                    </label>
+                </div>
+                <div class="cookie-category__body">
+                    <p id="marketing-description" class="cookie-category__description">
+                        Ces cookies sont utilisés pour vous proposer de la publicité et du contenu pertinents
+                        sur Error Explorer et d'autres sites web.
+                    </p>
+                    <div class="cookie-category__details">
+                        <strong>Exemples :</strong>
+                        Facebook Pixel, Google Ads, remarketing, tracking des conversions
+                    </div>
+                    <div class="cookie-category__storage">
+                        <strong>Conservation :</strong> 13 mois maximum
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cookie-modal__footer">
+            <div class="cookie-modal__actions">
+                <button type="button"
+                        class="cookie-btn cookie-btn--secondary"
+                        data-cookie-action="reject-all">
+                    <span class="cookie-btn__icon">✕</span>
+                    Refuser tout
+                </button>
+                <button type="button"
+                        class="cookie-btn cookie-btn--primary"
+                        data-cookie-action="save-preferences">
+                    <span class="cookie-btn__icon">💾</span>
+                    Enregistrer mes choix
+                </button>
+                <button type="button"
+                        class="cookie-btn cookie-btn--success"
+                        data-cookie-action="accept-all">
+                    <span class="cookie-btn__icon">✓</span>
+                    Accepter tout
+                </button>
+            </div>
+            <div class="cookie-modal__legal">
+                <p class="cookie-modal__legal-text">
+                    Pour plus d'informations, consultez notre
+                    <a href="{{ path('privacy') }}" class="cookie-modal__legal-link">politique de confidentialité</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button"
+        id="cookieSettingsBtn"
+        class="cookie-settings-btn"
+        data-cookie-action="open-settings"
+        title="Paramètres des cookies"
+        aria-label="Ouvrir les paramètres des cookies"
+        style="display: none;">
+    <span class="cookie-settings-btn__icon">⚙️</span>
+    <span class="sr-only">Paramètres cookies</span>
+</button>
+
+<div id="cookieNotification" class="cookie-notification" role="alert" aria-live="polite" style="display: none;">
+    <div class="cookie-notification__content">
+        <span class="cookie-notification__icon"></span>
+        <span class="cookie-notification__message"></span>
+    </div>
+    <button type="button"
+            class="cookie-notification__close"
+            data-cookie-action="close-notification"
+            aria-label="Fermer la notification">
+        &times;
+    </button>
+</div>

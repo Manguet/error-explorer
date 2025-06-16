@@ -5,6 +5,7 @@ import './Site/AboutPage.js';
 import './Site/FeaturesComponent.js';
 import './Site/FeaturesPage.js';
 import './Site/ContactPage.js';
+import './Site/CookieManager.js';
 import './Site/CTAComponents.js';
 import './Site/HeroComponent.js';
 import './Site/NotificationSystem.js';

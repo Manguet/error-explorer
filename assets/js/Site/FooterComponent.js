@@ -1,3 +1,5 @@
+import CookieManager from './CookieManager.js';
+
 /**
  * Footer Component - BEM Architecture
  * Gestion du statut, des liens "coming soon" et des easter eggs
@@ -10,6 +12,7 @@ class FooterComponent {
         this.statusDot = document.querySelector('.footer__status-dot');
         this.statusText = document.querySelector('.footer__status-text');
         this.comingSoonLinks = document.querySelectorAll('[data-coming-soon]');
+        this.initCookieManager();
 
         // Configuration du statut
         this.statusConfig = {
@@ -68,6 +71,38 @@ class FooterComponent {
         this.initComingSoonLinks();
         this.startStatusMonitoring();
         this.observeFooterEntrance();
+    }
+
+    initCookieManager() {
+        // Initialisation du Cookie Manager
+        this.cookieManager = new CookieManager({
+            showDelay: 2000,
+            debugMode: process.env.NODE_ENV === 'development'
+        });
+
+        // Écouter les événements de cookies
+        this.bindCookieEvents();
+    }
+
+    onCookiePreferencesChanged(preferences) {
+
+    }
+
+    bindCookieEvents() {
+        // Gérer le clic sur le lien Cookies dans le footer
+        const cookieLink = document.querySelector('[data-cookie-settings]');
+        if (cookieLink) {
+            cookieLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.cookieManager.openModal();
+            });
+        }
+
+        // Écouter les changements de préférences
+        window.addEventListener('cookiePreferencesApplied', (event) => {
+            console.log('Préférences cookies mises à jour:', event.detail);
+            this.onCookiePreferencesChanged(event.detail);
+        });
     }
 
     /**
