@@ -175,7 +175,6 @@ class HomeController extends AbstractController
 
             // Vérification honeypot
             if (!empty($data['website'])) {
-                // Bot détecté, on fait semblant que tout va bien
                 $this->addFlash('success', 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
                 return $this->redirectToRoute('contact');
             }

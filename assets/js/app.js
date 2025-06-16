@@ -3,6 +3,7 @@ import './Site/HeaderComponent.js';
 import './Site/FeaturesComponent.js';
 import './Site/FeaturesPage.js';
 import './Site/FooterComponent.js';
+import './Site/ContactPage.js';
 import './Site/CTAComponents.js';
 import './Site/HeroComponent.js';
 import './Site/NotificationSystem.js';
@@ -14,6 +15,5 @@ import './Site/StatsComponent.js';
 import './Site/TooltipManager.js';
 
 import './Site/auth.js';
-import './Site/contact.js';
 import './Site/integration.js';
 import './Site/register.js';
