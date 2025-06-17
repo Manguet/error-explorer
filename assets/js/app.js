@@ -3,6 +3,7 @@ import './Site/HeaderComponent.js';
 import './Site/FooterComponent.js';
 import './Site/AboutPage.js';
 import './Site/ChangelogComponent.js';
+import './Site/DocumentationComponent.js';
 import './Site/FeaturesComponent.js';
 import './Site/FeaturesPage.js';
 import './Site/ContactPage.js';

@@ -1,0 +1,659 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Documentation - Error Explorer{% endblock %}
+{% block description %}Documentation complète d'Error Explorer : guides d'installation, API, SDKs et exemples pour tous les frameworks.{% endblock %}
+
+{% block body %}
+    <main class="docs">
+        <section class="docs__hero">
+            <div class="docs__hero-container">
+                <div class="docs__hero-content">
+                    <div class="docs__hero-badge">
+                        <span class="docs__hero-badge-icon">📚</span>
+                        <span>Documentation complète</span>
+                    </div>
+
+                    <h1 class="docs__hero-title">
+                        Tout ce dont vous avez besoin pour
+                        <span class="docs__hero-title-highlight">débuter rapidement</span>
+                    </h1>
+
+                    <p class="docs__hero-description">
+                        Guides détaillés, exemples de code et référence API pour intégrer
+                        Error Explorer dans vos projets en quelques minutes.
+                    </p>
+
+                    <div class="docs__hero-quick-links">
+                        <a href="#getting-started" class="docs__hero-link docs__hero-link--primary">
+                            <span>🚀 Démarrage rapide</span>
+                        </a>
+                        <a href="#api-reference" class="docs__hero-link docs__hero-link--secondary">
+                            <span>📖 Référence API</span>
+                        </a>
+                        <a href="#examples" class="docs__hero-link docs__hero-link--secondary">
+                            <span>💡 Exemples</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="docs__hero-visual">
+                    <div class="docs__hero-code-preview">
+                        <div class="docs__code-window">
+                            <div class="docs__code-header">
+                                <div class="docs__code-dots">
+                                    <span class="docs__code-dot docs__code-dot--red"></span>
+                                    <span class="docs__code-dot docs__code-dot--yellow"></span>
+                                    <span class="docs__code-dot docs__code-dot--green"></span>
+                                </div>
+                                <span class="docs__code-title">Installation rapide</span>
+                            </div>
+                            <div class="docs__code-content">
+                                <div class="docs__code-line">
+                                    <span class="docs__code-comment"># Installation via Composer</span>
+                                </div>
+                                <div class="docs__code-line">
+                                    <span class="docs__code-command">composer require</span> <span class="docs__code-package">error-explorer/error-reporter</span>
+                                </div>
+                                <div class="docs__code-line docs__code-line--empty"></div>
+                                <div class="docs__code-line">
+                                    <span class="docs__code-comment"># Configuration en 30 secondes</span>
+                                </div>
+                                <div class="docs__code-line">
+                                    <span class="docs__code-var">ERROR_WEBHOOK_URL</span>=<span class="docs__code-string">https://your-domain.com</span>
+                                </div>
+                                <div class="docs__code-line">
+                                    <span class="docs__code-var">ERROR_WEBHOOK_TOKEN</span>=<span class="docs__code-string">your-project-token</span>
+                                </div>
+                                <div class="docs__code-line docs__code-line--success">
+                                    <span class="docs__code-comment"># ✅ Prêt à l'emploi !</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="docs__hero-background">
+                <div class="docs__hero-grid"></div>
+                <div class="docs__hero-particles">
+                    {% for i in 1..12 %}
+                        <div class="docs__hero-particle"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {# Navigation & Content #}
+        <div class="docs__layout">
+            {# Sidebar Navigation #}
+            <aside class="docs__sidebar" id="docs-sidebar">
+                <div class="docs__sidebar-content">
+                    <div class="docs__sidebar-header">
+                        <h3 class="docs__sidebar-title">Documentation</h3>
+                        <button class="docs__sidebar-toggle" id="sidebar-toggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <nav class="docs__nav">
+                        <div class="docs__nav-section">
+                            <h4 class="docs__nav-section-title">Démarrage</h4>
+                            <ul class="docs__nav-list">
+                                <li class="docs__nav-item">
+                                    <a href="#getting-started" class="docs__nav-link docs__nav-link--active">
+                                        <span class="docs__nav-icon">🚀</span>
+                                        Démarrage rapide
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#installation" class="docs__nav-link">
+                                        <span class="docs__nav-icon">📦</span>
+                                        Installation
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#configuration" class="docs__nav-link">
+                                        <span class="docs__nav-icon">⚙️</span>
+                                        Configuration
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="docs__nav-section">
+                            <h4 class="docs__nav-section-title">Intégrations</h4>
+                            <ul class="docs__nav-list">
+                                <li class="docs__nav-item">
+                                    <a href="#symfony" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🎼</span>
+                                        Symfony
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#laravel" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🅻</span>
+                                        Laravel
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#react" class="docs__nav-link">
+                                        <span class="docs__nav-icon">⚛️</span>
+                                        React
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#vue" class="docs__nav-link">
+                                        <span class="docs__nav-icon">💚</span>
+                                        Vue.js
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#angular" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🅰️</span>
+                                        Angular
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#nodejs" class="docs__nav-link">
+                                        <span class="docs__nav-icon">💚</span>
+                                        Node.js
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#python" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🐍</span>
+                                        Python
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#wordpress" class="docs__nav-link">
+                                        <span class="docs__nav-icon">📝</span>
+                                        WordPress
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="docs__nav-section">
+                            <h4 class="docs__nav-section-title">Référence</h4>
+                            <ul class="docs__nav-list">
+                                <li class="docs__nav-item">
+                                    <a href="#api-reference" class="docs__nav-link">
+                                        <span class="docs__nav-icon">📚</span>
+                                        API Reference
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#webhook-format" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🔗</span>
+                                        Format Webhook
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#examples" class="docs__nav-link">
+                                        <span class="docs__nav-icon">💡</span>
+                                        Exemples
+                                    </a>
+                                </li>
+                                <li class="docs__nav-item">
+                                    <a href="#troubleshooting" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🔧</span>
+                                        Dépannage
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            {# Main Content #}
+            <main class="docs__main">
+                <div class="docs__content">
+                    {# Getting Started Section #}
+                    <section id="getting-started" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">🚀</span>
+                            Démarrage rapide
+                        </h2>
+
+                        <p class="docs__section-intro">
+                            Intégrez Error Explorer dans votre projet en moins de 5 minutes.
+                        </p>
+
+                        <div class="docs__steps">
+                            <div class="docs__step">
+                                <div class="docs__step-number">1</div>
+                                <div class="docs__step-content">
+                                    <h3 class="docs__step-title">Créez votre compte</h3>
+                                    <p class="docs__step-description">
+                                        Inscrivez-vous gratuitement et créez votre premier projet.
+                                    </p>
+                                    <a href="{{ path('app_register') }}" class="docs__step-link">
+                                        Créer un compte →
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="docs__step">
+                                <div class="docs__step-number">2</div>
+                                <div class="docs__step-content">
+                                    <h3 class="docs__step-title">Installez le SDK</h3>
+                                    <p class="docs__step-description">
+                                        Choisissez votre framework et suivez le guide d'installation.
+                                    </p>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Symfony</span>
+                                            <button class="docs__copy-btn" data-copy="composer require error-explorer/error-reporter">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <pre><code>composer require error-explorer/error-reporter</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="docs__step">
+                                <div class="docs__step-number">3</div>
+                                <div class="docs__step-content">
+                                    <h3 class="docs__step-title">Configurez les variables</h3>
+                                    <p class="docs__step-description">
+                                        Ajoutez les variables d'environnement dans votre fichier <code>.env</code>.
+                                    </p>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>.env</span>
+                                            <button class="docs__copy-btn" data-copy="ERROR_WEBHOOK_URL=https://your-domain.com&#10;ERROR_WEBHOOK_TOKEN=your-project-token&#10;PROJECT_NAME=my-project&#10;ERROR_REPORTING_ENABLED=true">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <pre><code>ERROR_WEBHOOK_URL=https://your-domain.com
+ERROR_WEBHOOK_TOKEN=your-project-token
+PROJECT_NAME=my-project
+ERROR_REPORTING_ENABLED=true</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="docs__step">
+                                <div class="docs__step-number">4</div>
+                                <div class="docs__step-content">
+                                    <h3 class="docs__step-title">Testez l'intégration</h3>
+                                    <p class="docs__step-description">
+                                        Créez une erreur de test pour vérifier que tout fonctionne.
+                                    </p>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>PHP</span>
+                                        </div>
+                                        <pre><code>// Déclenchez une erreur de test
+throw new Exception('Test error for Error Explorer');</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="docs__success-message">
+                            <div class="docs__success-icon">✅</div>
+                            <div class="docs__success-content">
+                                <h4>Félicitations !</h4>
+                                <p>Votre projet est maintenant connecté à Error Explorer. Les erreurs seront automatiquement remontées dans votre dashboard.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# Symfony Integration #}
+                    <section id="symfony" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">🎼</span>
+                            Intégration Symfony
+                        </h2>
+
+                        <div class="docs__framework-info">
+                            <div class="docs__framework-badge">
+                                <span class="docs__framework-logo">🎼</span>
+                                <div>
+                                    <h4>Symfony Bundle</h4>
+                                    <p>Support Symfony 4.4+, PHP 7.2+</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Installation</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>Terminal</span>
+                                <button class="docs__copy-btn" data-copy="composer require error-explorer/error-reporter">Copier</button>
+                            </div>
+                            <pre><code>composer require error-explorer/error-reporter</code></pre>
+                        </div>
+
+                        <h3>Configuration</h3>
+                        <p>Ajoutez le bundle dans <code>config/bundles.php</code> :</p>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>config/bundles.php</span>
+                            </div>
+                            <pre><code>&lt;?php
+
+return [
+    // ... autres bundles
+    ErrorExplorer\ErrorReporter\ErrorReporterBundle::class =&gt; ['all' =&gt; true],
+];</code></pre>
+                        </div>
+
+                        <p>Créez <code>config/packages/error_reporter.yaml</code> :</p>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>config/packages/error_reporter.yaml</span>
+                            </div>
+                            <pre><code>error_reporter:
+    webhook_url: '%env(ERROR_WEBHOOK_URL)%'
+    token: '%env(ERROR_WEBHOOK_TOKEN)%'
+    project_name: '%env(PROJECT_NAME)%'
+    enabled: '%env(bool:ERROR_REPORTING_ENABLED)%'
+    ignore_exceptions:
+        - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+        - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'</code></pre>
+                        </div>
+
+                        <h3>Usage manuel</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>PHP</span>
+                            </div>
+                            <pre><code>use ErrorExplorer\ErrorReporter\ErrorReporter;
+
+class YourController
+{
+    public function someAction()
+    {
+        try {
+            // Votre code ici
+        } catch (\Exception $e) {
+            // Report simple
+            ErrorReporter::reportError($e, 'prod', 500);
+            throw $e; // Re-lancer si nécessaire
+        }
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="docs__info-box">
+                            <div class="docs__info-icon">💡</div>
+                            <div class="docs__info-content">
+                                <h4>Astuce</h4>
+                                <p>Le bundle capture automatiquement toutes les exceptions non gérées. Vous n'avez besoin du reporting manuel que pour des cas spécifiques.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# Laravel Integration #}
+                    <section id="laravel" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">🅻</span>
+                            Intégration Laravel
+                        </h2>
+
+                        <div class="docs__framework-info">
+                            <div class="docs__framework-badge">
+                                <span class="docs__framework-logo">🅻</span>
+                                <div>
+                                    <h4>Laravel Package</h4>
+                                    <p>Support Laravel 8+, PHP 7.4+</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Installation</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>Terminal</span>
+                            </div>
+                            <pre><code>composer require error-explorer/laravel-error-reporter</code></pre>
+                        </div>
+
+                        <h3>Configuration</h3>
+                        <p>Le package est autodécouvert. Ajoutez simplement vos variables d'environnement :</p>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>.env</span>
+                            </div>
+                            <pre><code>ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
+ERROR_WEBHOOK_TOKEN=your-unique-project-token
+ERROR_PROJECT_NAME="My Laravel App"
+ERROR_REPORTING_ENABLED=true</code></pre>
+                        </div>
+
+                        <h3>Usage avec Facade</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>PHP</span>
+                            </div>
+                            <pre><code>use ErrorExplorer\LaravelErrorReporter\Facades\ErrorReporter;
+
+class YourController extends Controller
+{
+    public function someAction()
+    {
+        try {
+            // Votre code ici
+        } catch (\Exception $e) {
+            ErrorReporter::reportError($e, 'production', 500);
+            throw $e;
+        }
+    }
+}</code></pre>
+                        </div>
+                    </section>
+
+                    {# React Integration #}
+                    <section id="react" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">⚛️</span>
+                            Intégration React
+                        </h2>
+
+                        <div class="docs__framework-info">
+                            <div class="docs__framework-badge">
+                                <span class="docs__framework-logo">⚛️</span>
+                                <div>
+                                    <h4>React SDK</h4>
+                                    <p>Support React 16.8+, TypeScript inclus</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Installation</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>Terminal</span>
+                            </div>
+                            <pre><code>npm install @error-explorer/react-error-reporter</code></pre>
+                        </div>
+
+                        <h3>Configuration</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>App.tsx</span>
+                            </div>
+                            <pre><code>import React from 'react';
+import { ErrorReporterProvider } from '@error-explorer/react-error-reporter';
+
+function App() {
+  return (
+    &lt;ErrorReporterProvider
+      config={
+        projectToken: 'your-project-token',
+        apiUrl: 'https://your-error-explorer-instance.com',
+        environment: 'production',
+        debug: process.env.NODE_ENV === 'development',
+    }
+    &gt;
+      &lt;YourApp /&gt;
+    &lt;/ErrorReporterProvider&gt;
+  );
+}</code></pre>
+                        </div>
+
+                        <h3>Usage avec Hook</h3>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>MyComponent.tsx</span>
+                            </div>
+                            <pre><code>import React from 'react';
+import { useErrorReporter } from '@error-explorer/react-error-reporter';
+
+function MyComponent() {
+  const { reportError, reportMessage, addBreadcrumb } = useErrorReporter();
+
+  const handleClick = async () =&gt; {
+    try {
+      addBreadcrumb('User clicked submit button', 'user');
+      await riskyOperation();
+    } catch (error) {
+      await reportError(error, { context: 'form_submission' });
+    }
+  };
+
+  return &lt;button onClick={handleClick}&gt;Submit&lt;/button&gt;;
+}</code></pre>
+                        </div>
+                    </section>
+
+                    {# API Reference #}
+                    <section id="api-reference" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">📚</span>
+                            Référence API
+                        </h2>
+
+                        <h3>Endpoint Webhook</h3>
+                        <div class="docs__api-endpoint">
+                            <div class="docs__api-method">POST</div>
+                            <div class="docs__api-url">/webhook/error/{token}</div>
+                        </div>
+
+                        <h4>Headers requis</h4>
+                        <div class="docs__code-block">
+                            <pre><code>Content-Type: application/json
+User-Agent: YourApp/1.0</code></pre>
+                        </div>
+
+                        <h4>Format du payload</h4>
+                        <div class="docs__code-block">
+                            <div class="docs__code-header">
+                                <span>JSON</span>
+                            </div>
+                            <pre><code>{
+  "message": "Call to undefined method User::getEmaill()",
+  "exception_class": "Error",
+  "stack_trace": "#0 /var/www/src/Controller...",
+  "file": "/var/www/src/Controller/UserController.php",
+  "line": 45,
+  "project": "mon-site-ecommerce",
+  "environment": "prod",
+  "http_status": 500,
+  "timestamp": "2025-06-02T14:30:25+02:00",
+  "fingerprint": "abc123...",
+  "request": {
+    "url": "https://monsite.com/profile",
+    "method": "GET",
+    "route": "user_profile",
+    "ip": "192.168.1.100",
+    "user_agent": "Mozilla/5.0..."
+  },
+  "server": {
+    "php_version": "8.2.7",
+    "memory_usage": 12582912
+  }
+}</code></pre>
+                        </div>
+
+                        <h4>Réponses</h4>
+                        <div class="docs__api-responses">
+                            <div class="docs__api-response docs__api-response--success">
+                                <div class="docs__api-status">200 OK</div>
+                                <div class="docs__api-description">Erreur enregistrée avec succès</div>
+                            </div>
+                            <div class="docs__api-response docs__api-response--error">
+                                <div class="docs__api-status">400 Bad Request</div>
+                                <div class="docs__api-description">Payload invalide</div>
+                            </div>
+                            <div class="docs__api-response docs__api-response--error">
+                                <div class="docs__api-status">401 Unauthorized</div>
+                                <div class="docs__api-description">Token invalide</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# Troubleshooting #}
+                    <section id="troubleshooting" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">🔧</span>
+                            Dépannage
+                        </h2>
+
+                        <div class="docs__troubleshoot-item">
+                            <h3>Les erreurs n'apparaissent pas dans le dashboard</h3>
+                            <div class="docs__troubleshoot-content">
+                                <h4>Solutions possibles :</h4>
+                                <ul>
+                                    <li>Vérifiez que <code>ERROR_REPORTING_ENABLED=true</code></li>
+                                    <li>Vérifiez l'URL webhook et le token</li>
+                                    <li>Consultez les logs pour les erreurs HTTP</li>
+                                    <li>Vérifiez que l'exception n'est pas dans la liste ignorée</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="docs__troubleshoot-item">
+                            <h3>Erreurs de connexion HTTP</h3>
+                            <div class="docs__troubleshoot-content">
+                                <p>Le SDK échoue silencieusement si le webhook est injoignable. Vérifiez vos logs :</p>
+                                <div class="docs__code-block">
+                                    <pre><code>php bin/console log:search "Failed to report error"</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="docs__troubleshoot-item">
+                            <h3>Test de l'intégration</h3>
+                            <div class="docs__troubleshoot-content">
+                                <p>Créez une route de test pour vérifier l'intégration :</p>
+                                <div class="docs__code-block">
+                                    <div class="docs__code-header">
+                                        <span>PHP</span>
+                                    </div>
+                                    <pre><code>// Route de test
+Route::get('/test-error-reporting', function () {
+    throw new \Exception('Test error for Error Explorer');
+});</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        {# Mobile Menu Toggle #}
+        <button class="docs__mobile-toggle" id="mobile-toggle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+            <span>Menu</span>
+        </button>
+    </main>
+{% endblock %}
