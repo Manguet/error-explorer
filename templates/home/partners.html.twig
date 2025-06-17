@@ -1,0 +1,299 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Partenaires & Intégrations - Error Explorer{% endblock %}
+
+{% block body %}
+    <main class="partners">
+        {# Hero Section #}
+        <section class="partners-hero">
+            <div class="partners-hero__background-effects">
+                <div class="partners-hero__background-pattern"></div>
+            </div>
+
+            <div class="partners-hero__container">
+                <div class="partners-hero__content">
+                    <h1 class="partners-hero__title">
+                        Intégrations &amp; <br>
+                        <span class="partners-hero__title-highlight">Partenaires</span>
+                    </h1>
+                    <p class="partners-hero__description">
+                        Connectez Error Explorer à votre écosystème d'outils existant.
+                        Streamline votre workflow de développement avec nos intégrations natives.
+                    </p>
+                    <div class="partners-hero__cta">
+                        <a href="#integrations" class="partners-hero__button partners-hero__button--primary">
+                            <span class="partners-hero__button-text">Découvrir les intégrations</span>
+                            <svg class="partners-hero__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                            </svg>
+                        </a>
+                        <a href="{{ path('contact') }}" class="partners-hero__button partners-hero__button--secondary">
+                            <span class="partners-hero__button-text">Devenir partenaire</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="partners-hero__visual">
+                    <div class="partners-hero__integration-preview">
+                        <div class="partners-hero__integration-node partners-hero__integration-node--center">
+                            <div class="partners-hero__integration-logo">
+                                <img src="{{ asset('images/logo.svg') }}" alt="Error Explorer" class="partners-hero__integration-image">
+                            </div>
+                            <span class="partners-hero__integration-label">Error Explorer</span>
+                        </div>
+
+                        {% set preview_partners = [
+                            {name: 'Slack', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/slack/slack-original.svg', delay: '0.2s'},
+                            {name: 'GitHub', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg', delay: '0.4s'},
+                            {name: 'AWS', logo: 'https://www.svgrepo.com/show/448266/aws.svg', delay: '0.6s'},
+                            {name: 'Discord', logo: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg', delay: '0.8s'}
+                        ] %}
+
+                        {% for partner in preview_partners %}
+                            <div class="partners-hero__integration-node partners-hero__integration-node--satellite"
+                                 style="animation-delay: {{ partner.delay }}">
+                                <div class="partners-hero__integration-logo">
+                                    <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-hero__integration-image">
+                                </div>
+                                <span class="partners-hero__integration-label">{{ partner.name }}</span>
+                                <div class="partners-hero__integration-line"></div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {# Integrations Section #}
+        <section class="partners-integrations" id="integrations">
+            <div class="partners-integrations__container">
+                <div class="partners-integrations__header">
+                    <h2 class="partners-integrations__title">Intégrations Disponibles</h2>
+                    <p class="partners-integrations__description">
+                        Choisissez parmi notre écosystème d'intégrations pour optimiser votre workflow de développement.
+                    </p>
+                </div>
+
+                {# Technology Partners #}
+                <div class="partners-integrations__category">
+                    <h3 class="partners-integrations__category-title">
+                        <svg class="partners-integrations__category-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        Outils de Communication & Développement
+                    </h3>
+                    <div class="partners-integrations__grid">
+                        {% for partner in partners.technology %}
+                            <div class="partners-integrations__card" data-category="{{ partner.category|lower }}">
+                                <div class="partners-integrations__card-header">
+                                    <div class="partners-integrations__card-logo">
+                                        <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-integrations__card-image">
+                                    </div>
+                                    <div class="partners-integrations__card-info">
+                                        <div class="partners-integrations__card-title">{{ partner.name }}</div>
+                                        <div class="partners-integrations__card-status partners-integrations__card-status--{{ partner.status }}">
+                                            {% if partner.status == 'active' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Disponible</span>
+                                            {% elseif partner.status == 'beta' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Beta</span>
+                                            {% else %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Bientôt</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="partners-integrations__card-description">{{ partner.description }}</p>
+
+                                <ul class="partners-integrations__card-features">
+                                    {% for feature in partner.features %}
+                                        <li class="partners-integrations__card-feature">
+                                            <svg class="partners-integrations__feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {{ feature }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                <div class="partners-integrations__card-footer">
+                                    <a href="{{ partner.link }}" class="partners-integrations__card-button">
+                                        {% if partner.status == 'active' %}
+                                            Configurer
+                                        {% elseif partner.status == 'beta' %}
+                                            Tester la beta
+                                        {% else %}
+                                            En savoir plus
+                                        {% endif %}
+                                        <svg class="partners-integrations__button-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Monitoring Partners #}
+                <div class="partners-integrations__category">
+                    <h3 class="partners-integrations__category-title">
+                        <svg class="partners-integrations__category-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3V21H21"/>
+                            <path d="M9 9L12 6L16 10L21 5"/>
+                        </svg>
+                        Solutions de Monitoring
+                    </h3>
+                    <div class="partners-integrations__grid">
+                        {% for partner in partners.monitoring %}
+                            <div class="partners-integrations__card" data-category="{{ partner.category|lower }}">
+                                <div class="partners-integrations__card-header">
+                                    <div class="partners-integrations__card-logo">
+                                        <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-integrations__card-image">
+                                    </div>
+                                    <div class="partners-integrations__card-info">
+                                        <div class="partners-integrations__card-title">{{ partner.name }}</div>
+                                        <div class="partners-integrations__card-status partners-integrations__card-status--{{ partner.status }}">
+                                            {% if partner.status == 'active' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Disponible</span>
+                                            {% elseif partner.status == 'beta' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Beta</span>
+                                            {% else %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Bientôt</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="partners-integrations__card-description">{{ partner.description }}</p>
+
+                                <ul class="partners-integrations__card-features">
+                                    {% for feature in partner.features %}
+                                        <li class="partners-integrations__card-feature">
+                                            <svg class="partners-integrations__feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {{ feature }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                <div class="partners-integrations__card-footer">
+                                    <a href="{{ partner.link }}" class="partners-integrations__card-button">
+                                        {% if partner.status == 'active' %}
+                                            Configurer
+                                        {% elseif partner.status == 'beta' %}
+                                            Tester la beta
+                                        {% else %}
+                                            En savoir plus
+                                        {% endif %}
+                                        <svg class="partners-integrations__button-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Cloud Partners #}
+                <div class="partners-integrations__category">
+                    <h3 class="partners-integrations__category-title">
+                        <svg class="partners-integrations__category-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 10H22L20 6L18 10Z"/>
+                            <path d="M14 10H18L16 6L14 10Z"/>
+                            <path d="M10 10H14L12 6L10 10Z"/>
+                            <path d="M6 10H10L8 6L6 10Z"/>
+                            <path d="M2 10H6L4 6L2 10Z"/>
+                            <path d="M2 10V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V10"/>
+                        </svg>
+                        Plateformes Cloud
+                    </h3>
+                    <div class="partners-integrations__grid">
+                        {% for partner in partners.cloud %}
+                            <div class="partners-integrations__card" data-category="{{ partner.category|lower }}">
+                                <div class="partners-integrations__card-header">
+                                    <div class="partners-integrations__card-logo">
+                                        <img src="{{ partner.logo }}" alt="{{ partner.name }}" class="partners-integrations__card-image">
+                                    </div>
+                                    <div class="partners-integrations__card-info">
+                                        <div class="partners-integrations__card-title">{{ partner.name }}</div>
+                                        <div class="partners-integrations__card-status partners-integrations__card-status--{{ partner.status }}">
+                                            {% if partner.status == 'active' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Disponible</span>
+                                            {% elseif partner.status == 'beta' %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Beta</span>
+                                            {% else %}
+                                                <div class="partners-integrations__status-dot"></div>
+                                                <span>Bientôt</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="partners-integrations__card-description">{{ partner.description }}</p>
+
+                                <ul class="partners-integrations__card-features">
+                                    {% for feature in partner.features %}
+                                        <li class="partners-integrations__card-feature">
+                                            <svg class="partners-integrations__feature-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {{ feature }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+
+                                <div class="partners-integrations__card-footer">
+                                    <a href="{{ partner.link }}" class="partners-integrations__card-button">
+                                        {% if partner.status == 'active' %}
+                                            Configurer
+                                        {% elseif partner.status == 'beta' %}
+                                            Tester la beta
+                                        {% else %}
+                                            En savoir plus
+                                        {% endif %}
+                                        <svg class="partners-integrations__button-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {# CTA Section #}
+        <section class="partners-cta">
+            <div class="partners-cta__container">
+                <div class="partners-cta__content">
+                    <h2 class="partners-cta__title">Vous ne trouvez pas votre outil ?</h2>
+                    <p class="partners-cta__description">
+                        Contactez-nous pour discuter d'une intégration personnalisée.
+                    </p>
+                    <div class="partners-cta__buttons">
+                        <a href="{{ path('contact') }}" class="partners-cta__button partners-cta__button--primary">
+                            <span class="partners-cta__button-text">Demander une intégration</span>
+                            <svg class="partners-cta__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

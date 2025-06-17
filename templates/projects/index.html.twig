@@ -127,7 +127,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
     <script src="/bundles/datatables/js/datatables.js"></script>
-    
+
     <script>
         // Configuration des routes pour les actions AJAX
         window.routes = {
@@ -135,11 +135,11 @@
             projects_toggle_status: '{{ path('projects_toggle_status', { id: '__ID__' }) }}',
             projects_delete: '{{ path('projects_delete', { id: '__ID__' }) }}'
         };
-        
+
         // Configuration DataTable depuis le contrôleur
         window.datatableSettings = {{ datatable_settings(datatable) }};
     </script>
-    
+
     <script src="{{ asset('js/Dashboard/datatables/actions.js') }}"></script>
     <script src="{{ asset('js/Dashboard/datatables/projects.js') }}"></script>
     <script src="{{ asset('js/Dashboard/datatables/init.js') }}"></script>
@@ -147,26 +147,24 @@
         // Fonction d'export des projets
         function exportProjects() {
             const format = prompt('Format d\'export (csv, json, xlsx):', 'csv');
-            console.log('Format sélectionné:', format);
-            
+
             if (!format || !['csv', 'json', 'xlsx'].includes(format.toLowerCase())) {
                 alert('Format non supporté. Formats disponibles: csv, json, xlsx');
                 return;
             }
-            
+
             // Créer un lien de téléchargement
             const downloadUrl = '{{ path('projects_export') }}?format=' + format.toLowerCase();
-            console.log('URL de téléchargement:', downloadUrl);
-            
+
             // Afficher une notification de début d'export
             if (window.showNotification) {
                 window.showNotification('Export en cours...', 'info');
             }
-            
+
             try {
                 // Utiliser window.open pour tester d'abord
                 window.open(downloadUrl, '_blank');
-                
+
                 // Notification de succès après un délai
                 setTimeout(() => {
                     if (window.showNotification) {

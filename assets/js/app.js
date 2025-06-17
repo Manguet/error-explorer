@@ -9,6 +9,7 @@ import './Site/CookieManager.js';
 import './Site/CTAComponents.js';
 import './Site/HeroComponent.js';
 import './Site/NotificationSystem.js';
+import './Site/PartnersComponent.js';
 import './Site/LoadingManager.js';
 import './Site/ModalManager.js';
 import './Site/PricingComponent.js';
