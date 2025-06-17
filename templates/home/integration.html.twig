@@ -24,7 +24,7 @@
 
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number">50+</div>
+                        <div class="stat-number">20+</div>
                         <div class="stat-label">Frameworks supportés</div>
                     </div>
                     <div class="stat">
@@ -32,7 +32,7 @@
                         <div class="stat-label">Temps d'installation</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number">3</div>
+                        <div class="stat-number">~4</div>
                         <div class="stat-label">Lignes de code</div>
                     </div>
                 </div>
@@ -83,13 +83,15 @@
                                 <div class="step-content">
                                     <h3>Installation du bundle</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="composer require error-explorer/symfony-bundle">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button class="copy-btn"
+                                                data-code="composer require error-explorer/error-reporter">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>composer require error-explorer/symfony-bundle</code></pre>
+                                        <pre><code>composer require error-explorer/error-reporter</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -99,23 +101,36 @@
                                 <div class="step-content">
                                     <h3>Configuration</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="# config/packages/error_explorer.yaml
-error_explorer:
-    webhook_url: '%env(ERROR_EXPLORER_WEBHOOK_URL)%'
-    project_name: '%env(ERROR_EXPLORER_PROJECT_NAME)%'
-    environment: '%kernel.environment%'
-    enabled: true">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button class="copy-btn" data-code="# config/packages/error_reporter.yaml
+error_reporter:
+    webhook_url: '%env(ERROR_WEBHOOK_URL)%'
+    token: '%env(ERROR_WEBHOOK_TOKEN)%'
+    project_name: '%env(PROJECT_NAME)%'
+    enabled: '%env(bool:ERROR_REPORTING_ENABLED)%'
+    ignore_exceptions:
+        - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+        - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+
+# For Symfony 4.4/5.x compatibility, you may need to adjust the env processor syntax:
+# enabled: '%env(resolve:default:true:bool:ERROR_REPORTING_ENABLED)%'">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code># config/packages/error_explorer.yaml
-error_explorer:
-    webhook_url: '%env(ERROR_EXPLORER_WEBHOOK_URL)%'
-    project_name: '%env(ERROR_EXPLORER_PROJECT_NAME)%'
-    environment: '%kernel.environment%'
-    enabled: true</code></pre>
+                                        <pre><code># config/packages/error_reporter.yaml
+error_reporter:
+    webhook_url: '%env(ERROR_WEBHOOK_URL)%'
+    token: '%env(ERROR_WEBHOOK_TOKEN)%'
+    project_name: '%env(PROJECT_NAME)%'
+    enabled: '%env(bool:ERROR_REPORTING_ENABLED)%'
+    ignore_exceptions:
+        - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+        - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+
+# For Symfony 4.4/5.x compatibility, you may need to adjust the env processor syntax:
+# enabled: '%env(resolve:default:true:bool:ERROR_REPORTING_ENABLED)%'</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -126,16 +141,21 @@ error_explorer:
                                     <h3>Variables d'environnement</h3>
                                     <div class="code-block">
                                         <button class="copy-btn" data-code="# .env
-ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
-ERROR_EXPLORER_PROJECT_NAME=my-symfony-app">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
+ERROR_WEBHOOK_TOKEN=your-unique-project-token
+PROJECT_NAME=your-project-name
+ERROR_REPORTING_ENABLED=true">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
                                         <pre><code># .env
-ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
-ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
+ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
+ERROR_WEBHOOK_TOKEN=your-unique-project-token
+PROJECT_NAME=your-project-name
+ERROR_REPORTING_ENABLED=true</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +164,8 @@ ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
                                 <div class="success-icon">✓</div>
                                 <div class="success-content">
                                     <h4>C'est tout ! 🎉</h4>
-                                    <p>Toutes vos erreurs sont maintenant automatiquement capturées et envoyées à Error Explorer.</p>
+                                    <p>Toutes vos erreurs sont maintenant automatiquement capturées et envoyées à Error
+                                        Explorer.</p>
                                 </div>
                             </div>
                         </div>
@@ -157,13 +178,15 @@ ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
                                 <div class="step-content">
                                     <h3>Installation du package</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="composer require error-explorer/laravel-package">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button class="copy-btn"
+                                                data-code="composer require error-explorer/laravel-error-reporter">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>composer require error-explorer/laravel-package</code></pre>
+                                        <pre><code>composer require error-explorer/laravel-error-reporter</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -173,13 +196,15 @@ ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
                                 <div class="step-content">
                                     <h3>Publication de la configuration</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="php artisan vendor:publish --tag=error-explorer-config">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button class="copy-btn"
+                                                data-code="php artisan vendor:publish --tag=error-reporter-config">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>php artisan vendor:publish --tag=error-explorer-config</code></pre>
+                                        <pre><code>php artisan vendor:publish --tag=error-reporter-config</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -189,17 +214,20 @@ ERROR_EXPLORER_PROJECT_NAME=my-symfony-app</code></pre>
                                 <div class="step-content">
                                     <h3>Configuration .env</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
-ERROR_EXPLORER_PROJECT_NAME=my-laravel-app
-ERROR_EXPLORER_ENABLED=true">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button class="copy-btn" data-code="ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
+ERROR_WEBHOOK_TOKEN=your-unique-project-token
+ERROR_PROJECT_NAME='My Laravel App'
+ERROR_REPORTING_ENABLED=true">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
-ERROR_EXPLORER_PROJECT_NAME=my-laravel-app
-ERROR_EXPLORER_ENABLED=true</code></pre>
+                                        <pre><code>ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
+ERROR_WEBHOOK_TOKEN=your-unique-project-token
+ERROR_PROJECT_NAME='My Laravel App'
+ERROR_REPORTING_ENABLED=true</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +236,8 @@ ERROR_EXPLORER_ENABLED=true</code></pre>
                                 <div class="success-icon">✓</div>
                                 <div class="success-content">
                                     <h4>Terminé ! 🚀</h4>
-                                    <p>Laravel va maintenant envoyer automatiquement toutes les exceptions à Error Explorer.</p>
+                                    <p>Laravel va maintenant envoyer automatiquement toutes les exceptions à Error
+                                        Explorer.</p>
                                 </div>
                             </div>
                         </div>
@@ -222,16 +251,17 @@ ERROR_EXPLORER_ENABLED=true</code></pre>
                                     <h3>Installation du plugin</h3>
                                     <div class="code-block">
                                         <button class="copy-btn" data-code="# Via Composer (recommandé)
-composer require error-explorer/wordpress-plugin
+composer require error-explorer/wordpress-error-reporter
 
 # Ou télécharger depuis WordPress.org">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
                                         <pre><code># Via Composer (recommandé)
-composer require error-explorer/wordpress-plugin
+composer require error-explorer/wordpress-error-reporter
 
 # Ou télécharger depuis WordPress.org</code></pre>
                                     </div>
@@ -241,38 +271,40 @@ composer require error-explorer/wordpress-plugin
                             <div class="step">
                                 <div class="step-number">2</div>
                                 <div class="step-content">
-                                    <h3>Configuration dans wp-config.php</h3>
+                                    <h3>Configuration</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="// wp-config.php
-define('ERROR_EXPLORER_WEBHOOK_URL', 'https://your-domain.com/webhook/project-token');
-define('ERROR_EXPLORER_PROJECT_NAME', 'my-wordpress-site');
-define('ERROR_EXPLORER_ENABLED', true);">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                                            </svg>
-                                        </button>
-                                        <pre><code>// wp-config.php
-define('ERROR_EXPLORER_WEBHOOK_URL', 'https://your-domain.com/webhook/project-token');
-define('ERROR_EXPLORER_PROJECT_NAME', 'my-wordpress-site');
-define('ERROR_EXPLORER_ENABLED', true);</code></pre>
-                                    </div>
-                                </div>
-                            </div>
+                                        <button class="copy-btn" data-code="require_once 'vendor/autoload.php';
 
-                            <div class="step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">
-                                    <h3>Activation du plugin</h3>
-                                    <p>Activez le plugin "Error Explorer" depuis l'interface d'administration WordPress ou via WP-CLI :</p>
-                                    <div class="code-block">
-                                        <button class="copy-btn" data-code="wp plugin activate error-explorer">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+use ErrorExplorer\WordPressErrorReporter\ErrorReporter;
+
+$errorReporter = new ErrorReporter('YOUR_WEBHOOK_URL', [
+    'environment' => wp_get_environment_type(),
+    'project_name' => 'My WordPress Site',
+    'capture_request_data' => true,
+    'capture_session_data' => true,
+    'capture_server_data' => true,
+]);
+
+$errorReporter->register();">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>wp plugin activate error-explorer</code></pre>
+                                        <pre><code>require_once 'vendor/autoload.php';
+
+use ErrorExplorer\WordPressErrorReporter\ErrorReporter;
+
+$errorReporter = new ErrorReporter('YOUR_WEBHOOK_URL', [
+    'environment' => wp_get_environment_type(),
+    'project_name' => 'My WordPress Site',
+    'capture_request_data' => true,
+    'capture_session_data' => true,
+    'capture_server_data' => true,
+]);
+
+$errorReporter->register();</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -294,17 +326,18 @@ define('ERROR_EXPLORER_ENABLED', true);</code></pre>
                                 <div class="step-content">
                                     <h3>Installation du package</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="npm install @error-explorer/react
+                                        <button class="copy-btn" data-code="npm install @error-explorer/react-error-reporter
 # ou
-yarn add @error-explorer/react">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+yarn add @error-explorer/react-error-reporter">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>npm install @error-explorer/react
+                                        <pre><code>npm install @error-explorer/react-error-reporter
 # ou
-yarn add @error-explorer/react</code></pre>
+yarn add @error-explorer/react-error-reporter</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -315,28 +348,47 @@ yarn add @error-explorer/react</code></pre>
                                     <h3>Initialisation</h3>
                                     <div class="code-block">
                                         <button class="copy-btn" data-code="// src/index.js ou src/App.js
-import { ErrorExplorer } from '@error-explorer/react';
+import React from 'react';
+import { ErrorReporterProvider } from '@error-explorer/react-error-reporter';
 
-ErrorExplorer.init({
-  webhookUrl: 'https://your-domain.com/webhook/project-token',
-  projectName: 'my-react-app',
-  environment: process.env.NODE_ENV,
-  userId: user?.id, // optionnel
-});">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+function App() {
+  return (
+    <ErrorReporterProvider
+      config={
+        projectToken: 'your-project-token',
+        apiUrl: 'https://your-error-explorer-instance.com',
+        environment: 'production',
+        debug: process.env.NODE_ENV === 'development',
+        }
+    >
+      <YourApp />
+    </ErrorReporterProvider>
+  );
+}">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
                                         <pre><code>// src/index.js ou src/App.js
-import { ErrorExplorer } from '@error-explorer/react';
+import React from 'react';
+import { ErrorReporterProvider } from '@error-explorer/react-error-reporter';
 
-ErrorExplorer.init({
-  webhookUrl: 'https://your-domain.com/webhook/project-token',
-  projectName: 'my-react-app',
-  environment: process.env.NODE_ENV,
-  userId: user?.id, // optionnel
-});</code></pre>
+function App() {
+  return (
+    &lt;ErrorReporterProvider&gt;
+        config={
+            projectToken: 'your-project-token',
+            apiUrl: 'https://your-error-explorer-instance.com',
+            environment: 'production',
+            debug: process.env.NODE_ENV === 'development',
+        }
+    >
+      &lt;YourApp /&gt;
+    &lt;/ErrorReporterProvider&gt;
+  );
+}</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -346,37 +398,43 @@ ErrorExplorer.init({
                                 <div class="step-content">
                                     <h3>Error Boundary (optionnel)</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="import { ErrorBoundary } from '@error-explorer/react';
+                                        <button class="copy-btn" data-code="import React from 'react';
+import { ErrorBoundary, useErrorReporter } from '@error-explorer/react-error-reporter';
 
-function App() {
+function YourApp() {
+  const { errorReporter } = useErrorReporter();
+
   return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
-      <Router>
-        <Routes>
-          {/* vos routes */}
-        </Routes>
-      </Router>
+    <ErrorBoundary
+      errorReporter={errorReporter}
+      fallback={<div>Something went wrong!</div>}
+    >
+      <YourComponents />
     </ErrorBoundary>
   );
 }">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>import { ErrorBoundary } from '@error-explorer/react';
+                                        <pre><code>import React from 'react';
+import { ErrorBoundary, useErrorReporter } from '@error-explorer/react-error-reporter';
 
-function App() {
+function YourApp() {
+  const { errorReporter } = useErrorReporter();
+
   return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
-      <Router>
-        <Routes>
-          {/* vos routes */}
-        </Routes>
-      </Router>
-                                                </ErrorBoundary>
-                                                );
-}</code></pre>
+    &lt;ErrorBoundary
+            errorReporter={errorReporter}
+            fallback={&lt;div&gt;Something went wrong!&lt;/div&gt;}
+    &gt;
+        &lt;YourComponents /&gt;
+        &lt;/ErrorBoundary&gt;
+    );
+}
+                                    </code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -385,7 +443,8 @@ function App() {
                                 <div class="success-icon">✓</div>
                                 <div class="success-content">
                                     <h4>Excellent ! ⚛️</h4>
-                                    <p>React capture maintenant toutes les erreurs JavaScript et les erreurs de rendu.</p>
+                                    <p>React capture maintenant toutes les erreurs JavaScript et les erreurs de
+                                        rendu.</p>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +460,8 @@ function App() {
                                         <button class="copy-btn" data-code="npm install @error-explorer/node
 # ou
 yarn add @error-explorer/node">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -430,7 +490,8 @@ ErrorExplorer.init({
 // Capture des erreurs non gérées
 process.on('uncaughtException', ErrorExplorer.captureException);
 process.on('unhandledRejection', ErrorExplorer.captureException);">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -460,7 +521,8 @@ process.on('unhandledRejection', ErrorExplorer.captureException);</code></pre>
 ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
 ERROR_EXPLORER_PROJECT_NAME=my-node-app
 NODE_ENV=production">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -493,7 +555,8 @@ NODE_ENV=production</code></pre>
                                         <button class="copy-btn" data-code="pip install error-explorer-python
 # ou
 poetry add error-explorer-python">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -528,7 +591,8 @@ INSTALLED_APPS = [
 # Flask: utiliser le décorateur
 from error_explorer.flask import capture_exceptions
 app = capture_exceptions(app)">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -564,7 +628,8 @@ app = capture_exceptions(app)</code></pre>
 ERROR_EXPLORER_WEBHOOK_URL=https://your-domain.com/webhook/project-token
 ERROR_EXPLORER_PROJECT_NAME=my-python-app
 ENVIRONMENT=production">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
@@ -613,22 +678,22 @@ ENVIRONMENT=production</code></pre>
                             <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/django.svg" alt="Django">
+                            <img src="{{ asset('images/tech/django.svg') }}" alt="Django">
                             <span>Django</span>
-                            <div class="status coming-soon">Bientôt</div>
+                            <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/flask.svg" alt="Flask">
+                            <img src="{{ asset('images/tech/flask.svg') }}" alt="Flask">
                             <span>Flask</span>
-                            <div class="status coming-soon">Bientôt</div>
+                            <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/express.svg" alt="Express.js">
+                            <img src="{{ asset('images/tech/express.svg') }}" alt="Express.js">
                             <span>Express.js</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/spring.svg" alt="Spring Boot">
+                            <img src="{{ asset('images/tech/spring.svg') }}" alt="Spring Boot">
                             <span>Spring Boot</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
@@ -644,27 +709,27 @@ ENVIRONMENT=production</code></pre>
                             <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/vue.svg" alt="Vue.js">
+                            <img src="{{ asset('images/tech/vuejs.svg') }}" alt="Vue.js">
                             <span>Vue.js</span>
-                            <div class="status coming-soon">Bientôt</div>
+                            <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/angular.svg" alt="Angular">
+                            <img src="{{ asset('images/tech/angular.svg') }}" alt="Angular">
                             <span>Angular</span>
-                            <div class="status coming-soon">Bientôt</div>
+                            <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/svelte.svg" alt="Svelte">
+                            <img src="{{ asset('images/tech/svelte.svg') }}" alt="Svelte">
                             <span>Svelte</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/nextjs.svg" alt="Next.js">
+                            <img src="{{ asset('images/tech/nextjs.svg') }}" alt="Next.js">
                             <span>Next.js</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/nuxt.svg" alt="Nuxt.js">
+                            <img src="{{ asset('images/tech/nuxt.svg') }}" alt="Nuxt.js">
                             <span>Nuxt.js</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
@@ -675,32 +740,32 @@ ENVIRONMENT=production</code></pre>
                     <h3>CMS & E-commerce</h3>
                     <div class="integration-list">
                         <div class="integration-item">
-                            <img src="/{{ asset('images/tech/wordpress.svg') }}" alt="WordPress">
+                            <img src="{{ asset('images/tech/wordpress.svg') }}" alt="WordPress">
                             <span>WordPress</span>
                             <div class="status available">Disponible</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/drupal.svg" alt="Drupal">
+                            <img src="{{ asset('images/tech/drupal.svg') }}" alt="Drupal">
                             <span>Drupal</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/magento.svg" alt="Magento">
+                            <img src="{{ asset('images/tech/magento.svg') }}" alt="Magento">
                             <span>Magento</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/shopify.svg" alt="Shopify">
+                            <img src="{{ asset('images/tech/shopify.svg') }}" alt="Shopify">
                             <span>Shopify</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/prestashop.svg" alt="PrestaShop">
+                            <img src="{{ asset('images/tech/prestashop.svg') }}" alt="PrestaShop">
                             <span>PrestaShop</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/woocommerce.svg" alt="WooCommerce">
+                            <img src="{{ asset('images/tech/woocommerce.svg') }}" alt="WooCommerce">
                             <span>WooCommerce</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
@@ -711,32 +776,32 @@ ENVIRONMENT=production</code></pre>
                     <h3>Langages</h3>
                     <div class="integration-list">
                         <div class="integration-item">
-                            <img src="/images/tech/php.svg" alt="PHP">
+                            <img src="{{ asset('images/tech/php.svg') }}" alt="PHP">
                             <span>PHP</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/javascript.svg" alt="JavaScript">
+                            <img src="{{ asset('images/tech/javascript.svg') }}" alt="JavaScript">
                             <span>JavaScript</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/typescript.svg" alt="TypeScript">
+                            <img src="{{ asset('images/tech/typescript.svg') }}" alt="TypeScript">
                             <span>TypeScript</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/python.svg" alt="Python">
+                            <img src="{{ asset('images/tech/python.svg') }}" alt="Python">
                             <span>Python</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/ruby.svg" alt="Ruby">
+                            <img src="{{ asset('images/tech/ruby.svg') }}" alt="Ruby">
                             <span>Ruby</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
                         <div class="integration-item">
-                            <img src="/images/tech/go.svg" alt="Go">
+                            <img src="{{ asset('images/tech/go.svg') }}" alt="Go">
                             <span>Go</span>
                             <div class="status coming-soon">Bientôt</div>
                         </div>
@@ -757,7 +822,8 @@ ENVIRONMENT=production</code></pre>
                 <div class="manual-integration-grid">
                     <div class="manual-step">
                         <div class="step-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
                                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                             </svg>
                         </div>
@@ -767,7 +833,8 @@ ENVIRONMENT=production</code></pre>
 
                     <div class="manual-step">
                         <div class="step-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
                                 <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                                 <path d="M2 17l10 5 10-5"/>
                                 <path d="M2 12l10 5 10-5"/>
@@ -779,7 +846,8 @@ ENVIRONMENT=production</code></pre>
 
                     <div class="manual-step">
                         <div class="step-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
                                 <path d="M15 7l-6 6 6 6"/>
                                 <path d="M9 7l-6 6 6 6"/>
                             </svg>
@@ -816,7 +884,8 @@ ENVIRONMENT=production</code></pre>
     "user": {"id": 123, "email": "user@example.com"}
   }
 }'>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                             </svg>
@@ -863,7 +932,8 @@ ENVIRONMENT=production</code></pre>
                 <div class="cta-actions">
                     <a href="{{ path('app_register') }}" class="btn btn-primary">
                         <span>Créer un compte gratuit</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     </a>

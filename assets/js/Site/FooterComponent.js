@@ -593,24 +593,7 @@ class FooterComponent {
  * Initialisation automatique au chargement du DOM
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialisation du footer
     window.footerComponent = new FooterComponent();
-
-    // Exemples d'utilisation des événements personnalisés
-    document.addEventListener('footer:statusChanged', (e) => {
-        console.log(`Statut changé de ${e.detail.oldStatus} vers ${e.detail.newStatus}`);
-    });
-
-    // Test de changement de statut (pour le développement)
-    if (window.location.search.includes('debug=footer')) {
-        setTimeout(() => {
-            window.footerComponent.forceStatusUpdate('degraded');
-        }, 3000);
-
-        setTimeout(() => {
-            window.footerComponent.forceStatusUpdate('operational');
-        }, 6000);
-    }
 });
 
 // Export pour utilisation externe

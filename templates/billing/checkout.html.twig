@@ -20,7 +20,6 @@
 <div class="dashboard-section">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Plan sélectionné -->
             <div class="data-section">
                 <div class="section-header">
                     <div>
@@ -40,7 +39,7 @@
                                     <span class="badge badge-primary">Populaire</span>
                                 {% endif %}
                             </div>
-                            
+
                             <div class="plan-summary-price">
                                 {% if billing_period == 'yearly' and plan.priceYearly %}
                                     <div class="price-main">{{ (plan.priceYearly / 12)|number_format(2, ',', ' ') }}€ <span class="price-period">/ mois</span></div>
@@ -111,7 +110,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Actions -->
                         <div class="checkout-actions">
                             <button id="checkout-button" class="btn btn-primary btn-lg">
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +121,7 @@
                                     Finaliser le paiement
                                 {% endif %}
                             </button>
-                            
+
                             <a href="{{ path('pricing') }}" class="btn btn-secondary">
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -181,7 +179,7 @@
             } catch (error) {
                 console.error('Erreur checkout:', error);
                 alert('Une erreur est survenue : ' + error.message);
-                
+
                 // Réactiver le bouton
                 this.disabled = false;
                 this.innerHTML = '{% if plan.trialDays and plan.trialDays > 0 %}Commencer l\'essai gratuit{% else %}Finaliser le paiement{% endif %}';
