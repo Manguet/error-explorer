@@ -15,6 +15,7 @@ import './Site/ModalManager.js';
 import './Site/PricingComponent.js';
 import './Site/PricingPage.js';
 import './Site/StatsComponent.js';
+import './Site/SecurityPage.js';
 import './Site/TooltipManager.js';
 
 import './Site/auth.js';

@@ -1,0 +1,167 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Sécurité et Confidentialité - Error Explorer{% endblock %}
+
+{% block body %}
+    <main class="security-page">
+        <!-- Hero Section -->
+        <section class="security-hero">
+            <div class="security-hero__container">
+                <div class="security-hero__content">
+                    <div class="security-hero__badge">
+                        <svg class="security-hero__badge-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                        <span class="security-hero__badge-text">Sécurité & Confidentialité</span>
+                    </div>
+
+                    <h1 class="security-hero__title">
+                        Votre sécurité est notre
+                        <span class="security-hero__title-highlight">priorité absolue</span>
+                    </h1>
+
+                    <p class="security-hero__description">
+                        Nous appliquons les standards de sécurité les plus élevés pour protéger vos données
+                        et garantir la confidentialité de vos informations sensibles.
+                    </p>
+                </div>
+
+                <div class="security-hero__visual">
+                    <div class="security-hero__shield">
+                        <svg class="security-hero__shield-icon" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
+                        <div class="security-hero__shield-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Measures Section -->
+        <section class="security-measures">
+            <div class="security-measures__container">
+                <div class="security-measures__header">
+                    <h2 class="security-measures__title">Mesures de Protection</h2>
+                    <p class="security-measures__description">
+                        Une approche multicouche pour garantir la sécurité de vos données
+                    </p>
+                </div>
+
+                <div class="security-measures__grid">
+                    {% for measure in security_data.security_measures %}
+                        <div class="security-measure" data-security-measure>
+                            <div class="security-measure__icon">
+                                <svg class="security-measure__icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    {% if measure.icon == 'shield-check' %}
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        <path d="m9 12 2 2 4-4"/>
+                                    {% elseif measure.icon == 'key' %}
+                                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                                    {% elseif measure.icon == 'eye-off' %}
+                                        <path d="m9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                        <line x1="2" x2="22" y1="2" y2="22"/>
+                                    {% elseif measure.icon == 'server' %}
+                                        <rect width="20" height="8" x="2" y="2" rx="2" ry="2"/>
+                                        <rect width="20" height="8" x="2" y="14" rx="2" ry="2"/>
+                                        <line x1="6" x2="6.01" y1="6" y2="6"/>
+                                        <line x1="6" x2="6.01" y1="18" y2="18"/>
+                                    {% elseif measure.icon == 'users' %}
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="9" cy="7" r="4"/>
+                                        <path d="m22 21-3-3"/>
+                                        <path d="M19 14c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4c0 .4.1.8.2 1.1"/>
+                                    {% elseif measure.icon == 'activity' %}
+                                        <path d="m22 12-4-4-6 6-4-4-4 4"/>
+                                        <path d="M2 12h20"/>
+                                    {% endif %}
+                                </svg>
+                            </div>
+
+                            <div class="security-measure__content">
+                                <h3 class="security-measure__title">{{ measure.title }}</h3>
+                                <p class="security-measure__description">{{ measure.description }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Features Section -->
+        <section class="security-privacy">
+            <div class="security-privacy__container">
+                <div class="security-privacy__content">
+                    <div class="security-privacy__header">
+                        <h2 class="security-privacy__title">Protection de la Vie Privée</h2>
+                        <p class="security-privacy__description">
+                            Nous respectons votre vie privée et vous donnons le contrôle total sur vos données
+                        </p>
+                    </div>
+
+                    <div class="security-privacy__features">
+                        {% for feature in security_data.privacy_features %}
+                            <div class="security-privacy__feature" data-privacy-feature>
+                                <div class="security-privacy__feature-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </div>
+                                <div class="security-privacy__feature-content">
+                                    <h3 class="security-privacy__feature-title">{{ feature.title }}</h3>
+                                    <p class="security-privacy__feature-description">{{ feature.description }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="security-privacy__visual">
+                    <div class="security-privacy__lock">
+                        <svg class="security-privacy__lock-icon" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <div class="security-privacy__lock-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Security Section -->
+        <section class="security-contact">
+            <div class="security-contact__container">
+                <div class="security-contact__content">
+                    <h2 class="security-contact__title">Une question sur la sécurité ?</h2>
+                    <p class="security-contact__description">
+                        Notre équipe de sécurité est à votre disposition pour répondre à toutes vos questions
+                    </p>
+
+                    <div class="security-contact__actions">
+                        <a href="{{ path('contact') }}" class="security-contact__button security-contact__button--primary">
+                            <svg class="security-contact__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            Nous contacter
+                        </a>
+
+                        <a href="{{ path('privacy') }}" class="security-contact__button security-contact__button--secondary">
+                            <svg class="security-contact__button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" x2="8" y1="13" y2="13"/>
+                                <line x1="16" x2="8" y1="17" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            Politique de confidentialité
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

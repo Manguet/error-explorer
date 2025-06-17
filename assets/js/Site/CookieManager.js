@@ -120,7 +120,7 @@ export default class CookieManager {
         this.loadStoredPreferences();
         this.bindEvents();
         this.checkConsentValidity();
-console.log('Cookie Manager components initialized', this.hasValidConsent());
+
         if (!this.hasValidConsent()) {
             this.showBanner();
         } else {
