@@ -1,0 +1,238 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Changelog - Error Explorer{% endblock %}
+
+{% block body %}
+    <main class="changelog">
+        {# Hero Section #}
+        <section class="changelog__hero">
+            <div class="changelog__hero-container">
+                <div class="changelog__hero-content">
+                    <h1 class="changelog__hero-title">
+                        <span class="changelog__hero-icon">📝</span>
+                        Changelog
+                    </h1>
+                    <p class="changelog__hero-description">
+                        Suivez l'évolution d'Error Explorer avec toutes les nouvelles fonctionnalités,
+                        améliorations et corrections apportées à chaque version.
+                    </p>
+
+                    {% if latest_version %}
+                        <div class="changelog__hero-badge">
+                            <span class="changelog__hero-badge-label">Dernière version</span>
+                            <span class="changelog__hero-badge-version">{{ latest_version.version }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="changelog__hero-stats">
+                    <div class="changelog__hero-stat">
+                        <span class="changelog__hero-stat-number">{{ stats.total_versions ?? changelog|length }}</span>
+                        <span class="changelog__hero-stat-label">Versions</span>
+                    </div>
+                    <div class="changelog__hero-stat">
+                        <span class="changelog__hero-stat-number">{{ stats.major_versions ?? changelog|filter(v => v.type == 'major')|length }}</span>
+                        <span class="changelog__hero-stat-label">Majeures</span>
+                    </div>
+                    <div class="changelog__hero-stat">
+                        <span class="changelog__hero-stat-number">
+                            {{ stats.total_features ?? changelog|reduce((carry, v) => carry + v.features|length, 0) }}
+                        </span>
+                        <span class="changelog__hero-stat-label">Fonctionnalités</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="changelog__hero-background">
+                <div class="changelog__hero-grid"></div>
+                <div class="changelog__hero-particles">
+                    {% for i in 1..15 %}
+                        <div class="changelog__hero-particle"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {# Filters Section #}
+        <section class="changelog__filters">
+            <div class="changelog__filters-container">
+                <div class="changelog__filters-group">
+                    <button class="changelog__filter changelog__filter--active" data-filter="all">
+                        Toutes les versions
+                    </button>
+                    <button class="changelog__filter" data-filter="major">
+                        <span class="changelog__filter-icon changelog__filter-icon--major">🚀</span>
+                        Majeures
+                    </button>
+                    <button class="changelog__filter" data-filter="minor">
+                        <span class="changelog__filter-icon changelog__filter-icon--minor">✨</span>
+                        Mineures
+                    </button>
+                    <button class="changelog__filter" data-filter="patch">
+                        <span class="changelog__filter-icon changelog__filter-icon--patch">🔧</span>
+                        Corrections
+                    </button>
+                </div>
+
+                <div class="changelog__search">
+                    <input type="text"
+                           class="changelog__search-input"
+                           placeholder="Rechercher dans le changelog..."
+                           data-search>
+                    <div class="changelog__search-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {# Timeline Section #}
+        <section class="changelog__timeline">
+            <div class="changelog__timeline-container">
+                <div class="changelog__timeline-line"></div>
+
+                {% for entry in changelog %}
+                    <article class="changelog__entry"
+                             data-version="{{ entry.version }}"
+                             data-type="{{ entry.type }}"
+                             data-entry-index="{{ loop.index0 }}">
+
+                        <div class="changelog__entry-marker">
+                            <div class="changelog__entry-marker-dot changelog__entry-marker-dot--{{ entry.type }}">
+                                {% if entry.type == 'major' %}
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M9 11H6l3-9 3 9h-3v8l-3-4"/>
+                                    </svg>
+                                {% elseif entry.type == 'minor' %}
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="changelog__entry-content">
+                            <header class="changelog__entry-header">
+                                <div class="changelog__entry-meta">
+                                    <span class="changelog__entry-version changelog__entry-version--{{ entry.type }}">
+                                        v{{ entry.version }}
+                                    </span>
+                                    <span class="changelog__entry-type changelog__entry-type--{{ entry.type }}">
+                                        {% if entry.type == 'major' %}
+                                            Version majeure
+                                        {% elseif entry.type == 'minor' %}
+                                            Version mineure
+                                        {% else %}
+                                            Correction
+                                        {% endif %}
+                                    </span>
+                                    <time class="changelog__entry-date" datetime="{{ entry.date|date('Y-m-d') }}">
+                                        {{ entry.date|date('d/m/Y') }}
+                                    </time>
+                                </div>
+
+                                <h2 class="changelog__entry-title">{{ entry.title }}</h2>
+                                <p class="changelog__entry-description">{{ entry.description }}</p>
+                            </header>
+
+                            <div class="changelog__entry-body">
+                                {% if entry.features is not empty %}
+                                    <div class="changelog__features">
+                                        <h3 class="changelog__features-title">Nouveautés et améliorations</h3>
+                                        <ul class="changelog__features-list">
+                                            {% for feature in entry.features %}
+                                                <li class="changelog__feature changelog__feature--{{ feature.type }}">
+                                                    <div class="changelog__feature-icon">
+                                                        {% if feature.type == 'feature' %}
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                            </svg>
+                                                        {% elseif feature.type == 'improvement' %}
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                                            </svg>
+                                                        {% elseif feature.type == 'fix' %}
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                                                            </svg>
+                                                        {% elseif feature.type == 'security' %}
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                                            </svg>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="changelog__feature-content">
+                                                        <h4 class="changelog__feature-title">{{ feature.title }}</h4>
+                                                        <p class="changelog__feature-description">{{ feature.description }}</p>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% if entry.breaking_changes is not empty %}
+                                    <div class="changelog__breaking-changes">
+                                        <h3 class="changelog__breaking-changes-title">
+                                            <span class="changelog__breaking-changes-icon">⚠️</span>
+                                            Changements importants
+                                        </h3>
+                                        <ul class="changelog__breaking-changes-list">
+                                            {% for change in entry.breaking_changes %}
+                                                <li class="changelog__breaking-change">{{ change }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <footer class="changelog__entry-footer">
+                                <button class="changelog__entry-toggle" data-toggle="collapse" data-target="#details-{{ loop.index0 }}">
+                                    <span class="changelog__entry-toggle-text">Voir les détails</span>
+                                    <svg class="changelog__entry-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M6 9l6 6 6-6"/>
+                                    </svg>
+                                </button>
+                            </footer>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# Newsletter Section #}
+        <section class="changelog__newsletter">
+            <div class="changelog__newsletter-container">
+                <div class="changelog__newsletter-content">
+                    <h2 class="changelog__newsletter-title">Restez informé</h2>
+                    <p class="changelog__newsletter-description">
+                        Recevez les dernières mises à jour directement dans votre boîte mail
+                    </p>
+
+                    <form class="changelog__newsletter-form" data-newsletter-form>
+                        <div class="changelog__newsletter-input-group">
+                            <input type="email"
+                                   class="changelog__newsletter-input"
+                                   placeholder="votre@email.com"
+                                   required>
+                            <button type="submit" class="changelog__newsletter-button">
+                                <span class="changelog__newsletter-button-text">S'abonner</span>
+                                <svg class="changelog__newsletter-button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M22 2L11 13"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}

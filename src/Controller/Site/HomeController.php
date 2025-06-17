@@ -7,6 +7,7 @@ use App\Form\ContactType;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\PlanRepository;
 use App\Repository\UserRepository;
+use App\Service\Changelog\ChangelogParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,8 @@ class HomeController extends AbstractController
     public function __construct(
         private readonly PlanRepository $planRepository,
         private readonly UserRepository $userRepository,
-        private readonly ErrorGroupRepository $errorGroupRepository
+        private readonly ErrorGroupRepository $errorGroupRepository,
+        private readonly ChangelogParser $changelogParser
     ) {}
 
     #[Route('/', name: 'home')]
@@ -293,5 +295,65 @@ error_reporter:
         </body>
         </html>
         ');
+    }
+
+    #[Route('/changelog', name: 'changelog')]
+    public function changelog(): Response
+    {
+        try {
+            $changelog = $this->changelogParser->parse();
+            $latestVersion = $this->changelogParser->getLatestVersion();
+            $stats = $this->changelogParser->getStats();
+
+            return $this->render('home/changelog.html.twig', [
+                'changelog' => $changelog,
+                'latest_version' => $latestVersion,
+                'stats' => $stats
+            ]);
+
+        } catch (\Exception) {
+            $this->addFlash('error', 'Impossible de charger le changelog. Veuillez réessayer plus tard.');
+
+            return $this->render('home/changelog.html.twig', [
+                'changelog' => $this->getFallbackChangelogData(),
+                'latest_version' => null,
+                'stats' => [
+                    'total_versions' => 0,
+                    'major_versions' => 0,
+                    'minor_versions' => 0,
+                    'patch_versions' => 0,
+                    'total_features' => 0
+                ]
+            ]);
+        }
+    }
+
+    /**
+     * Données de fallback en cas d'erreur
+     */
+    private function getFallbackChangelogData(): array
+    {
+        return [
+            [
+                'version' => '2.1.0',
+                'date' => new \DateTime('2025-06-15'),
+                'type' => 'major',
+                'title' => 'Version Majeure avec Intelligence Artificielle',
+                'description' => 'Intégration de l\'IA et nouvelles fonctionnalités avancées.',
+                'features' => [
+                    [
+                        'type' => 'feature',
+                        'title' => 'Analyse IA des erreurs',
+                        'description' => 'Suggestions automatiques de résolution'
+                    ],
+                    [
+                        'type' => 'feature',
+                        'title' => 'Dashboards interactifs',
+                        'description' => 'Graphiques personnalisables et métriques temps réel'
+                    ]
+                ],
+                'breaking_changes' => []
+            ]
+        ];
     }
 }
