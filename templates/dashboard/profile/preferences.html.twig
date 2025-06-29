@@ -1,123 +1,109 @@
 {% extends 'dashboard/base.html.twig' %}
+{% form_theme form 'form/dashboard_form_theme.html.twig' %}
 
 {% block title %}Préférences - {{ parent() }}{% endblock %}
 
-{% block page_header %}
-    <div class="page-header">
-        <div class="page-header__content">
-            <nav class="breadcrumb">
-                <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
-                <span class="breadcrumb__separator">/</span>
-                <span class="breadcrumb__current">Préférences</span>
-            </nav>
-            <h1 class="page-header__title">Préférences</h1>
-            <p class="page-header__subtitle">Personnalisez vos notifications et vos paramètres</p>
-        </div>
-    </div>
+{% block page_title %}Préférences{% endblock %}
+{% block page_subtitle %}Personnalisez vos notifications et vos paramètres{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
+    <span class="breadcrumb__current">Préférences</span>
 {% endblock %}
 
-{% block content %}
-    <div class="profile-preferences">
-        <div class="profile-preferences__container">
-            {{ form_start(form, {'attr': {'class': 'form form--preferences'}}) }}
-                <div class="form__section">
-                    <h2 class="form__section-title">
-                        <i class="fas fa-envelope"></i>
-                        Notifications par email
-                    </h2>
-                    
-                    <div class="form__preferences-grid">
-                        <div class="form__preference-item">
-                            <div class="form__preference-content">
-                                <div class="form__preference-header">
-                                    {{ form_widget(form.emailAlertsEnabled) }}
-                                    {{ form_label(form.emailAlertsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
-                                </div>
-                                <p class="form__preference-help">{{ form.emailAlertsEnabled.vars.help }}</p>
+{% block header_actions %}
+    <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+        <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+        </svg>
+        <span class="btn__text">Retour</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div class="dashboard-table-container-header">
+                <h3>Préférences</h3>
+            </div>
+            <div style="padding: 2rem;">
+                {{ form_start(form, {'attr': {'class': 'dashboard-form'}}) }}
+                    <div class="dashboard-form__field">
+                        <h4 class="dashboard-form__section-header">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Notifications par email
+                        </h4>
+                        
+                        <div class="dashboard-form__checkbox-wrapper">
+                            <div class="dashboard-form__checkbox-header">
+                                <label class="dashboard-form__toggle">
+                                    {{ form_widget(form.emailAlertsEnabled, {'attr': {'class': 'dashboard-form__toggle-input'}}) }}
+                                    <span class="dashboard-form__toggle-slider"></span>
+                                </label>
+                                <label class="dashboard-form__checkbox-label">{{ form.emailAlertsEnabled.vars.label }}</label>
                             </div>
+                            <p class="dashboard-form__checkbox-help">{{ form.emailAlertsEnabled.vars.help }}</p>
                             {{ form_errors(form.emailAlertsEnabled) }}
                         </div>
-
-                        <div class="form__preference-item">
-                            <div class="form__preference-content">
-                                <div class="form__preference-header">
-                                    {{ form_widget(form.criticalAlertsEnabled) }}
-                                    {{ form_label(form.criticalAlertsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
-                                </div>
-                                <p class="form__preference-help">{{ form.criticalAlertsEnabled.vars.help }}</p>
+                        
+                        <div class="dashboard-form__checkbox-wrapper">
+                            <div class="dashboard-form__checkbox-header">
+                                <label class="dashboard-form__toggle">
+                                    {{ form_widget(form.criticalAlertsEnabled, {'attr': {'class': 'dashboard-form__toggle-input'}}) }}
+                                    <span class="dashboard-form__toggle-slider"></span>
+                                </label>
+                                <label class="dashboard-form__checkbox-label">{{ form.criticalAlertsEnabled.vars.label }}</label>
                             </div>
+                            <p class="dashboard-form__checkbox-help">{{ form.criticalAlertsEnabled.vars.help }}</p>
                             {{ form_errors(form.criticalAlertsEnabled) }}
                         </div>
-
-                        <div class="form__preference-item">
-                            <div class="form__preference-content">
-                                <div class="form__preference-header">
-                                    {{ form_widget(form.weeklyReportsEnabled) }}
-                                    {{ form_label(form.weeklyReportsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
-                                </div>
-                                <p class="form__preference-help">{{ form.weeklyReportsEnabled.vars.help }}</p>
+                        
+                        <div class="dashboard-form__checkbox-wrapper">
+                            <div class="dashboard-form__checkbox-header">
+                                <label class="dashboard-form__toggle">
+                                    {{ form_widget(form.weeklyReportsEnabled, {'attr': {'class': 'dashboard-form__toggle-input'}}) }}
+                                    <span class="dashboard-form__toggle-slider"></span>
+                                </label>
+                                <label class="dashboard-form__checkbox-label">{{ form.weeklyReportsEnabled.vars.label }}</label>
                             </div>
+                            <p class="dashboard-form__checkbox-help">{{ form.weeklyReportsEnabled.vars.help }}</p>
                             {{ form_errors(form.weeklyReportsEnabled) }}
                         </div>
                     </div>
-                </div>
-
-                <div class="form__section">
-                    <h2 class="form__section-title">
-                        <i class="fas fa-shield-alt"></i>
-                        Sécurité
-                    </h2>
                     
-                    <div class="form__preferences-grid">
-                        <div class="form__preference-item">
-                            <div class="form__preference-content">
-                                <div class="form__preference-header">
-                                    {{ form_widget(form.loginNotificationsEnabled) }}
-                                    {{ form_label(form.loginNotificationsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
-                                </div>
-                                <p class="form__preference-help">{{ form.loginNotificationsEnabled.vars.help }}</p>
+                    <div class="dashboard-form__field">
+                        <h4 class="dashboard-form__section-header">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            Sécurité
+                        </h4>
+                        
+                        <div class="dashboard-form__checkbox-wrapper">
+                            <div class="dashboard-form__checkbox-header">
+                                <label class="dashboard-form__toggle">
+                                    {{ form_widget(form.loginNotificationsEnabled, {'attr': {'class': 'dashboard-form__toggle-input'}}) }}
+                                    <span class="dashboard-form__toggle-slider"></span>
+                                </label>
+                                <label class="dashboard-form__checkbox-label">{{ form.loginNotificationsEnabled.vars.label }}</label>
                             </div>
+                            <p class="dashboard-form__checkbox-help">{{ form.loginNotificationsEnabled.vars.help }}</p>
                             {{ form_errors(form.loginNotificationsEnabled) }}
                         </div>
                     </div>
-                </div>
-
-                <div class="form__actions">
-                    <a href="{{ path('dashboard_profile_index') }}" class="button button--secondary">
-                        <i class="fas fa-arrow-left"></i>
-                        Retour
-                    </a>
-                    <button type="submit" class="button button--primary">
-                        <i class="fas fa-save"></i>
-                        Enregistrer les préférences
-                    </button>
-                </div>
-            {{ form_end(form) }}
+                    
+                    <div class="dashboard-form__actions">
+                        <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+                            <span class="btn__text">Retour</span>
+                        </a>
+                        <button type="submit" class="btn btn--primary">
+                            <span class="btn__text">Enregistrer</span>
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
         </div>
-
-        <aside class="profile-preferences__sidebar">
-            <div class="profile-tip">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <h3 class="profile-tip__title">Types de notifications</h3>
-                <ul class="profile-tip__list">
-                    <li><strong>Alertes générales :</strong> Toutes les nouvelles erreurs détectées</li>
-                    <li><strong>Alertes critiques :</strong> Erreurs avec un impact élevé uniquement</li>
-                    <li><strong>Rapports hebdomadaires :</strong> Résumé de l'activité de la semaine</li>
-                    <li><strong>Notifications de connexion :</strong> Alertes de sécurité pour les nouvelles connexions</li>
-                </ul>
-            </div>
-            
-            <div class="profile-tip profile-tip--info">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <h3 class="profile-tip__title">Personnalisation</h3>
-                <p class="profile-tip__content">
-                    Vous pouvez modifier ces préférences à tout moment. Les changements prennent effet immédiatement pour les nouvelles notifications.
-                </p>
-            </div>
-        </aside>
     </div>
 {% endblock %}

@@ -1,91 +1,74 @@
 {% extends 'dashboard/base.html.twig' %}
+{% form_theme form 'form/dashboard_form_theme.html.twig' %}
 
 {% block title %}Modifier le profil - {{ parent() }}{% endblock %}
 
-{% block page_header %}
-    <div class="page-header">
-        <div class="page-header__content">
-            <nav class="breadcrumb">
-                <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
-                <span class="breadcrumb__separator">/</span>
-                <span class="breadcrumb__current">Modifier le profil</span>
-            </nav>
-            <h1 class="page-header__title">Modifier le profil</h1>
-            <p class="page-header__subtitle">Mettez à jour vos informations personnelles</p>
-        </div>
-    </div>
+{% block page_title %}Modifier le profil{% endblock %}
+{% block page_subtitle %}Mettez à jour vos informations personnelles{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
+    <span class="breadcrumb__current">Modifier le profil</span>
 {% endblock %}
 
-{% block content %}
-    <div class="profile-edit">
-        <div class="profile-edit__container">
-            {{ form_start(form, {'attr': {'class': 'form form--profile'}}) }}
-                <div class="form__section">
-                    <h2 class="form__section-title">Informations personnelles</h2>
-                    
-                    <div class="form__row">
-                        <div class="form__group form__group--half">
-                            {{ form_label(form.firstName, null, {'label_attr': {'class': 'form__label'}}) }}
-                            {{ form_widget(form.firstName) }}
+{% block header_actions %}
+    <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+        <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+        </svg>
+        <span class="btn__text">Retour</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div class="dashboard-table-container-header">
+                <h3>Modifier le profil</h3>
+            </div>
+            <div style="padding: 2rem;">
+                {{ form_start(form, {'attr': {'class': 'dashboard-form'}}) }}
+                    <div class="dashboard-form__row">
+                        <div class="dashboard-form__field">
+                            <label class="dashboard-form__label">{{ form.firstName.vars.label }}</label>
+                            {{ form_widget(form.firstName, {'attr': {'class': 'dashboard-form__input'}}) }}
                             {{ form_errors(form.firstName) }}
                         </div>
-                        <div class="form__group form__group--half">
-                            {{ form_label(form.lastName, null, {'label_attr': {'class': 'form__label'}}) }}
-                            {{ form_widget(form.lastName) }}
+                        <div class="dashboard-form__field">
+                            <label class="dashboard-form__label">{{ form.lastName.vars.label }}</label>
+                            {{ form_widget(form.lastName, {'attr': {'class': 'dashboard-form__input'}}) }}
                             {{ form_errors(form.lastName) }}
                         </div>
                     </div>
-
-                    <div class="form__group">
-                        {{ form_label(form.email, null, {'label_attr': {'class': 'form__label'}}) }}
-                        {{ form_widget(form.email) }}
+                    
+                    <div class="dashboard-form__field">
+                        <label class="dashboard-form__label">{{ form.email.vars.label }}</label>
+                        {{ form_widget(form.email, {'attr': {'class': 'dashboard-form__input'}}) }}
                         {{ form_errors(form.email) }}
-                        <p class="form__help">
-                            <i class="fas fa-info-circle"></i>
+                        <p class="dashboard-form__help">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 0.25rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                             Si vous modifiez votre email, vous devrez la vérifier à nouveau.
                         </p>
                     </div>
-
-                    <div class="form__group">
-                        {{ form_label(form.company, null, {'label_attr': {'class': 'form__label'}}) }}
-                        {{ form_widget(form.company) }}
+                    
+                    <div class="dashboard-form__field">
+                        <label class="dashboard-form__label">{{ form.company.vars.label }}</label>
+                        {{ form_widget(form.company, {'attr': {'class': 'dashboard-form__input'}}) }}
                         {{ form_errors(form.company) }}
                     </div>
-                </div>
-
-                <div class="form__actions">
-                    <a href="{{ path('dashboard_profile_index') }}" class="button button--secondary">
-                        <i class="fas fa-arrow-left"></i>
-                        Annuler
-                    </a>
-                    <button type="submit" class="button button--primary">
-                        <i class="fas fa-save"></i>
-                        Enregistrer les modifications
-                    </button>
-                </div>
-            {{ form_end(form) }}
+                    
+                    <div class="dashboard-form__actions">
+                        <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+                            <span class="btn__text">Annuler</span>
+                        </a>
+                        <button type="submit" class="btn btn--primary">
+                            <span class="btn__text">Enregistrer</span>
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
         </div>
-
-        <aside class="profile-edit__sidebar">
-            <div class="profile-tip">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <h3 class="profile-tip__title">Conseil</h3>
-                <p class="profile-tip__content">
-                    Gardez vos informations à jour pour recevoir des notifications importantes et faciliter la collaboration avec votre équipe.
-                </p>
-            </div>
-            
-            <div class="profile-tip profile-tip--info">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3 class="profile-tip__title">Sécurité</h3>
-                <p class="profile-tip__content">
-                    Vos informations sont stockées de manière sécurisée et ne sont jamais partagées avec des tiers sans votre consentement.
-                </p>
-            </div>
-        </aside>
     </div>
 {% endblock %}

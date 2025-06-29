@@ -1,0 +1,78 @@
+{% use "form_div_layout.html.twig" %}
+
+{# Customisation des erreurs pour les formulaires dashboard #}
+{% block form_errors -%}
+    {%- if errors|length > 0 -%}
+        <div class="dashboard-form__error">
+            {%- if errors|length == 1 -%}
+                {{ errors[0].message }}
+            {%- else -%}
+                <ul class="dashboard-form__error-list">
+                    {%- for error in errors -%}
+                        <li>{{ error.message }}</li>
+                    {%- endfor -%}
+                </ul>
+            {%- endif -%}
+        </div>
+    {%- endif -%}
+{%- endblock form_errors %}
+
+{# Customisation des widgets pour ajouter les classes d'erreur #}
+{% block form_widget_simple -%}
+    {%- set attr = attr|merge({'class': (attr.class|default('') ~ 
+        (errors|length > 0 ? ' is-invalid' : ''))|trim}) -%}
+    {{- parent() -}}
+{%- endblock form_widget_simple %}
+
+{% block email_widget -%}
+    {%- set type = type|default('email') -%}
+    {{- block('form_widget_simple') -}}
+{%- endblock email_widget %}
+
+{% block password_widget -%}
+    {%- set type = type|default('password') -%}
+    {{- block('form_widget_simple') -}}
+{%- endblock password_widget %}
+
+{% block text_widget -%}
+    {%- set type = type|default('text') -%}
+    {{- block('form_widget_simple') -}}
+{%- endblock text_widget %}
+
+{# Toggle switch pour les checkboxes avec classe toggle-input #}
+{% block checkbox_widget -%}
+    {%- if 'dashboard-form__toggle-input' in attr.class|default('') -%}
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+    {%- else -%}
+        {{- parent() -}}
+    {%- endif -%}
+{%- endblock checkbox_widget %}
+
+{# Customisation des labels #}
+{% block form_label -%}
+    {% if label is not same as(false) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' dashboard-form__label dashboard-form__label--required')|trim}) %}
+        {%- else -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' dashboard-form__label')|trim}) %}
+        {%- endif -%}
+        <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}>
+            {%- if translation_domain is same as(false) -%}
+                {%- if label_html is same as(false) -%}
+                    {{- label -}}
+                {%- else -%}
+                    {{- label|raw -}}
+                {%- endif -%}
+            {%- else -%}
+                {%- if label_html is same as(false) -%}
+                    {{- label|trans(label_translation_parameters, translation_domain) -}}
+                {%- else -%}
+                    {{- label|trans(label_translation_parameters, translation_domain)|raw -}}
+                {%- endif -%}
+            {%- endif -%}
+        </label>
+    {%- endif -%}
+{%- endblock form_label %}

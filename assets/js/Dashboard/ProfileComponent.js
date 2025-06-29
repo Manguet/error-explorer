@@ -106,6 +106,7 @@ class ProfileComponent {
         const passwordInput = document.getElementById('delete_account_form_password');
         const confirmationInput = document.getElementById('delete_account_form_confirmation');
         const deleteButton = document.getElementById('delete-account-btn');
+        const modal = document.getElementById('delete-confirmation-modal');
         
         if (!passwordInput || !confirmationInput || !deleteButton) return;
 
@@ -116,21 +117,26 @@ class ProfileComponent {
             if (password && confirmation === 'SUPPRIMER MON COMPTE') {
                 deleteButton.disabled = false;
                 deleteButton.classList.remove('button--disabled');
+                deleteButton.style.opacity = '1';
             } else {
                 deleteButton.disabled = true;
                 deleteButton.classList.add('button--disabled');
+                deleteButton.style.opacity = '0.5';
             }
         };
         
         passwordInput.addEventListener('input', checkFormValidity);
         confirmationInput.addEventListener('input', checkFormValidity);
         
-        // Confirmation supplémentaire avant soumission
-        deleteButton.addEventListener('click', (e) => {
-            if (!confirm('Êtes-vous absolument certain de vouloir supprimer votre compte ? Cette action est irréversible.')) {
-                e.preventDefault();
-            }
-        });
+        // Si une modale existe, on ne fait rien ici car elle gère déjà la confirmation
+        // Sinon, on garde le confirm() comme fallback
+        if (!modal) {
+            deleteButton.addEventListener('click', (e) => {
+                if (!confirm('Êtes-vous absolument certain de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+                    e.preventDefault();
+                }
+            });
+        }
     }
 
     /**

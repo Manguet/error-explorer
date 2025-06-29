@@ -1,111 +1,128 @@
 {% extends 'dashboard/base.html.twig' %}
+{% form_theme form 'form/dashboard_form_theme.html.twig' %}
 
 {% block title %}Supprimer le compte - {{ parent() }}{% endblock %}
 
-{% block page_header %}
-    <div class="page-header">
-        <div class="page-header__content">
-            <nav class="breadcrumb">
-                <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
-                <span class="breadcrumb__separator">/</span>
-                <span class="breadcrumb__current">Supprimer le compte</span>
-            </nav>
-            <h1 class="page-header__title">Supprimer le compte</h1>
-            <p class="page-header__subtitle">Cette action est irréversible</p>
-        </div>
-    </div>
+{% block page_title %}Supprimer le compte{% endblock %}
+{% block page_subtitle %}Cette action est irréversible{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
+    <span class="breadcrumb__current">Supprimer le compte</span>
 {% endblock %}
 
-{% block content %}
-    <div class="profile-delete">
-        <div class="profile-delete__container">
-            <div class="profile-delete__warning">
-                <div class="profile-delete__warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="profile-delete__warning-content">
-                    <h2 class="profile-delete__warning-title">Attention ! Cette action est définitive</h2>
-                    <p class="profile-delete__warning-text">
+{% block header_actions %}
+    <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+        <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
+        </svg>
+        <span class="btn__text">Retour</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div class="dashboard-table-container-header">
+                <h3>Supprimer le compte</h3>
+            </div>
+            <div style="padding: 2rem;">
+                <div class="dashboard-form__info-box dashboard-form__info-box--danger">
+                    <h4 class="dashboard-form__info-box-title dashboard-form__info-box-title--danger">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 0.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                        </svg>
+                        Attention ! Cette action est définitive
+                    </h4>
+                    <p class="dashboard-form__info-box-text dashboard-form__info-box-text--danger">
                         La suppression de votre compte entraînera la perte permanente de :
                     </p>
-                    <ul class="profile-delete__warning-list">
-                        <li>Tous vos projets et leurs données d'erreurs</li>
-                        <li>Votre historique de notifications et rapports</li>
-                        <li>Vos paramètres et préférences personnalisés</li>
-                        <li>Votre appartenance aux équipes</li>
-                        <li>Tous les fichiers et données associés à votre compte</li>
+                    <ul class="dashboard-form__info-box-list dashboard-form__info-box-list--danger">
+                        <li>• Tous vos projets et leurs données d'erreurs</li>
+                        <li>• Votre historique de notifications et rapports</li>
+                        <li>• Vos paramètres et préférences personnalisés</li>
+                        <li>• Votre appartenance aux équipes</li>
+                        <li>• Tous les fichiers et données associés à votre compte</li>
                     </ul>
-                    <p class="profile-delete__warning-note">
+                    <p class="dashboard-form__info-box-note dashboard-form__info-box-note--danger">
                         <strong>Ces données ne pourront pas être récupérées.</strong>
                     </p>
                 </div>
-            </div>
-
-            {{ form_start(form, {'attr': {'class': 'form form--delete-account'}}) }}
-                <div class="form__section">
-                    <h2 class="form__section-title">Confirmer la suppression</h2>
-                    
-                    <div class="form__group">
-                        {{ form_label(form.password, null, {'label_attr': {'class': 'form__label'}}) }}
-                        {{ form_widget(form.password) }}
+                
+                {{ form_start(form, {'attr': {'class': 'dashboard-form'}}) }}
+                    <div class="dashboard-form__field">
+                        <label class="dashboard-form__label">{{ form.password.vars.label }}</label>
+                        {{ form_widget(form.password, {'attr': {'class': 'dashboard-form__input'}}) }}
                         {{ form_errors(form.password) }}
-                        <p class="form__help">
+                        <p class="dashboard-form__help">
                             Entrez votre mot de passe pour confirmer votre identité.
                         </p>
                     </div>
-
-                    <div class="form__group">
-                        {{ form_label(form.confirmation, null, {'label_attr': {'class': 'form__label'}}) }}
-                        {{ form_widget(form.confirmation) }}
+                    
+                    <div class="dashboard-form__field">
+                        <label class="dashboard-form__label">{{ form.confirmation.vars.label }}</label>
+                        {{ form_widget(form.confirmation, {'attr': {'class': 'dashboard-form__input'}}) }}
                         {{ form_errors(form.confirmation) }}
-                        <p class="form__help">
+                        <p class="dashboard-form__help">
                             {{ form.confirmation.vars.help }}
                         </p>
                     </div>
-                </div>
-
-                <div class="form__actions form__actions--danger">
-                    <a href="{{ path('dashboard_profile_index') }}" class="button button--secondary">
-                        <i class="fas fa-arrow-left"></i>
-                        Annuler
-                    </a>
-                    <button type="submit" class="button button--danger" id="delete-account-btn" disabled>
-                        <i class="fas fa-trash-alt"></i>
-                        Supprimer définitivement mon compte
-                    </button>
-                </div>
-            {{ form_end(form) }}
+                    
+                    <div class="dashboard-form__actions">
+                        <a href="{{ path('dashboard_profile_index') }}" class="btn btn--secondary">
+                            <span class="btn__text">Annuler</span>
+                        </a>
+                        <button type="button" class="btn btn--danger" id="delete-account-btn" disabled style="opacity: 0.5;">
+                            <span class="btn__text">Supprimer définitivement</span>
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
         </div>
+    </div>
 
-        <aside class="profile-delete__sidebar">
-            <div class="profile-tip profile-tip--info">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-download"></i>
+    <!-- Modale de confirmation -->
+    <div class="delete-confirmation-modal" id="delete-confirmation-modal">
+        <div class="delete-confirmation-modal__content">
+            <div class="delete-confirmation-modal__header">
+                <div class="delete-confirmation-modal__icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
                 </div>
-                <h3 class="profile-tip__title">Exporter vos données</h3>
-                <p class="profile-tip__content">
-                    Avant de supprimer votre compte, vous pouvez exporter vos données importantes.
-                </p>
-                <a href="#" class="button button--outline button--small">
-                    <i class="fas fa-download"></i>
-                    Exporter mes données
-                </a>
+                <h3 class="delete-confirmation-modal__title">Confirmer la suppression</h3>
             </div>
             
-            <div class="profile-tip profile-tip--warning">
-                <div class="profile-tip__icon">
-                    <i class="fas fa-pause-circle"></i>
-                </div>
-                <h3 class="profile-tip__title">Alternative</h3>
-                <p class="profile-tip__content">
-                    Si vous souhaitez simplement faire une pause, vous pouvez désactiver votre compte temporairement au lieu de le supprimer.
-                </p>
-                <a href="{{ path('dashboard_profile_preferences') }}" class="button button--outline button--small">
-                    <i class="fas fa-cog"></i>
-                    Paramètres du compte
-                </a>
+            <p class="delete-confirmation-modal__message">
+                Vous êtes sur le point de supprimer définitivement votre compte. Cette action est <strong>irréversible</strong> et entraînera la perte de toutes vos données.
+            </p>
+            
+            <div class="delete-confirmation-modal__warning">
+                <h4 class="delete-confirmation-modal__warning-title">Données qui seront supprimées :</h4>
+                <ul class="delete-confirmation-modal__warning-list">
+                    <li>Tous vos projets et leurs données d'erreurs</li>
+                    <li>Votre historique de notifications et rapports</li>
+                    <li>Vos paramètres et préférences personnalisés</li>
+                    <li>Votre appartenance aux équipes</li>
+                    <li>Tous les fichiers et données associés</li>
+                </ul>
             </div>
-        </aside>
+            
+            <div class="delete-confirmation-modal__actions">
+                <button type="button" class="delete-confirmation-modal__btn delete-confirmation-modal__btn--cancel" id="modal-cancel-btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Annuler
+                </button>
+                <button type="button" class="delete-confirmation-modal__btn delete-confirmation-modal__btn--confirm" id="modal-confirm-btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Supprimer définitivement
+                </button>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
@@ -116,6 +133,10 @@
             const passwordInput = document.getElementById('delete_account_form_password');
             const confirmationInput = document.getElementById('delete_account_form_confirmation');
             const deleteButton = document.getElementById('delete-account-btn');
+            const modal = document.getElementById('delete-confirmation-modal');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+            const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+            const form = document.querySelector('form[name="delete_account_form"]');
             
             function checkFormValidity() {
                 const password = passwordInput.value.trim();
@@ -123,21 +144,59 @@
                 
                 if (password && confirmation === 'SUPPRIMER MON COMPTE') {
                     deleteButton.disabled = false;
-                    deleteButton.classList.remove('button--disabled');
+                    deleteButton.style.opacity = '1';
                 } else {
                     deleteButton.disabled = true;
-                    deleteButton.classList.add('button--disabled');
+                    deleteButton.style.opacity = '0.5';
                 }
             }
             
+            function showModal() {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                // Focus sur le bouton annuler pour l'accessibilité
+                modalCancelBtn.focus();
+            }
+            
+            function hideModal() {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+            
+            // Vérification de la validité du formulaire
             passwordInput.addEventListener('input', checkFormValidity);
             confirmationInput.addEventListener('input', checkFormValidity);
             
-            // Confirmation supplémentaire avant soumission
+            // Affichage de la modale au clic sur supprimer
             deleteButton.addEventListener('click', function(e) {
-                if (!confirm('Êtes-vous absolument certain de vouloir supprimer votre compte ? Cette action est irréversible.')) {
-                    e.preventDefault();
+                e.preventDefault();
+                if (!deleteButton.disabled) {
+                    showModal();
                 }
+            });
+            
+            // Fermeture de la modale
+            modalCancelBtn.addEventListener('click', hideModal);
+            
+            // Fermeture au clic sur l'overlay
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    hideModal();
+                }
+            });
+            
+            // Fermeture au clavier (Escape)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    hideModal();
+                }
+            });
+            
+            // Confirmation finale et soumission du formulaire
+            modalConfirmBtn.addEventListener('click', function() {
+                hideModal();
+                // Soumettre le formulaire
+                form.submit();
             });
         });
     </script>

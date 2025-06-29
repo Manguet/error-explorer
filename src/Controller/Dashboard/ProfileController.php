@@ -33,22 +33,9 @@ class ProfileController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        
-        // Calculer les statistiques du profil
-        $profileStats = [
-            'projects_count' => $user->getCurrentProjectsCount(),
-            'monthly_errors' => $user->getCurrentMonthlyErrors(),
-            'monthly_ai_suggestions' => $user->getCurrentMonthlyAiSuggestions(),
-            'teams_count' => $user->getOwnedTeams()->count() + $user->getTeamMemberships()->count(),
-            'account_age_days' => $user->getCreatedAt()->diff(new \DateTime())->days,
-            'login_count' => $user->getLoginCount(),
-            'last_login' => $user->getLastLoginAt(),
-            'verification_status' => $user->isVerified()
-        ];
 
         return $this->render('dashboard/profile/index.html.twig', [
-            'user' => $user,
-            'profile_stats' => $profileStats
+            'user' => $user
         ]);
     }
 
@@ -58,13 +45,35 @@ class ProfileController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         
+        // Sauvegarder l'email original pour détecter les changements
+        $originalEmail = $user->getEmail();
+        
         $form = $this->createForm(ProfileEditFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
+            $emailChanged = $originalEmail !== $user->getEmail();
             
-            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+            // Si l'email a changé, marquer comme non vérifié et envoyer un email de vérification
+            if ($emailChanged) {
+                $user->setIsVerified(false);
+                $this->entityManager->flush();
+                
+                // Envoyer l'email de vérification
+                try {
+                    $result = $this->emailService->sendEmailVerification($user);
+                    if ($result->isSuccess()) {
+                        $this->addFlash('success', 'Votre profil a été mis à jour. Un email de vérification a été envoyé à votre nouvelle adresse.');
+                    } else {
+                        $this->addFlash('warning', 'Votre profil a été mis à jour, mais l\'email de vérification n\'a pas pu être envoyé. Veuillez réessayer plus tard.');
+                    }
+                } catch (\Exception $e) {
+                    $this->addFlash('warning', 'Votre profil a été mis à jour, mais l\'email de vérification n\'a pas pu être envoyé. Veuillez réessayer plus tard.');
+                }
+            } else {
+                $this->entityManager->flush();
+                $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+            }
             
             return $this->redirectToRoute('dashboard_profile_index');
         }
