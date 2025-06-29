@@ -96,7 +96,6 @@ export default class CookieManager {
      */
     async init() {
         try {
-            this.log('Initialisation du Cookie Manager...');
 
             // Vérifier si le DOM est prêt
             if (document.readyState === 'loading') {
@@ -106,9 +105,8 @@ export default class CookieManager {
             }
 
             this.isInitialized = true;
-            this.log('Cookie Manager initialisé avec succès');
         } catch (error) {
-            this.error('Erreur lors de l\'initialisation:', error);
+            console.error('Erreur lors de l\'initialisation du Cookie Manager:', error);
         }
     }
 
@@ -145,7 +143,7 @@ export default class CookieManager {
         // Vérifier que les éléments existent
         Object.entries(this.elements).forEach(([key, element]) => {
             if (!element) {
-                this.warn(`Élément ${key} non trouvé dans le DOM`);
+                console.warn(`Élément manquant: ${key}. Assurez-vous que l'élément avec l'ID "${key}" existe dans le DOM.`);
             }
         });
     }
@@ -190,7 +188,6 @@ export default class CookieManager {
     setupCustomEvents() {
         // Écouter les changements de préférences depuis d'autres scripts
         window.addEventListener('cookiePreferencesChange', (event) => {
-            this.log('Changement de préférences externe détecté:', event.detail);
             this.updatePreferences(event.detail);
         });
 
@@ -206,7 +203,6 @@ export default class CookieManager {
      * @param {Event} event - Événement déclencheur
      */
     async handleAction(action, event) {
-        this.log(`Action déclenchée: ${action}`);
 
         switch (action) {
             case 'accept-all':
@@ -229,7 +225,7 @@ export default class CookieManager {
                 this.closeNotification();
                 break;
             default:
-                this.warn(`Action non reconnue: ${action}`);
+                console.warn(`Action non reconnue: ${action}`);
         }
     }
 
@@ -280,9 +276,7 @@ export default class CookieManager {
      */
     handleVisibilityChange() {
         if (document.hidden) {
-            this.log('Page cachée - pause des timers');
         } else {
-            this.log('Page visible - reprise des timers');
             this.checkConsentValidity();
         }
     }
@@ -403,12 +397,10 @@ export default class CookieManager {
      */
     updateCategoryPreference(category, enabled) {
         if (category === CookieManager.CATEGORIES.ESSENTIAL) {
-            this.warn('Les cookies essentiels ne peuvent pas être désactivés');
             return;
         }
 
         this.cookiePreferences[category] = enabled;
-        this.log(`Préférence mise à jour: ${category} = ${enabled}`);
 
         // Émettre un événement personnalisé
         this.dispatchEvent('categoryChanged', { category, enabled });
@@ -501,9 +493,8 @@ export default class CookieManager {
                 await this.savePreferencesToServer();
             }
 
-            this.log('Préférences sauvegardées avec succès');
         } catch (error) {
-            this.error('Erreur lors de la sauvegarde:', error);
+            console.error('Erreur lors de la sauvegarde:', error);
         }
     }
 
@@ -530,9 +521,8 @@ export default class CookieManager {
             }
 
             const result = await response.json();
-            this.log('Préférences sauvegardées sur le serveur:', result);
         } catch (error) {
-            this.warn('Impossible de sauvegarder sur le serveur:', error);
+            console.error('Impossible de sauvegarder sur le serveur:', error);
         }
     }
 
@@ -553,9 +543,8 @@ export default class CookieManager {
                 this.cookiePreferences = { ...this.cookiePreferences, ...JSON.parse(preferencesData) };
             }
 
-            this.log('Préférences chargées:', this.cookiePreferences);
         } catch (error) {
-            this.error('Erreur lors du chargement des préférences:', error);
+            console.error('Erreur lors du chargement des préférences:', error);
         }
     }
 
@@ -572,7 +561,6 @@ export default class CookieManager {
         const daysDiff = Math.floor((now - consentDate) / (1000 * 60 * 60 * 24));
 
         if (daysDiff > this.options.consentDuration) {
-            this.log('Consentement expiré, redemande nécessaire');
             this.resetConsent();
             return false;
         }
@@ -592,7 +580,6 @@ export default class CookieManager {
      * Application des préférences de cookies
      */
     applyPreferences() {
-        this.log('Application des préférences:', this.cookiePreferences);
 
         // Cookies de performance (Analytics)
         if (this.cookiePreferences[CookieManager.CATEGORIES.PERFORMANCE]) {
@@ -630,11 +617,9 @@ export default class CookieManager {
             gtag('consent', 'update', {
                 'analytics_storage': 'granted'
             });
-            this.log('Google Analytics activé');
         } else if (typeof ga !== 'undefined') {
             // Support Google Analytics Universal
             ga('set', 'anonymizeIp', false);
-            this.log('Google Analytics Universal activé');
         }
     }
 
@@ -646,7 +631,6 @@ export default class CookieManager {
             gtag('consent', 'update', {
                 'analytics_storage': 'denied'
             });
-            this.log('Google Analytics désactivé');
         }
     }
 
@@ -654,7 +638,6 @@ export default class CookieManager {
      * Activation des cookies de fonctionnalité
      */
     enableFunctionalCookies() {
-        this.log('Cookies de fonctionnalité activés');
 
         // Exemples d'activation
         this.enableChatSupport();
@@ -666,7 +649,6 @@ export default class CookieManager {
      * Désactivation des cookies de fonctionnalité
      */
     disableFunctionalCookies() {
-        this.log('Cookies de fonctionnalité désactivés');
 
         // Exemples de désactivation
         this.disableChatSupport();
@@ -677,7 +659,6 @@ export default class CookieManager {
      * Activation des cookies marketing
      */
     enableMarketingCookies() {
-        this.log('Cookies marketing activés');
 
         // Facebook Pixel
         if (typeof fbq !== 'undefined') {
@@ -698,7 +679,6 @@ export default class CookieManager {
      * Désactivation des cookies marketing
      */
     disableMarketingCookies() {
-        this.log('Cookies marketing désactivés');
 
         // Facebook Pixel
         if (typeof fbq !== 'undefined') {
@@ -748,7 +728,6 @@ export default class CookieManager {
 
     enableUserPreferences() {
         // Activation des préférences utilisateur avancées
-        this.log('Préférences utilisateur avancées activées');
     }
 
     /**
@@ -774,8 +753,6 @@ export default class CookieManager {
         cookiesToRemove.forEach(cookieName => {
             this.removeCookie(cookieName);
         });
-
-        this.log('Cookies non essentiels supprimés');
     }
 
     /**
@@ -918,7 +895,6 @@ export default class CookieManager {
         };
 
         this.cookiePreferences = { ...this.consentState.preferences };
-        this.log('Consentement réinitialisé');
     }
 
     /**
@@ -948,7 +924,6 @@ export default class CookieManager {
         });
 
         window.dispatchEvent(event);
-        this.log(`Événement émis: ${event.type}`, event.detail);
     }
 
     /**
@@ -972,8 +947,6 @@ export default class CookieManager {
 
         // Événement personnalisé pour d'autres trackers
         this.dispatchEvent('tracked', eventData);
-
-        this.log(`Événement tracké: ${eventName}`, eventData);
     }
 
     /**
@@ -1045,27 +1018,6 @@ export default class CookieManager {
         // Nettoyer les références
         this.elements = {};
         this.isInitialized = false;
-
-        this.log('Cookie Manager détruit');
-    }
-
-    /**
-     * Méthodes de logging
-     */
-    log(message, data = null) {
-        if (this.options.debugMode) {
-            console.log(`[CookieManager] ${message}`, data || '');
-        }
-    }
-
-    warn(message, data = null) {
-        if (this.options.debugMode) {
-            console.warn(`[CookieManager] ${message}`, data || '');
-        }
-    }
-
-    error(message, data = null) {
-        console.error(`[CookieManager] ${message}`, data || '');
     }
 
     /**

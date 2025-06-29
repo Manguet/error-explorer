@@ -11,7 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,9 +28,10 @@ class RegistrationFormType extends AbstractType
             ->add('firstName', TextType::class, [
                 'label' => 'Prénom *',
                 'attr' => [
-                    'placeholder' => 'Votre prénom',
+                    'placeholder' => 'John',
                     'class' => 'form-input',
                     'autocomplete' => 'given-name',
+                    'id' => 'registration_form_firstName',
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -52,9 +52,10 @@ class RegistrationFormType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'Nom *',
                 'attr' => [
-                    'placeholder' => 'Votre nom',
+                    'placeholder' => 'Doe',
                     'class' => 'form-input',
                     'autocomplete' => 'family-name',
+                    'id' => 'registration_form_lastName',
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -75,9 +76,10 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Adresse email *',
                 'attr' => [
-                    'placeholder' => 'votre@email.com',
+                    'placeholder' => 'john@entreprise.com',
                     'class' => 'form-input',
                     'autocomplete' => 'email',
+                    'id' => 'registration_form_email',
                 ],
                 'constraints' => [
                     new NotBlank([
@@ -95,6 +97,7 @@ class RegistrationFormType extends AbstractType
                     'placeholder' => 'Nom de votre entreprise',
                     'class' => 'form-input',
                     'autocomplete' => 'organization',
+                    'id' => 'registration_form_company',
                 ],
                 'constraints' => [
                     new Length([
@@ -110,8 +113,9 @@ class RegistrationFormType extends AbstractType
                     'label' => 'Mot de passe *',
                     'attr' => [
                         'placeholder' => '••••••••••••',
-                        'class' => 'form-input',
+                        'class' => 'form-input form-input--password',
                         'autocomplete' => 'new-password',
+                        'id' => 'registration_form_plainPassword_first',
                     ],
                     'constraints' => [
                         new NotBlank([
@@ -133,8 +137,9 @@ class RegistrationFormType extends AbstractType
                     'label' => 'Confirmer le mot de passe *',
                     'attr' => [
                         'placeholder' => '••••••••••••',
-                        'class' => 'form-input',
+                        'class' => 'form-input form-input--password',
                         'autocomplete' => 'new-password',
+                        'id' => 'registration_form_plainPassword_second',
                     ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas',
@@ -149,17 +154,17 @@ class RegistrationFormType extends AbstractType
                         ->setParameter('active', true)
                         ->setParameter('isBuyable', true)
                         ->orderBy('p.priceMonthly', 'ASC')
-                    ;
+                        ;
                 },
                 'expanded' => true,
                 'multiple' => false,
                 'label' => 'Choisissez votre plan',
                 'attr' => [
-                    'class' => 'plan-selector-field',
+                    'class' => 'plan-selector-field sr-only',
                 ],
-                'choice_attr' => function (Plan $plan) {
+                'choice_attr' => function (Plan $plan, $key, $value) {
                     return [
-                        'class' => 'plan-radio',
+                        'class' => 'plan-card__radio sr-only',
                         'data-plan-id' => $plan->getId(),
                         'data-plan-name' => $plan->getName(),
                         'data-plan-price' => $plan->getFormattedPriceMonthly(),
@@ -167,6 +172,7 @@ class RegistrationFormType extends AbstractType
                         'data-plan-is-popular' => $plan->isPopular() ? 'true' : 'false',
                         'data-plan-max-projects' => $plan->getMaxProjectsLabel(),
                         'data-plan-max-errors' => $plan->getMaxMonthlyErrorsLabel(),
+                        'id' => 'registration_form_plan_' . $key,
                     ];
                 },
                 'constraints' => [
@@ -179,19 +185,13 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'label' => 'J\'accepte les conditions d\'utilisation et la politique de confidentialité',
                 'attr' => [
-                    'class' => 'checkbox-input',
+                    'class' => 'checkbox-input sr-only',
+                    'id' => 'registration_form_acceptTerms',
                 ],
                 'constraints' => [
                     new IsTrue([
                         'message' => 'Vous devez accepter les conditions d\'utilisation',
                     ]),
-                ],
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Créer mon compte',
-                'attr' => [
-                    'class' => 'btn btn-primary auth-submit-btn',
-                    'id' => 'submitBtn',
                 ],
             ]);
     }
@@ -201,7 +201,7 @@ class RegistrationFormType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'attr' => [
-                'class' => 'auth-form register-form',
+                'class' => 'auth-form auth-form--register',
                 'id' => 'registerForm',
                 'novalidate' => true,
             ],

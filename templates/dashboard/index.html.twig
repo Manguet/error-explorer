@@ -6,15 +6,15 @@
 {% block page_subtitle %}Vue d'ensemble de vos erreurs et monitoring{% endblock %}
 
 {% block header_actions %}
-    <button class="header-btn btn-secondary" onclick="window.location.reload()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button class="btn btn--secondary" onclick="window.location.reload()">
+        <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
         </svg>
-        Actualiser
+        <span class="btn__text">Actualiser</span>
     </button>
-    <label class="header-btn btn-secondary" style="background: none; border: 1px solid #e2e8f0; cursor: pointer;">
-        <input type="checkbox" id="auto-refresh-toggle" checked style="margin-right: 0.5rem;">
-        Auto-refresh
+    <label class="btn btn--secondary btn--toggle">
+        <input type="checkbox" id="auto-refresh-toggle" checked class="btn__checkbox">
+        <span class="btn__text">Auto-refresh</span>
     </label>
 {% endblock %}
 

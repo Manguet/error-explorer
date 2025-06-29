@@ -1,241 +1,225 @@
-// Import variables du site principal
-@import '../variables.scss';
+/**
+ * Dashboard Variables - BEM Architecture
+ * Variables spécifiques au dashboard
+ */
 
-// Variables spécifiques au dashboard
-$dashboard-sidebar-width: 280px;
-$dashboard-header-height: 70px;
-$dashboard-content-padding: 2rem;
+// ===== LAYOUT DIMENSIONS =====
+$sidebar-width: 280px;
+$sidebar-width-collapsed: 70px;
+$header-height: 120px;
+$mobile-header-height: 80px;
 
-// Couleurs dashboard style sombre professionnel
-$dashboard-bg: $black;
-$dashboard-sidebar-bg: rgba($black, 0.95);
-$dashboard-content-bg: rgba(15, 23, 42, 0.98);  // Slate-900 avec transparence
-$dashboard-card-bg: rgba(30, 41, 59, 0.95);     // Slate-800 avec transparence
-$dashboard-border: rgba(255, 255, 255, 0.1);     // Bordures translucides comme le site
+// ===== DASHBOARD COLORS =====
+$dashboard-bg: $dark-slate;
+$dashboard-bg-darker: $dark-slate-light;
+$dashboard-surface: rgba($white, 0.02);
+$dashboard-border: rgba($white, 0.1);
+
+// ===== SIDEBAR COLORS =====
+$sidebar-bg: rgba($dark-slate-light, 0.8);
+$sidebar-border: rgba($white, 0.1);
+$sidebar-text: rgba($white, 0.8);
+$sidebar-text-hover: $white;
+$sidebar-active: rgba($primary-blue, 0.1);
+$sidebar-active-border: $primary-blue;
+
+// ===== HEADER COLORS =====
+$header-bg: rgba($white, 0.02);
+$header-border: rgba($white, 0.1);
+$header-title: $white;
+$header-subtitle: rgba($white, 0.7);
+
+// ===== COMPONENT SPACING =====
+$component-spacing-xs: 0.25rem;
+$component-spacing-sm: 0.5rem;
+$component-spacing-md: 1rem;
+$component-spacing-lg: 1.5rem;
+$component-spacing-xl: 2rem;
+$component-spacing-2xl: 3rem;
+
+// ===== CARD STYLES =====
+$card-bg: rgba($white, 0.05);
+$card-border: rgba($white, 0.1);
+$card-shadow: 0 4px 6px -1px rgba($black, 0.1);
+$card-shadow-hover: 0 10px 25px -3px rgba($black, 0.3);
+
+// ===== BUTTON VARIANTS =====
+$btn-primary-bg: linear-gradient(135deg, $primary-blue, $secondary-blue);
+$btn-primary-text: $white;
+$btn-primary-hover: linear-gradient(135deg, $secondary-blue, $primary-blue-darker);
+
+$btn-secondary-bg: rgba($white, 0.1);
+$btn-secondary-text: $white;
+$btn-secondary-border: rgba($white, 0.2);
+$btn-secondary-hover: rgba($white, 0.15);
+
+$btn-success-bg: rgba($success-green, 0.1);
+$btn-success-text: $success-green;
+$btn-success-border: rgba($success-green, 0.3);
+$btn-success-hover: rgba($success-green, 0.15);
+
+$btn-danger-bg: rgba($error-red, 0.1);
+$btn-danger-text: $error-red;
+$btn-danger-border: rgba($error-red, 0.3);
+$btn-danger-hover: rgba($error-red, 0.15);
+
+$btn-warning-bg: rgba($warning-yellow, 0.1);
+$btn-warning-text: $warning-yellow;
+$btn-warning-border: rgba($warning-yellow, 0.3);
+$btn-warning-hover: rgba($warning-yellow, 0.15);
+
+// ===== STATUS BADGES =====
+$badge-open-bg: rgba($error-red, 0.1);
+$badge-open-text: $error-red;
+$badge-open-border: rgba($error-red, 0.3);
+
+$badge-resolved-bg: rgba($success-green, 0.1);
+$badge-resolved-text: $success-green;
+$badge-resolved-border: rgba($success-green, 0.3);
+
+$badge-ignored-bg: rgba($gray-500, 0.1);
+$badge-ignored-text: $gray-500;
+$badge-ignored-border: rgba($gray-500, 0.3);
+
+$badge-pending-bg: rgba($warning-yellow, 0.1);
+$badge-pending-text: $warning-yellow;
+$badge-pending-border: rgba($warning-yellow, 0.3);
+
+// ===== TABLE STYLES =====
+$table-header-bg: rgba($white, 0.05);
+$table-header-text: $white;
+$table-row-bg: transparent;
+$table-row-hover: rgba($white, 0.02);
+$table-row-selected: rgba($primary-blue, 0.05);
+$table-border: rgba($white, 0.1);
+
+// ===== FORM ELEMENTS =====
+$input-bg: rgba($white, 0.05);
+$input-border: rgba($white, 0.2);
+$input-border-focus: $primary-blue;
+$input-text: $white;
+$input-placeholder: rgba($white, 0.5);
+
+$select-bg: rgba($white, 0.05);
+$select-border: rgba($white, 0.2);
+$select-arrow: rgba($white, 0.6);
+
+// ===== LOADING STATES =====
+$loading-bg: rgba($white, 0.05);
+$loading-shimmer: rgba($white, 0.1);
+$spinner-color: $primary-blue;
+
+// ===== TRANSITIONS =====
+$transition-fast: 0.15s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+// ===== BREAKPOINTS DASHBOARD =====
+$dashboard-breakpoint-sm: 640px;
+$dashboard-breakpoint-md: 768px;
+$dashboard-breakpoint-lg: 1024px;
+$dashboard-breakpoint-xl: 1280px;
+$dashboard-breakpoint-2xl: 1536px;
+
+// ===== Z-INDEX LAYERS =====
+$z-flash: 100;
+$z-mobile-toggle: 60;
+$z-sidebar: 50;
+$z-mobile-overlay: 40;
+$z-live-status: 30;
+$z-dropdown: 20;
+$z-tooltip: 10;
+
+// ===== ANIMATIONS =====
+$animation-duration-fast: 0.2s;
+$animation-duration-normal: 0.3s;
+$animation-duration-slow: 0.5s;
+
+$animation-ease-in: ease-in;
+$animation-ease-out: ease-out;
+$animation-ease-in-out: ease-in-out;
+$animation-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+// ===== GLASS EFFECT =====
+$glass-bg-light: rgba($white, 0.05);
+$glass-bg-medium: rgba($white, 0.1);
+$glass-bg-strong: rgba($white, 0.15);
+$glass-border: rgba($white, 0.1);
+$glass-blur: blur(8px);
+
+// ===== CUSTOM SCROLLBAR =====
+$scrollbar-width: 6px;
+$scrollbar-track: rgba($white, 0.05);
+$scrollbar-thumb: rgba($white, 0.2);
+$scrollbar-thumb-hover: rgba($white, 0.3);
+
+// ===== DASHBOARD TEXT COLORS =====
 $dashboard-text: $white;
-$dashboard-text-light: rgba(255, 255, 255, 0.7); // Texte semi-transparent
-$dashboard-shadow: rgba(0, 0, 0, 0.3);
+$dashboard-text-light: rgba($white, 0.7);
 
-// Status colors (cohérent avec votre système)
-$status-open: #ef4444;
-$status-resolved: #10b981;
-$status-ignored: #6b7280;
-$status-warning: #f59e0b;
+// ===== STATUS COLORS =====
+$status-open: $error-red;
+$status-resolved: $success-green;
+$status-ignored: $gray-500;
+$status-warning: $warning-yellow;
 
-// Animations dashboard
-$dashboard-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+// ===== DASHBOARD SPECIFIC CARDS =====
+$dashboard-card-bg: rgba($white, 0.05);
+$dashboard-border: rgba($white, 0.1);
+$dashboard-transition: all 0.3s ease;
 
-// Billing specific colors
-$billing-success-bg: rgba(#10b981, 0.1);
-$billing-success-border: rgba(#10b981, 0.2);
-$billing-warning-bg: rgba(#f59e0b, 0.1);
-$billing-warning-border: rgba(#f59e0b, 0.2);
-$billing-info-bg: rgba(#3b82f6, 0.1);
-$billing-info-border: rgba(#3b82f6, 0.2);
-$billing-primary-bg: rgba($primary-blue, 0.1);
-$billing-primary-border: rgba($primary-blue, 0.2);
-
-// CSS Custom Properties for billing
-:root {
-  --color-primary: #{$primary-blue};
-  --color-primary-light: #{lighten($primary-blue, 20%)};
-  --color-primary-bg: #{$billing-primary-bg};
-  --color-primary-border: #{$billing-primary-border};
-  
-  --color-success: #{$status-resolved};
-  --color-success-bg: #{$billing-success-bg};
-  --color-success-border: #{$billing-success-border};
-  
-  --color-warning: #{$status-warning};
-  --color-warning-bg: #{$billing-warning-bg};
-  --color-warning-border: #{$billing-warning-border};
-  --color-warning-text: #{darken($status-warning, 10%)};
-  
-  --color-info: #3b82f6;
-  --color-info-bg: #{$billing-info-bg};
-  --color-info-border: #{$billing-info-border};
-  
-  --color-text-primary: #{$dashboard-text};
-  --color-text-secondary: #{$dashboard-text-light};
-  --color-text-muted: #{rgba($white, 0.5)};
-  
-  --color-background-light: #{$dashboard-card-bg};
-  --color-border: #{$dashboard-border};
-  
-  --border-radius: 8px;
-  --border-radius-lg: 12px;
-  
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
-}
-
-// Mixins dashboard
+// ===== MIXINS DASHBOARD =====
 @mixin dashboard-card {
   background: $dashboard-card-bg;
-  backdrop-filter: blur(20px);
-  border-radius: 12px;
   border: 1px solid $dashboard-border;
-  box-shadow: 0 8px 32px $dashboard-shadow;
-  transition: $dashboard-transition;
-
-  &:hover {
-    border-color: rgba($primary-blue, 0.3);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-    transform: translateY(-2px);
-  }
+  border-radius: $radius-xl;
+  box-shadow: 0 4px 6px -1px rgba($black, 0.1);
+  @include glass-effect(0.05);
 }
 
-@mixin dashboard-button($color: $primary-blue) {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: $color;
-  color: white;
-  text-decoration: none;
-  border: none;
-  border-radius: 8px;
+@mixin dashboard-button {
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: $radius-lg;
   font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: $dashboard-transition;
-
+  @include smooth-transition();
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
   &:hover {
-    background: darken($color, 10%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($color, 0.3);
+    @include hover-lift();
   }
-
-  &:active {
-    transform: translateY(0);
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
-@mixin status-badge($color, $bg-color) {
+@mixin status-badge($bg-color, $text-color) {
   display: inline-flex;
   align-items: center;
+  gap: 0.375rem;
   padding: 0.375rem 0.75rem;
-  background: lighten($bg-color, 45%);
-  color: $color;
-  border-radius: 20px;
+  background: rgba($bg-color, 0.1);
+  color: $text-color;
+  border: 1px solid rgba($bg-color, 0.3);
+  border-radius: $radius-full;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 1px solid lighten($bg-color, 30%);
-}
-
-// Layout responsive
-@mixin dashboard-responsive {
-  @media (max-width: 1024px) {
-    .dashboard-layout {
-      grid-template-columns: 1fr;
-    }
-
-    .dashboard-sidebar {
-      position: fixed;
-      top: 0;
-      left: -$dashboard-sidebar-width;
-      height: 100vh;
-      z-index: 1000;
-      transition: transform $dashboard-transition;
-
-      &.active {
-        transform: translateX($dashboard-sidebar-width);
-      }
-    }
-
-    .dashboard-main {
-      margin-left: 0;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .dashboard-content {
-      padding: 1rem;
-    }
-
-    .dashboard-stats-grid {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .dashboard-table-container {
-      overflow-x: auto;
-    }
-  }
-}
-
-// Grille tech animée (cohérent avec le site)
-@mixin dashboard-tech-grid {
-  position: relative;
-
+  
   &::before {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image:
-            linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px),
-            linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    animation: gridFloat 25s linear infinite;
-    pointer-events: none;
-    z-index: -1;
-  }
-}
-
-@keyframes gridFloat {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(40px, 40px);
-  }
-}
-
-// Classes utilitaires
-.dashboard-hidden {
-  display: none !important;
-}
-
-.dashboard-loading {
-  opacity: 0.6;
-  pointer-events: none;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
-    border: 2px solid $primary-blue;
+    width: 6px;
+    height: 6px;
+    background: $bg-color;
     border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.dashboard-fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

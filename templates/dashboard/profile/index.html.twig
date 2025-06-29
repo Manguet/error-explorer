@@ -1,0 +1,208 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Mon Profil - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header">
+        <div class="page-header__content">
+            <h1 class="page-header__title">Mon Profil</h1>
+            <p class="page-header__subtitle">Gérez vos informations personnelles et vos préférences</p>
+        </div>
+        <div class="page-header__actions">
+            <a href="{{ path('dashboard_profile_edit') }}" class="button button--primary">
+                <i class="fas fa-edit"></i>
+                Modifier le profil
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="profile">
+        <!-- Informations personnelles -->
+        <div class="profile__section">
+            <div class="profile__section-header">
+                <h2 class="profile__section-title">Informations personnelles</h2>
+            </div>
+            <div class="profile__info-grid">
+                <div class="profile__info-item">
+                    <div class="profile__info-label">Nom complet</div>
+                    <div class="profile__info-value">{{ user.firstName }} {{ user.lastName }}</div>
+                </div>
+                <div class="profile__info-item">
+                    <div class="profile__info-label">Email</div>
+                    <div class="profile__info-value">
+                        {{ user.email }}
+                        {% if user.isVerified %}
+                            <span class="profile__badge profile__badge--verified">
+                                <i class="fas fa-check-circle"></i> Vérifié
+                            </span>
+                        {% else %}
+                            <span class="profile__badge profile__badge--unverified">
+                                <i class="fas fa-exclamation-circle"></i> Non vérifié
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="profile__info-item">
+                    <div class="profile__info-label">Entreprise</div>
+                    <div class="profile__info-value">{{ user.company|default('Non renseigné') }}</div>
+                </div>
+                <div class="profile__info-item">
+                    <div class="profile__info-label">Membre depuis</div>
+                    <div class="profile__info-value">{{ user.createdAt|date('d/m/Y') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan et utilisation -->
+        <div class="profile__section">
+            <div class="profile__section-header">
+                <h2 class="profile__section-title">Plan et utilisation</h2>
+                <a href="{{ path('billing_dashboard') }}" class="profile__section-link">
+                    Gérer la facturation <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="profile__plan-info">
+                <div class="profile__plan-header">
+                    <div class="profile__plan-name">
+                        {{ user.plan.name }}
+                        {% if user.plan.isFree %}
+                            <span class="profile__badge profile__badge--free">Gratuit</span>
+                        {% else %}
+                            <span class="profile__badge profile__badge--premium">Premium</span>
+                        {% endif %}
+                    </div>
+                    {% if user.planExpiresAt %}
+                        <div class="profile__plan-expiry">
+                            Expire le {{ user.planExpiresAt|date('d/m/Y') }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="profile__usage-stats">
+                    <div class="profile__usage-item">
+                        <div class="profile__usage-label">Projets</div>
+                        <div class="profile__usage-value">
+                            {{ profile_stats.projects_count }} / {{ user.plan.maxProjects }}
+                        </div>
+                        <div class="profile__usage-bar">
+                            <div class="profile__usage-bar-fill" style="width: {{ (profile_stats.projects_count / user.plan.maxProjects * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                    <div class="profile__usage-item">
+                        <div class="profile__usage-label">Erreurs ce mois</div>
+                        <div class="profile__usage-value">
+                            {{ profile_stats.monthly_errors|number_format }} / {{ user.plan.maxMonthlyErrors|number_format }}
+                        </div>
+                        <div class="profile__usage-bar">
+                            <div class="profile__usage-bar-fill" style="width: {{ (profile_stats.monthly_errors / user.plan.maxMonthlyErrors * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                    <div class="profile__usage-item">
+                        <div class="profile__usage-label">Suggestions IA ce mois</div>
+                        <div class="profile__usage-value">
+                            {{ profile_stats.monthly_ai_suggestions }} / {{ user.plan.maxMonthlyAiSuggestions }}
+                        </div>
+                        <div class="profile__usage-bar">
+                            <div class="profile__usage-bar-fill" style="width: {{ (profile_stats.monthly_ai_suggestions / user.plan.maxMonthlyAiSuggestions * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques du compte -->
+        <div class="profile__section">
+            <div class="profile__section-header">
+                <h2 class="profile__section-title">Statistiques du compte</h2>
+            </div>
+            <div class="profile__stats-grid">
+                <div class="profile__stat-card">
+                    <div class="profile__stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="profile__stat-content">
+                        <div class="profile__stat-value">{{ profile_stats.account_age_days }}</div>
+                        <div class="profile__stat-label">Jours d'ancienneté</div>
+                    </div>
+                </div>
+                <div class="profile__stat-card">
+                    <div class="profile__stat-icon">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <div class="profile__stat-content">
+                        <div class="profile__stat-value">{{ profile_stats.login_count }}</div>
+                        <div class="profile__stat-label">Connexions</div>
+                    </div>
+                </div>
+                <div class="profile__stat-card">
+                    <div class="profile__stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="profile__stat-content">
+                        <div class="profile__stat-value">{{ profile_stats.teams_count }}</div>
+                        <div class="profile__stat-label">Équipes</div>
+                    </div>
+                </div>
+                <div class="profile__stat-card">
+                    <div class="profile__stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="profile__stat-content">
+                        <div class="profile__stat-value">{{ profile_stats.last_login ? profile_stats.last_login|date('d/m H:i') : 'Première connexion' }}</div>
+                        <div class="profile__stat-label">Dernière connexion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="profile__section">
+            <div class="profile__section-header">
+                <h2 class="profile__section-title">Actions rapides</h2>
+            </div>
+            <div class="profile__actions">
+                <a href="{{ path('dashboard_profile_edit') }}" class="profile__action-card">
+                    <div class="profile__action-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="profile__action-content">
+                        <h3 class="profile__action-title">Modifier le profil</h3>
+                        <p class="profile__action-description">Mettre à jour vos informations personnelles</p>
+                    </div>
+                    <i class="fas fa-chevron-right profile__action-arrow"></i>
+                </a>
+                <a href="{{ path('dashboard_profile_password') }}" class="profile__action-card">
+                    <div class="profile__action-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <div class="profile__action-content">
+                        <h3 class="profile__action-title">Changer le mot de passe</h3>
+                        <p class="profile__action-description">Sécuriser votre compte avec un nouveau mot de passe</p>
+                    </div>
+                    <i class="fas fa-chevron-right profile__action-arrow"></i>
+                </a>
+                <a href="{{ path('dashboard_profile_preferences') }}" class="profile__action-card">
+                    <div class="profile__action-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="profile__action-content">
+                        <h3 class="profile__action-title">Préférences</h3>
+                        <p class="profile__action-description">Gérer les notifications et les emails</p>
+                    </div>
+                    <i class="fas fa-chevron-right profile__action-arrow"></i>
+                </a>
+                <a href="{{ path('dashboard_profile_delete') }}" class="profile__action-card profile__action-card--danger">
+                    <div class="profile__action-icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="profile__action-content">
+                        <h3 class="profile__action-title">Supprimer le compte</h3>
+                        <p class="profile__action-description">Supprimer définitivement votre compte</p>
+                    </div>
+                    <i class="fas fa-chevron-right profile__action-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

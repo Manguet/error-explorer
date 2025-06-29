@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Modifier le profil - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header">
+        <div class="page-header__content">
+            <nav class="breadcrumb">
+                <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
+                <span class="breadcrumb__separator">/</span>
+                <span class="breadcrumb__current">Modifier le profil</span>
+            </nav>
+            <h1 class="page-header__title">Modifier le profil</h1>
+            <p class="page-header__subtitle">Mettez à jour vos informations personnelles</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="profile-edit">
+        <div class="profile-edit__container">
+            {{ form_start(form, {'attr': {'class': 'form form--profile'}}) }}
+                <div class="form__section">
+                    <h2 class="form__section-title">Informations personnelles</h2>
+                    
+                    <div class="form__row">
+                        <div class="form__group form__group--half">
+                            {{ form_label(form.firstName, null, {'label_attr': {'class': 'form__label'}}) }}
+                            {{ form_widget(form.firstName) }}
+                            {{ form_errors(form.firstName) }}
+                        </div>
+                        <div class="form__group form__group--half">
+                            {{ form_label(form.lastName, null, {'label_attr': {'class': 'form__label'}}) }}
+                            {{ form_widget(form.lastName) }}
+                            {{ form_errors(form.lastName) }}
+                        </div>
+                    </div>
+
+                    <div class="form__group">
+                        {{ form_label(form.email, null, {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.email) }}
+                        {{ form_errors(form.email) }}
+                        <p class="form__help">
+                            <i class="fas fa-info-circle"></i>
+                            Si vous modifiez votre email, vous devrez la vérifier à nouveau.
+                        </p>
+                    </div>
+
+                    <div class="form__group">
+                        {{ form_label(form.company, null, {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.company) }}
+                        {{ form_errors(form.company) }}
+                    </div>
+                </div>
+
+                <div class="form__actions">
+                    <a href="{{ path('dashboard_profile_index') }}" class="button button--secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="button button--primary">
+                        <i class="fas fa-save"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <aside class="profile-edit__sidebar">
+            <div class="profile-tip">
+                <div class="profile-tip__icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="profile-tip__title">Conseil</h3>
+                <p class="profile-tip__content">
+                    Gardez vos informations à jour pour recevoir des notifications importantes et faciliter la collaboration avec votre équipe.
+                </p>
+            </div>
+            
+            <div class="profile-tip profile-tip--info">
+                <div class="profile-tip__icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="profile-tip__title">Sécurité</h3>
+                <p class="profile-tip__content">
+                    Vos informations sont stockées de manière sécurisée et ne sont jamais partagées avec des tiers sans votre consentement.
+                </p>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

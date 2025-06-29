@@ -13,13 +13,16 @@
 @import './Site/layout/header';
 @import './Site/layout/footer';
 @import './Site/layout/about';
+@import './Site/layout/auth';
+@import './Site/layout/auth-register';
 @import './Site/layout/changelog';
 @import './Site/layout/contact';
 @import './Site/layout/documentation';
+@import './Site/layout/email-verification';
+@import './Site/layout/password-reset';
 @import './Site/layout/features';
 @import './Site/layout/integration';
 @import './Site/layout/legals';
-@import './Site/layout/login';
 @import './Site/layout/partners';
 @import './Site/layout/pricing';
 @import './Site/layout/security';

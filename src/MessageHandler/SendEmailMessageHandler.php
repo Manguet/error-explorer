@@ -32,15 +32,23 @@ class SendEmailMessageHandler
         }
 
         try {
-            $result = $this->emailService->sendEmail(
-                type: $message->type,
-                recipient: $user,
-                context: $message->context,
-                subject: $message->subject,
-                template: $message->template,
-                metadata: $message->metadata,
-                priority: $message->priority
-            );
+            // Pour certains types d'emails, on utilise les méthodes spécifiques
+            // qui reconstruisent le contexte nécessaire
+            $result = match($message->type) {
+                'password_reset' => $this->emailService->sendPasswordReset($user),
+                'email_verification' => $this->emailService->sendEmailVerification($user),
+                'welcome' => $this->emailService->sendWelcomeEmail($user),
+                'password_changed' => $this->emailService->sendPasswordChangeNotification($user),
+                default => $this->emailService->sendEmail(
+                    type: $message->type,
+                    recipient: $user,
+                    context: $message->context,
+                    subject: $message->subject,
+                    template: $message->template,
+                    metadata: $message->metadata,
+                    priority: $message->priority
+                )
+            };
 
             if (!$result->isSuccess()) {
                 $this->logger->error('Échec envoi email depuis la queue', [

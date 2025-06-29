@@ -97,6 +97,8 @@ class DocumentationComponent {
      * Fermer la sidebar
      */
     closeSidebar() {
+        if (!this.isSidebarOpen) return;
+
         this.sidebar.classList.remove('active');
         this.isSidebarOpen = false;
         document.body.style.overflow = '';

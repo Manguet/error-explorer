@@ -104,7 +104,7 @@
 
     <!-- Bouton principal -->
     <div class="btn-center">
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="btn btn-primary" style="font-size: 18px; padding: 16px 32px;">
+        <a href="{{ app_url }}{{ path('billing_dashboard') }}" class="btn btn-primary" style="font-size: 18px; padding: 16px 32px;">
             🚀 Activer mon abonnement
         </a>
     </div>
@@ -135,10 +135,10 @@
 
     <!-- Boutons secondaires -->
     <div class="btn-center">
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="btn btn-secondary">
+        <a href="{{ app_url }}{{ path('home_pricing') }}" class="btn btn-secondary">
             📋 Voir tous les plans
         </a>
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="btn btn-secondary">
+        <a href="{{ app_url }}{{ path('home_contact') }}" class="btn btn-secondary">
             💬 Contacter l'équipe
         </a>
     </div>
@@ -150,8 +150,8 @@
 {% endblock %}
 
 {% block additional_footer_links %}
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('billing_dashboard') }}" class="footer-link">Gérer mon abonnement</a>
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="footer-link">Plans et tarifs</a>
+    <a href="{{ app_url }}{{ path('billing_dashboard') }}" class="footer-link">Gérer mon abonnement</a>
+    <a href="{{ app_url }}{{ path('home_pricing') }}" class="footer-link">Plans et tarifs</a>
 {% endblock %}
 
 {% block footer_legal %}

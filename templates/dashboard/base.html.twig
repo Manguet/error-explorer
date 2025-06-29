@@ -21,115 +21,123 @@
     {% endblock %}
 </head>
 
-<body class="dashboard-body">
+<body class="dashboard">
 {% if app.flashes|length > 0 %}
-    <div class="dashboard-flash-messages" id="flash-messages">
+    <div class="flash-container" id="flash-container">
         {% for type, messages in app.flashes %}
             {% for message in messages %}
-                <div class="flash-message alert-{{ type }}" data-auto-dismiss="5000">
-                    {{ message }}
-                    <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+                <div class="flash-message flash-message--{{ type }}" data-auto-dismiss="5000">
+                    <span class="flash-message__content">{{ message }}</span>
+                    <button class="flash-message__close" onclick="this.parentElement.remove()">&times;</button>
                 </div>
             {% endfor %}
         {% endfor %}
     </div>
 {% endif %}
 
-<div class="dashboard-layout">
-    <!-- Sidebar -->
-    <aside class="dashboard-sidebar" id="dashboard-sidebar">
-        <!-- Logo -->
-        <div class="dashboard-logo">
-            <a href="{{ path('dashboard_index') }}">
-                <img src="{{ asset('images/logo.svg') }}" alt="Error Explorer">
-                <span>Error Explorer</span>
+<div class="dashboard__layout">
+    <!-- Sidebar Component -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Logo Block -->
+        <div class="sidebar__logo">
+            <a href="{{ path('dashboard_index') }}" class="sidebar__logo-link">
+                <img src="{{ asset('images/logo.svg') }}" alt="Error Explorer" class="sidebar__logo-image">
+                <span class="sidebar__logo-text">Error Explorer</span>
             </a>
         </div>
 
-        <!-- Navigation -->
-        <nav class="dashboard-nav">
-            <div class="dashboard-nav-section">
-                <div class="dashboard-nav-section-title">Principal</div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('dashboard_index') }}" class="{{ app.request.get('_route') == 'dashboard_index' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Navigation Component -->
+        <nav class="sidebar__nav">
+            <div class="sidebar__nav-section">
+                <div class="sidebar__nav-title">Principal</div>
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('dashboard_index') }}" class="sidebar__nav-link {{ app.request.get('_route') == 'dashboard_index' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v3H8V5z"/>
                         </svg>
-                        <span>Dashboard</span>
+                        <span class="sidebar__nav-text">Dashboard</span>
                         {% if stats is defined and stats.open_errors is defined and stats.open_errors > 0 %}
-                            <span class="nav-badge">{{ stats.open_errors }}</span>
+                            <span class="sidebar__nav-badge">{{ stats.open_errors }}</span>
                         {% endif %}
                     </a>
                 </div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('projects_index') }}" class="{{ app.request.get('_route') starts with 'projects_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('projects_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'projects_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                         </svg>
-                        <span>Projets</span>
+                        <span class="sidebar__nav-text">Projets</span>
                     </a>
                 </div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('team_index') }}" class="{{ app.request.get('_route') starts with 'team_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('team_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'team_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
-                        <span>Équipes</span>
+                        <span class="sidebar__nav-text">Équipes</span>
                     </a>
                 </div>
             </div>
 
-            <div class="dashboard-nav-section">
-                <div class="dashboard-nav-section-title">Monitoring</div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('analytics_index') }}" class="{{ app.request.get('_route') starts with 'analytics_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="sidebar__nav-section">
+                <div class="sidebar__nav-title">Monitoring</div>
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('analytics_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'analytics_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
-                        <span>Analytics</span>
+                        <span class="sidebar__nav-text">Analytics</span>
                     </a>
                 </div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('alerts_index') }}" class="{{ app.request.get('_route') starts with 'alerts_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('alerts_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'alerts_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
                         </svg>
-                        <span>Alertes</span>
+                        <span class="sidebar__nav-text">Alertes</span>
                     </a>
                 </div>
             </div>
 
-            <div class="dashboard-nav-section">
-                <div class="dashboard-nav-section-title">Configuration</div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('billing_dashboard') }}" class="{{ app.request.get('_route') starts with 'billing_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            <div class="sidebar__nav-section">
+                <div class="sidebar__nav-title">Configuration</div>
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('dashboard_profile_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'dashboard_profile_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
-                        <span>Facturation</span>
+                        <span class="sidebar__nav-text">Mon Profil</span>
                     </a>
                 </div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('dashboard_settings_index') }}" class="{{ app.request.get('_route') starts with 'dashboard_settings_' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('billing_dashboard') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'billing_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <span class="sidebar__nav-text">Facturation</span>
+                    </a>
+                </div>
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('dashboard_settings_index') }}" class="sidebar__nav-link {{ app.request.get('_route') starts with 'dashboard_settings_' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <span>Paramètres</span>
+                        <span class="sidebar__nav-text">Paramètres</span>
                     </a>
                 </div>
             </div>
 
-            <div class="dashboard-nav-section">
-                <div class="dashboard-nav-section-title">Développeur</div>
-                <div class="dashboard-nav-item">
-                    <a href="{{ path('api_docs') }}" target="_blank" class="{{ app.request.get('_route') == 'api_docs' ? 'active' : '' }}">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="sidebar__nav-section">
+                <div class="sidebar__nav-title">Développeur</div>
+                <div class="sidebar__nav-item">
+                    <a href="{{ path('api_docs') }}" target="_blank" class="sidebar__nav-link {{ app.request.get('_route') == 'api_docs' ? 'sidebar__nav-link--active' : '' }}">
+                        <svg class="sidebar__nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                         </svg>
-                        <span>API</span>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="external-link">
+                        <span class="sidebar__nav-text">API</span>
+                        <svg class="sidebar__nav-external" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
@@ -137,23 +145,23 @@
             </div>
         </nav>
 
-        <!-- User Info -->
+        <!-- User Component -->
         {% if app.user %}
-            <div class="dashboard-user">
-                <div class="dashboard-user-info">
-                    <img src="https://ui-avatars.com/api/?name={{ app.user.fullName|url_encode }}&background=3b82f6&color=fff" alt="Avatar">
-                    <div>
-                        <div class="user-name">{{ app.user.fullName }}</div>
-                        <div class="user-email">{{ app.user.email }}</div>
+            <div class="sidebar__user">
+                <div class="sidebar__user-info">
+                    <img src="https://ui-avatars.com/api/?name={{ app.user.fullName|url_encode }}&background=3b82f6&color=fff" alt="Avatar" class="sidebar__user-avatar">
+                    <div class="sidebar__user-details">
+                        <div class="sidebar__user-name">{{ app.user.fullName }}</div>
+                        <div class="sidebar__user-email">{{ app.user.email }}</div>
                     </div>
                 </div>
-                <div class="dashboard-user-actions">
-                    <a href="#" title="Profil">
+                <div class="sidebar__user-actions">
+                    <a href="#" title="Profil" class="sidebar__user-action">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </a>
-                    <a href="{{ path('app_logout') }}" title="Déconnexion">
+                    <a href="{{ path('app_logout') }}" title="Déconnexion" class="sidebar__user-action">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
@@ -163,59 +171,58 @@
         {% endif %}
     </aside>
 
-    <!-- Main Content -->
-    <main class="dashboard-content">
-        <!-- Header -->
-        <header class="dashboard-header">
-            <div class="dashboard-header-top">
-                <div class="dashboard-header-title">
+    <!-- Main Content Area -->
+    <main class="dashboard__content">
+        <!-- Header Component -->
+        <header class="header">
+            <div class="header__top">
+                <div class="header__title-group">
                     {% block page_header %}
-                        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
-                        <p>{% block page_subtitle %}Vue d'ensemble de vos erreurs{% endblock %}</p>
+                        <h1 class="header__title">{% block page_title %}Dashboard{% endblock %}</h1>
+                        <p class="header__subtitle">{% block page_subtitle %}Vue d'ensemble de vos erreurs{% endblock %}</p>
                     {% endblock %}
                 </div>
 
-                <div class="dashboard-header-actions">
+                <div class="header__actions">
                     {% block header_actions %}
-                        <button class="header-btn btn-secondary" onclick="window.location.reload()">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="btn btn--secondary" onclick="window.location.reload()">
+                            <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
-                            Actualiser
+                            <span class="btn__text">Actualiser</span>
                         </button>
                     {% endblock %}
                 </div>
             </div>
 
             {% block breadcrumb %}
-                <nav class="dashboard-header-breadcrumb">
-                    <a href="{{ path('dashboard_index') }}">Dashboard</a>
+                <nav class="breadcrumb">
+                    <a href="{{ path('dashboard_index') }}" class="breadcrumb__link">Dashboard</a>
                     {% block breadcrumb_items %}{% endblock %}
                 </nav>
             {% endblock %}
         </header>
 
-        <!-- Content -->
-        <div class="dashboard-main">
+        <!-- Page Content -->
+        <div class="content">
             {% block body %}{% endblock %}
         </div>
     </main>
 </div>
 
-<!-- Mobile Menu Toggle -->
-<button class="dashboard-mobile-toggle" id="mobile-toggle">
-    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<!-- Mobile Components -->
+<button class="mobile-toggle" id="mobile-toggle">
+    <svg class="mobile-toggle__icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
     </svg>
 </button>
 
-<!-- Mobile Overlay -->
-<div class="dashboard-overlay" id="mobile-overlay"></div>
+<div class="mobile-overlay" id="mobile-overlay"></div>
 
-<!-- Live Status -->
-<div class="dashboard-live-status">
-    <div class="status-dot"></div>
-    <span>Live</span>
+<!-- Live Status Indicator -->
+<div class="live-status">
+    <div class="live-status__dot"></div>
+    <span class="live-status__text">Live</span>
 </div>
 
 {% block javascripts %}

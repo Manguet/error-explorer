@@ -6,7 +6,12 @@
 }
 
 .dashboard-stat-card {
-  @include dashboard-card;
+  background: $card-bg;
+  border: 1px solid $card-border;
+  border-radius: $radius-xl;
+  @include glass-effect(0.05);
+  box-shadow: $card-shadow;
+  @include smooth-transition();
   padding: 1.5rem;
   position: relative;
   overflow: hidden;

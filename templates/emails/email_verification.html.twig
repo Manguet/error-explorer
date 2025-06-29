@@ -21,7 +21,7 @@
 
     <!-- Bouton principal de vérification -->
     <div class="btn-center">
-        <a href="{{ verification_url }}" class="btn btn-primary" style="font-size: 18px; padding: 16px 32px;">
+        <a href="{{ verification_url }}" class="btn btn-primary btn-large">
             ✅ Vérifier mon adresse email
         </a>
     </div>
@@ -43,7 +43,7 @@
         <div class="card-title">Si le bouton ne fonctionne pas</div>
         <div class="card-content">
             <p>Vous pouvez copier et coller ce lien dans votre navigateur :</p>
-            <div class="code-block" style="word-break: break-all; font-size: 12px;">{{ verification_url }}</div>
+            <div class="code-block code-block-small">{{ verification_url }}</div>
         </div>
     </div>
 
@@ -79,8 +79,8 @@
 {% endblock %}
 
 {% block additional_footer_links %}
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_features') }}" class="footer-link">Fonctionnalités</a>
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="footer-link">Guide d'intégration</a>
+    <a href="{{ app_url }}/features" class="footer-link">Fonctionnalités</a>
+    <a href="{{ app_url }}/integration" class="footer-link">Guide d'intégration</a>
 {% endblock %}
 
 {% block footer_legal %}

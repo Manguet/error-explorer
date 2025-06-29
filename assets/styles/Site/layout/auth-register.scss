@@ -1,0 +1,524 @@
+// ===== AUTH REGISTER SPECIFIC STYLES =====
+.auth-page--register {
+  .auth-container {
+    max-width: 600px;
+
+    @include responsive('lg') {
+      max-width: 500px;
+    }
+  }
+
+  .auth-form-container {
+    padding: 3rem 2.5rem;
+
+    @include responsive('sm') {
+      padding: 2rem 1.5rem;
+    }
+  }
+}
+
+// ===== FORM SECTIONS =====
+.form-section {
+  margin-bottom: 0;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: $font-heading;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $white;
+    margin-bottom: 1rem;
+
+    svg {
+      color: $primary-blue;
+      flex-shrink: 0;
+    }
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    color: $white-semi;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  // Variantes de sections
+  &--personal {
+    .form-section__title svg {
+      color: $success-green;
+    }
+  }
+
+  &--security {
+    .form-section__title svg {
+      color: $warning-yellow;
+    }
+  }
+
+  &--plan {
+    .form-section__title svg {
+      color: $primary-blue;
+    }
+  }
+}
+
+// ===== FORM ROW (pour prénom/nom) =====
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @include responsive('sm') {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.form-group--half {
+  // Styles spécifiques pour les champs à moitié
+}
+
+.form-group--optional {
+  .form-label__optional {
+    font-size: 0.8rem;
+    color: $gray-500;
+    font-weight: 400;
+  }
+}
+
+// ===== INPUT VALIDATION =====
+.input-validation {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  @include smooth-transition();
+
+  &--checking {
+    opacity: 1;
+    color: $warning-yellow;
+
+    &::after {
+      content: '⏳';
+    }
+  }
+
+  &--valid {
+    opacity: 1;
+    color: $success-green;
+
+    &::after {
+      content: '✓';
+    }
+  }
+
+  &--invalid {
+    opacity: 1;
+    color: $error-red;
+
+    &::after {
+      content: '✗';
+    }
+  }
+}
+
+// ===== PASSWORD STRENGTH INDICATOR =====
+.password-strength {
+  margin-top: 0.5rem;
+
+  &__bar {
+    width: 100%;
+    height: 4px;
+    background: rgba($white, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  &__fill {
+    height: 100%;
+    width: 0%;
+    @include smooth-transition(all, 0.3s);
+    border-radius: 2px;
+
+    // États de force
+    &--weak {
+      width: 25%;
+      background: $error-red;
+    }
+
+    &--fair {
+      width: 50%;
+      background: $warning-yellow;
+    }
+
+    &--good {
+      width: 75%;
+      background: $primary-blue;
+    }
+
+    &--strong {
+      width: 100%;
+      background: $success-green;
+    }
+  }
+
+  &__text {
+    font-size: 0.8rem;
+    color: $white-semi;
+    @include smooth-transition();
+
+    &--weak {
+      color: $error-red;
+    }
+
+    &--fair {
+      color: $warning-yellow;
+    }
+
+    &--good {
+      color: $primary-blue;
+    }
+
+    &--strong {
+      color: $success-green;
+    }
+  }
+}
+
+// ===== PLAN SELECTOR =====
+.plan-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  @include responsive('sm') {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-card {
+  position: relative;
+  @include glass-effect(0.05);
+  border: 2px solid rgba($white, 0.1);
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  cursor: pointer;
+  @include smooth-transition();
+  overflow: hidden;
+
+  &:hover {
+    border-color: rgba($primary-blue, 0.3);
+    background: rgba($white, 0.08);
+    transform: translateY(-2px);
+  }
+
+  &--selected {
+    border-color: $primary-blue;
+    background: rgba($primary-blue, 0.1);
+
+    .plan-card__select-indicator {
+      opacity: 1;
+      background: $primary-blue;
+
+      svg {
+        opacity: 1;
+      }
+    }
+  }
+
+  &--popular {
+    border-color: rgba($success-green, 0.4);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, $success-green, $primary-blue);
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: -1px;
+    right: 3rem;
+    background: $success-green;
+    color: $white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0 0 $radius-sm $radius-sm;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  &__header {
+    margin-bottom: 1.5rem;
+  }
+
+  &__name {
+    font-family: $font-heading;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: $white;
+    margin: 0 0 0.5rem 0;
+  }
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+
+  &__amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: $primary-blue;
+    font-family: $font-heading;
+  }
+
+  &__period {
+    font-size: 0.875rem;
+    color: $white-semi;
+  }
+
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &__radio {
+    // Masqué, la card sert de contrôle visuel
+  }
+
+  &__select-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba($white, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    @include smooth-transition();
+    opacity: 0.7;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      color: $white;
+      opacity: 0;
+      @include smooth-transition();
+    }
+  }
+}
+
+.plan-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $white-semi;
+
+  svg {
+    color: $primary-blue;
+    flex-shrink: 0;
+  }
+}
+
+// ===== CHECKBOX STYLING =====
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba($white, 0.3);
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include smooth-transition();
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+
+  svg {
+    opacity: 0;
+    @include smooth-transition();
+    color: $white;
+  }
+
+  .checkbox-input:checked + .checkbox-wrapper & {
+    background: $primary-blue;
+    border-color: $primary-blue;
+
+    svg {
+      opacity: 1;
+    }
+  }
+
+  .checkbox-input:focus + .checkbox-wrapper & {
+    outline: 2px solid $primary-blue;
+    outline-offset: 2px;
+  }
+}
+
+.checkbox-label {
+  font-size: 0.875rem;
+  color: $white-semi;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.checkbox-link {
+  color: $primary-blue;
+  text-decoration: none;
+
+  &:hover {
+    color: $light-blue;
+    text-decoration: underline;
+  }
+}
+
+// ===== REGISTER SPECIFIC AUTH FORM =====
+.auth-form--register {
+  .auth-submit-btn {
+    margin-top: 1rem;
+    font-size: 1rem;
+    padding: 1rem 2rem;
+
+    // Animation spéciale pour l'inscription
+    &:hover:not(:disabled) {
+      box-shadow: 0 8px 25px rgba($primary-blue, 0.5);
+    }
+  }
+}
+
+// ===== ANIMATIONS SPÉCIFIQUES =====
+@keyframes planCardSelect {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.plan-card--selected {
+  animation: planCardSelect 0.3s ease-out;
+}
+
+// Animation progressive des sections
+.form-section {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.15 * $i}s;
+    }
+  }
+}
+
+// ===== RESPONSIVE ADJUSTMENTS =====
+@include responsive('md') {
+  .plan-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-card {
+    padding: 1.25rem;
+
+    &__header {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+@include responsive('sm') {
+  .form-section {
+    margin-bottom: 2rem;
+
+    &__title {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    &__description {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .password-strength {
+    &__text {
+      font-size: 0.75rem;
+    }
+  }
+
+  .checkbox-wrapper {
+    gap: 0.5rem;
+  }
+
+  .checkbox-custom {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ===== ACCESSIBILITÉ =====
+@media (prefers-reduced-motion: reduce) {
+  .form-section,
+  .plan-card,
+  .input-validation,
+  .password-strength__fill {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// ===== PRINT STYLES =====
+@media print {
+  .auth-page--register {
+    .plan-selector {
+      display: block;
+    }
+
+    .plan-card {
+      border: 1px solid black;
+      margin-bottom: 1rem;
+      break-inside: avoid;
+    }
+  }
+}

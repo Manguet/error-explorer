@@ -36,6 +36,7 @@ services:
             $senderName: '%env(MAILER_FROM_NAME)%'
             $maxRetries: '%env(MAILER_MAX_RETRIES)%'
             $retryDelayMs: '%env(MAILER_RETRY_DELAY_MS)%'
+            $appUrl: '%env(APP_URL)%'
 
     App\Service\Email\EmailQueueService:
         arguments:

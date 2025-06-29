@@ -68,7 +68,8 @@ class EmailService
         private readonly string $senderEmail = self::DEFAULT_SENDER_EMAIL,
         private readonly string $senderName = self::DEFAULT_SENDER_NAME,
         private readonly int $maxRetries = 3,
-        private readonly int $retryDelayMs = 1000
+        private readonly int $retryDelayMs = 1000,
+        private readonly string $appUrl = 'https://error-explorer.com'
     ) {}
 
     /**
@@ -122,7 +123,8 @@ class EmailService
             context: [
                 'user' => $user,
                 'reset_url' => $resetUrl,
-                'expires_at' => $user->getPasswordResetRequestedAt()?->modify('+24 hours')
+                'expires_at' => $user->getPasswordResetRequestedAt()?->modify('+24 hours'),
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'Non disponible'
             ],
             metadata: [
                 'user_id' => $user->getId(),
@@ -171,7 +173,9 @@ class EmailService
             context: [
                 'user' => $user,
                 'changed_at' => new DateTimeImmutable(),
-                'support_url' => $this->urlGenerator->generate('contact', [], UrlGeneratorInterface::ABSOLUTE_URL)
+                'support_url' => $this->urlGenerator->generate('contact', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'Non disponible',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Non disponible'
             ],
             metadata: [
                 'user_id' => $user->getId()
@@ -252,7 +256,8 @@ class EmailService
             'app_name' => 'Error Explorer',
             'year' => date('Y'),
             'support_email' => 'support@errorexplorer.com',
-            'unsubscribe_url' => $this->generateUnsubscribeUrl($recipient)
+            'unsubscribe_url' => $this->generateUnsubscribeUrl($recipient),
+            'app_url' => $this->appUrl
         ], $context);
 
         // Création de l'email

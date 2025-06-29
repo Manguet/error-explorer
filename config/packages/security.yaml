@@ -46,7 +46,7 @@ security:
 
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800 # 7 jours
+                lifetime: 2592000 # 30 jours (30 * 24 * 60 * 60)
                 path: /
                 domain: ~
                 secure: auto
@@ -105,6 +105,13 @@ when@test:
                 cost: 4
                 time_cost: 3
                 memory_cost: 10
+
+when@dev:
+    security:
+        firewalls:
+            main:
+                remember_me:
+                    lifetime: 7776000 # 90 jours en dev (plus pratique pour développeurs)
 
 when@prod:
     security:

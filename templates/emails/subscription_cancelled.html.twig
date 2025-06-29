@@ -102,7 +102,7 @@
         <div class="card-content">
             <p>Votre avis nous intéresse ! Dites-nous pourquoi vous avez annulé votre abonnement.</p>
             <div style="margin-top: 15px;">
-                <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}?subject=Feedback annulation" class="btn btn-success">
+                <a href="{{ app_url }}{{ path('home_contact') }}?subject=Feedback annulation" class="btn btn-success">
                     💬 Donner mon avis
                 </a>
             </div>
@@ -113,7 +113,7 @@
     <div class="btn-center">
         <h3>Vous changez d'avis ?</h3>
         <p>Vous pouvez réactiver votre abonnement à tout moment et retrouver immédiatement toutes vos données et configurations.</p>
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="btn btn-primary">
+        <a href="{{ app_url }}{{ path('home_pricing') }}" class="btn btn-primary">
             🚀 Réactiver mon abonnement
         </a>
     </div>
@@ -137,8 +137,8 @@
 {% endblock %}
 
 {% block additional_footer_links %}
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="footer-link">Mon dashboard</a>
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_pricing') }}" class="footer-link">Voir les plans</a>
+    <a href="{{ app_url }}{{ path('dashboard_index') }}" class="footer-link">Mon dashboard</a>
+    <a href="{{ app_url }}{{ path('home_pricing') }}" class="footer-link">Voir les plans</a>
 {% endblock %}
 
 {% block footer_legal %}

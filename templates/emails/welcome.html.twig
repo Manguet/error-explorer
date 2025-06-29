@@ -73,7 +73,7 @@
             🛠️ Pour bien commencer
         </div>
         <div class="card-content">
-            <ol style="padding-left: 20px; margin: 0;">
+            <ol class="styled-ordered-list">
                 <li><strong>Créez votre premier projet</strong> depuis le dashboard</li>
                 <li><strong>Intégrez notre SDK</strong> dans votre application</li>
                 <li><strong>Configurez vos alertes</strong> personnalisées</li>
@@ -87,7 +87,7 @@
         <a href="{{ dashboard_url }}" class="btn btn-primary">
             🚀 Commencer maintenant
         </a>
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="btn btn-secondary">
+        <a href="{{ app_url }}/integration" class="btn btn-secondary">
             📚 Guide d'intégration
         </a>
     </div>
@@ -109,6 +109,6 @@
 {% endblock %}
 
 {% block additional_footer_links %}
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('integration') }}" class="footer-link">Intégration</a>
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('features') }}" class="footer-link">Fonctionnalités</a>
+    <a href="{{ app_url }}/integration" class="footer-link">Intégration</a>
+    <a href="{{ app_url }}/features" class="footer-link">Fonctionnalités</a>
 {% endblock %}

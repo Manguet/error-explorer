@@ -118,7 +118,7 @@
 
     <!-- Bouton dashboard -->
     <div class="btn-center">
-        <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="btn btn-primary">
+        <a href="{{ app_url }}{{ path('dashboard_index') }}" class="btn btn-primary">
             📊 Accéder au dashboard
         </a>
     </div>
@@ -130,8 +130,8 @@
 {% endblock %}
 
 {% block additional_footer_links %}
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('dashboard_index') }}" class="footer-link">Dashboard</a>
-    <a href="{{ app.request.schemeAndHttpHost }}{{ path('home_contact') }}" class="footer-link">Support</a>
+    <a href="{{ app_url }}{{ path('dashboard_index') }}" class="footer-link">Dashboard</a>
+    <a href="{{ app_url }}{{ path('home_contact') }}" class="footer-link">Support</a>
 {% endblock %}
 
 {% block footer_legal %}

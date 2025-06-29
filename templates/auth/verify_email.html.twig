@@ -5,7 +5,7 @@
 {% block keywords %}vérification email, activation compte, error explorer, validation{% endblock %}
 {% block robots %}noindex, nofollow{% endblock %}
 
-{% block body_attributes %} class="auth-page verify-email-page"{% endblock %}
+{% block body_attributes %} class="auth-page auth-page--verify-email"{% endblock %}
 
 {% block body %}
     <a href="{{ path('home') }}" class="back-link" data-tooltip="Retour à l'accueil">
@@ -15,291 +15,384 @@
         <span>Retour à l'accueil</span>
     </a>
 
-    <div class="auth-container verify-email-container">
-        <div class="auth-header">
-            <div class="hero-badge">
-                <div class="badge-dot"></div>
-                <span>Vérification en cours</span>
-            </div>
+    <div class="auth-wrapper">
+        <div class="email-verification">
+            <!-- Header avec badge et titre -->
+            <header class="email-verification__header">
+                <div class="status-badge status-badge--{{ verification_status }}">
+                    <div class="status-badge__dot"></div>
+                    <span class="status-badge__text">
+                        {% if verification_status == 'success' %}
+                            Email vérifié
+                        {% elseif verification_status == 'error' %}
+                            Erreur de vérification
+                        {% elseif verification_status == 'expired' or verification_status == 'invalid' %}
+                            Lien invalide
+                        {% else %}
+                            Vérification en attente
+                        {% endif %}
+                    </span>
+                </div>
 
-            <h1 class="auth-title">Error Explorer</h1>
-            <p class="auth-subtitle">
+                <h1 class="email-verification__title">
+                    {% if verification_status == 'success' %}
+                        Email vérifié avec succès !
+                    {% elseif verification_status == 'expired' %}
+                        Lien de vérification expiré
+                    {% elseif verification_status == 'invalid' %}
+                        Lien de vérification invalide
+                    {% elseif verification_status == 'error' %}
+                        Erreur de vérification
+                    {% else %}
+                        Vérifiez votre adresse email
+                    {% endif %}
+                </h1>
+
+                <p class="email-verification__subtitle">
+                    {% if verification_status == 'success' %}
+                        Votre compte est maintenant activé et prêt à l'emploi
+                    {% elseif verification_status == 'expired' or verification_status == 'invalid' %}
+                        Ce lien n'est plus valide, mais vous pouvez en demander un nouveau
+                    {% elseif verification_status == 'error' %}
+                        Une erreur s'est produite lors de la vérification
+                    {% else %}
+                        Consultez votre boîte mail et cliquez sur le lien de vérification
+                    {% endif %}
+                </p>
+            </header>
+
+            <!-- Contenu principal basé sur le statut -->
+            <div class="email-verification__content">
+
+                <!-- Alertes Flash Messages -->
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash-alert flash-alert--{{ type }}" role="alert">
+                            <div class="flash-alert__icon">
+                                {% if type == 'success' %}✅
+                                {% elseif type == 'error' %}❌
+                                {% elseif type == 'info' %}ℹ️
+                                {% else %}⚠️{% endif %}
+                            </div>
+                            <div class="flash-alert__content">
+                                <strong class="flash-alert__title">
+                                    {% if type == 'success' %}Succès
+                                    {% elseif type == 'error' %}Erreur
+                                    {% elseif type == 'info' %}Information
+                                    {% else %}Attention{% endif %}
+                                </strong>
+                                <span class="flash-alert__message">{{ message }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
                 {% if verification_status == 'success' %}
-                    Email vérifié avec succès !
-                {% elseif verification_status == 'expired' %}
-                    Lien de vérification expiré
-                {% elseif verification_status == 'invalid' %}
-                    Lien de vérification invalide
-                {% else %}
-                    Vérifiez votre adresse email
-                {% endif %}
-            </p>
-        </div>
-
-        <div class="auth-form-container verify-email-form-container">
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-error" role="alert">
-                    <div class="alert-icon">❌</div>
-                    <div class="alert-content">
-                        <strong>Erreur</strong>
-                        <span>{{ message }}</span>
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success" role="alert">
-                    <div class="alert-icon">✅</div>
-                    <div class="alert-content">
-                        <strong>Succès</strong>
-                        <span>{{ message }}</span>
-                    </div>
-                </div>
-            {% endfor %}
-
-            {% if verification_status == 'success' %}
-                <div class="verification-success">
-                    <div class="success-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-
-                    <h2>Email vérifié avec succès !</h2>
-                    <p>Votre compte est maintenant activé. Vous pouvez accéder à toutes les fonctionnalités d'Error Explorer.</p>
-
-                    <div class="success-benefits">
-                        <h3>Vous pouvez maintenant :</h3>
-                        <ul class="benefits-list">
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 12l2 2 4-4"/>
-                                </svg>
-                                Créer et surveiller vos projets
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 12l2 2 4-4"/>
-                                </svg>
-                                Recevoir des alertes en temps réel
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 12l2 2 4-4"/>
-                                </svg>
-                                Accéder aux analyses détaillées
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="form-group">
-                        <a href="{{ path('dashboard_index') }}" class="btn btn-primary auth-submit-btn">
-                            <span class="btn-text">Accéder au dashboard</span>
-                            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                    <!-- État de succès -->
+                    <div class="verification-success">
+                        <div class="verification-success__icon">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                        </a>
-                    </div>
-                </div>
+                        </div>
 
-            {% elseif verification_status == 'expired' or verification_status == 'invalid' %}
-                <div class="verification-error">
-                    <div class="error-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M15 9l-6 6M9 9l6 6"/>
-                        </svg>
-                    </div>
+                        <div class="verification-success__content">
+                            <h2 class="verification-success__title">Parfait ! Vous êtes prêt</h2>
+                            <p class="verification-success__description">
+                                Votre adresse email a été confirmée. Vous pouvez maintenant profiter
+                                de toutes les fonctionnalités d'Error Explorer.
+                            </p>
+                        </div>
 
-                    <h2>
-                        {% if verification_status == 'expired' %}
-                            Lien de vérification expiré
-                        {% else %}
-                            Lien de vérification invalide
-                        {% endif %}
-                    </h2>
+                        <div class="benefits-grid">
+                            <h3 class="benefits-grid__title">Ce que vous pouvez faire maintenant :</h3>
+                            <div class="benefits-grid__items">
+                                <div class="benefit-item">
+                                    <div class="benefit-item__icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                            <line x1="8" y1="21" x2="16" y2="21"/>
+                                            <line x1="12" y1="17" x2="12" y2="21"/>
+                                        </svg>
+                                    </div>
+                                    <div class="benefit-item__content">
+                                        <h4 class="benefit-item__title">Créer vos projets</h4>
+                                        <p class="benefit-item__description">Surveillez vos applications en temps réel</p>
+                                    </div>
+                                </div>
 
-                    <p>
-                        {% if verification_status == 'expired' %}
-                            Ce lien de vérification a expiré. Les liens de vérification sont valides pendant 24 heures pour des raisons de sécurité.
-                        {% else %}
-                            Ce lien de vérification n'est pas valide. Il a peut-être déjà été utilisé ou est incorrect.
-                        {% endif %}
-                    </p>
+                                <div class="benefit-item">
+                                    <div class="benefit-item__icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="benefit-item__content">
+                                        <h4 class="benefit-item__title">Alertes instantanées</h4>
+                                        <p class="benefit-item__description">Soyez notifié dès qu'une erreur survient</p>
+                                    </div>
+                                </div>
 
-                    <form method="post" action="{{ path('app_resend_verification') }}" class="resend-form">
-                        <div class="form-group">
-                            <label for="email" class="form-label">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                    <polyline points="22,6 12,13 2,6"/>
-                                </svg>
-                                Votre adresse email
-                            </label>
-                            <div class="input-wrapper">
-                                <input type="email"
-                                       name="email"
-                                       id="email"
-                                       class="form-input"
-                                       placeholder="votre@email.com"
-                                       value="{{ app.user ? app.user.email : '' }}"
-                                       required>
-                                <div class="input-focus-ring"></div>
+                                <div class="benefit-item">
+                                    <div class="benefit-item__icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 3v18h18V3H3zm9 13l-5-5 1.41-1.41L12 13.17l7.59-7.58L21 7l-9 9z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="benefit-item__content">
+                                        <h4 class="benefit-item__title">Analyses détaillées</h4>
+                                        <p class="benefit-item__description">Stack traces et contexte complet</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary auth-submit-btn" id="resendBtn">
-                                <span class="btn-text">Renvoyer le lien de vérification</span>
-                                <div class="btn-loader" style="display: none;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 12a9 9 0 11-6.219-8.56"/>
-                                    </svg>
-                                </div>
-                                <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <div class="verification-success__actions">
+                            <a href="{{ path('dashboard_index') }}" class="btn-primary btn-primary--large">
+                                <span class="btn-primary__text">Accéder au dashboard</span>
+                                <svg class="btn-primary__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M5 12h14M12 5l7 7-7 7"/>
                                 </svg>
-                            </button>
+                            </a>
                         </div>
-                    </form>
-                </div>
-
-            {% else %}
-                <div class="verification-pending">
-                    <div class="pending-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
                     </div>
 
-                    <h2>Vérifiez votre adresse email</h2>
-                    <p>
-                        Nous avons envoyé un email de vérification à <strong>{{ app.user ? app.user.email : 'votre adresse email' }}</strong>.
-                        Cliquez sur le lien dans l'email pour activer votre compte.
-                    </p>
+                {% elseif verification_status in ['expired', 'invalid'] %}
+                    <!-- État d'erreur avec possibilité de renvoi -->
+                    <div class="verification-error">
+                        <div class="verification-error__icon">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M15 9l-6 6M9 9l6 6"/>
+                            </svg>
+                        </div>
 
-                    <div class="verification-steps">
-                        <h3>Étapes à suivre :</h3>
-                        <ol class="steps-list">
-                            <li>
-                                <div class="step-icon">1</div>
-                                <div class="step-content">
-                                    <strong>Vérifiez votre boîte de réception</strong>
-                                    <span>Recherchez un email de Error Explorer</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="step-icon">2</div>
-                                <div class="step-content">
-                                    <strong>Cliquez sur le lien de vérification</strong>
-                                    <span>Le lien est valide pendant 24 heures</span>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="step-icon">3</div>
-                                <div class="step-content">
-                                    <strong>Accédez à votre dashboard</strong>
-                                    <span>Votre compte sera immédiatement activé</span>
-                                </div>
-                            </li>
-                        </ol>
-                    </div>
+                        <div class="verification-error__content">
+                            <h2 class="verification-error__title">
+                                {% if verification_status == 'expired' %}
+                                    Lien expiré
+                                {% else %}
+                                    Lien invalide
+                                {% endif %}
+                            </h2>
+                            <p class="verification-error__description">
+                                {% if verification_status == 'expired' %}
+                                    Ce lien a expiré pour des raisons de sécurité. Les liens de vérification
+                                    sont valides pendant 24 heures.
+                                {% else %}
+                                    Ce lien n'est pas valide. Il a peut-être déjà été utilisé ou est incorrect.
+                                {% endif %}
+                            </p>
+                        </div>
 
-                    <div class="help-section">
-                        <h4>Vous ne trouvez pas l'email ?</h4>
-                        <ul class="help-list">
-                            <li>Vérifiez votre dossier spam/courrier indésirable</li>
-                            <li>Assurez-vous que l'adresse email est correcte</li>
-                            <li>Attendez quelques minutes, l'email peut prendre du temps à arriver</li>
-                        </ul>
-                    </div>
+                        <div class="resend-form-container">
+                            <h3 class="resend-form-container__title">Recevoir un nouveau lien</h3>
+                            <form method="post" action="{{ path('app_resend_verification') }}" class="resend-form" data-resend-form>
+                                <div class="form-field">
+                                    <label for="email" class="form-field__label">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                            <polyline points="22,6 12,13 2,6"/>
+                                        </svg>
+                                        Votre adresse email
+                                    </label>
+                                    <div class="form-field__input-wrapper">
+                                        <input type="email"
+                                               name="email"
+                                               id="email"
+                                               class="form-field__input"
+                                               placeholder="votre@email.com"
+                                               value="{{ app.user ? app.user.email : '' }}"
+                                               required>
+                                        <div class="form-field__focus-ring"></div>
+                                    </div>
+                                </div>
 
-                    {% if app.user %}
-                        <form method="post" action="{{ path('app_resend_verification') }}" class="resend-form">
-                            <input type="hidden" name="email" value="{{ app.user.email }}">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-secondary auth-submit-btn" id="resendBtn">
-                                    <span class="btn-text">Renvoyer l'email de vérification</span>
-                                    <div class="btn-loader" style="display: none;">
+                                <button type="submit" class="btn-primary btn-primary--full-width" data-resend-btn>
+                                    <span class="btn-primary__text">Envoyer un nouveau lien</span>
+                                    <div class="btn-primary__loader" style="display: none;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M21 12a9 9 0 11-6.219-8.56"/>
                                         </svg>
                                     </div>
+                                    <svg class="btn-primary__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                                    </svg>
                                 </button>
+                            </form>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- État en attente (pending) -->
+                    <div class="verification-pending">
+                        <div class="verification-pending__icon">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+
+                        <div class="verification-pending__content">
+                            <h2 class="verification-pending__title">Consultez votre boîte mail</h2>
+                            <p class="verification-pending__description">
+                                Nous avons envoyé un email de vérification à
+                                <strong>{{ app.user ? app.user.email : 'votre adresse email' }}</strong>.
+                            </p>
+                        </div>
+
+                        <div class="steps-guide">
+                            <h3 class="steps-guide__title">Comment procéder :</h3>
+                            <ol class="steps-guide__list">
+                                <li class="steps-guide__item">
+                                    <div class="steps-guide__number">1</div>
+                                    <div class="steps-guide__content">
+                                        <h4 class="steps-guide__item-title">Ouvrez votre boîte mail</h4>
+                                        <p class="steps-guide__item-description">Recherchez un email de Error Explorer</p>
+                                    </div>
+                                </li>
+                                <li class="steps-guide__item">
+                                    <div class="steps-guide__number">2</div>
+                                    <div class="steps-guide__content">
+                                        <h4 class="steps-guide__item-title">Cliquez sur le lien</h4>
+                                        <p class="steps-guide__item-description">Le lien est valide pendant 24 heures</p>
+                                    </div>
+                                </li>
+                                <li class="steps-guide__item">
+                                    <div class="steps-guide__number">3</div>
+                                    <div class="steps-guide__content">
+                                        <h4 class="steps-guide__item-title">C'est terminé !</h4>
+                                        <p class="steps-guide__item-description">Votre compte sera activé immédiatement</p>
+                                    </div>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="help-box">
+                            <h4 class="help-box__title">Vous ne trouvez pas l'email ? 🤔</h4>
+                            <ul class="help-box__list">
+                                <li class="help-box__item">Vérifiez votre dossier spam/courrier indésirable</li>
+                                <li class="help-box__item">Assurez-vous que l'adresse email est correcte</li>
+                                <li class="help-box__item">L'email peut prendre quelques minutes à arriver</li>
+                            </ul>
+                        </div>
+
+                        {% if app.user %}
+                            <div class="verification-pending__actions">
+                                <form method="post" action="{{ path('app_resend_verification') }}" class="resend-form" data-resend-form>
+                                    <input type="hidden" name="email" value="{{ app.user.email }}">
+                                    <button type="submit" class="btn-secondary" data-resend-btn>
+                                        <span class="btn-secondary__text">Renvoyer l'email</span>
+                                        <div class="btn-secondary__loader" style="display: none;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </form>
                             </div>
-                        </form>
-                    {% endif %}
-                </div>
-            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
 
-            <!-- Footer avec liens -->
-            <div class="auth-footer">
-                <div class="auth-separator">
-                    <span>ou</span>
-                </div>
-
-                <div class="auth-login-prompt">
-                    <p>Besoin d'aide ?</p>
-                    <a href="{{ path('contact') }}" class="auth-link contact-link">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Footer avec liens d'aide -->
+            <footer class="email-verification__footer">
+                <div class="help-links">
+                    <a href="{{ path('contact') }}" class="help-links__item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                         </svg>
-                        <span>Contactez le support</span>
+                        <span>Besoin d'aide ?</span>
                     </a>
 
                     {% if not app.user %}
-                        <a href="{{ path('app_login') }}" class="auth-link login-link">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <a href="{{ path('app_login') }}" class="help-links__item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M21 12H9"/>
                             </svg>
                             <span>Se connecter</span>
                         </a>
                     {% endif %}
                 </div>
-            </div>
+            </footer>
         </div>
     </div>
 
-    <!-- Toast notification container -->
+    <!-- Toast container pour les notifications dynamiques -->
     <div id="toast-container" class="toast-container"></div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Script spécifique à la vérification d'email
+        // Script pour la page de vérification d'email
         document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du formulaire de renvoi
-            const resendForm = document.querySelector('.resend-form');
-            const resendBtn = document.getElementById('resendBtn');
+            const emailVerification = document.querySelector('.email-verification');
 
-            if (resendForm && resendBtn) {
-                resendForm.addEventListener('submit', function(e) {
-                    // Animation de chargement
-                    resendBtn.classList.add('loading');
-                    resendBtn.disabled = true;
+            if (!emailVerification) return;
 
-                    // Réactiver après 3 secondes (timeout de sécurité)
-                    setTimeout(() => {
-                        resendBtn.classList.remove('loading');
-                        resendBtn.disabled = false;
-                    }, 3000);
-                });
-            }
+            // Gestion des formulaires de renvoi
+            const resendForms = document.querySelectorAll('[data-resend-form]');
 
-            // Auto-focus sur le champ email si présent
-            const emailInput = document.getElementById('email');
-            if (emailInput) {
-                emailInput.focus();
-            }
+            resendForms.forEach(form => {
+                const submitBtn = form.querySelector('[data-resend-btn]');
 
-            // Animation des étapes
-            const steps = document.querySelectorAll('.steps-list li');
-            steps.forEach((step, index) => {
-                step.style.animationDelay = `${index * 0.2}s`;
-                step.classList.add('animate-in');
+                if (submitBtn) {
+                    form.addEventListener('submit', function() {
+                        // Animation de chargement
+                        submitBtn.classList.add('loading');
+                        submitBtn.disabled = true;
+
+                        const btnText = submitBtn.querySelector('.btn-primary__text, .btn-secondary__text');
+                        const btnLoader = submitBtn.querySelector('.btn-primary__loader, .btn-secondary__loader');
+                        const btnIcon = submitBtn.querySelector('.btn-primary__icon, .btn-secondary__icon');
+
+                        if (btnText) btnText.style.opacity = '0';
+                        if (btnLoader) btnLoader.style.display = 'block';
+                        if (btnIcon) btnIcon.style.opacity = '0';
+
+                        // Réactiver après timeout (sécurité)
+                        setTimeout(() => {
+                            submitBtn.classList.remove('loading');
+                            submitBtn.disabled = false;
+                            if (btnText) btnText.style.opacity = '1';
+                            if (btnLoader) btnLoader.style.display = 'none';
+                            if (btnIcon) btnIcon.style.opacity = '1';
+                        }, 3000);
+                    });
+                }
             });
+
+            // Animation d'entrée progressive pour les éléments
+            const animateElements = () => {
+                const elementsToAnimate = [
+                    '.email-verification__header',
+                    '.verification-success',
+                    '.verification-error',
+                    '.verification-pending',
+                    '.steps-guide__item',
+                    '.benefit-item',
+                    '.help-box'
+                ];
+
+                elementsToAnimate.forEach((selector, index) => {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach((element, elementIndex) => {
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(20px)';
+
+                        setTimeout(() => {
+                            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }, (index * 100) + (elementIndex * 100));
+                    });
+                });
+            };
+
+            // Démarrer les animations après un court délai
+            setTimeout(animateElements, 200);
         });
     </script>
 {% endblock %}

@@ -1,16 +1,22 @@
+// ===== DASHBOARD ARCHITECTURE BEM =====
+// Imports des variables et fonctions de base
 @import './variables.scss';
+
+// Variables spécifiques au dashboard
 @import './Dashboard/variables.scss';
-@import './Dashboard/main.scss';
 
-@import './Dashboard/layout/base.scss';
+// Layout de base (structure principale)
+@import './Dashboard/base.scss';
 
+// Composants modulaires
+@import './Dashboard/components/buttons.scss';
+@import './Dashboard/components/stat-cards.scss';
+@import './Dashboard/components/tables.scss';
+@import './Dashboard/components/filters.scss';
+@import './Dashboard/components/loading-states.scss';
 @import './Dashboard/components/badges.scss';
 @import './Dashboard/components/block-codes.scss';
 @import './Dashboard/components/empty-states.scss';
-@import './Dashboard/components/filters.scss';
-@import './Dashboard/components/flash-messages.scss';
-@import './Dashboard/components/loading-states.scss';
 @import './Dashboard/components/paginations.scss';
-@import './Dashboard/components/stat-cards.scss';
-@import './Dashboard/components/tables.scss';
-@import './Dashboard/components/teams.scss';
+@import './Dashboard/components/profile.scss';
+ @import './Dashboard/components/teams.scss';

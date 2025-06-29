@@ -1,0 +1,123 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Préférences - {{ parent() }}{% endblock %}
+
+{% block page_header %}
+    <div class="page-header">
+        <div class="page-header__content">
+            <nav class="breadcrumb">
+                <a href="{{ path('dashboard_profile_index') }}" class="breadcrumb__link">Mon Profil</a>
+                <span class="breadcrumb__separator">/</span>
+                <span class="breadcrumb__current">Préférences</span>
+            </nav>
+            <h1 class="page-header__title">Préférences</h1>
+            <p class="page-header__subtitle">Personnalisez vos notifications et vos paramètres</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="profile-preferences">
+        <div class="profile-preferences__container">
+            {{ form_start(form, {'attr': {'class': 'form form--preferences'}}) }}
+                <div class="form__section">
+                    <h2 class="form__section-title">
+                        <i class="fas fa-envelope"></i>
+                        Notifications par email
+                    </h2>
+                    
+                    <div class="form__preferences-grid">
+                        <div class="form__preference-item">
+                            <div class="form__preference-content">
+                                <div class="form__preference-header">
+                                    {{ form_widget(form.emailAlertsEnabled) }}
+                                    {{ form_label(form.emailAlertsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
+                                </div>
+                                <p class="form__preference-help">{{ form.emailAlertsEnabled.vars.help }}</p>
+                            </div>
+                            {{ form_errors(form.emailAlertsEnabled) }}
+                        </div>
+
+                        <div class="form__preference-item">
+                            <div class="form__preference-content">
+                                <div class="form__preference-header">
+                                    {{ form_widget(form.criticalAlertsEnabled) }}
+                                    {{ form_label(form.criticalAlertsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
+                                </div>
+                                <p class="form__preference-help">{{ form.criticalAlertsEnabled.vars.help }}</p>
+                            </div>
+                            {{ form_errors(form.criticalAlertsEnabled) }}
+                        </div>
+
+                        <div class="form__preference-item">
+                            <div class="form__preference-content">
+                                <div class="form__preference-header">
+                                    {{ form_widget(form.weeklyReportsEnabled) }}
+                                    {{ form_label(form.weeklyReportsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
+                                </div>
+                                <p class="form__preference-help">{{ form.weeklyReportsEnabled.vars.help }}</p>
+                            </div>
+                            {{ form_errors(form.weeklyReportsEnabled) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form__section">
+                    <h2 class="form__section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Sécurité
+                    </h2>
+                    
+                    <div class="form__preferences-grid">
+                        <div class="form__preference-item">
+                            <div class="form__preference-content">
+                                <div class="form__preference-header">
+                                    {{ form_widget(form.loginNotificationsEnabled) }}
+                                    {{ form_label(form.loginNotificationsEnabled, null, {'label_attr': {'class': 'form__preference-label'}}) }}
+                                </div>
+                                <p class="form__preference-help">{{ form.loginNotificationsEnabled.vars.help }}</p>
+                            </div>
+                            {{ form_errors(form.loginNotificationsEnabled) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form__actions">
+                    <a href="{{ path('dashboard_profile_index') }}" class="button button--secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Retour
+                    </a>
+                    <button type="submit" class="button button--primary">
+                        <i class="fas fa-save"></i>
+                        Enregistrer les préférences
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <aside class="profile-preferences__sidebar">
+            <div class="profile-tip">
+                <div class="profile-tip__icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="profile-tip__title">Types de notifications</h3>
+                <ul class="profile-tip__list">
+                    <li><strong>Alertes générales :</strong> Toutes les nouvelles erreurs détectées</li>
+                    <li><strong>Alertes critiques :</strong> Erreurs avec un impact élevé uniquement</li>
+                    <li><strong>Rapports hebdomadaires :</strong> Résumé de l'activité de la semaine</li>
+                    <li><strong>Notifications de connexion :</strong> Alertes de sécurité pour les nouvelles connexions</li>
+                </ul>
+            </div>
+            
+            <div class="profile-tip profile-tip--info">
+                <div class="profile-tip__icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h3 class="profile-tip__title">Personnalisation</h3>
+                <p class="profile-tip__content">
+                    Vous pouvez modifier ces préférences à tout moment. Les changements prennent effet immédiatement pour les nouvelles notifications.
+                </p>
+            </div>
+        </aside>
+    </div>
+{% endblock %}
