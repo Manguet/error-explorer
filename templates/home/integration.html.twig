@@ -457,18 +457,18 @@ function YourApp() {
                                 <div class="step-content">
                                     <h3>Installation</h3>
                                     <div class="code-block">
-                                        <button class="copy-btn" data-code="npm install @error-explorer/node
+                                        <button class="copy-btn" data-code="npm install error-explorer-node-reporter
 # ou
-yarn add @error-explorer/node">
+yarn add error-explorer-node-reporter">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                                                  stroke="currentColor" stroke-width="2">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                                             </svg>
                                         </button>
-                                        <pre><code>npm install @error-explorer/node
+                                        <pre><code>npm install error-explorer-node-reporter
 # ou
-yarn add @error-explorer/node</code></pre>
+yarn add error-explorer-node-reporter</code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -479,12 +479,19 @@ yarn add @error-explorer/node</code></pre>
                                     <h3>Configuration</h3>
                                     <div class="code-block">
                                         <button class="copy-btn" data-code="// app.js ou server.js
-const ErrorExplorer = require('@error-explorer/node');
+const { ErrorExplorer } = require('error-explorer-node-reporter');
 
 ErrorExplorer.init({
   webhookUrl: process.env.ERROR_EXPLORER_WEBHOOK_URL,
   projectName: process.env.ERROR_EXPLORER_PROJECT_NAME || 'my-node-app',
   environment: process.env.NODE_ENV || 'development',
+  
+  // Nouvelles options v1.1.0
+  onError: (error, context) => console.error('ErrorExplorer failed:', error),
+  onWarning: (message, context) => console.warn('ErrorExplorer:', message),
+  enableOfflineQueue: true,
+  maxQueueSize: 100,
+  enableRateLimit: true
 });
 
 // Capture des erreurs non gérées
@@ -497,12 +504,19 @@ process.on('unhandledRejection', ErrorExplorer.captureException);">
                                             </svg>
                                         </button>
                                         <pre><code>// app.js ou server.js
-const ErrorExplorer = require('@error-explorer/node');
+const { ErrorExplorer } = require('error-explorer-node-reporter');
 
 ErrorExplorer.init({
   webhookUrl: process.env.ERROR_EXPLORER_WEBHOOK_URL,
   projectName: process.env.ERROR_EXPLORER_PROJECT_NAME || 'my-node-app',
   environment: process.env.NODE_ENV || 'development',
+  
+  // Nouvelles options v1.1.0
+  onError: (error, context) => console.error('ErrorExplorer failed:', error),
+  onWarning: (message, context) => console.warn('ErrorExplorer:', message),
+  enableOfflineQueue: true,
+  maxQueueSize: 100,
+  enableRateLimit: true
 });
 
 // Capture des erreurs non gérées

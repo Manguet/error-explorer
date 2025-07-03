@@ -1,0 +1,577 @@
+// Styles pour le système de tags
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.5rem 0;
+
+  &--small {
+    gap: 0.375rem;
+    margin: 0.25rem 0;
+  }
+
+  &--large {
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+  }
+}
+
+// Badge de tag
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--tag-bg, #3B82F6);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: $dashboard-transition;
+  white-space: nowrap;
+  border: none;
+  cursor: default;
+  line-height: 1.2;
+
+  &--small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    border-radius: 8px;
+    gap: 0.25rem;
+  }
+
+  &--large {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 16px;
+    gap: 0.5rem;
+  }
+
+  &--interactive {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--removable {
+    cursor: pointer;
+    padding-right: 0.5rem;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.125rem 0.375rem;
+    border-radius: 8px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    margin-left: 0.25rem;
+  }
+
+  &__remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+  }
+}
+
+// Formulaire d'ajout de tags
+.tag-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__field {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: $dashboard-card-bg;
+    border: 1px solid $dashboard-border;
+    border-radius: 8px;
+    color: $dashboard-text;
+    font-size: 0.875rem;
+    transition: $dashboard-transition;
+
+    &::placeholder {
+      color: $dashboard-text-light;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+    }
+  }
+
+  &__add-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background: $primary-blue;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $dashboard-transition;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary-blue, 0.9);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0f172a;
+    border: 1px solid $dashboard-border;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 0.25rem;
+  }
+
+  &__suggestion {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba($dashboard-border, 0.5);
+    transition: $dashboard-transition;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: rgba($primary-blue, 0.1);
+    }
+
+    &--active {
+      background: rgba($primary-blue, 0.1);
+    }
+  }
+
+  &__suggestion-tag {
+    flex-shrink: 0;
+  }
+
+  &__suggestion-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__suggestion-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $dashboard-text;
+    margin-bottom: 0.125rem;
+  }
+
+  &__suggestion-count {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+}
+
+// Section de gestion des tags
+.tags-section {
+  background: $dashboard-card-bg;
+  border: 1px solid $dashboard-border;
+  border-radius: $dashboard-radius;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid $dashboard-border;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    background: transparent;
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($dashboard-text-light, 0.1);
+      color: $dashboard-text;
+    }
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  &__content {
+    min-height: 2rem;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: $dashboard-text-light;
+
+    &-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba($dashboard-text-light, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    &-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: $dashboard-text;
+    }
+
+    &-description {
+      font-size: 0.75rem;
+      line-height: 1.5;
+    }
+  }
+}
+
+// États de chargement
+.tags-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: $dashboard-text-light;
+
+  &__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid $primary-blue;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+  }
+}
+
+// Couleurs prédéfinies pour les tags
+.tag {
+  // Couleurs par défaut
+  &--blue { background-color: #3B82F6; }
+  &--emerald { background-color: #10B981; }
+  &--amber { background-color: #F59E0B; }
+  &--red { background-color: #EF4444; }
+  &--violet { background-color: #8B5CF6; }
+  &--cyan { background-color: #06B6D4; }
+  &--lime { background-color: #84CC16; }
+  &--orange { background-color: #F97316; }
+  &--pink { background-color: #EC4899; }
+  &--indigo { background-color: #6366F1; }
+  &--teal { background-color: #14B8A6; }
+  &--purple { background-color: #A855F7; }
+  &--green { background-color: #22C55E; }
+  &--rose { background-color: #F43F5E; }
+  &--gray { background-color: #6B7280; }
+}
+
+// Filtres de tags
+.tag-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  background: rgba($white, 0.02);
+  border: 1px solid $dashboard-border;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $dashboard-text;
+    margin-right: 0.5rem;
+  }
+
+  &__tag {
+    cursor: pointer;
+    position: relative;
+
+    &--active {
+      box-shadow: 0 0 0 2px $primary-blue;
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__clear {
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 1px solid $dashboard-border;
+    border-radius: 4px;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($dashboard-text-light, 0.1);
+    }
+  }
+}
+
+// Responsive
+@include responsive('md') {
+  .tags-container {
+    gap: 0.375rem;
+  }
+
+  .tag {
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.5rem;
+
+    &--large {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+    }
+  }
+
+  .tag-input {
+    &__wrapper {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &__add-btn {
+      align-self: flex-start;
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tag-input__suggestions {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.tag {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Input de filtrage des tags dans les formulaires
+.tags-filter-input {
+  position: relative;
+
+  input[type="text"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: $dashboard-card-bg;
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    color: $dashboard-text;
+    font-size: 0.875rem;
+    transition: $dashboard-transition;
+
+    &::placeholder {
+      color: $dashboard-text-light;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+    }
+  }
+
+  .tag-input__suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #0f172a;
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 0.25rem;
+  }
+}
+
+.tags-filter-display {
+  margin-top: 0.75rem;
+
+  .tags-container {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.tags-filter-mode {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+    cursor: pointer;
+
+    input[type="radio"] {
+      margin: 0;
+      accent-color: $primary-blue;
+    }
+
+    &:hover {
+      color: $dashboard-text;
+    }
+  }
+}
+
+// Corrections spécifiques pour les suggestions de filtrage
+.tags-filter-suggestions,
+#tags-filter-suggestions {
+  background: #0f172a !important;
+  border: 1px solid $dashboard-border !important;
+  color: $dashboard-text !important;
+
+  .tag-input__suggestion {
+    background: transparent;
+    color: $dashboard-text;
+
+    &:hover,
+    &--active {
+      background: rgba($primary-blue, 0.1) !important;
+    }
+  }
+
+  .tag-input__suggestion-name {
+    color: $dashboard-text !important;
+  }
+
+  .tag-input__suggestion-count {
+    color: $dashboard-text-light !important;
+  }
+}

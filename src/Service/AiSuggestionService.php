@@ -26,9 +26,9 @@ class AiSuggestionService
         string $groqApiKey = null
     ) {
         $this->entityManager = $entityManager;
-        $this->aiProvider = $aiProvider ?: $_ENV['AI_PROVIDER'] ?? 'rules';
-        $this->openaiApiKey = $openaiApiKey ?: $_ENV['OPENAI_API_KEY'] ?? '';
-        $this->groqApiKey = $groqApiKey ?: $_ENV['GROQ_API_KEY'] ?? '';
+        $this->aiProvider = $aiProvider ?: 'rules';
+        $this->openaiApiKey = $openaiApiKey ?: '';
+        $this->groqApiKey = $groqApiKey ?: '';
     }
 
     /**
@@ -148,7 +148,7 @@ class AiSuggestionService
         $prompt .= "- Occurrences: {$errorGroup->getOccurrenceCount()}\n\n";
 
         // Stack trace tronquée
-        if ($stackTrace = $errorGroup->getStackTrace()) {
+        if ($stackTrace = $errorGroup->getStackTracePreview()) {
             $shortStackTrace = substr($stackTrace, 0, self::MAX_STACK_TRACE_LENGTH);
             $prompt .= "## Stack Trace:\n```\n{$shortStackTrace}\n```\n\n";
         }
@@ -190,17 +190,20 @@ class AiSuggestionService
         $context = [];
 
         // Ajouter le contexte de la dernière occurrence
-        $latestContext = $errorGroup->getLatestContext();
-        if (!empty($latestContext)) {
-            $context['latest_context'] = $latestContext;
-        }
-
-        // Ajouter les informations de requête
-        $latestRequest = $errorGroup->getLatestRequest();
-        if (!empty($latestRequest)) {
-            // Filtrer les données sensibles
-            $filteredRequest = $this->filterSensitiveData($latestRequest);
-            $context['request'] = $filteredRequest;
+        $latestOccurrence = $errorGroup->getLatestOccurrence();
+        if ($latestOccurrence) {
+            $latestContext = $latestOccurrence->getContext();
+            if (!empty($latestContext)) {
+                $context['latest_context'] = $latestContext;
+            }
+            
+            // Ajouter les informations de requête
+            $latestRequest = $latestOccurrence->getRequest();
+            if (!empty($latestRequest)) {
+                // Filtrer les données sensibles
+                $filteredRequest = $this->filterSensitiveData($latestRequest);
+                $context['request'] = $filteredRequest;
+            }
         }
 
         return $context;

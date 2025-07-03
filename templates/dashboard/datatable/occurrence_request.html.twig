@@ -1,0 +1,23 @@
+{% if row.url %}
+    <div class="occurrence-request">
+        <div class="occurrence-request__method-url">
+            {% if row.httpMethod %}
+                <span class="http-method http-method--{{ row.httpMethod|lower }}">{{ row.httpMethod }}</span>
+            {% endif %}
+            <span class="occurrence-request__url" title="{{ row.url }}">
+                {{ row.url|length > 40 ? (row.url|slice(0, 37) ~ '...') : row.url }}
+            </span>
+        </div>
+        {% if row.ipAddress %}
+            <div class="occurrence-request__ip">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                {{ row.ipAddress }}
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <span class="text-muted">-</span>
+{% endif %}

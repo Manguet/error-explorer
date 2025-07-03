@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[Route('/dashboard/billing')]
 #[IsGranted('ROLE_USER')]
@@ -21,7 +22,8 @@ class BillingController extends AbstractController
 {
     public function __construct(
         private StripeService $stripeService,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        #[Autowire('%app.stripe.secret_key%')] private readonly string $stripeSecretKey
     ) {}
 
     #[Route('/', name: 'billing_dashboard')]
@@ -232,7 +234,7 @@ class BillingController extends AbstractController
             }
 
             // Détacher de Stripe
-            $stripe = new StripeClient($_ENV['STRIPE_SECRET_KEY']);
+            $stripe = new StripeClient($this->stripeSecretKey);
             $stripe->paymentMethods->detach($paymentMethod->getStripePaymentMethodId());
 
             // Supprimer de la base de données
@@ -270,7 +272,7 @@ class BillingController extends AbstractController
 
             // Mettre à jour dans Stripe
             $customerId = $this->stripeService->createOrUpdateCustomer($user);
-            $stripe = new StripeClient($_ENV['STRIPE_SECRET_KEY']);
+            $stripe = new StripeClient($this->stripeSecretKey);
             $stripe->customers->update($customerId, [
                 'invoice_settings' => [
                     'default_payment_method' => $paymentMethod->getStripePaymentMethodId()

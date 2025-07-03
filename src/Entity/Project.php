@@ -65,6 +65,12 @@ class Project
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $repositoryUrl = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $gitProvider = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $gitAccessCredentials = null;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'projects')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
@@ -363,6 +369,65 @@ class Project
         $this->repositoryUrl = $repositoryUrl;
         $this->updatedAt = new \DateTime();
         return $this;
+    }
+
+    public function getGitProvider(): ?string
+    {
+        return $this->gitProvider;
+    }
+
+    public function setGitProvider(?string $gitProvider): static
+    {
+        $this->gitProvider = $gitProvider;
+        return $this;
+    }
+
+    public function getGitAccessCredentials(): ?array
+    {
+        return $this->gitAccessCredentials;
+    }
+
+    public function setGitAccessCredentials(?array $gitAccessCredentials): static
+    {
+        $this->gitAccessCredentials = $gitAccessCredentials;
+        return $this;
+    }
+
+    /**
+     * Récupère le token d'accès Git chiffré
+     */
+    public function getGitAccessToken(): ?string
+    {
+        return $this->gitAccessCredentials['encrypted_token'] ?? null;
+    }
+
+    /**
+     * Définit le token d'accès Git chiffré
+     */
+    public function setGitAccessToken(?string $encryptedToken): static
+    {
+        if (!$this->gitAccessCredentials) {
+            $this->gitAccessCredentials = [];
+        }
+        
+        if ($encryptedToken) {
+            $this->gitAccessCredentials['encrypted_token'] = $encryptedToken;
+        } else {
+            unset($this->gitAccessCredentials['encrypted_token']);
+        }
+        
+        $this->updatedAt = new \DateTime();
+        return $this;
+    }
+
+    /**
+     * Vérifie si l'intégration Git est configurée et prête à l'emploi.
+     */
+    public function isGitConfigured(): bool
+    {
+        return !empty($this->repositoryUrl) &&
+               !empty($this->gitProvider) &&
+               !empty($this->gitAccessCredentials['encrypted_token']);
     }
 
     public function getOwner(): ?User

@@ -21,6 +21,11 @@
 @import 'components/settings';
 @import 'components/billing';
 @import 'components/teams';
+@import 'components/error-detail';
+@import 'components/git-integration';
+@import 'components/occurrence-datatable';
+@import 'components/comments';
+@import 'components/tags';
 
 // Reset et base
 * {
@@ -339,7 +344,7 @@ button:focus,
 }
 
 // High contrast mode
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .dashboard-table-container,
   .dashboard-stat-card,
   .dashboard-filters {

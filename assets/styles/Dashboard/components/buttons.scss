@@ -218,6 +218,23 @@
   }
 }
 
+// Info button
+.btn--info {
+  background: rgba($primary-blue, 0.1);
+  color: $primary-blue;
+  border-color: rgba($primary-blue, 0.3);
+
+  &:hover:not(:disabled) {
+    background: rgba($primary-blue, 0.15);
+    border-color: rgba($primary-blue, 0.4);
+  }
+
+  &:focus {
+    outline: 2px solid rgba($primary-blue, 0.3);
+    outline-offset: 2px;
+  }
+}
+
 // Ghost button
 .btn--ghost {
   background: transparent;
@@ -399,5 +416,125 @@
   
   .btn--secondary {
     border-color: $white;
+  }
+}
+
+// ===== HEADER BUTTONS =====
+.header-btn {
+  @include dashboard-button();
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: $dashboard-transition;
+  position: relative;
+  overflow: hidden;
+
+  // Shine effect on hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &.btn-primary {
+    background: $primary-blue;
+    color: $white;
+    border: 1px solid $primary-blue;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.9);
+      border-color: rgba(59, 130, 246, 0.9);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  &.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: $dashboard-text-light;
+    border: 1px solid $dashboard-border;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: $white;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &.btn-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: $status-resolved;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+
+    &:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.5);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+  }
+
+  &.btn-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: $warning-yellow;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.25);
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+  }
+
+  &.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: $status-open;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  &.btn-info {
+    background: rgba($primary-blue, 0.15);
+    color: $primary-blue;
+    border: 1px solid rgba($primary-blue, 0.3);
+
+    &:hover {
+      background: rgba($primary-blue, 0.25);
+      border-color: rgba($primary-blue, 0.5);
+      box-shadow: 0 4px 12px rgba($primary-blue, 0.3);
+    }
   }
 }

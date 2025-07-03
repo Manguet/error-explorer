@@ -163,10 +163,40 @@ $status-resolved: $success-green;
 $status-ignored: $gray-500;
 $status-warning: $warning-yellow;
 
+// ===== ADDITIONAL GRAY SHADES =====
+$gray-400: #94a3b8;
+
+// ===== ALERT COLORS =====
+$alert-bg-success: rgba($success-green, 0.1);
+$alert-border-success: rgba($success-green, 0.3);
+$alert-text-success: $success-green;
+
+$alert-bg-warning: rgba($warning-yellow, 0.1);
+$alert-border-warning: rgba($warning-yellow, 0.3);
+$alert-text-warning: $warning-yellow;
+
+$alert-bg-info: rgba($primary-blue, 0.1);
+$alert-border-info: rgba($primary-blue, 0.3);
+$alert-text-info: $primary-blue;
+
+$alert-bg-danger: rgba($error-red, 0.1);
+$alert-border-danger: rgba($error-red, 0.3);
+$alert-text-danger: $error-red;
+
+// ===== MISSING LAYOUT VARIABLES =====
+$dashboard-content-bg: $dashboard-bg;
+$dashboard-sidebar-width: $sidebar-width;
+$dashboard-content-padding: 2rem;
+$dashboard-sidebar-bg: $sidebar-bg;
+
 // ===== DASHBOARD SPECIFIC CARDS =====
 $dashboard-card-bg: rgba($white, 0.05);
 $dashboard-border: rgba($white, 0.1);
+$dashboard-shadow: 0 4px 6px -1px rgba($black, 0.1);
 $dashboard-transition: all 0.3s ease;
+$dashboard-radius: $radius-lg;
+$dashboard-code-bg: rgba($white, 0.05);
+$dashboard-code-text: $white;
 
 // ===== MIXINS DASHBOARD =====
 @mixin dashboard-card {
@@ -221,5 +251,35 @@ $dashboard-transition: all 0.3s ease;
     height: 6px;
     background: $bg-color;
     border-radius: 50%;
+  }
+}
+
+@mixin dashboard-responsive {
+  @media (max-width: $dashboard-breakpoint-lg) {
+    grid-template-columns: 1fr;
+    
+    .dashboard-sidebar {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      height: 100vh;
+      width: $sidebar-width;
+      z-index: $z-sidebar;
+      transition: left $transition-normal;
+      
+      &.open {
+        left: 0;
+      }
+    }
+    
+    .dashboard-content {
+      padding: $component-spacing-md;
+    }
+  }
+  
+  @media (max-width: $dashboard-breakpoint-md) {
+    .dashboard-content {
+      padding: $component-spacing-sm;
+    }
   }
 }

@@ -2,13 +2,18 @@
 
 namespace App\Controller\Dashboard;
 
+use App\DataTable\Type\ErrorGroupDataTableType;
 use App\Entity\ErrorGroup;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
 use App\Service\AiSuggestionService;
+use App\Service\Error\ErrorOccurrenceFormatter;
 use App\Service\ErrorLimitService;
 use App\Service\UpgradeMessageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,11 +31,12 @@ class DashboardController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly ErrorLimitService $errorLimitService,
         private readonly UpgradeMessageService $upgradeMessageService,
-        private readonly AiSuggestionService $aiSuggestionService
+        private readonly AiSuggestionService $aiSuggestionService,
+        private readonly ErrorOccurrenceFormatter $errorOccurrenceFormatter
     ) {}
 
     #[Route('/', name: 'index')]
-    public function index(Request $request): Response
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
         $user = $this->getUser();
 
@@ -43,6 +49,12 @@ class DashboardController extends AbstractController
         $filters = $this->getFiltersFromRequest($request);
         $filters['user'] = $user; // Filtrer par utilisateur connecté
 
+        // Créer le DataTable avec l'utilisateur en contexte
+        $table = $dataTableFactory->createFromType(ErrorGroupDataTableType::class, [
+            'user' => $user,
+            'filters' => $filters
+        ])->handleRequest($request);
+
         // Récupérer les statistiques générales pour cet utilisateur
         $stats = $this->getGlobalStats($filters);
 
@@ -52,21 +64,10 @@ class DashboardController extends AbstractController
         // Récupérer le message d'upgrade si nécessaire
         $upgradeMessage = $this->upgradeMessageService->getUpgradeMessage($user);
 
-        // Récupérer les groupes d'erreurs avec pagination
-        $page = max(1, $request->query->getInt('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
-
-        $errorGroups = $this->errorGroupRepository->findWithFilters(
-            $filters,
-            $request->query->get('sort', 'lastSeen'),
-            $request->query->get('direction', 'DESC'),
-            $limit,
-            $offset
-        );
-
-        $totalGroups = $this->errorGroupRepository->countWithFilters($filters);
-        $totalPages = ceil($totalGroups / $limit);
+        // Si c'est une requête AJAX DataTable, renvoyer la réponse JSON
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
 
         // Récupérer la liste des projets de l'utilisateur pour le filtre
         $projects = $this->errorGroupRepository->getDistinctProjectsForUser($user);
@@ -75,26 +76,18 @@ class DashboardController extends AbstractController
         $templateFilters = $this->cleanFiltersForTemplate($filters);
 
         return $this->render('dashboard/index.html.twig', [
-            'error_groups' => $errorGroups,
+            'datatable' => $table,
             'stats' => $stats,
             'usage_stats' => $usageStats,
             'upgrade_message' => $upgradeMessage,
-            'filters' => $templateFilters, // Utiliser les filtres nettoyés
+            'filters' => $templateFilters,
             'projects' => $projects,
-            'user' => $user,
-            'pagination' => [
-                'current_page' => $page,
-                'total_pages' => $totalPages,
-                'total_items' => $totalGroups,
-                'per_page' => $limit
-            ],
-            'sort' => $request->query->get('sort', 'lastSeen'),
-            'direction' => $request->query->get('direction', 'DESC')
+            'user' => $user
         ]);
     }
 
     #[Route('/project/{project}', name: 'project')]
-    public function project(string $project, Request $request): Response
+    public function project(string $project, Request $request, DataTableFactory $dataTableFactory): Response
     {
         $user = $this->getUser();
         $projectRepository = $this->entityManager->getRepository(\App\Entity\Project::class);
@@ -123,6 +116,18 @@ class DashboardController extends AbstractController
         $filters['project'] = $project;
         $filters['user'] = $user;
 
+        // Créer le DataTable pour les erreurs du projet
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\ProjectErrorGroupDataTableType::class, [
+            'user' => $user,
+            'project' => $project,
+            'filters' => $filters
+        ])->handleRequest($request);
+
+        // Si c'est une requête AJAX DataTable, renvoyer la réponse JSON
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
         // Récupérer les statistiques pour ce projet
         $stats = $this->getGlobalStats($filters);
 
@@ -131,21 +136,6 @@ class DashboardController extends AbstractController
 
         // Récupérer le message d'upgrade si nécessaire
         $upgradeMessage = $this->upgradeMessageService->getUpgradeMessage($user);
-
-        $page = max(1, $request->query->getInt('page', 1));
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
-
-        $errorGroups = $this->errorGroupRepository->findWithFilters(
-            $filters,
-            $request->query->get('sort', 'lastSeen'),
-            $request->query->get('direction', 'DESC'),
-            $limit,
-            $offset
-        );
-
-        $totalGroups = $this->errorGroupRepository->countWithFilters($filters);
-        $totalPages = ceil($totalGroups / $limit);
 
         $metadata = [
             'project_exists' => $projectEntity !== null,
@@ -162,29 +152,30 @@ class DashboardController extends AbstractController
         return $this->render('dashboard/project.html.twig', [
             'project' => $project,
             'project_entity' => $projectEntity,
-            'error_groups' => $errorGroups,
+            'datatable' => $table,
             'stats' => $stats,
             'usage_stats' => $usageStats,
             'upgrade_message' => $upgradeMessage,
-            'filters' => $templateFilters, // Utiliser les filtres nettoyés
+            'filters' => $templateFilters,
             'metadata' => $metadata,
-            'user' => $user,
-            'pagination' => [
-                'current_page' => $page,
-                'total_pages' => $totalPages,
-                'total_items' => $totalGroups,
-                'per_page' => $limit
-            ],
-            'sort' => $request->query->get('sort', 'lastSeen'),
-            'direction' => $request->query->get('direction', 'DESC')
+            'user' => $user
         ]);
     }
 
-    #[Route('/error/{id}', name: 'error_detail', requirements: ['id' => '\d+'])]
-    public function errorDetail(int $id, Request $request): Response
+    #[Route('/project/{projectSlug}/error/{id}', name: 'error_detail', requirements: ['id' => '\d+'])]
+    public function errorDetail(string $projectSlug, int $id, Request $request, DataTableFactory $dataTableFactory): Response
     {
         $user = $this->getUser();
-        $errorGroup = $this->errorGroupRepository->find($id);
+        
+        // Récupérer l'ErrorGroup avec l'utilisateur assigné et les tags
+        $errorGroup = $this->errorGroupRepository->createQueryBuilder('eg')
+            ->leftJoin('eg.assignedTo', 'assignedUser')
+            ->leftJoin('eg.tags', 'tags')
+            ->addSelect('assignedUser', 'tags')
+            ->where('eg.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
 
         if (!$errorGroup) {
             throw $this->createNotFoundException('Groupe d\'erreur non trouvé');
@@ -195,19 +186,24 @@ class DashboardController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette erreur');
         }
 
-        // Récupérer les occurrences récentes avec pagination
-        $page = max(1, $request->query->getInt('page', 1));
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
+        // Vérifier que le slug du projet correspond
+        if ($errorGroup->getProjectEntity() && $errorGroup->getProjectEntity()->getSlug() !== $projectSlug) {
+            throw $this->createNotFoundException('Projet non trouvé');
+        }
 
-        $occurrences = $this->errorOccurrenceRepository->findByErrorGroup(
-            $errorGroup,
-            $limit,
-            $offset
-        );
+        // Créer le DataTable pour les occurrences
+        $occurrenceTable = $dataTableFactory->createFromType(\App\DataTable\Type\ErrorOccurrenceDataTableType::class, [
+            'error_group' => $errorGroup,
+            'user' => $user
+        ])->handleRequest($request);
 
-        $totalOccurrences = $this->errorOccurrenceRepository->countByErrorGroup($errorGroup);
-        $totalPages = ceil($totalOccurrences / $limit);
+        // Si c'est une requête AJAX DataTable, renvoyer la réponse JSON
+        if ($occurrenceTable->isCallback()) {
+            return $occurrenceTable->getResponse();
+        }
+
+        // Récupérer quelques occurrences récentes pour l'affichage initial
+        $recentOccurrences = $this->errorOccurrenceRepository->findByErrorGroup($errorGroup, 5, 0);
 
         // Récupérer les statistiques d'occurrences par jour (30 derniers jours)
         $occurrenceStats = $this->errorOccurrenceRepository->getOccurrenceStatsForGroup(
@@ -237,16 +233,13 @@ class DashboardController extends AbstractController
 
         return $this->render('dashboard/error_detail.html.twig', [
             'error_group' => $errorGroup,
-            'occurrences' => $occurrences,
+            'project' => $errorGroup->getProjectEntity(),
+            'occurrences' => $recentOccurrences,
+            'occurrence_table' => $occurrenceTable,
             'occurrence_stats' => $occurrenceStats,
             'ai_suggestions' => $aiSuggestions,
             'user' => $user,
-            'pagination' => [
-                'current_page' => $page,
-                'total_pages' => $totalPages,
-                'total_items' => $totalOccurrences,
-                'per_page' => $limit
-            ]
+            'error_formatter' => $this->errorOccurrenceFormatter
         ]);
     }
 
@@ -391,6 +384,378 @@ class DashboardController extends AbstractController
         return $this->json($stats);
     }
 
+    #[Route('/api/occurrence/{id}/details', name: 'api_occurrence_details')]
+    public function occurrenceDetails(int $id): JsonResponse
+    {
+        $user = $this->getUser();
+        $occurrence = $this->errorOccurrenceRepository->find($id);
+
+        if (!$occurrence) {
+            return $this->json(['error' => 'Occurrence non trouvée'], 404);
+        }
+
+        // Vérifier que l'occurrence appartient à l'utilisateur
+        if (!$this->errorGroupRepository->belongsToUser($occurrence->getErrorGroup(), $user)) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
+        // Extraire les données des propriétés JSON
+        $requestData = $occurrence->getRequest();
+        $serverData = $occurrence->getServer();
+        $contextData = $occurrence->getContext();
+
+        // Formatter les données pour l'affichage
+        $details = [
+            'id' => $occurrence->getId(),
+            'created_at' => $occurrence->getCreatedAt()->format('d/m/Y H:i:s'),
+            'user_agent' => $occurrence->getUserAgent(),
+            'ip_address' => $occurrence->getIpAddress(),
+            'url' => $occurrence->getUrl(),
+            'http_method' => $occurrence->getHttpMethod(),
+            'environment' => $occurrence->getEnvironment(),
+            'user_id' => $occurrence->getUserId(),
+            'session_id' => $requestData['session_id'] ?? $serverData['session_id'] ?? null,
+            'memory_usage' => $occurrence->getMemoryUsage(),
+            'execution_time' => $occurrence->getExecutionTime(),
+            'commit_hash' => $occurrence->getCommitHash(),
+            'request_data' => $requestData,
+            'server_data' => $serverData,
+            'context' => $contextData,
+            'headers' => $requestData['headers'] ?? $serverData['headers'] ?? null,
+            'cookies' => $requestData['cookies'] ?? $serverData['cookies'] ?? null,
+            'breadcrumbs' => $contextData['breadcrumbs'] ?? null,
+            'stack_trace' => $occurrence->getStackTrace(),
+            'error_group' => [
+                'id' => $occurrence->getErrorGroup()->getId(),
+                'title' => $occurrence->getErrorGroup()->getTitle(),
+                'message' => $occurrence->getErrorGroup()->getMessage(),
+                'file' => $occurrence->getErrorGroup()->getFile(),
+                'line' => $occurrence->getErrorGroup()->getLine(),
+            ]
+        ];
+
+        return $this->json(['success' => true, 'occurrence' => $details]);
+    }
+
+    #[Route('/error/{id}/export-occurrences', name: 'error_export_occurrences', requirements: ['id' => '\d+'])]
+    public function exportOccurrences(int $id, Request $request): Response
+    {
+        try {
+            $user = $this->getUser();
+            $errorGroup = $this->errorGroupRepository->find($id);
+
+            if (!$errorGroup) {
+                throw $this->createNotFoundException('Groupe d\'erreur non trouvé');
+            }
+
+            // Vérifier que l'erreur appartient à l'utilisateur
+            if (!$this->errorGroupRepository->belongsToUser($errorGroup, $user)) {
+                throw $this->createAccessDeniedException('Vous n\'avez pas accès à cette erreur');
+            }
+
+            $format = $request->query->get('format', 'csv'); // csv, json, pdf
+            $limit = $request->query->getInt('limit', 100); // Limiter le nombre d'occurrences
+
+            // Récupérer les occurrences
+            $occurrences = $this->errorOccurrenceRepository->findByErrorGroup($errorGroup, $limit, 0);
+
+            switch ($format) {
+                case 'json':
+                    return $this->exportAsJson($errorGroup, $occurrences);
+                case 'pdf':
+                    return $this->exportAsPdf($errorGroup, $occurrences);
+                default:
+                    return $this->exportAsCsv($errorGroup, $occurrences);
+            }
+        } catch (\Exception $e) {
+            // En cas d'erreur, retourner une réponse d'erreur
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json');
+            $response->setStatusCode(500);
+            $response->setContent(json_encode([
+                'error' => 'Erreur serveur lors de l\'export',
+                'message' => $e->getMessage(),
+                'type' => get_class($e)
+            ]));
+            return $response;
+        }
+    }
+
+    private function exportAsCsv($errorGroup, $occurrences): Response
+    {
+        $filename = sprintf('occurrences_%s_%s.csv', 
+            $errorGroup->getProject(), 
+            date('Y-m-d_H-i-s')
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        $csv = [];
+        $csv[] = [
+            'ID',
+            'Date',
+            'URL',
+            'Méthode HTTP',
+            'Adresse IP',
+            'User Agent',
+            'Environnement',
+            'Utilisateur ID',
+            'Usage mémoire',
+            'Temps exécution',
+            'Hash commit',
+            'Tags',
+            'Assigné à'
+        ];
+
+        // Récupérer les tags et l'assignation une seule fois
+        $tagsString = implode(', ', $errorGroup->getTagNames());
+        $assignedTo = $errorGroup->getAssignedTo() ? $errorGroup->getAssignedTo()->getFullName() : '';
+
+        foreach ($occurrences as $occurrence) {
+            $csv[] = [
+                $occurrence->getId(),
+                $occurrence->getCreatedAt()->format('Y-m-d H:i:s'),
+                $occurrence->getUrl(),
+                $occurrence->getHttpMethod(),
+                $occurrence->getIpAddress(),
+                $occurrence->getUserAgent(),
+                $occurrence->getEnvironment(),
+                $occurrence->getUserId(),
+                $occurrence->getMemoryUsage(),
+                $occurrence->getExecutionTime(),
+                $occurrence->getCommitHash(),
+                $tagsString,
+                $assignedTo
+            ];
+        }
+
+        $output = fopen('php://temp', 'r+');
+        foreach ($csv as $row) {
+            fputcsv($output, $row, ';'); // Utiliser ; comme séparateur pour Excel
+        }
+        rewind($output);
+        $content = stream_get_contents($output);
+        fclose($output);
+
+        $response->setContent($content);
+        return $response;
+    }
+
+    private function exportAsJson($errorGroup, $occurrences): Response
+    {
+        try {
+            $filename = sprintf('occurrences_%s_%s.json', 
+                preg_replace('/[^a-zA-Z0-9_-]/', '_', $errorGroup->getProject()), 
+                date('Y-m-d_H-i-s')
+            );
+
+            $data = [
+                'error_group' => [
+                    'id' => $errorGroup->getId(),
+                    'title' => $this->sanitizeString($errorGroup->getExceptionClass()),
+                    'message' => $this->sanitizeString($errorGroup->getMessage()),
+                    'file' => $this->sanitizeString($errorGroup->getFile()),
+                    'line' => $errorGroup->getLine(),
+                    'project' => $this->sanitizeString($errorGroup->getProject()),
+                    'status' => $errorGroup->getStatus(),
+                    'first_seen' => $errorGroup->getFirstSeen() ? $errorGroup->getFirstSeen()->format('c') : null,
+                    'last_seen' => $errorGroup->getLastSeen() ? $errorGroup->getLastSeen()->format('c') : null,
+                    'occurrence_count' => count($occurrences),
+                    'tags' => $errorGroup->getTagsAsArray(),
+                    'assigned_to' => $errorGroup->getAssignedTo() ? [
+                        'id' => $errorGroup->getAssignedTo()->getId(),
+                        'name' => $errorGroup->getAssignedTo()->getFullName(),
+                        'email' => $errorGroup->getAssignedTo()->getEmail()
+                    ] : null
+                ],
+                'occurrences' => []
+            ];
+
+            foreach ($occurrences as $occurrence) {
+                try {
+                    $occurrenceData = [
+                        'id' => $occurrence->getId(),
+                        'created_at' => $occurrence->getCreatedAt() ? $occurrence->getCreatedAt()->format('c') : null,
+                        'url' => $this->sanitizeString($occurrence->getUrl()),
+                        'http_method' => $this->sanitizeString($occurrence->getHttpMethod()),
+                        'ip_address' => $this->sanitizeString($occurrence->getIpAddress()),
+                        'user_agent' => $this->sanitizeString($occurrence->getUserAgent()),
+                        'environment' => $this->sanitizeString($occurrence->getEnvironment()),
+                        'user_id' => $occurrence->getUserId(),
+                        'memory_usage' => $occurrence->getMemoryUsage(),
+                        'execution_time' => $occurrence->getExecutionTime(),
+                        'commit_hash' => $this->sanitizeString($occurrence->getCommitHash()),
+                    ];
+
+                    // Ajouter les données complexes avec protection
+                    try {
+                        // Stack trace
+                        $stackTrace = $occurrence->getStackTrace();
+                        $occurrenceData['stack_trace'] = $stackTrace ? substr($this->sanitizeString($stackTrace), 0, 5000) : null;
+                        
+                        // Request data
+                        try {
+                            $requestData = $occurrence->getRequest();
+                            $occurrenceData['request_data'] = is_array($requestData) ? $this->sanitizeJsonData($requestData) : [];
+                        } catch (\Exception $e) {
+                            $occurrenceData['request_data'] = [];
+                        }
+                        
+                        // Server data
+                        try {
+                            $serverData = $occurrence->getServer();
+                            $occurrenceData['server_data'] = is_array($serverData) ? $this->sanitizeJsonData($serverData) : [];
+                        } catch (\Exception $e) {
+                            $occurrenceData['server_data'] = [];
+                        }
+                        
+                        // Context data
+                        try {
+                            $contextData = $occurrence->getContext();
+                            $occurrenceData['context'] = is_array($contextData) ? $this->sanitizeJsonData($contextData) : [];
+                        } catch (\Exception $e) {
+                            $occurrenceData['context'] = [];
+                        }
+                    } catch (\Exception $e) {
+                        // En cas d'erreur, on met des valeurs par défaut
+                        $occurrenceData['stack_trace'] = 'Erreur lors de la récupération: ' . $e->getMessage();
+                        $occurrenceData['request_data'] = [];
+                        $occurrenceData['server_data'] = [];
+                        $occurrenceData['context'] = [];
+                    }
+
+                    $data['occurrences'][] = $occurrenceData;
+                } catch (\Exception $e) {
+                    // Si une occurrence pose problème, on continue avec les autres
+                    $data['occurrences'][] = [
+                        'id' => isset($occurrence) ? $occurrence->getId() : 'unknown',
+                        'error' => 'Erreur lors de la récupération de cette occurrence: ' . $e->getMessage()
+                    ];
+                }
+            }
+
+            // Utiliser les options JSON disponibles
+            $jsonOptions = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR;
+            // Ajouter JSON_INVALID_UTF8_SUBSTITUTE si disponible (PHP 7.2+)
+            if (defined('JSON_INVALID_UTF8_SUBSTITUTE')) {
+                $jsonOptions |= JSON_INVALID_UTF8_SUBSTITUTE;
+            }
+            $jsonContent = json_encode($data, $jsonOptions);
+            
+            if ($jsonContent === false) {
+                throw new \Exception('Erreur lors de l\'encodage JSON: ' . json_last_error_msg());
+            }
+
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            $response->setContent($jsonContent);
+
+            return $response;
+            
+        } catch (\Exception $e) {
+            // Log l'erreur pour debug
+            error_log('Export JSON Error: ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            
+            // En cas d'erreur, retourner un JSON d'erreur simple
+            $errorData = [
+                'error' => 'Erreur lors de l\'export JSON',
+                'message' => $e->getMessage(),
+                'error_group_id' => $errorGroup->getId(),
+                'debug_trace' => $e->getTraceAsString()
+            ];
+            
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+            $response->headers->set('Content-Disposition', 'attachment; filename="error_export.json"');
+            $response->setContent(json_encode($errorData, JSON_PRETTY_PRINT | JSON_PARTIAL_OUTPUT_ON_ERROR));
+            
+            return $response;
+        }
+    }
+
+    private function sanitizeString(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        
+        // Supprimer les caractères de contrôle qui peuvent causer des problèmes JSON
+        return preg_replace('/[\x00-\x1F\x7F]/', '', $value);
+    }
+
+    private function sanitizeJsonData($data)
+    {
+        if ($data === null) {
+            return null;
+        }
+        
+        if (is_array($data)) {
+            $sanitized = [];
+            foreach ($data as $key => $value) {
+                try {
+                    $sanitizedKey = $this->sanitizeString((string)$key);
+                    if (is_string($value)) {
+                        $sanitized[$sanitizedKey] = $this->sanitizeString($value);
+                    } elseif (is_array($value)) {
+                        // Récursion pour les tableaux imbriqués
+                        $sanitized[$sanitizedKey] = $this->sanitizeJsonData($value);
+                    } elseif (is_object($value)) {
+                        // Convertir les objets en tableaux
+                        $sanitized[$sanitizedKey] = $this->sanitizeJsonData((array)$value);
+                    } else {
+                        $sanitized[$sanitizedKey] = $value;
+                    }
+                } catch (\Exception $e) {
+                    // En cas d'erreur, ignorer cette clé
+                    continue;
+                }
+            }
+            return $sanitized;
+        }
+        
+        return $data;
+    }
+
+    private function exportAsPdf($errorGroup, $occurrences): Response
+    {
+        $filename = sprintf('error_report_%s_%s.pdf', 
+            preg_replace('/[^a-zA-Z0-9_-]/', '_', $errorGroup->getProject()), 
+            date('Y-m-d_H-i-s')
+        );
+
+        // Préparer les données pour le template
+        $data = [
+            'error_group' => $errorGroup,
+            'occurrences' => $occurrences,
+            'generated_at' => new \DateTime(),
+            'total_occurrences' => count($occurrences)
+        ];
+
+        // Générer le HTML à partir du template Twig
+        $html = $this->renderView('exports/error_report.html.twig', $data);
+
+        // Configurer DomPDF
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Créer la réponse
+        $response = new Response($dompdf->output());
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return $response;
+    }
+
     /**
      * Extrait les filtres depuis la requête
      */
@@ -432,6 +797,24 @@ class DashboardController extends AbstractController
         // Filtre par recherche textuelle
         if ($search = $request->query->get('search')) {
             $filters['search'] = trim($search);
+        }
+
+        // Filtre par tags
+        if ($tags = $request->query->get('tags')) {
+            if (is_string($tags)) {
+                // Support pour tags séparés par des virgules
+                $filters['tags'] = array_filter(array_map('trim', explode(',', $tags)));
+            } elseif (is_array($tags)) {
+                $filters['tags'] = array_filter($tags);
+            }
+            
+            // Mode de filtre pour les tags (any/all)
+            $filters['tag_mode'] = $request->query->get('tag_mode', 'any');
+        }
+
+        // Filtre pour les erreurs sans tags
+        if ($request->query->getBoolean('untagged_only')) {
+            $filters['untagged_only'] = true;
         }
 
         return $filters;
@@ -485,4 +868,5 @@ class DashboardController extends AbstractController
             'error_trend' => $this->errorOccurrenceRepository->getErrorTrend(7, $filters)
         ];
     }
+
 }

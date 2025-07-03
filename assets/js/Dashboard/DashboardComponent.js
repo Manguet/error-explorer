@@ -25,7 +25,7 @@ class DashboardComponent {
             sidebar: document.getElementById('sidebar'),
             mobileToggle: document.getElementById('mobile-toggle'),
             mobileOverlay: document.getElementById('mobile-overlay'),
-            flashContainer: document.getElementById('flash-container'),
+            flashContainer: document.getElementById('dashboard-flash-messages'),
             liveStatus: document.querySelector('.live-status')
         };
 
@@ -42,11 +42,9 @@ class DashboardComponent {
         this.setupFlashMessages();
         this.setupKeyboardShortcuts();
         this.restoreUserPreferences();
-        
+
         // Initialiser les sous-composants
         this.initializeSubComponents();
-        
-        console.log('Dashboard Component initialized');
     }
 
     /**
@@ -103,7 +101,7 @@ class DashboardComponent {
      */
     toggleMobileMenu() {
         this.state.isMobileMenuOpen = !this.state.isMobileMenuOpen;
-        
+
         if (this.state.isMobileMenuOpen) {
             this.openMobileMenu();
         } else {
@@ -121,11 +119,11 @@ class DashboardComponent {
         this.elements.sidebar.classList.add('sidebar--mobile-open');
         this.elements.mobileOverlay.classList.add('mobile-overlay--active');
         this.elements.mobileToggle.classList.add('mobile-toggle--active');
-        
+
         // ARIA updates
         this.elements.mobileToggle.setAttribute('aria-expanded', 'true');
         this.elements.sidebar.setAttribute('aria-hidden', 'false');
-        
+
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
     }
@@ -140,11 +138,11 @@ class DashboardComponent {
         this.elements.sidebar.classList.remove('sidebar--mobile-open');
         this.elements.mobileOverlay.classList.remove('mobile-overlay--active');
         this.elements.mobileToggle.classList.remove('mobile-toggle--active');
-        
+
         // ARIA updates
         this.elements.mobileToggle.setAttribute('aria-expanded', 'false');
         this.elements.sidebar.setAttribute('aria-hidden', 'true');
-        
+
         // Restore body scroll
         document.body.style.overflow = '';
     }
@@ -158,7 +156,7 @@ class DashboardComponent {
         if (savedPreference !== null) {
             const isEnabled = savedPreference === 'true';
             this.setAutoRefresh(isEnabled);
-            
+
             // Mettre à jour les toggles
             document.querySelectorAll('#auto-refresh-toggle').forEach(toggle => {
                 toggle.checked = isEnabled;
@@ -179,7 +177,7 @@ class DashboardComponent {
      */
     setAutoRefresh(enabled) {
         this.state.isAutoRefreshEnabled = enabled;
-        
+
         if (enabled) {
             this.startAutoRefresh();
         } else {
@@ -192,12 +190,10 @@ class DashboardComponent {
      */
     startAutoRefresh() {
         this.stopAutoRefresh(); // Clear existing interval
-        
+
         this.state.refreshInterval = setInterval(() => {
             this.performAutoRefresh();
         }, this.config.autoRefreshInterval);
-        
-        console.log('Auto-refresh started');
     }
 
     /**
@@ -207,7 +203,6 @@ class DashboardComponent {
         if (this.state.refreshInterval) {
             clearInterval(this.state.refreshInterval);
             this.state.refreshInterval = null;
-            console.log('Auto-refresh stopped');
         }
     }
 
@@ -225,7 +220,7 @@ class DashboardComponent {
             // Mettre à jour le status live
             this.updateLiveStatus();
             this.state.lastUpdate = new Date();
-            
+
         } catch (error) {
             console.error('Auto-refresh error:', error);
         }
@@ -309,7 +304,7 @@ class DashboardComponent {
      */
     isInInputField(element) {
         const inputElements = ['INPUT', 'TEXTAREA', 'SELECT'];
-        return inputElements.includes(element.tagName) || 
+        return inputElements.includes(element.tagName) ||
                element.contentEditable === 'true';
     }
 
@@ -346,7 +341,7 @@ class DashboardComponent {
      */
     restoreUserPreferences() {
         // Auto-refresh déjà géré dans setupAutoRefresh
-        
+
         // Autres préférences peuvent être ajoutées ici
         const theme = localStorage.getItem('dashboard-theme');
         if (theme) {
@@ -360,10 +355,10 @@ class DashboardComponent {
     initializeSubComponents() {
         // Initialiser les tooltips
         this.initTooltips();
-        
+
         // Initialiser les dropdowns
         this.initDropdowns();
-        
+
         // Initialiser les modals (si nécessaire)
         this.initModals();
     }
@@ -373,7 +368,7 @@ class DashboardComponent {
      */
     initTooltips() {
         const tooltipElements = document.querySelectorAll('[title], [data-tooltip]');
-        
+
         tooltipElements.forEach(element => {
             element.addEventListener('mouseenter', (e) => {
                 this.showTooltip(e.target);
@@ -461,7 +456,7 @@ class DashboardComponent {
     showNotification(message, type = 'info', duration = null) {
         const notificationDuration = duration || this.config.notificationDuration;
         const container = this.elements.flashContainer || document.body;
-        
+
         const notification = document.createElement('div');
         notification.className = `flash-message flash-message--${type}`;
         notification.innerHTML = `
@@ -631,14 +626,11 @@ class DashboardComponent {
      */
     destroy() {
         this.stopAutoRefresh();
-        
+
         // Supprimer les event listeners
         if (this.elements.mobileToggle) {
             this.elements.mobileToggle.removeEventListener('click', this.toggleMobileMenu);
         }
-        
-        // Autres nettoyages nécessaires
-        console.log('Dashboard Component destroyed');
     }
 }
 

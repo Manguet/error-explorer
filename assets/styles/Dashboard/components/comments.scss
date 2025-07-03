@@ -1,0 +1,751 @@
+// Styles pour le système de commentaires
+.comments-section {
+  background: $dashboard-card-bg;
+  border: 1px solid $dashboard-border;
+  border-radius: $dashboard-radius;
+  padding: 2rem;
+  margin-top: 2rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $dashboard-border;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__count {
+    font-size: 0.875rem;
+    color: $dashboard-text-light;
+    background: rgba($primary-blue, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+  }
+}
+
+// Formulaire de nouveau commentaire
+.comment-form {
+  background: rgba($white, 0.02);
+  border: 1px solid $dashboard-border;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $primary-blue, $secondary-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  &__user-info {
+    flex: 1;
+  }
+
+  &__user-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $dashboard-text;
+    margin-bottom: 0.25rem;
+  }
+
+  &__user-role {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 120px;
+    background: $dashboard-card-bg;
+    border: 1px solid $dashboard-border;
+    border-radius: 8px;
+    padding: 1rem;
+    color: $dashboard-text;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: vertical;
+    transition: $dashboard-transition;
+
+    &::placeholder {
+      color: $dashboard-text-light;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-blue;
+      box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  &__left-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__upload {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    
+    input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+  }
+
+  &__upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba($dashboard-text-light, 0.1);
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($dashboard-text-light, 0.15);
+      color: $dashboard-text;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__internal-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
+  &__right-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__cancel-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid $dashboard-border;
+    border-radius: 6px;
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($dashboard-text-light, 0.1);
+    }
+  }
+
+  &__submit-btn {
+    padding: 0.5rem 1.25rem;
+    background: $primary-blue;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover:not(:disabled) {
+      background: rgba($primary-blue, 0.9);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__files-preview {
+    background: rgba($white, 0.02);
+    border: 1px solid $dashboard-border;
+    border-radius: 8px;
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  &__files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: $dashboard-text;
+  }
+
+  &__clear-files {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($error-red, 0.1);
+      color: $error-red;
+    }
+  }
+
+  &__files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba($white, 0.02);
+    border: 1px solid rgba($dashboard-border, 0.5);
+    border-radius: 6px;
+    font-size: 0.875rem;
+  }
+
+  &__file-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba($primary-blue, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary-blue;
+    flex-shrink: 0;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__file-name {
+    color: $dashboard-text;
+    margin-bottom: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__file-size {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+
+  &__file-remove {
+    background: none;
+    border: none;
+    color: $dashboard-text-light;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($error-red, 0.1);
+      color: $error-red;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__file-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+
+// Liste des commentaires
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// Commentaire individuel
+.comment {
+  background: rgba($white, 0.02);
+  border: 1px solid $dashboard-border;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: $dashboard-transition;
+
+  &:hover {
+    background: rgba($white, 0.03);
+  }
+
+  &--reply {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    background: rgba($white, 0.01);
+    border-left: 3px solid $primary-blue;
+    border-radius: 8px;
+  }
+
+  &--internal {
+    border-left: 3px solid $warning-yellow;
+    background: rgba($warning-yellow, 0.05);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $primary-blue, $secondary-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__author {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $dashboard-text;
+    margin-bottom: 0.25rem;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__edited {
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  &__internal-badge {
+    background: rgba($warning-yellow, 0.1);
+    color: $warning-yellow;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  &__action-btn {
+    background: none;
+    border: none;
+    color: $dashboard-text-light;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($dashboard-text-light, 0.1);
+      color: $dashboard-text;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__content {
+    color: $dashboard-text;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+
+    p {
+      margin-bottom: 0.75rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    code {
+      background: rgba($white, 0.05);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8em;
+    }
+
+    pre {
+      background: rgba($white, 0.05);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+
+      code {
+        background: none;
+        padding: 0;
+      }
+    }
+  }
+
+  &__attachments {
+    margin-top: 1rem;
+  }
+
+  &__images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__image {
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+
+  &__files {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__file {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba($white, 0.03);
+    border: 1px solid $dashboard-border;
+    border-radius: 8px;
+    text-decoration: none;
+    color: $dashboard-text;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($white, 0.05);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__file-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba($primary-blue, 0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $primary-blue;
+    flex-shrink: 0;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &__file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__file-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__file-size {
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba($dashboard-border, 0.5);
+  }
+
+  &__reply-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba($primary-blue, 0.1);
+    border: 1px solid rgba($primary-blue, 0.3);
+    border-radius: 6px;
+    color: $primary-blue;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: $dashboard-transition;
+
+    &:hover {
+      background: rgba($primary-blue, 0.15);
+    }
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+// États de chargement
+.comments-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: $dashboard-text-light;
+
+  &__spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid transparent;
+    border-top: 2px solid $primary-blue;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.75rem;
+  }
+}
+
+.comments-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: $dashboard-text-light;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    background: rgba($dashboard-text-light, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: $dashboard-text;
+  }
+
+  &__description {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+// Responsive
+@include responsive('lg') {
+  .comment--reply {
+    margin-left: 2rem;
+  }
+}
+
+@include responsive('md') {
+  .comments-section {
+    padding: 1.5rem;
+  }
+
+  .comment-form {
+    padding: 1rem;
+  }
+
+  .comment {
+    padding: 1rem;
+  }
+
+  .comment--reply {
+    margin-left: 1rem;
+  }
+
+  .comment__images {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Lightbox pour images
+.image-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &__content {
+    max-width: 90vw;
+    max-height: 90vh;
+    position: relative;
+  }
+
+  &__image {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+
+  &__close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}

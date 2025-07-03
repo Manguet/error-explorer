@@ -6,6 +6,9 @@ use App\Entity\ErrorGroup;
 use App\Entity\ErrorOccurrence;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
+use App\Service\Error\WebhookDataExtractor;
+use App\Service\Error\ErrorFingerprintService;
+use App\ValueObject\Error\WebhookData;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,37 +20,69 @@ class ErrorProcessor
         private ErrorOccurrenceRepository $errorOccurrenceRepository,
         private LoggerInterface $logger,
         private AlertService $alertService,
-        private ExternalWebhookService $externalWebhookService
+        private ExternalWebhookService $externalWebhookService,
+        private WebhookDataExtractor $webhookDataExtractor,
+        private ErrorFingerprintService $fingerprintService
     ) {}
 
     /**
      * Traite une erreur reçue via webhook
      */
-    public function processError(array $payload, string $token): array
+    public function processError(array $payload, string $token, ?\App\Entity\Project $project = null): array
     {
         try {
-            // Récupérer le projet depuis le token
+            // Récupérer le repository du projet
             $projectRepository = $this->entityManager->getRepository(\App\Entity\Project::class);
-            $project = $projectRepository->findByWebhookToken($token);
-
+            
+            // Récupérer le projet depuis le token si pas fourni
             if (!$project) {
-                throw new \InvalidArgumentException('Projet non trouvé pour ce token');
+                $project = $projectRepository->findByWebhookToken($token);
+
+                if (!$project) {
+                    throw new \InvalidArgumentException('Projet non trouvé pour ce token');
+                }
             }
 
-            // Nettoyer et normaliser le payload
-            $normalizedPayload = $this->normalizePayload($payload);
+            // Extraire et transformer les données avec Value Objects
+            $webhookData = $this->webhookDataExtractor->extractWebhookData($payload);
+
+            // Valider les données extraites
+            $validationErrors = $this->webhookDataExtractor->validateWebhookData($webhookData);
+            if (!empty($validationErrors)) {
+                throw new \InvalidArgumentException('Données webhook invalides: ' . implode(', ', $validationErrors));
+            }
 
             // Utiliser le nom du projet depuis la BDD (priorité sur le payload)
-            $normalizedPayload['project'] = $project->getSlug();
+            $coreData = $webhookData->coreData;
+            $coreDataWithProject = new \App\ValueObject\Error\CoreErrorData(
+                message: $coreData->message,
+                exceptionClass: $coreData->exceptionClass,
+                file: $coreData->file,
+                line: $coreData->line,
+                project: $project->getSlug(), // Override avec le slug du projet
+                environment: $coreData->environment,
+                httpStatus: $coreData->httpStatus,
+                stackTrace: $coreData->stackTrace,
+                timestamp: $coreData->timestamp,
+                errorType: $coreData->errorType,
+                fingerprint: $coreData->fingerprint
+            );
+
+            $webhookDataWithProject = new WebhookData(
+                requestContext: $webhookData->requestContext,
+                serverContext: $webhookData->serverContext,
+                errorContext: $webhookData->errorContext,
+                coreData: $coreDataWithProject
+            );
 
             // Générer le fingerprint pour grouper les erreurs similaires
-            $fingerprint = $this->generateFingerprint($normalizedPayload);
+            $fingerprint = $this->fingerprintService->generateFingerprint($webhookDataWithProject);
 
             // Trouver ou créer le groupe d'erreur
-            $errorGroup = $this->findOrCreateErrorGroup($fingerprint, $normalizedPayload, $project);
+            $errorGroup = $this->findOrCreateErrorGroup($fingerprint, $webhookDataWithProject, $project);
 
             // Créer l'occurrence
-            $occurrence = $this->createOccurrence($errorGroup, $normalizedPayload);
+            $occurrence = $this->createOccurrence($errorGroup, $webhookDataWithProject);
 
             // Mettre à jour les statistiques du projet
             $isNewGroup = $errorGroup->getOccurrenceCount() === 1;
@@ -68,7 +103,10 @@ class ErrorProcessor
                 'fingerprint' => $fingerprint,
                 'project' => $project->getSlug(),
                 'project_id' => $project->getId(),
-                'new_group' => $isNewGroup
+                'new_group' => $isNewGroup,
+                'webhook_summary' => $webhookDataWithProject->getSummary(),
+                'has_user_context' => $webhookDataWithProject->hasUserContext(),
+                'has_performance_metrics' => $webhookDataWithProject->hasPerformanceMetrics()
             ]);
 
             return [
@@ -91,97 +129,44 @@ class ErrorProcessor
         }
     }
 
-    /**
-     * Nettoie et normalise le payload reçu
-     */
-    private function normalizePayload(array $payload): array
-    {
-        $normalized = [
-            // Champs obligatoires
-            'message' => trim($payload['message']),
-            'exception_class' => trim($payload['exception_class']),
-            'file' => $this->normalizePath($payload['file']),
-            'line' => (int) $payload['line'],
-            'project' => $this->normalizeProjectName($payload['project']),
 
-            // Champs optionnels avec valeurs par défaut
-            'environment' => $payload['environment'] ?? 'unknown',
-            'http_status' => isset($payload['http_status']) ? (int) $payload['http_status'] : null,
-            'stack_trace' => $payload['stack_trace'] ?? '',
-            'error_type' => $this->detectErrorType($payload['exception_class']),
-            'timestamp' => $this->parseTimestamp($payload['timestamp'] ?? null),
-
-            // Données contextuelles
-            'request' => $payload['request'] ?? [],
-            'server' => $payload['server'] ?? [],
-            'context' => $payload['context'] ?? []
-        ];
-
-        // Extraire les données de requête si présentes
-        if (isset($payload['request'])) {
-            $normalized['url'] = $payload['request']['url'] ?? null;
-            $normalized['http_method'] = $payload['request']['method'] ?? null;
-            $normalized['ip_address'] = $payload['request']['ip'] ?? null;
-            $normalized['user_agent'] = $payload['request']['user_agent'] ?? null;
-            $normalized['user_id'] = $payload['request']['user_id'] ?? $payload['context']['user']['id'] ?? null;
-        }
-
-        // Extraire les métriques serveur si présentes
-        if (isset($payload['server'])) {
-            $normalized['memory_usage'] = isset($payload['server']['memory_usage']) ? (int) $payload['server']['memory_usage'] : null;
-            $normalized['execution_time'] = isset($payload['server']['execution_time']) ? (float) $payload['server']['execution_time'] : null;
-        }
-
-        return $normalized;
-    }
-
-    /**
-     * Génère un fingerprint unique pour grouper les erreurs similaires
-     */
-    private function generateFingerprint(array $payload): string
-    {
-        // Utiliser la méthode de l'entité ErrorGroup pour cohérence
-        return ErrorGroup::generateFingerprint(
-            $payload['exception_class'],
-            $payload['file'],
-            $payload['line'],
-            $payload['message']
-        );
-    }
 
     /**
      * Trouve un groupe d'erreur existant ou en crée un nouveau
      */
-    private function findOrCreateErrorGroup(string $fingerprint, array $payload, \App\Entity\Project $project): ErrorGroup
+    private function findOrCreateErrorGroup(string $fingerprint, WebhookData $webhookData, \App\Entity\Project $project): ErrorGroup
     {
         $errorGroup = $this->errorGroupRepository->findOneBy(['fingerprint' => $fingerprint]);
+        $core = $webhookData->coreData;
 
         if (!$errorGroup) {
             // Créer un nouveau groupe
             $errorGroup = new ErrorGroup();
             $errorGroup->setFingerprint($fingerprint)
-                ->setMessage($payload['message'])
-                ->setExceptionClass($payload['exception_class'])
-                ->setFile($payload['file'])
-                ->setLine($payload['line'])
-                ->setProject($payload['project'])
-                ->setProjectEntity($project)  // Nouvelle relation
-                ->setHttpStatusCode($payload['http_status'])
-                ->setErrorType($payload['error_type'])
-                ->setEnvironment($payload['environment'])
-                ->setStackTracePreview($this->extractStackTracePreview($payload['stack_trace']));
+                ->setMessage($core->message)
+                ->setExceptionClass($core->exceptionClass)
+                ->setFile($core->file)
+                ->setLine($core->line)
+                ->setProject($core->project)
+                ->setProjectEntity($project)
+                ->setHttpStatusCode($core->httpStatus)
+                ->setErrorType($core->errorType)
+                ->setEnvironment($core->environment)
+                ->setStackTracePreview($core->getStackTracePreview());
 
             $this->entityManager->persist($errorGroup);
 
             $this->logger->info('ErrorProcessor: Nouveau groupe d\'erreur créé', [
                 'fingerprint' => $fingerprint,
-                'project' => $payload['project'],
+                'project' => $core->project,
                 'project_id' => $project->getId(),
-                'exception_class' => $payload['exception_class']
+                'exception_class' => $core->exceptionClass,
+                'is_critical' => $core->isCritical(),
+                'tags' => $core->getTags()
             ]);
         } else {
             // Mettre à jour les informations du groupe existant
-            $this->updateExistingGroup($errorGroup, $payload);
+            $this->updateExistingGroup($errorGroup, $webhookData);
         }
 
         // Incrémenter le compteur d'occurrences
@@ -193,21 +178,22 @@ class ErrorProcessor
     /**
      * Met à jour un groupe d'erreur existant si nécessaire
      */
-    private function updateExistingGroup(ErrorGroup $errorGroup, array $payload): void
+    private function updateExistingGroup(ErrorGroup $errorGroup, WebhookData $webhookData): void
     {
         $updated = false;
+        $core = $webhookData->coreData;
 
         // Mettre à jour l'environnement si pas défini ou différent
         if (!$errorGroup->getEnvironment() || $errorGroup->getEnvironment() === 'unknown') {
-            if (isset($payload['environment']) && $payload['environment'] && $payload['environment'] !== 'unknown') {
-                $errorGroup->setEnvironment($payload['environment']);
+            if ($core->environment && $core->environment !== 'unknown') {
+                $errorGroup->setEnvironment($core->environment);
                 $updated = true;
             }
         }
 
         // Mettre à jour le code HTTP si pas défini
-        if (!$errorGroup->getHttpStatusCode() && isset($payload['http_status']) && $payload['http_status']) {
-            $errorGroup->setHttpStatusCode($payload['http_status']);
+        if (!$errorGroup->getHttpStatusCode() && $core->httpStatus) {
+            $errorGroup->setHttpStatusCode($core->httpStatus);
             $updated = true;
         }
 
@@ -218,13 +204,16 @@ class ErrorProcessor
 
             $this->logger->info('ErrorProcessor: Groupe d\'erreur rouvert', [
                 'error_group_id' => $errorGroup->getId(),
-                'previous_status' => $errorGroup->getStatus()
+                'previous_status' => $errorGroup->getStatus(),
+                'is_critical' => $core->isCritical()
             ]);
         }
 
         if ($updated) {
             $this->logger->debug('ErrorProcessor: Groupe d\'erreur mis à jour', [
-                'error_group_id' => $errorGroup->getId()
+                'error_group_id' => $errorGroup->getId(),
+                'new_environment' => $core->environment,
+                'new_http_status' => $core->httpStatus
             ]);
         }
     }
@@ -232,41 +221,51 @@ class ErrorProcessor
     /**
      * Crée une nouvelle occurrence d'erreur
      */
-    private function createOccurrence(ErrorGroup $errorGroup, array $payload): ErrorOccurrence
+    private function createOccurrence(ErrorGroup $errorGroup, WebhookData $webhookData): ErrorOccurrence
     {
+        $core = $webhookData->coreData;
+        
         $occurrence = new ErrorOccurrence();
         $occurrence->setErrorGroup($errorGroup)
-            ->setStackTrace($payload['stack_trace'])
-            ->setEnvironment($payload['environment'])
-            ->setRequest($payload['request'])
-            ->setServer($payload['server'])
-            ->setContext($payload['context'])
-            ->setCreatedAt($payload['timestamp']);
+            ->setStackTrace($core->stackTrace)
+            ->setEnvironment($core->environment)
+            ->setRequest($webhookData->requestContext?->toArray() ?? [])
+            ->setServer($webhookData->serverContext?->toArray() ?? [])
+            ->setContext($webhookData->errorContext?->toArray() ?? [])
+            ->setCreatedAt($core->timestamp);
 
-        // Définir les champs extraits pour les index
-        if (isset($payload['url'])) {
-            $occurrence->setUrl($payload['url']);
+        // Définir les champs extraits pour les index (depuis Value Objects)
+        if ($webhookData->requestContext) {
+            $request = $webhookData->requestContext;
+            $occurrence->setUrl($request->url)
+                      ->setHttpMethod($request->method)
+                      ->setIpAddress($request->ip)
+                      ->setUserAgent($request->userAgent);
         }
-        if (isset($payload['http_method'])) {
-            $occurrence->setHttpMethod($payload['http_method']);
+
+        if ($webhookData->serverContext) {
+            $server = $webhookData->serverContext;
+            $occurrence->setMemoryUsage($server->memoryUsage)
+                      ->setExecutionTime($server->executionTime);
         }
-        if (isset($payload['ip_address'])) {
-            $occurrence->setIpAddress($payload['ip_address']);
-        }
-        if (isset($payload['user_agent'])) {
-            $occurrence->setUserAgent($payload['user_agent']);
-        }
-        if (isset($payload['user_id'])) {
-            $occurrence->setUserId($payload['user_id']);
-        }
-        if (isset($payload['memory_usage'])) {
-            $occurrence->setMemoryUsage($payload['memory_usage']);
-        }
-        if (isset($payload['execution_time'])) {
-            $occurrence->setExecutionTime($payload['execution_time']);
+
+        if ($webhookData->errorContext && $webhookData->errorContext->hasUserContext()) {
+            $user = $webhookData->errorContext->userContext;
+            $occurrence->setUserId($user->id);
         }
 
         $this->entityManager->persist($occurrence);
+
+        // Log détaillé pour debug
+        $this->logger->debug('ErrorProcessor: Occurrence créée', [
+            'error_group_id' => $errorGroup->getId(),
+            'has_request_context' => $webhookData->requestContext !== null,
+            'has_server_context' => $webhookData->serverContext !== null,
+            'has_error_context' => $webhookData->errorContext !== null,
+            'has_user_context' => $webhookData->hasUserContext(),
+            'has_breadcrumbs' => $webhookData->hasBreadcrumbs(),
+            'performance_metrics' => $webhookData->hasPerformanceMetrics()
+        ]);
 
         return $occurrence;
     }
@@ -297,65 +296,6 @@ class ErrorProcessor
         return substr($project, 0, 100);
     }
 
-    /**
-     * Détecte le type d'erreur basé sur la classe d'exception
-     */
-    private function detectErrorType(string $exceptionClass): string
-    {
-        $class = strtolower($exceptionClass);
-
-        if (str_contains($class, 'error')) {
-            return ErrorGroup::ERROR_TYPE_ERROR;
-        }
-
-        if (str_contains($class, 'warning')) {
-            return ErrorGroup::ERROR_TYPE_WARNING;
-        }
-
-        if (str_contains($class, 'notice')) {
-            return ErrorGroup::ERROR_TYPE_NOTICE;
-        }
-
-        // Par défaut, considérer comme une exception
-        return ErrorGroup::ERROR_TYPE_EXCEPTION;
-    }
-
-    /**
-     * Parse un timestamp reçu
-     */
-    private function parseTimestamp(?string $timestamp): \DateTime
-    {
-        if (!$timestamp) {
-            return new \DateTime();
-        }
-
-        try {
-            return new \DateTime($timestamp);
-        } catch (\Exception $e) {
-            $this->logger->warning('ErrorProcessor: Timestamp invalide', [
-                'timestamp' => $timestamp,
-                'error' => $e->getMessage()
-            ]);
-
-            return new \DateTime();
-        }
-    }
-
-    /**
-     * Extrait un aperçu de la stack trace pour l'affichage
-     */
-    private function extractStackTracePreview(string $stackTrace): string
-    {
-        if (!$stackTrace) {
-            return '';
-        }
-
-        // Prendre les 3 premières lignes de la stack trace
-        $lines = explode("\n", $stackTrace);
-        $preview = array_slice($lines, 0, 3);
-
-        return implode("\n", $preview);
-    }
 
     /**
      * Nettoie les anciennes occurrences (à appeler via une commande cron)

@@ -1,0 +1,530 @@
+// Occurrence DataTable Styles - BEM Architecture
+.occurrence-request {
+  &__method-url {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__url {
+    color: $dashboard-text;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  &__ip {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: $dashboard-text-light;
+    font-size: 0.75rem;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.7;
+    }
+  }
+}
+
+.occurrence-context {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__user,
+  &__session,
+  &__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.7;
+    }
+  }
+
+  &__more {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.occurrence-performance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__memory,
+  &__time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: $dashboard-text-light;
+
+    svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.7;
+    }
+  }
+}
+
+// Actions use standard table-actions styling from dashboard
+
+// HTTP Method badges
+.http-method {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+
+  &--get {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  &--post {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  &--put {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  &--delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  &--patch {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+  }
+
+  &--options,
+  &--head {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+  }
+}
+
+// Button icons use standard action-btn styling from dashboard
+
+// DataTable specific overrides for occurrences
+.error-detail__occurrences-section {
+  .datatable-wrapper {
+    .datatable-header {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+    }
+
+    .datatable-filters {
+      input[type="search"] {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: $dashboard-text;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-blue;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+          color: $dashboard-text-light;
+        }
+      }
+    }
+
+    .datatable-length {
+      select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: $dashboard-text;
+        border-radius: 0.375rem;
+        padding: 0.375rem 2rem 0.375rem 0.75rem;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-blue;
+        }
+      }
+    }
+
+    .datatable-footer {
+      background: transparent;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+    }
+
+    .datatable-info {
+      color: $dashboard-text-light;
+      font-size: 0.875rem;
+    }
+
+    .datatable-pagination {
+      .paginate_button {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: $dashboard-text-light !important;
+        margin: 0 0.125rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          color: $dashboard-text !important;
+        }
+
+        &.current {
+          background: $primary-blue;
+          border-color: $primary-blue;
+          color: white !important;
+        }
+
+        &.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  // Table styles
+  table.dataTable {
+    background: transparent;
+    color: $dashboard-text;
+
+    thead {
+      th {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: $dashboard-text;
+        font-weight: 600;
+        padding: 1rem 0.75rem;
+
+        &.sorting,
+        &.sorting_asc,
+        &.sorting_desc {
+          cursor: pointer;
+          position: relative;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background: transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        td {
+          padding: 0.75rem;
+          vertical-align: top;
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+// JavaScript function for DataTable actions - use standard action-btn classes
+
+// Initialize actions function should be called by DataTable drawCallback
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Loading state for buttons
+.action-btn.loading {
+  svg {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+// Modal styles for occurrence details
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  margin: 0;
+  padding: 0;
+
+  &.show {
+    display: flex !important;
+  }
+}
+
+.modal-content {
+  background: $card-bg;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  margin: 0;
+  transform: none;
+
+  &--large {
+    max-width: 1000px;
+    width: 95%;
+    max-height: 90vh;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    margin: 0;
+    color: $dashboard-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: $dashboard-text-light;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $dashboard-text;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  max-height: calc(80vh - 100px);
+  overflow-y: auto;
+  color: $dashboard-text;
+
+  .modal-content--large & {
+    max-height: calc(90vh - 100px);
+  }
+}
+
+// Occurrence details styling
+.occurrence-detail-section {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &__title {
+    font-weight: 600;
+    color: $dashboard-text;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+  }
+
+  &__content {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &-label {
+      font-weight: 500;
+      color: $dashboard-text-light;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    &-value {
+      color: $dashboard-text;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      word-break: break-all;
+    }
+  }
+}
+
+.occurrence-stack-trace {
+  background: #1a1b26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #c0caf5;
+  max-height: 400px;
+  overflow-y: auto;
+
+  .stack-frame {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 0.25rem;
+    border-left: 3px solid #7c3aed;
+
+    &__file {
+      color: #bb9af7;
+      font-weight: 500;
+    }
+
+    &__line {
+      color: #f7768e;
+    }
+
+    &__function {
+      color: #7dcfff;
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+.occurrence-json-data {
+  background: #1a1b26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #c0caf5;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+// Loading spinner animation
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Export dropdown styles
+.export-dropdown {
+  .export-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(22, 28, 45, 0.95) !important; // Fond sombre plus opaque
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+    overflow: hidden; // Pour les border-radius
+  }
+
+  .export-option {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: transparent;
+    color: white !important; // Couleur blanche forcée
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-radius: 0;
+    font-weight: 500;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+      color: white !important;
+    }
+    
+    &--first {
+      border-radius: 0.5rem 0.5rem 0 0;
+      
+      &:hover {
+        border-radius: 0.5rem 0.5rem 0 0;
+      }
+    }
+    
+    &--last {
+      border-radius: 0 0 0.5rem 0.5rem;
+      
+      &:hover {
+        border-radius: 0 0 0.5rem 0.5rem;
+      }
+    }
+
+    svg {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    span {
+      color: white !important;
+    }
+  }
+}

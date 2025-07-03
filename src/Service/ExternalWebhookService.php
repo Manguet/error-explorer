@@ -6,12 +6,14 @@ use App\Entity\ErrorGroup;
 use App\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ExternalWebhookService
 {
     public function __construct(
         private HttpClientInterface $httpClient,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        #[Autowire('%app.base_url%')] private readonly string $baseUrl
     ) {
     }
 
@@ -131,6 +133,8 @@ class ExternalWebhookService
      */
     public function testWebhook(array $webhook, Project $project): array
     {
+        $startTime = microtime(true);
+        
         try {
             $testPayload = [
                 'event' => 'webhook.test',
@@ -155,20 +159,126 @@ class ExternalWebhookService
             ];
 
             $response = $this->httpClient->request('POST', $webhook['url'], $options);
+            $responseTime = round((microtime(true) - $startTime) * 1000);
+            $statusCode = $response->getStatusCode();
             
-            return [
-                'success' => $response->getStatusCode() < 400,
-                'status_code' => $response->getStatusCode(),
-                'response_time' => null, // Pourrait être ajouté si nécessaire
-                'message' => $response->getStatusCode() < 400 ? 'Test réussi' : 'Test échoué'
+            $result = [
+                'success' => $statusCode < 400,
+                'status_code' => $statusCode,
+                'response_time' => $responseTime
             ];
-        } catch (\Exception $e) {
+
+            if ($statusCode < 400) {
+                $result['message'] = 'Webhook répond correctement';
+            } else {
+                $result['message'] = $this->getHttpErrorMessage($statusCode);
+                $result['error_type'] = $this->getErrorType($statusCode);
+            }
+
+            return $result;
+            
+        } catch (\Symfony\Component\HttpClient\Exception\TransportException $e) {
+            $responseTime = round((microtime(true) - $startTime) * 1000);
+            
+            // Analyser le type d'erreur de transport
+            $errorMessage = strtolower($e->getMessage());
+            
+            if (str_contains($errorMessage, 'could not resolve host') || str_contains($errorMessage, 'name resolution')) {
+                return [
+                    'success' => false,
+                    'status_code' => null,
+                    'response_time' => $responseTime,
+                    'message' => 'Domaine introuvable - Vérifiez l\'URL',
+                    'error_type' => 'dns'
+                ];
+            }
+            
+            if (str_contains($errorMessage, 'connection refused') || str_contains($errorMessage, 'failed to connect')) {
+                return [
+                    'success' => false,
+                    'status_code' => null,
+                    'response_time' => $responseTime,
+                    'message' => 'Connexion refusée - Service indisponible',
+                    'error_type' => 'connection'
+                ];
+            }
+            
+            if (str_contains($errorMessage, 'timeout') || str_contains($errorMessage, 'timed out')) {
+                return [
+                    'success' => false,
+                    'status_code' => null,
+                    'response_time' => $responseTime,
+                    'message' => 'Timeout - Le serveur met trop de temps à répondre',
+                    'error_type' => 'timeout'
+                ];
+            }
+            
+            if (str_contains($errorMessage, 'ssl') || str_contains($errorMessage, 'certificate')) {
+                return [
+                    'success' => false,
+                    'status_code' => null,
+                    'response_time' => $responseTime,
+                    'message' => 'Erreur SSL - Certificat invalide ou expiré',
+                    'error_type' => 'ssl'
+                ];
+            }
+            
             return [
                 'success' => false,
                 'status_code' => null,
-                'message' => 'Erreur: ' . $e->getMessage()
+                'response_time' => $responseTime,
+                'message' => 'Erreur de connexion: ' . $e->getMessage(),
+                'error_type' => 'connection'
+            ];
+            
+        } catch (\Exception $e) {
+            $responseTime = round((microtime(true) - $startTime) * 1000);
+            
+            return [
+                'success' => false,
+                'status_code' => null,
+                'response_time' => $responseTime,
+                'message' => 'Erreur inattendue: ' . $e->getMessage(),
+                'error_type' => 'unknown'
             ];
         }
+    }
+
+    /**
+     * Retourne un message d'erreur lisible pour un code de statut HTTP
+     */
+    private function getHttpErrorMessage(int $statusCode): string
+    {
+        return match($statusCode) {
+            400 => 'Requête invalide - Vérifiez le format des données',
+            401 => 'Non autorisé - Vérifiez les headers d\'authentification', 
+            403 => 'Accès interdit - Permissions insuffisantes',
+            404 => 'Endpoint non trouvé - Vérifiez l\'URL',
+            405 => 'Méthode non autorisée - L\'endpoint n\'accepte pas POST',
+            408 => 'Timeout de la requête',
+            422 => 'Données invalides - Le serveur ne peut pas traiter le payload',
+            429 => 'Trop de requêtes - Rate limit atteint',
+            500 => 'Erreur interne du serveur',
+            502 => 'Bad Gateway - Problème de proxy/load balancer',
+            503 => 'Service indisponible - Serveur temporairement hors service',
+            504 => 'Gateway Timeout - Le serveur upstream est trop lent',
+            default => "Erreur HTTP $statusCode"
+        };
+    }
+
+    /**
+     * Détermine le type d'erreur basé sur le code de statut
+     */
+    private function getErrorType(int $statusCode): string
+    {
+        return match(true) {
+            $statusCode === 401 || $statusCode === 403 => 'forbidden',
+            $statusCode === 404 => 'not_found',
+            $statusCode === 408 || $statusCode === 504 => 'timeout',
+            $statusCode >= 500 => 'server_error',
+            $statusCode >= 400 => 'client_error',
+            default => 'unknown'
+        };
     }
 
     /**
@@ -199,7 +309,7 @@ class ExternalWebhookService
     private function buildErrorGroupUrl(ErrorGroup $errorGroup, Project $project): string
     {
         // URL de base à configurer selon votre environnement
-        $baseUrl = $_ENV['APP_URL'] ?? 'https://your-error-explorer.com';
+        $baseUrl = $this->baseUrl;
         return rtrim($baseUrl, '/') . '/dashboard/project/' . $project->getSlug() . '/error/' . $errorGroup->getId();
     }
 

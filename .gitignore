@@ -1,6 +1,5 @@
 
 ###> symfony/framework-bundle ###
-/.claude
 /.env.dev
 /.env.local
 /.env.local.php
@@ -43,3 +42,8 @@ yarn-error.log
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
+
+###> error-explorer/planning ###
+PLAN_AMELIORATIONS_GROUPEMENT.md
+PLAN_AMELIORATIONS_WEBHOOKS.md
+###< error-explorer/planning ###

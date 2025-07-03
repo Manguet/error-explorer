@@ -25,7 +25,10 @@
                 <div class="welcome-content">
                     <div class="welcome-text">
                         <h3 class="welcome-title">
-                            👋 Bienvenue {{ user.firstName }} {{ user.lastName }} !
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 8px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-1l-4 4z"/>
+                            </svg>
+                            Bienvenue {{ user.firstName }} {{ user.lastName }} !
                         </h3>
                         <p class="welcome-description">
                             Votre dashboard de monitoring d'erreurs est prêt. Commencez par créer votre premier projet.
@@ -148,8 +151,8 @@
                 </div>
 
                 <div class="dashboard-filters-group">
-                    <label>Statut</label>
-                    <select name="status">
+                    <label for="status">Statut</label>
+                    <select name="status" id="status">
                         <option value="">Tous les statuts</option>
                         <option value="open" {{ (filters.status ?? '') == 'open' ? 'selected' : '' }}>Ouvertes</option>
                         <option value="resolved" {{ (filters.status ?? '') == 'resolved' ? 'selected' : '' }}>Résolues</option>
@@ -158,8 +161,8 @@
                 </div>
 
                 <div class="dashboard-filters-group">
-                    <label>Code HTTP</label>
-                    <select name="http_status">
+                    <label for="http-code">Code HTTP</label>
+                    <select name="http_status" id="http-code">
                         <option value="">Tous les codes</option>
                         <option value="403" {{ (filters.http_status ?? '') == 403 ? 'selected' : '' }}>403 - Forbidden</option>
                         <option value="404" {{ (filters.http_status ?? '') == 404 ? 'selected' : '' }}>404 - Not Found</option>
@@ -170,8 +173,8 @@
                 </div>
 
                 <div class="dashboard-filters-group">
-                    <label>Type d'erreur</label>
-                    <select name="error_type">
+                    <label for="error_type">Type d'erreur</label>
+                    <select name="error_type" id="error_type">
                         <option value="">Tous les types</option>
                         <option value="exception" {{ (filters.error_type ?? '') == 'exception' ? 'selected' : '' }}>Exception</option>
                         <option value="error" {{ (filters.error_type ?? '') == 'error' ? 'selected' : '' }}>Error</option>
@@ -181,8 +184,8 @@
                 </div>
 
                 <div class="dashboard-filters-group">
-                    <label>Période</label>
-                    <select name="days">
+                    <label for="days">Période</label>
+                    <select name="days" id="days">
                         <option value="1" {{ app.request.get('days', 7) == 1 ? 'selected' : '' }}>Dernières 24h</option>
                         <option value="7" {{ app.request.get('days', 7) == 7 ? 'selected' : '' }}>7 derniers jours</option>
                         <option value="30" {{ app.request.get('days', 7) == 30 ? 'selected' : '' }}>30 derniers jours</option>
@@ -191,8 +194,8 @@
                 </div>
 
                 <div class="dashboard-filters-group">
-                    <label>Recherche</label>
-                    <input type="text" name="search" value="{{ filters.search ?? '' }}" placeholder="Message, classe, fichier...">
+                    <label for="search">Recherche</label>
+                    <input type="text" name="search" id="search" value="{{ filters.search ?? '' }}" placeholder="Message, classe, fichier...">
                 </div>
 
                 <div class="dashboard-filters-actions">
@@ -218,24 +221,28 @@
         <div class="dashboard-section">
             <div class="dashboard-table-container">
                 <div class="dashboard-table-container-header">
-                    <h3>🏆 Top des projets</h3>
+                    <h3>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 8px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                        Top des projets
+                    </h3>
                 </div>
-                <div style="padding: 1.5rem;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                <div class="dashboard-top-projects">
+                    <div class="dashboard-top-projects__grid">
                         {% for project in stats.top_projects %}
-                            <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.3s ease;">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="flex: 1;">
-                                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">
+                            <div class="dashboard-top-projects__item">
+                                <div class="dashboard-top-projects__content">
+                                    <div class="dashboard-top-projects__info">
+                                        <div class="dashboard-top-projects__name">
                                             {{ project.project }}
                                         </div>
-                                        <div style="color: #64748b; font-size: 0.875rem;">
+                                        <div class="dashboard-top-projects__stats">
                                             {{ project.total_occurrences }} occurrences
                                         </div>
                                     </div>
                                     <a href="{{ path('dashboard_project', { project: project.project }) }}"
-                                       class="filter-btn btn-secondary"
-                                       style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;">
+                                       class="dashboard-top-projects__action">
                                         Voir →
                                     </a>
                                 </div>
@@ -247,175 +254,39 @@
         </div>
     {% endif %}
 
-    <!-- Errors Table -->
+    <!-- Errors DataTable -->
     <div class="dashboard-section">
         <div class="dashboard-table-container">
             <div class="dashboard-table-container-header">
                 <h3>
-                    🚨 Erreurs récentes
-                    <span style="color: #64748b; font-weight: 400; font-size: 0.875rem; margin-left: 0.5rem;">
-                        ({{ pagination.total_items }} au total)
-                    </span>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 8px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                    Erreurs récentes
                 </h3>
-                <div class="table-actions">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #64748b;">
-                        Trier par:
-                        <select id="sort-select" class="sort-select">
-                            <option value="lastSeen|DESC" {{ sort == 'lastSeen' and direction == 'DESC' ? 'selected' : '' }}>Plus récentes</option>
-                            <option value="occurrenceCount|DESC" {{ sort == 'occurrenceCount' and direction == 'DESC' ? 'selected' : '' }}>Plus fréquentes</option>
-                            <option value="firstSeen|ASC" {{ sort == 'firstSeen' and direction == 'ASC' ? 'selected' : '' }}>Plus anciennes</option>
-                            <option value="message|ASC" {{ sort == 'message' and direction == 'ASC' ? 'selected' : '' }}>Message A-Z</option>
-                        </select>
-                    </label>
-                </div>
             </div>
 
-            {% if error_groups|length > 0 %}
-                <table class="dashboard-table">
-                    <thead>
-                    <tr>
-                        <th>Erreur</th>
-                        <th>Projet</th>
-                        <th>Statut</th>
-                        <th>Occurrences</th>
-                        <th>Dernière vue</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for error in error_groups %}
-                        <tr data-error-id="{{ error.id }}">
-                            <td>
-                                <div class="table-cell-title">
-                                    <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
-                                        {{ error.title }}
-                                    </a>
-                                </div>
-                                <div class="table-cell-subtitle">
-                                    {{ error.message|length > 80 ? error.message|slice(0, 80) ~ '...' : error.message }}
-                                </div>
-                                <div class="table-cell-meta">
-                                    {% if error.httpStatusCode %}
-                                        <span class="status-badge badge-warning">HTTP {{ error.httpStatusCode }}</span>
-                                    {% endif %}
-                                    {% if error.environment %}
-                                        <span class="status-badge badge-ignored">{{ error.environment }}</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                <a href="{{ path('dashboard_project', { project: error.project }) }}"
-                                   class="table-cell-title"
-                                   style="color: #3b82f6; text-decoration: none; font-weight: 500;">
-                                    {{ error.project }}
-                                </a>
-                            </td>
-                            <td>
-                                    <span class="status-badge badge-{{ error.status }}">
-                                        {{ error.status|title }}
-                                    </span>
-                            </td>
-                            <td>
-                                <div class="table-cell-title">{{ error.occurrenceCount }}</div>
-                                <div class="table-cell-meta">
-                                    Depuis {{ error.firstSeen|date('d/m/Y') }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="table-cell-title">{{ error.lastSeen|date('d/m H:i') }}</div>
-                                <div class="table-cell-meta">{{ error.lastSeen|date('d/m/Y') }}</div>
-                            </td>
-                            <td>
-                                <div class="table-actions">
-                                    {% if error.status == 'open' %}
-                                        <button class="action-btn btn-success" onclick="resolveError({{ error.id }})" title="Résoudre">
-                                            ✓
-                                        </button>
-                                        <button class="action-btn btn-danger" onclick="ignoreError({{ error.id }})" title="Ignorer">
-                                            ✕
-                                        </button>
-                                    {% elseif error.status == 'resolved' %}
-                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                            ↻
-                                        </button>
-                                    {% elseif error.status == 'ignored' %}
-                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                            ↻
-                                        </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="dashboard-empty-state">
-                    <div class="empty-icon">🎉</div>
-                    <h3>Aucune erreur trouvée</h3>
-                    {% if filters|length > 0 %}
-                        <p>Aucune erreur ne correspond à vos critères de recherche.</p>
-                        <a href="{{ path('dashboard_index') }}" class="empty-action">
-                            Voir toutes les erreurs
-                        </a>
-                    {% else %}
-                        <p>Félicitations ! Aucune erreur n'a été détectée. Continuez ainsi !</p>
-                        <a href="{{ path('projects_create') }}" class="empty-action">
-                            Créer un projet
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            {% if pagination.total_pages > 1 %}
-                <div class="dashboard-pagination">
-                    {% if pagination.current_page > 1 %}
-                        <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: pagination.current_page - 1 })) }}">
-                            ← Précédent
-                        </a>
-                    {% endif %}
-
-                    {% for page in range(max(1, pagination.current_page - 2), min(pagination.total_pages, pagination.current_page + 2)) %}
-                        {% if page == pagination.current_page %}
-                            <span class="current">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: page })) }}">
-                                {{ page }}
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if pagination.current_page < pagination.total_pages %}
-                        <a href="{{ path('dashboard_index', app.request.query.all|merge({ page: pagination.current_page + 1 })) }}">
-                            Suivant →
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+            <div class="table-container">
+                <div id="errors-table"></div>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block body_class %}dashboard-index{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du tri
-            const sortSelect = document.getElementById('sort-select');
-            if (sortSelect) {
-                sortSelect.addEventListener('change', function() {
-                    const [sort, direction] = this.value.split('|');
-                    const url = new URL(window.location);
-                    url.searchParams.set('sort', sort);
-                    url.searchParams.set('direction', direction);
-                    url.searchParams.delete('page'); // Reset pagination
-                    window.location.href = url.toString();
-                });
-            }
-
-            // Actions sur les erreurs
+        // Actions sur les erreurs
             window.resolveError = async function(errorId) {
                 if (!window.dashboard) {
                     console.error('Dashboard not initialized');
@@ -548,6 +419,218 @@
                     }
                 });
             }
-        });
+
+            // Initialiser DataTable pour les erreurs
+            $(document).ready(function () {
+                $('#errors-table').initDataTables({{ datatable_settings(datatable) }}, {
+                    searching: true,
+                    dom: 'lTfgtpi',
+                    pageLength: 25,
+                    responsive: true,
+                    language: {
+                        "sProcessing":     "Traitement en cours...",
+                        "sSearch":         "Rechercher :",
+                        "sLengthMenu":     "Afficher _MENU_ éléments",
+                        "sInfo":           "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+                        "sInfoEmpty":      "Affichage de l'élément 0 à 0 sur 0 élément",
+                        "sInfoFiltered":   "(filtré de _MAX_ éléments au total)",
+                        "sInfoPostFix":    "",
+                        "sLoadingRecords": "Chargement en cours...",
+                        "sZeroRecords":    "Aucun élément à afficher",
+                        "sEmptyTable":     "Aucune donnée disponible dans le tableau",
+                        "oPaginate": {
+                            "sFirst":      "Premier",
+                            "sPrevious":   "Précédent",
+                            "sNext":       "Suivant",
+                            "sLast":       "Dernier"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                            "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
+                        }
+                    }
+                });
+            });
+
+            // ================== TAGS FILTERING ==================
+            let filterTags = [];
+            let tagFilterSuggestions = [];
+            let selectedFilterSuggestionIndex = -1;
+
+            // Initialiser les tags depuis les filtres existants
+            const existingTags = '{{ (filters.tags ?? [])|join(",") }}';
+            if (existingTags) {
+                filterTags = existingTags.split(',').filter(tag => tag.trim());
+            }
+
+            window.removeFilterTag = function(tagToRemove) {
+                filterTags = filterTags.filter(tag => tag !== tagToRemove);
+                updateTagsFilterDisplay();
+                updateTagsHiddenInput();
+            };
+
+            window.updateTagMode = function(mode) {
+                document.getElementById('tag-mode-hidden').value = mode;
+            };
+
+            async function searchFilterTags(query) {
+                if (query.length < 1) {
+                    hideFilterSuggestions();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/tags/autocomplete?q=${encodeURIComponent(query)}&limit=5`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        tagFilterSuggestions = result.tags;
+                        displayFilterSuggestions();
+                    }
+                } catch (error) {
+                    console.error('Error searching tags:', error);
+                }
+            }
+
+            function displayFilterSuggestions() {
+                const suggestionsContainer = document.getElementById('tags-filter-suggestions');
+
+                if (tagFilterSuggestions.length === 0) {
+                    hideFilterSuggestions();
+                    return;
+                }
+
+                const html = tagFilterSuggestions.map((tag, index) => `
+                    <div class="tag-input__suggestion ${index === selectedFilterSuggestionIndex ? 'tag-input__suggestion--active' : ''}"
+                         onclick="selectFilterSuggestion(${index})"
+                         data-index="${index}">
+                        <span class="tag tag--small tag-input__suggestion-tag" style="--tag-bg: ${tag.color}">
+                            ${tag.name}
+                        </span>
+                        <div class="tag-input__suggestion-info">
+                            <div class="tag-input__suggestion-name">${tag.name}</div>
+                            <div class="tag-input__suggestion-count">${tag.usage_count} utilisation(s)</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                suggestionsContainer.innerHTML = html;
+                suggestionsContainer.style.display = 'block';
+            }
+
+            function hideFilterSuggestions() {
+                document.getElementById('tags-filter-suggestions').style.display = 'none';
+                selectedFilterSuggestionIndex = -1;
+            }
+
+            window.selectFilterSuggestion = function(index) {
+                if (index >= 0 && index < tagFilterSuggestions.length) {
+                    const tag = tagFilterSuggestions[index];
+
+                    // Vérifier que le tag n'est pas déjà ajouté
+                    if (!filterTags.includes(tag.name)) {
+                        filterTags.push(tag.name);
+                        updateTagsFilterDisplay();
+                        updateTagsHiddenInput();
+                    }
+
+                    document.getElementById('tags-filter').value = '';
+                    hideFilterSuggestions();
+                }
+            };
+
+            function addFilterTag() {
+                const input = document.getElementById('tags-filter');
+                const tagName = input.value.trim();
+
+                if (!tagName) return;
+
+                // Vérifier que le tag n'est pas déjà ajouté
+                if (!filterTags.includes(tagName)) {
+                    filterTags.push(tagName);
+                    updateTagsFilterDisplay();
+                    updateTagsHiddenInput();
+                }
+
+                input.value = '';
+                hideFilterSuggestions();
+            }
+
+            function updateTagsFilterDisplay() {
+                const container = document.getElementById('tags-filter-display');
+
+                if (filterTags.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                const currentMode = document.getElementById('tag-mode-hidden').value || 'any';
+
+                const tagsHtml = filterTags.map(tag => `
+                    <span class="tag tag--small tag--removable" data-tag="${tag}">
+                        <span class="tag__text">${tag}</span>
+                        <button type="button" class="tag__remove" onclick="removeFilterTag('${tag}')">
+                            <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </span>
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="tags-container">${tagsHtml}</div>
+                    <div class="tags-filter-mode">
+                        <label>
+                            <input type="radio" name="tag_mode_display" value="any" ${currentMode === 'any' ? 'checked' : ''} onchange="updateTagMode('any')">
+                            Au moins un
+                        </label>
+                        <label>
+                            <input type="radio" name="tag_mode_display" value="all" ${currentMode === 'all' ? 'checked' : ''} onchange="updateTagMode('all')">
+                            Tous les tags
+                        </label>
+                    </div>
+                `;
+            }
+
+            function updateTagsHiddenInput() {
+                document.getElementById('tags-hidden').value = filterTags.join(',');
+            }
+
+            // Gestionnaires d'événements pour le filtre par tags
+            document.getElementById('tags-filter').addEventListener('input', function(e) {
+                searchFilterTags(e.target.value);
+            });
+
+            document.getElementById('tags-filter').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedFilterSuggestionIndex >= 0) {
+                        selectFilterSuggestion(selectedFilterSuggestionIndex);
+                    } else {
+                        addFilterTag();
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (tagFilterSuggestions.length > 0) {
+                        selectedFilterSuggestionIndex = Math.min(selectedFilterSuggestionIndex + 1, tagFilterSuggestions.length - 1);
+                        displayFilterSuggestions();
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (tagFilterSuggestions.length > 0) {
+                        selectedFilterSuggestionIndex = Math.max(selectedFilterSuggestionIndex - 1, 0);
+                        displayFilterSuggestions();
+                    }
+                } else if (e.key === 'Escape') {
+                    hideFilterSuggestions();
+                }
+            });
+
+            // Fermer les suggestions quand on clique ailleurs
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.tags-filter-input')) {
+                    hideFilterSuggestions();
+                }
+            });
     </script>
 {% endblock %}

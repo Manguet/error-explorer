@@ -61,19 +61,19 @@
   }
 
   &.stat-primary::before {
-    background: linear-gradient(90deg, $primary-blue, lighten($primary-blue, 10%));
+    background: linear-gradient(90deg, $primary-blue, rgba(59, 130, 246, 0.8));
   }
 
   &.stat-warning::before {
-    background: linear-gradient(90deg, $status-warning, lighten($status-warning, 10%));
+    background: linear-gradient(90deg, $status-warning, rgba(245, 158, 11, 0.8));
   }
 
   &.stat-success::before {
-    background: linear-gradient(90deg, $status-resolved, lighten($status-resolved, 10%));
+    background: linear-gradient(90deg, $status-resolved, rgba(16, 185, 129, 0.8));
   }
 
   &.stat-info::before {
-    background: linear-gradient(90deg, #8b5cf6, lighten(#8b5cf6, 10%));
+    background: linear-gradient(90deg, #8b5cf6, rgba(139, 92, 246, 0.8));
   }
 
   &:hover {
@@ -306,7 +306,7 @@
 
         &:hover {
           text-decoration: underline;
-          color: darken($primary-blue, 10%);
+          color: rgba(59, 130, 246, 0.8);
         }
       }
     }

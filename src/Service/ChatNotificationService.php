@@ -13,7 +13,8 @@ class ChatNotificationService
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
-        private readonly SettingsManager $settingsManager
+        private readonly SettingsManager $settingsManager,
+        private readonly UrlHelper $urlHelper
     ) {}
 
     public function sendSlackNotification(ErrorGroup $errorGroup, Project $project, User $user): bool
@@ -325,7 +326,7 @@ class ChatNotificationService
 
     private function generateDashboardUrl(ErrorGroup $errorGroup): string
     {
-        // TODO: Générer l'URL complète vers le dashboard
-        return sprintf('https://error-explorer.localhost/dashboard/error/%d', $errorGroup->getId());
+        $projectSlug = $errorGroup->getProjectEntity()?->getSlug() ?? 'unknown';
+        return $this->urlHelper->generateErrorUrl($projectSlug, $errorGroup->getId());
     }
 }

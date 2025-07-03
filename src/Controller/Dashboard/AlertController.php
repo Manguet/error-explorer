@@ -14,6 +14,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[Route('/dashboard/alerts')]
 #[IsGranted('ROLE_USER')]
@@ -23,7 +24,8 @@ class AlertController extends AbstractController
         private readonly ErrorGroupRepository $errorGroupRepository,
         private readonly ProjectRepository $projectRepository,
         private readonly SettingsManager $settingsManager,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        #[Autowire('%app.mailer_from_email%')] private readonly string $mailerFromEmail
     ) {}
 
     #[Route('', name: 'alerts_index', methods: ['GET'])]
@@ -156,7 +158,7 @@ class AlertController extends AbstractController
         try {
             // Créer un email de test
             $email = (new Email())
-                ->from('alerts@errorexplorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('[Test] Alerte Error Explorer')
                 ->html($this->renderView('emails/test_alert.html.twig', [

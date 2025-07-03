@@ -11,6 +11,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class AlertService
 {
@@ -19,7 +20,9 @@ class AlertService
         private readonly Environment $twig,
         private readonly LoggerInterface $logger,
         private readonly SettingsManager $settingsManager,
-        private readonly ChatNotificationService $chatNotificationService
+        private readonly ChatNotificationService $chatNotificationService,
+        private readonly UrlHelper $urlHelper,
+        #[Autowire('%app.mailer_from_email%')] private readonly string $mailerFromEmail
     ) {}
 
     public function sendErrorAlert(ErrorGroup $errorGroup, Project $project, User $user): bool
@@ -185,11 +188,12 @@ class AlertService
             'project' => $project,
             'user' => $user,
             'dashboardUrl' => $this->generateDashboardUrl($errorGroup),
-            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project)
+            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project),
+            'app_url' => rtrim($this->urlHelper->getBaseUrl(), '/')
         ]);
 
         return (new Email())
-            ->from('alerts@errorexplorer.com')
+            ->from($this->mailerFromEmail)
             ->to($user->getEmail())
             ->subject($subject)
             ->html($html);
@@ -207,11 +211,12 @@ class AlertService
             'user' => $user,
             'stats' => $stats,
             'dashboardUrl' => $this->generateProjectDashboardUrl($project),
-            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project)
+            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project),
+            'app_url' => rtrim($this->urlHelper->getBaseUrl(), '/')
         ]);
 
         return (new Email())
-            ->from('alerts@errorexplorer.com')
+            ->from($this->mailerFromEmail)
             ->to($user->getEmail())
             ->subject($subject)
             ->html($html);
@@ -237,20 +242,19 @@ class AlertService
 
     private function generateDashboardUrl(ErrorGroup $errorGroup): string
     {
-        // TODO: Générer l'URL complète vers le dashboard
-        return sprintf('https://errorexplorer.com/dashboard/error/%d', $errorGroup->getId());
+        $projectSlug = $errorGroup->getProjectEntity()?->getSlug() ?? 'unknown';
+        return $this->urlHelper->generateErrorUrl($projectSlug, $errorGroup->getId());
     }
 
     private function generateProjectDashboardUrl(Project $project): string
     {
-        // TODO: Générer l'URL complète vers le dashboard du projet
-        return sprintf('https://errorexplorer.com/dashboard/project/%s', $project->getSlug());
+        return $this->urlHelper->generateProjectUrl($project->getSlug());
     }
 
     private function generateUnsubscribeUrl(User $user, Project $project): string
     {
         // TODO: Générer un token sécurisé pour la désinscription
-        return sprintf('https://errorexplorer.com/unsubscribe/%d/%d', $user->getId(), $project->getId());
+        return $this->urlHelper->generateUnsubscribeUrl($user->getId(), $project->getId());
     }
 
     /**
@@ -328,11 +332,12 @@ class AlertService
                 'errorGroup' => $errorGroup,
                 'project' => $project,
                 'user' => $user,
-                'dashboardUrl' => $this->generateDashboardUrl($errorGroup)
+                'dashboardUrl' => $this->generateDashboardUrl($errorGroup),
+                'app_url' => rtrim($this->urlHelper->getBaseUrl(), '/')
             ]);
 
             $email = (new Email())
-                ->from('critical@errorexplorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject($subject)
                 ->html($html)
@@ -497,7 +502,8 @@ class AlertService
             'project' => $project,
             'user' => $user,
             'dashboardUrl' => $this->generateProjectDashboardUrl($project),
-            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project)
+            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project),
+            'app_url' => rtrim($this->urlHelper->getBaseUrl(), '/')
         ]);
 
         $priority = match($metric->getSeverityLevel()) {
@@ -507,7 +513,7 @@ class AlertService
         };
 
         return (new Email())
-            ->from('performance@errorexplorer.com')
+            ->from($this->mailerFromEmail)
             ->to($user->getEmail())
             ->subject($subject)
             ->html($html)
@@ -539,13 +545,14 @@ class AlertService
             'project' => $project,
             'user' => $user,
             'dashboardUrl' => $this->generateProjectDashboardUrl($project),
-            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project)
+            'unsubscribeUrl' => $this->generateUnsubscribeUrl($user, $project),
+            'app_url' => rtrim($this->urlHelper->getBaseUrl(), '/')
         ]);
 
         $priority = $check->isCritical() ? Email::PRIORITY_HIGH : Email::PRIORITY_NORMAL;
 
         return (new Email())
-            ->from('uptime@errorexplorer.com')
+            ->from($this->mailerFromEmail)
             ->to($user->getEmail())
             ->subject($subject)
             ->html($html)

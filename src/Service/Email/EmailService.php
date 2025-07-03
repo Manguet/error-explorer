@@ -4,6 +4,7 @@ namespace App\Service\Email;
 
 use App\Entity\User;
 use App\Service\Logs\MonologService;
+use App\Service\SettingsManager;
 use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
@@ -40,7 +41,8 @@ class EmailService
         'new_project_created' => 'emails/new_project_created.html.twig',
         'error_threshold_reached' => 'emails/error_threshold_reached.html.twig',
         'weekly_digest' => 'emails/weekly_digest.html.twig',
-        'contact_confirmation' => 'emails/contact_confirmation.html.twig'
+        'contact_confirmation' => 'emails/contact_confirmation.html.twig',
+        'error_assignment' => 'emails/error_assignment.html.twig'
     ];
 
     // Sujets par défaut
@@ -55,7 +57,8 @@ class EmailService
         'new_project_created' => 'Nouveau projet créé - Error Explorer',
         'error_threshold_reached' => 'Seuil d\'erreurs atteint - Error Explorer',
         'weekly_digest' => 'Votre résumé hebdomadaire - Error Explorer',
-        'contact_confirmation' => 'Confirmation de réception - Error Explorer'
+        'contact_confirmation' => 'Confirmation de réception - Error Explorer',
+        'error_assignment' => 'Nouvelle erreur assignée - Error Explorer'
     ];
 
     public function __construct(
@@ -65,11 +68,11 @@ class EmailService
         private readonly MonologService $monolog,
         private readonly CacheInterface $cache,
         private readonly Environment $twig,
+        private readonly SettingsManager $settingsManager,
         private readonly string $senderEmail = self::DEFAULT_SENDER_EMAIL,
         private readonly string $senderName = self::DEFAULT_SENDER_NAME,
         private readonly int $maxRetries = 3,
-        private readonly int $retryDelayMs = 1000,
-        private readonly string $appUrl = 'https://error-explorer.com'
+        private readonly int $retryDelayMs = 1000
     ) {}
 
     /**
@@ -229,6 +232,48 @@ class EmailService
     }
 
     /**
+     * Envoie une notification d'assignation d'erreur
+     */
+    public function sendErrorAssignmentNotification($assignee, $errorGroup, $project, $assignedBy = null): EmailResult
+    {
+        $errorUrl = $this->urlGenerator->generate(
+            'dashboard_error_detail',
+            [
+                'projectSlug' => $project->getSlug(),
+                'id' => $errorGroup->getId()
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $projectUrl = $this->urlGenerator->generate(
+            'projects_show',
+            ['slug' => $project->getSlug()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return $this->sendEmail(
+            type: 'error_assignment',
+            recipient: $assignee,
+            context: [
+                'user' => $assignee,
+                'error' => $errorGroup,
+                'project' => $project,
+                'assigned_by' => $assignedBy,
+                'error_url' => $errorUrl,
+                'project_url' => $projectUrl,
+                'assigned_at' => $errorGroup->getAssignedAt(),
+                'dashboard_url' => $this->urlGenerator->generate('dashboard_index', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ],
+            metadata: [
+                'assignee_id' => $assignee->getId(),
+                'error_id' => $errorGroup->getId(),
+                'project_id' => $project->getId(),
+                'assigned_by_id' => $assignedBy?->getId()
+            ],
+        );
+    }
+
+    /**
      * Méthode générique pour envoyer un email
      */
     public function sendEmail(
@@ -255,9 +300,9 @@ class EmailService
         $enrichedContext = array_merge([
             'app_name' => 'Error Explorer',
             'year' => date('Y'),
-            'support_email' => 'support@errorexplorer.com',
+            'support_email' => $this->senderEmail,
             'unsubscribe_url' => $this->generateUnsubscribeUrl($recipient),
-            'app_url' => $this->appUrl
+            'app_url' => $this->settingsManager->getSetting('general.site_url', 'http://localhost')
         ], $context);
 
         // Création de l'email
@@ -408,7 +453,7 @@ class EmailService
         $enrichedContext = array_merge([
             'app_name' => 'Error Explorer',
             'year' => date('Y'),
-            'support_email' => 'support@errorexplorer.com',
+            'support_email' => $this->senderEmail,
             'unsubscribe_url' => $this->generateUnsubscribeUrl($recipient),
             'preview_mode' => true,
             'user' => $recipient,

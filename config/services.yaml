@@ -1,4 +1,12 @@
 parameters:
+    # Application configuration
+    app.mailer_from_email: '%env(MAILER_FROM_EMAIL)%'
+    app.base_url: '%env(APP_URL)%'
+    app.ai.provider: '%env(AI_PROVIDER)%'
+    app.ai.openai_key: '%env(OPENAI_API_KEY)%'
+    app.ai.groq_key: '%env(GROQ_API_KEY)%'
+    app.stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+    app.stripe.public_key: '%env(STRIPE_PUBLIC_KEY)%'
 
 services:
     _defaults:
@@ -18,9 +26,9 @@ services:
     App\Service\AiSuggestionService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
-            $aiProvider: '%env(AI_PROVIDER)%'
-            $openaiApiKey: '%env(OPENAI_API_KEY)%'
-            $groqApiKey: '%env(GROQ_API_KEY)%'
+            $aiProvider: '%app.ai.provider%'
+            $openaiApiKey: '%app.ai.openai_key%'
+            $groqApiKey: '%app.ai.groq_key%'
     ## SERVICES D'IA ####
 
     #### SERVICES DE NOTIFICATIONS ####
@@ -36,7 +44,6 @@ services:
             $senderName: '%env(MAILER_FROM_NAME)%'
             $maxRetries: '%env(MAILER_MAX_RETRIES)%'
             $retryDelayMs: '%env(MAILER_RETRY_DELAY_MS)%'
-            $appUrl: '%env(APP_URL)%'
 
     App\Service\Email\EmailQueueService:
         arguments:

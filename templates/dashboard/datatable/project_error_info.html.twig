@@ -1,0 +1,16 @@
+<div class="table-cell-title">
+    <a href="{{ path('dashboard_error_detail', { projectSlug: row.projectEntity ? row.projectEntity.slug : row.project, id: row.id }) }}">
+        {{ row.title }}
+    </a>
+</div>
+<div class="table-cell-subtitle">
+    {{ row.message|length > 100 ? row.message|slice(0, 100) ~ '...' : row.message }}
+</div>
+<div class="table-cell-meta">
+    {% if row.httpStatusCode %}
+        <span class="status-badge badge-warning">HTTP {{ row.httpStatusCode }}</span>
+    {% endif %}
+    {% if row.environment %}
+        <span class="status-badge badge-info">{{ row.environment }}</span>
+    {% endif %}
+</div>

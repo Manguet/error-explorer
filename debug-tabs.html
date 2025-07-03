@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Tabs</title>
+    <style>
+        .docs__tab-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .docs__tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            font-weight: 500;
+            min-width: fit-content;
+        }
+
+        .docs__tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .docs__tab-btn--active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
+        }
+
+        .docs__tab-btn--active:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #60a5fa;
+        }
+
+        .docs__tab-content {
+            position: relative;
+            min-height: 400px;
+        }
+
+        .docs__tab-panel {
+            display: none;
+            animation: tabFadeIn 0.3s ease-out;
+        }
+
+        .docs__tab-panel--active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test des onglets Error Explorer</h1>
+    
+    <div class="docs__framework-tabs">
+        <div class="docs__tab-nav">
+            <button class="docs__tab-btn docs__tab-btn--active" data-framework="symfony" aria-selected="true">
+                <span class="docs__tab-icon">🎼</span>
+                <span class="docs__tab-label">Symfony</span>
+            </button>
+            <button class="docs__tab-btn" data-framework="laravel" aria-selected="false">
+                <span class="docs__tab-icon">🅻</span>
+                <span class="docs__tab-label">Laravel</span>
+            </button>
+            <button class="docs__tab-btn" data-framework="nodejs" aria-selected="false">
+                <span class="docs__tab-icon">💚</span>
+                <span class="docs__tab-label">Node.js</span>
+            </button>
+            <button class="docs__tab-btn" data-framework="react" aria-selected="false">
+                <span class="docs__tab-icon">⚛️</span>
+                <span class="docs__tab-label">React</span>
+            </button>
+        </div>
+
+        <div class="docs__tab-content">
+            <div class="docs__tab-panel docs__tab-panel--active" data-framework="symfony">
+                <h3>Symfony Content</h3>
+                <p>Contenu pour Symfony...</p>
+            </div>
+            
+            <div class="docs__tab-panel" data-framework="laravel">
+                <h3>Laravel Content</h3>
+                <p>Contenu pour Laravel...</p>
+            </div>
+            
+            <div class="docs__tab-panel" data-framework="nodejs">
+                <h3>Node.js Content</h3>
+                <p>Contenu pour Node.js...</p>
+            </div>
+            
+            <div class="docs__tab-panel" data-framework="react">
+                <h3>React Content</h3>
+                <p>Contenu pour React...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple tab functionality for debugging
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Debug script loaded');
+            
+            const tabButtons = document.querySelectorAll('.docs__tab-btn');
+            const tabPanels = document.querySelectorAll('.docs__tab-panel');
+            
+            console.log('Found', tabButtons.length, 'tab buttons');
+            console.log('Found', tabPanels.length, 'tab panels');
+            
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', function(e) {
+                    console.log('Tab clicked:', e.currentTarget.dataset.framework);
+                    
+                    const framework = e.currentTarget.dataset.framework;
+                    
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('docs__tab-btn--active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    // Add active class to clicked button
+                    e.currentTarget.classList.add('docs__tab-btn--active');
+                    e.currentTarget.setAttribute('aria-selected', 'true');
+                    
+                    // Hide all panels
+                    tabPanels.forEach(panel => {
+                        panel.classList.remove('docs__tab-panel--active');
+                    });
+                    
+                    // Show corresponding panel
+                    const activePanel = document.querySelector(`.docs__tab-panel[data-framework="${framework}"]`);
+                    if (activePanel) {
+                        activePanel.classList.add('docs__tab-panel--active');
+                        console.log('Showing panel for:', framework);
+                    } else {
+                        console.error('Panel not found for:', framework);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

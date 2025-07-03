@@ -31,6 +31,10 @@ class DocumentationComponent {
         this.initSmoothScrolling();
         this.initCopyButtons();
         this.initSearchFunctionality();
+        this.initFrameworkTabs();
+        this.initCollapsibles();
+        this.initProgressBar();
+        this.initQuickActions();
     }
 
     /**
@@ -595,6 +599,342 @@ class DocumentationComponent {
     }
 
     /**
+     * Initialisation des onglets de frameworks
+     */
+    initFrameworkTabs() {
+        console.log('🔍 Initializing framework tabs...');
+        const tabButtons = document.querySelectorAll('.docs__tab-btn');
+        const tabPanels = document.querySelectorAll('.docs__tab-panel');
+        
+        console.log('📊 Found', tabButtons.length, 'tab buttons and', tabPanels.length, 'tab panels');
+        
+        if (tabButtons.length === 0) {
+            console.warn('⚠️ No tab buttons found');
+            return;
+        }
+        
+        // État initial depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeFramework = urlParams.get('framework') || 'symfony';
+        
+        tabButtons.forEach(button => {
+            console.log('🎯 Adding click listener to button:', button.dataset.framework);
+            button.addEventListener('click', (e) => {
+                const framework = e.currentTarget.dataset.framework;
+                console.log('🔄 Tab clicked:', framework);
+                this.switchFrameworkTab(framework);
+            });
+            
+            // Navigation clavier
+            button.addEventListener('keydown', (e) => {
+                const buttons = Array.from(tabButtons);
+                const currentIndex = buttons.indexOf(e.currentTarget);
+                
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const nextIndex = e.key === 'ArrowLeft' 
+                        ? (currentIndex - 1 + buttons.length) % buttons.length
+                        : (currentIndex + 1) % buttons.length;
+                    buttons[nextIndex].focus();
+                    buttons[nextIndex].click();
+                }
+            });
+        });
+        
+        // Activer l'onglet initial
+        this.switchFrameworkTab(activeFramework);
+    }
+    
+    /**
+     * Changer d'onglet de framework
+     */
+    switchFrameworkTab(framework) {
+        console.log('🔄 Switching to framework tab:', framework);
+        
+        // Mettre à jour les boutons
+        const tabButtons = document.querySelectorAll('.docs__tab-btn');
+        console.log('📋 Updating', tabButtons.length, 'tab buttons');
+        
+        tabButtons.forEach(btn => {
+            btn.classList.remove('docs__tab-btn--active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+        
+        const activeButton = document.querySelector(`[data-framework="${framework}"]`);
+        if (activeButton) {
+            activeButton.classList.add('docs__tab-btn--active');
+            activeButton.setAttribute('aria-selected', 'true');
+            console.log('✅ Activated button for:', framework);
+        } else {
+            console.error('❌ Button not found for framework:', framework);
+        }
+        
+        // Mettre à jour les panneaux
+        const tabPanels = document.querySelectorAll('.docs__tab-panel');
+        console.log('📋 Updating', tabPanels.length, 'tab panels');
+        
+        tabPanels.forEach(panel => {
+            panel.classList.remove('docs__tab-panel--active');
+        });
+        
+        const activePanel = document.querySelector(`.docs__tab-panel[data-framework="${framework}"]`);
+        if (activePanel) {
+            activePanel.classList.add('docs__tab-panel--active');
+            console.log('✅ Activated panel for:', framework);
+        } else {
+            console.error('❌ Panel not found for framework:', framework);
+        }
+        
+        // Mettre à jour l'URL
+        const url = new URL(window.location);
+        url.searchParams.set('framework', framework);
+        window.history.replaceState({}, '', url);
+        
+        // Analytics
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'framework_tab_change', {
+                'framework': framework,
+                'page_title': document.title
+            });
+        }
+    }
+    
+    /**
+     * Initialisation des sections pliables
+     */
+    initCollapsibles() {
+        const collapsibleHeaders = document.querySelectorAll('.docs__collapsible-header');
+        
+        collapsibleHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const isActive = header.classList.contains('docs__collapsible-header--active');
+                
+                // Fermer les autres dans le même groupe
+                const group = header.closest('.docs__collapsible-group');
+                if (group) {
+                    group.querySelectorAll('.docs__collapsible-header').forEach(h => {
+                        if (h !== header) {
+                            h.classList.remove('docs__collapsible-header--active');
+                            h.nextElementSibling.classList.remove('docs__collapsible-content--active');
+                            h.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+                
+                // Toggle current
+                header.classList.toggle('docs__collapsible-header--active');
+                content.classList.toggle('docs__collapsible-content--active');
+                header.setAttribute('aria-expanded', !isActive);
+            });
+            
+            // Accessibilité
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', 'false');
+            
+            // Support clavier
+            header.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    header.click();
+                }
+            });
+        });
+    }
+    
+    /**
+     * Initialisation de la barre de progression
+     */
+    initProgressBar() {
+        // Créer la barre de progression
+        const progressBar = document.createElement('div');
+        progressBar.className = 'docs__progress';
+        progressBar.innerHTML = '<div class="docs__progress-bar"></div>';
+        document.body.appendChild(progressBar);
+        
+        const updateProgress = () => {
+            const scrolled = window.pageYOffset;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrolled / total) * 100;
+            
+            const bar = progressBar.querySelector('.docs__progress-bar');
+            if (bar) {
+                bar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+            }
+        };
+        
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+    }
+    
+    /**
+     * Initialisation des actions rapides
+     */
+    initQuickActions() {
+        const quickActions = document.createElement('div');
+        quickActions.className = 'docs__quick-actions';
+        quickActions.innerHTML = `
+            <button class="docs__quick-actions-btn docs__quick-actions-btn--primary" 
+                    id="scroll-to-top" 
+                    aria-label="Retour en haut de page"
+                    title="Retour en haut">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
+                </svg>
+            </button>
+            <button class="docs__quick-actions-btn" 
+                    id="toggle-theme" 
+                    aria-label="Changer le thème"
+                    title="Basculer le thème">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+            </button>
+        `;
+        
+        document.body.appendChild(quickActions);
+        
+        // Scroll to top
+        const scrollToTopBtn = quickActions.querySelector('#scroll-to-top');
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Theme toggle (pour future implémentation)
+        const themeToggle = quickActions.querySelector('#toggle-theme');
+        themeToggle.addEventListener('click', () => {
+            // Future: toggle entre dark/light theme
+            console.log('Theme toggle clicked');
+        });
+        
+        // Montrer/cacher selon la position de scroll
+        let isVisible = false;
+        window.addEventListener('scroll', () => {
+            const shouldShow = window.pageYOffset > 300;
+            
+            if (shouldShow !== isVisible) {
+                isVisible = shouldShow;
+                quickActions.style.opacity = shouldShow ? '1' : '0';
+                quickActions.style.visibility = shouldShow ? 'visible' : 'hidden';
+                quickActions.style.transform = shouldShow ? 'translateY(0)' : 'translateY(20px)';
+            }
+        });
+        
+        // État initial
+        quickActions.style.opacity = '0';
+        quickActions.style.visibility = 'hidden';
+        quickActions.style.transform = 'translateY(20px)';
+        quickActions.style.transition = 'all 0.3s ease';
+    }
+    
+    /**
+     * Amélioration de la recherche avec support des onglets
+     */
+    performSearch(query, resultsContainer) {
+        const sections = document.querySelectorAll('.docs__section, .docs__tab-panel');
+        const results = [];
+
+        sections.forEach(section => {
+            const title = section.querySelector('.docs__section-title, h3')?.textContent || '';
+            const content = section.textContent.toLowerCase();
+            const queryLower = query.toLowerCase();
+
+            if (content.includes(queryLower)) {
+                const titleClean = title.replace(/^[🚀📦⚙️🎼🅻⚛️💚🅰️🐍📝📚🔗💡🔧]\s*/, '');
+                const framework = section.dataset.framework || null;
+
+                results.push({
+                    id: section.id || framework,
+                    title: titleClean,
+                    excerpt: this.getSearchExcerpt(section, query),
+                    framework: framework
+                });
+            }
+        });
+
+        this.displaySearchResults(results, resultsContainer, query);
+    }
+    
+    /**
+     * Affichage amélioré des résultats de recherche
+     */
+    displaySearchResults(results, container, query) {
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="docs__search-no-results">
+                    <div style="margin-bottom: 0.5rem;">Aucun résultat pour "${query}"</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Essayez des mots-clés différents</div>
+                </div>
+            `;
+            container.style.display = 'block';
+            return;
+        }
+
+        const resultsHTML = results.map(result => {
+            const frameworkBadge = result.framework ? 
+                `<span class="docs__search-result-framework">${result.framework}</span>` : '';
+            
+            return `
+                <a href="#${result.id}" class="docs__search-result" data-framework="${result.framework || ''}">
+                    <div class="docs__search-result-header">
+                        <div class="docs__search-result-title">${this.highlightQuery(result.title, query)}</div>
+                        ${frameworkBadge}
+                    </div>
+                    ${result.excerpt ? `<div class="docs__search-result-excerpt">${this.highlightQuery(result.excerpt, query)}</div>` : ''}
+                </a>
+            `;
+        }).join('');
+
+        container.innerHTML = resultsHTML;
+        container.style.display = 'block';
+
+        // Ajouter les écouteurs avec support des onglets
+        container.querySelectorAll('.docs__search-result').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const framework = e.currentTarget.dataset.framework;
+                const targetId = e.currentTarget.getAttribute('href').substring(1);
+                
+                // Switch tab si nécessaire
+                if (framework) {
+                    this.switchFrameworkTab(framework);
+                }
+                
+                // Navigation après un court délai pour laisser l'onglet se charger
+                setTimeout(() => {
+                    this.handleSearchResultClick(e);
+                }, framework ? 100 : 0);
+            });
+        });
+    }
+    
+    /**
+     * Surligner les termes de recherche
+     */
+    highlightQuery(text, query) {
+        if (!query || !text) return text;
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark style="background: rgba(59, 130, 246, 0.3); color: inherit; padding: 0.1em 0.2em; border-radius: 2px;">$1</mark>');
+    }
+    
+    /**
+     * API publique - Aller à un framework spécifique
+     */
+    goToFramework(framework) {
+        if (document.querySelector(`[data-framework="${framework}"]`)) {
+            this.switchFrameworkTab(framework);
+            
+            // Scroll vers la section des frameworks
+            const frameworkSection = document.getElementById('framework-integrations');
+            if (frameworkSection) {
+                this.goToSection('framework-integrations');
+            }
+        }
+    }
+
+    /**
      * Nettoyage
      */
     destroy() {
@@ -602,6 +942,13 @@ class DocumentationComponent {
         if (this.mobileToggle) {
             this.mobileToggle.removeEventListener('click', this.toggleSidebar);
         }
+
+        // Supprimer les éléments créés dynamiquement
+        const progressBar = document.querySelector('.docs__progress');
+        const quickActions = document.querySelector('.docs__quick-actions');
+        
+        if (progressBar) progressBar.remove();
+        if (quickActions) quickActions.remove();
 
         // Restaurer le scroll du body
         document.body.style.overflow = '';
@@ -687,10 +1034,29 @@ const searchStyles = `
     border-bottom: none;
 }
 
+.docs__search-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
 .docs__search-result-title {
     font-weight: 600;
-    margin-bottom: 0.25rem;
     color: #3b82f6;
+    flex: 1;
+}
+
+.docs__search-result-framework {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    white-space: nowrap;
 }
 
 .docs__search-result-excerpt {
@@ -722,19 +1088,25 @@ const searchStyles = `
  * Initialisation automatique au chargement du DOM
  */
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 DocumentationComponent starting initialization...');
+    
     // Ajouter les styles de recherche
     const styleSheet = document.createElement('style');
     styleSheet.textContent = searchStyles;
     document.head.appendChild(styleSheet);
 
     // Initialiser le composant
+    console.log('🔧 Creating DocumentationComponent instance...');
     window.docsComponent = new DocumentationComponent();
+    console.log('✅ DocumentationComponent initialized successfully');
 
     // Exposer des méthodes globales pour les tests
     window.docsAPI = {
         goToSection: (id) => window.docsComponent.goToSection(id),
         getCurrentSection: () => window.docsComponent.getCurrentSection(),
-        toggleSidebar: () => window.docsComponent.toggleSidebar()
+        toggleSidebar: () => window.docsComponent.toggleSidebar(),
+        goToFramework: (framework) => window.docsComponent.goToFramework(framework),
+        switchFrameworkTab: (framework) => window.docsComponent.switchFrameworkTab(framework)
     };
 
     // Animation d'entrée des sections

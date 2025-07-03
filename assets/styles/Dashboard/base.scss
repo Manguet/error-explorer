@@ -3,6 +3,24 @@
  * Structure principale du dashboard avec composants modulaires
  */
 
+// ===== DASHBOARD RESET =====
+body.dashboard-body, body.dashboard {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $font-body;
+  background: $dark-slate;
+  color: $white;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 // ===== DASHBOARD ROOT =====
 .dashboard {
   min-height: 100vh;
@@ -266,18 +284,17 @@
   }
 }
 
-// ===== HEADER COMPONENT =====
-.header {
+// ===== DASHBOARD PAGE HEADER =====
+.header__page {
   background: rgba($white, 0.02);
   border-bottom: 1px solid rgba($white, 0.1);
   padding: 1.5rem 2rem;
-  @include glass-effect(0.05);
 
   @include responsive('sm') {
     padding: 1rem;
   }
 
-  &__top {
+  .header__top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -290,11 +307,11 @@
     }
   }
 
-  &__title-group {
+  .header__title-group {
     flex: 1;
   }
 
-  &__title {
+  .header__title {
     font-size: 2rem;
     font-weight: 700;
     font-family: $font-heading;
@@ -307,13 +324,13 @@
     }
   }
 
-  &__subtitle {
+  .header__subtitle {
     font-size: 1rem;
     color: rgba($white, 0.7);
     margin: 0;
   }
 
-  &__actions {
+  .header__actions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -329,23 +346,42 @@
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0;
   font-size: 0.875rem;
 
+  // Style pour tous les liens et éléments
+  a,
+  span,
   &__link {
     color: rgba($white, 0.6);
     text-decoration: none;
     @include smooth-transition();
+    padding: 0 0.375rem;
 
     &:hover {
       color: $white;
     }
 
+    // Ajouter le séparateur après chaque élément sauf le dernier
     &:not(:last-child)::after {
-      content: '/';
-      margin-left: 0.5rem;
+      content: '>';
+      margin-left: 12px;
       color: rgba($white, 0.4);
+      font-weight: 500;
     }
+  }
+  
+  // Style spécifique pour l'élément actuel (dernier)
+  span:last-child,
+  &__current {
+    color: $white !important;
+    font-weight: 500;
+  }
+
+  // Premier élément (Dashboard) a une couleur légèrement différente
+  a:first-child {
+    color: rgba($white, 0.7);
+    font-weight: 500;
   }
 }
 
@@ -354,10 +390,19 @@
   flex: 1;
   padding: 2rem;
   min-height: 0;
+  margin-top: 0; // No additional margin needed, header__page handles spacing
 
   @include responsive('sm') {
     padding: 1rem;
   }
+}
+
+// ===== DASHBOARD CONTENT ADJUSTMENTS =====
+.dashboard__content {
+  // Pas de padding-top car plus de header fixe
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 // ===== MOBILE COMPONENTS =====

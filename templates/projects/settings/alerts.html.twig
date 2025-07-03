@@ -6,17 +6,8 @@
 {% block page_subtitle %}Paramétrez les notifications pour le projet {{ project.name }}{% endblock %}
 
 {% block breadcrumb_items %}
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
     <a href="{{ path('projects_index') }}">Projets</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
-    <a href="{{ path('projects_show', { id: project.id }) }}">{{ project.name }}</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
+    <a href="{{ path('projects_show', { slug: project.slug }) }}">{{ project.name }}</a>
     <span>Alertes</span>
 {% endblock %}
 
@@ -27,21 +18,24 @@
         </svg>
         Tous les projets
     </a>
-    <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+    <a href="{{ path('projects_show', { slug: project.slug }) }}" class="header-btn btn-secondary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         Retour au projet
     </a>
-    <form style="display: inline;" method="POST" action="{{ path('project_test_alert', { id: project.id }) }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('test_alert_' ~ project.id) }}">
-        <button type="submit" class="header-btn btn-warning" onclick="return confirm('Envoyer une alerte de test ?')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
-            </svg>
-            Test d'alerte
-        </button>
-    </form>
+    <a href="{{ path('project_git_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+        </svg>
+        Git
+    </a>
+    <button type="button" class="header-btn btn-warning" onclick="showTestAlertModal()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+        </svg>
+        Test d'alerte
+    </button>
 {% endblock %}
 
 {% block body %}
@@ -354,51 +348,49 @@
                             {{ form_errors(form.externalWebhooksEnabled) }}
                         </div>
 
-                        {% if project.externalWebhooksEnabled %}
-                            <div class="form-group full-width">
-                                <div class="webhooks-list">
-                                    <div class="webhooks-header">
-                                        <h4>Webhooks configurés</h4>
-                                        <button type="button" class="btn btn-sm btn-primary" onclick="addWebhook()">
-                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                            </svg>
-                                            Ajouter un webhook
-                                        </button>
-                                    </div>
-                                    
-                                    {% if project.externalWebhooks is not empty %}
-                                        {% for webhook in project.externalWebhooks %}
-                                            <div class="webhook-item">
-                                                <div class="webhook-info">
-                                                    <div class="webhook-name">{{ webhook.name }}</div>
-                                                    <div class="webhook-url">{{ webhook.url }}</div>
-                                                    <div class="webhook-events">
-                                                        Événements: {{ webhook.events|join(', ') }}
-                                                    </div>
-                                                </div>
-                                                <div class="webhook-actions">
-                                                    <button type="button" class="btn btn-sm btn-secondary" onclick="testWebhook('{{ webhook.id }}')">
-                                                        Test
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeWebhook('{{ webhook.id }}')">
-                                                        Supprimer
-                                                    </button>
+                        <div class="form-group full-width" id="webhooks-section" style="{% if not project.externalWebhooksEnabled %}display: none;{% endif %}">
+                            <div class="webhooks-list">
+                                <div class="webhooks-header">
+                                    <h4>Webhooks configurés</h4>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="addWebhook()">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Ajouter un webhook
+                                    </button>
+                                </div>
+
+                                {% if project.externalWebhooks is not empty %}
+                                    {% for webhook in project.externalWebhooks %}
+                                        <div class="webhook-item">
+                                            <div class="webhook-info">
+                                                <div class="webhook-name">{{ webhook.name }}</div>
+                                                <div class="webhook-url">{{ webhook.url }}</div>
+                                                <div class="webhook-events">
+                                                    Événements: {{ webhook.events|join(', ') }}
                                                 </div>
                                             </div>
-                                        {% endfor %}
-                                    {% else %}
-                                        <div class="webhook-empty">
-                                            <p>Aucun webhook configuré. Les webhooks externes vous permettent d'envoyer automatiquement les données d'erreur vers vos systèmes tiers.</p>
+                                            <div class="webhook-actions">
+                                                <button type="button" class="btn btn-sm btn-secondary" onclick="testWebhook('{{ webhook.id }}')">
+                                                    Test
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeWebhook('{{ webhook.id }}')">
+                                                    Supprimer
+                                                </button>
+                                            </div>
                                         </div>
-                                    {% endif %}
-                                </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="webhook-empty">
+                                        <p>Aucun webhook configuré. Les webhooks externes vous permettent d'envoyer automatiquement les données d'erreur vers vos systèmes tiers.</p>
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                        </div>
 
                         <!-- Boutons d'action -->
                         <div class="form-actions full-width">
-                            <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+                            <a href="{{ path('projects_show', { slug: project.slug }) }}" class="header-btn btn-secondary">
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
@@ -525,6 +517,44 @@
         .btn-sm {
             padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+            border-color: rgba(239, 68, 68, 0.4);
         }
 
         /* Toggle switches pour les checkboxes */
@@ -574,7 +604,7 @@
         }
 
         input:checked + .toggle-slider:before {
-            transform: translateX(20px);
+            transform: translateX(18px);
         }
 
         /* Toggle switches pour les filtres (plus petits) */
@@ -653,26 +683,28 @@
 
         /* Styles pour les webhooks */
         .webhooks-list {
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            background-color: #f9fafb;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .webhooks-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .webhooks-header h4 {
             margin: 0;
             font-size: 1rem;
             font-weight: 600;
-            color: #374151;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         .webhook-item {
@@ -680,10 +712,17 @@
             justify-content: space-between;
             align-items: flex-start;
             padding: 1rem;
-            background-color: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.375rem;
-            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .webhook-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
         }
 
         .webhook-item:last-child {
@@ -696,20 +735,21 @@
 
         .webhook-name {
             font-weight: 600;
-            color: #111827;
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 0.25rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         .webhook-url {
             font-size: 0.875rem;
-            color: #6b7280;
-            font-family: monospace;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
             margin-bottom: 0.25rem;
         }
 
         .webhook-events {
             font-size: 0.75rem;
-            color: #9ca3af;
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .webhook-actions {
@@ -721,7 +761,7 @@
         .webhook-empty {
             text-align: center;
             padding: 2rem;
-            color: #6b7280;
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .webhook-empty p {
@@ -738,18 +778,21 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
         }
 
         .modal-content {
-            background-color: white;
+            background: #1f2937;
             margin: 5% auto;
             padding: 2rem;
-            border-radius: 0.5rem;
+            border-radius: 16px;
             width: 90%;
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .modal-header {
@@ -757,14 +800,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 0 0 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .modal-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #111827;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         .close {
@@ -772,11 +816,19 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #6b7280;
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
         }
 
         .close:hover {
-            color: #374151;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .form-grid-modal {
@@ -792,39 +844,201 @@
         .form-label-modal {
             font-weight: 500;
             margin-bottom: 0.5rem;
-            color: #374151;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
         }
 
         .form-input-modal {
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
             font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
         }
 
         .form-input-modal:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 1px #3b82f6;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .form-input-modal::placeholder {
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .form-help-modal {
             font-size: 0.75rem;
-            color: #6b7280;
+            color: rgba(255, 255, 255, 0.5);
             margin-top: 0.25rem;
         }
 
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.5rem;
+        /* Styles pour les événements avec toggle switches */
+        .events-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
             margin-top: 0.5rem;
         }
 
-        .checkbox-item {
+        .event-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .event-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .event-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .event-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .event-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+        }
+
+        /* Toggle switches pour la modal */
+        .toggle-switch-modal {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        .toggle-switch-modal input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider-modal {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider-modal:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider-modal {
+            background-color: #3b82f6;
+        }
+
+        input:focus + .toggle-slider-modal {
+            box-shadow: 0 0 1px #3b82f6;
+        }
+
+        input:checked + .toggle-slider-modal:before {
+            transform: translateX(14px);
+        }
+
+        /* Styles pour le constructeur de headers */
+        .headers-builder {
+            margin-top: 0.5rem;
+        }
+
+        .headers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .header-field {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .header-field input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+        }
+
+        .header-field input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+
+        .header-field input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .remove-header-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .remove-header-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .add-header-btn {
+            align-self: flex-start;
+        }
+
+        .form-help-modal code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.125rem 0.25rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .modal-actions {
@@ -833,20 +1047,101 @@
             gap: 1rem;
             margin-top: 2rem;
             padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        /* Animation de rotation pour le spinner */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
     </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
+
+        // Gestion de l'affichage de la section webhooks
+        document.addEventListener('DOMContentLoaded', function() {
+            const webhooksToggle = document.getElementById('{{ form.externalWebhooksEnabled.vars.id }}');
+            const webhooksSection = document.getElementById('webhooks-section');
+
+            if (webhooksToggle) {
+                webhooksToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        webhooksSection.style.display = 'block';
+                    } else {
+                        webhooksSection.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Gestion des headers personnalisés
+        function addHeaderField() {
+            const headersList = document.getElementById('headersList');
+            const headerIndex = headersList.children.length;
+
+            const headerField = document.createElement('div');
+            headerField.className = 'header-field';
+            headerField.innerHTML = `
+                <input type="text" placeholder="Nom du header (ex: Authorization)" data-header-name="${headerIndex}">
+                <input type="text" placeholder="Valeur (ex: Bearer token)" data-header-value="${headerIndex}">
+                <button type="button" class="remove-header-btn" onclick="removeHeaderField(this)">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+
+            headersList.appendChild(headerField);
+        }
+
+        function removeHeaderField(button) {
+            button.closest('.header-field').remove();
+        }
+
+        function collectHeaders() {
+            const headers = {};
+            const headerFields = document.querySelectorAll('.header-field');
+
+            headerFields.forEach(field => {
+                const nameInput = field.querySelector('[data-header-name]');
+                const valueInput = field.querySelector('[data-header-value]');
+
+                if (nameInput.value.trim() && valueInput.value.trim()) {
+                    headers[nameInput.value.trim()] = valueInput.value.trim();
+                }
+            });
+
+            return headers;
+        }
+
+        function populateHeaders(headers) {
+            const headersList = document.getElementById('headersList');
+            headersList.innerHTML = '';
+
+            if (headers && typeof headers === 'object') {
+                Object.entries(headers).forEach(([name, value]) => {
+                    addHeaderField();
+                    const lastField = headersList.lastElementChild;
+                    lastField.querySelector('[data-header-name]').value = name;
+                    lastField.querySelector('[data-header-value]').value = value;
+                });
+            }
+        }
+
         // Modal pour ajouter/éditer un webhook
         function addWebhook() {
             document.getElementById('webhookModal').style.display = 'block';
             document.getElementById('modalTitle').textContent = 'Ajouter un webhook';
             document.getElementById('webhookForm').reset();
             document.getElementById('webhookId').value = '';
+
+            // Réinitialiser les headers
+            document.getElementById('headersList').innerHTML = '';
         }
 
         function editWebhook(webhookId, name, url, events) {
@@ -855,7 +1150,7 @@
             document.getElementById('webhookId').value = webhookId;
             document.getElementById('webhookName').value = name;
             document.getElementById('webhookUrl').value = url;
-            
+
             // Cocher les événements
             const eventCheckboxes = document.querySelectorAll('input[name="webhook_events[]"]');
             eventCheckboxes.forEach(checkbox => {
@@ -870,7 +1165,7 @@
         function saveWebhook() {
             const form = document.getElementById('webhookForm');
             const formData = new FormData(form);
-            
+
             // Récupérer les événements sélectionnés
             const events = [];
             const eventCheckboxes = document.querySelectorAll('input[name="webhook_events[]"]:checked');
@@ -879,7 +1174,7 @@
             });
 
             if (events.length === 0) {
-                alert('Veuillez sélectionner au moins un événement');
+                showNotification('Veuillez sélectionner au moins un événement pour ce webhook', 'warning');
                 return;
             }
 
@@ -888,22 +1183,11 @@
                 name: document.getElementById('webhookName').value,
                 url: document.getElementById('webhookUrl').value,
                 events: events,
-                headers: {}
+                headers: collectHeaders()
             };
 
-            // Headers personnalisés (optionnel)
-            const customHeaders = document.getElementById('webhookHeaders').value;
-            if (customHeaders) {
-                try {
-                    webhookData.headers = JSON.parse(customHeaders);
-                } catch (e) {
-                    alert('Format JSON invalide pour les headers');
-                    return;
-                }
-            }
-
             // Envoyer via AJAX
-            fetch('{{ path("project_webhook_save", { id: project.id }) }}', {
+            fetch('{{ path("project_webhook_save", { slug: project.slug }) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -914,14 +1198,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload(); // Recharger la page pour voir les changements
+                    showNotification('Webhook sauvegardé avec succès', 'success');
+                    setTimeout(() => location.reload(), 1500);
                 } else {
-                    alert('Erreur: ' + (data.message || 'Erreur inconnue'));
+                    showNotification(data.message || 'Erreur lors de la sauvegarde', 'error');
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la sauvegarde');
+                showNotification('Erreur de connexion lors de la sauvegarde', 'error');
             });
         }
 
@@ -930,7 +1215,7 @@
                 return;
             }
 
-            fetch('{{ path("project_webhook_remove", { id: project.id }) }}', {
+            fetch('{{ path("project_webhook_remove", { slug: project.slug }) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -941,14 +1226,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    showNotification('Webhook supprimé avec succès', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert('Erreur: ' + (data.message || 'Erreur inconnue'));
+                    showNotification(data.message || 'Erreur lors de la suppression', 'error');
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors de la suppression');
+                showNotification('Erreur de connexion lors de la suppression', 'error');
             });
         }
 
@@ -958,7 +1244,7 @@
             button.textContent = 'Test...';
             button.disabled = true;
 
-            fetch('{{ path("project_webhook_test", { id: project.id }) }}', {
+            fetch('{{ path("project_webhook_test", { slug: project.slug }) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -969,14 +1255,54 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Test réussi ! Status: ' + data.status_code);
+                    let message = `✅ Test réussi ! Status: ${data.status_code}`;
+                    if (data.response_time) {
+                        message += ` (${data.response_time}ms)`;
+                    }
+                    showNotification(message, 'success');
                 } else {
-                    alert('Test échoué: ' + data.message);
+                    // Messages d'erreur plus détaillés
+                    let errorMessage = '❌ Test webhook échoué: ';
+
+                    if (data.status_code) {
+                        errorMessage += `Status ${data.status_code} - `;
+                    }
+
+                    if (data.error_type) {
+                        switch(data.error_type) {
+                            case 'timeout':
+                                errorMessage += 'Timeout - Le serveur n\'a pas répondu dans les temps';
+                                break;
+                            case 'connection':
+                                errorMessage += 'Connexion impossible - Vérifiez l\'URL';
+                                break;
+                            case 'dns':
+                                errorMessage += 'Domaine introuvable - Vérifiez l\'URL';
+                                break;
+                            case 'ssl':
+                                errorMessage += 'Erreur SSL/TLS - Certificat invalide';
+                                break;
+                            case 'forbidden':
+                                errorMessage += 'Accès refusé - Vérifiez les headers d\'authentification';
+                                break;
+                            case 'not_found':
+                                errorMessage += 'Endpoint non trouvé - Vérifiez l\'URL';
+                                break;
+                            default:
+                                errorMessage += data.message || 'Erreur inconnue';
+                        }
+                    } else if (data.message) {
+                        errorMessage += data.message;
+                    } else {
+                        errorMessage += 'Erreur inconnue';
+                    }
+
+                    showNotification(errorMessage, 'error');
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Erreur lors du test');
+                showNotification('❌ Erreur de connexion au serveur lors du test', 'error');
             })
             .finally(() => {
                 button.textContent = originalText;
@@ -984,14 +1310,121 @@
             });
         }
 
+        // Gestion de la modal de test d'alerte
+        function showTestAlertModal() {
+            document.getElementById('testAlertModal').style.display = 'block';
+        }
+
+        function closeTestAlertModal() {
+            document.getElementById('testAlertModal').style.display = 'none';
+        }
+
+        async function sendTestAlert() {
+            const button = document.querySelector('button[onclick="sendTestAlert()"]');
+            const originalText = button.innerHTML;
+
+            // Afficher le loading
+            button.disabled = true;
+            button.innerHTML = `
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                Envoi en cours...
+            `;
+
+            try {
+                // Créer et soumettre le formulaire
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ path('project_test_alert', { slug: project.slug }) }}';
+
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token('test_alert_' ~ project.slug) }}';
+                form.appendChild(csrfToken);
+
+                document.body.appendChild(form);
+                form.submit();
+
+            } catch (error) {
+                showNotification('Erreur lors de l\'envoi du test', 'error');
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
         // Fermer la modal si on clique en dehors
         window.onclick = function(event) {
-            const modal = document.getElementById('webhookModal');
-            if (event.target === modal) {
+            const webhookModal = document.getElementById('webhookModal');
+            const testAlertModal = document.getElementById('testAlertModal');
+
+            if (event.target === webhookModal) {
                 closeModal();
+            }
+
+            if (event.target === testAlertModal) {
+                closeTestAlertModal();
             }
         }
     </script>
+
+    <!-- Modal de confirmation pour test d'alerte -->
+    <div id="testAlertModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Test d'alerte email</h3>
+                <button type="button" class="close" onclick="closeTestAlertModal()">&times;</button>
+            </div>
+
+            <div style="padding: 1rem 0;">
+                <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="color: #f59e0b; flex-shrink: 0; margin-top: 2px;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: rgba(255, 255, 255, 0.9); font-weight: 500;">
+                            Confirmer l'envoi d'une alerte de test
+                        </p>
+                        <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.875rem; line-height: 1.4;">
+                            Une alerte de test sera envoyée avec une erreur fictive pour vérifier que votre configuration fonctionne correctement.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">
+                        <strong>Destinataire :</strong>
+                        <span style="color: rgba(255, 255, 255, 0.9);">
+                            {{ project.alertsEmail ?: app.user.email }}
+                        </span>
+                    </div>
+                    {% if project.alertsEnabled %}
+                        <div style="color: #10b981; font-size: 0.75rem; margin-top: 0.5rem;">
+                            ✓ Alertes activées pour ce projet
+                        </div>
+                    {% else %}
+                        <div style="color: #f59e0b; font-size: 0.75rem; margin-top: 0.5rem;">
+                            ⚠ Les alertes sont désactivées pour ce projet
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="header-btn btn-secondary" onclick="closeTestAlertModal()">Annuler</button>
+                <button type="button" class="header-btn btn-warning" onclick="sendTestAlert()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Envoyer le test
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal HTML -->
     <div id="webhookModal" class="modal">
@@ -1000,10 +1433,10 @@
                 <h3 id="modalTitle" class="modal-title">Ajouter un webhook</h3>
                 <button type="button" class="close" onclick="closeModal()">&times;</button>
             </div>
-            
+
             <form id="webhookForm" class="form-grid-modal">
                 <input type="hidden" id="webhookId">
-                
+
                 <div class="form-group-modal">
                     <label for="webhookName" class="form-label-modal">Nom du webhook</label>
                     <input type="text" id="webhookName" class="form-input-modal" required placeholder="Mon webhook Jira">
@@ -1018,27 +1451,60 @@
 
                 <div class="form-group-modal">
                     <label class="form-label-modal">Événements à surveiller</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="event_created" name="webhook_events[]" value="error.created">
-                            <label for="event_created">Nouvelle erreur</label>
+                    <div class="events-group">
+                        <div class="event-item">
+                            <label class="toggle-switch-modal">
+                                <input type="checkbox" id="event_created" name="webhook_events[]" value="error.created">
+                                <span class="toggle-slider-modal"></span>
+                            </label>
+                            <div class="event-info">
+                                <label for="event_created" class="event-name">Nouvelle erreur</label>
+                                <span class="event-desc">Déclenché lors de la première occurrence d'une erreur</span>
+                            </div>
                         </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="event_critical" name="webhook_events[]" value="error.critical">
-                            <label for="event_critical">Erreur critique</label>
+                        <div class="event-item">
+                            <label class="toggle-switch-modal">
+                                <input type="checkbox" id="event_critical" name="webhook_events[]" value="error.critical">
+                                <span class="toggle-slider-modal"></span>
+                            </label>
+                            <div class="event-info">
+                                <label for="event_critical" class="event-name">Erreur critique</label>
+                                <span class="event-desc">Déclenché pour les erreurs à haute priorité</span>
+                            </div>
                         </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="event_occurred" name="webhook_events[]" value="error.occurred">
-                            <label for="event_occurred">Récurrence d'erreur</label>
+                        <div class="event-item">
+                            <label class="toggle-switch-modal">
+                                <input type="checkbox" id="event_occurred" name="webhook_events[]" value="error.occurred">
+                                <span class="toggle-slider-modal"></span>
+                            </label>
+                            <div class="event-info">
+                                <label for="event_occurred" class="event-name">Récurrence d'erreur</label>
+                                <span class="event-desc">Déclenché à chaque nouvelle occurrence</span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-help-modal">Sélectionnez les types d'événements qui déclencheront ce webhook</div>
                 </div>
 
                 <div class="form-group-modal">
-                    <label for="webhookHeaders" class="form-label-modal">Headers personnalisés (optionnel)</label>
-                    <textarea id="webhookHeaders" class="form-input-modal" rows="3" placeholder='{"Authorization": "Bearer token", "X-Custom": "value"}'></textarea>
-                    <div class="form-help-modal">Headers HTTP au format JSON (optionnel)</div>
+                    <label class="form-label-modal">Headers personnalisés (optionnel)</label>
+                    <div class="headers-builder">
+                        <div class="headers-list" id="headersList">
+                            <!-- Headers seront ajoutés dynamiquement ici -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary add-header-btn" onclick="addHeaderField()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Ajouter un header
+                        </button>
+                    </div>
+                    <div class="form-help-modal">
+                        <strong>Exemples courants :</strong><br>
+                        • <code>Authorization: Bearer votre-token</code><br>
+                        • <code>X-API-Key: votre-cle-api</code><br>
+                        • <code>Content-Type: application/json</code>
+                    </div>
                 </div>
             </form>
 

@@ -122,8 +122,9 @@ class ErrorOccurrenceRepository extends ServiceEntityRepository
 
         // Filtre utilisateur (multi-tenancy) via projects
         if (isset($filters['user'])) {
-            $sql .= " JOIN projects p ON eg.project_id = p.id";
-            $whereClauses[] = 'p.owner_id = :userId';
+            $sql .= " LEFT JOIN projects p ON eg.project_id = p.id";
+            // Exclure les erreurs sans projet pour éviter les données orphelines
+            $whereClauses[] = 'p.owner_id = :userId AND eg.project_id IS NOT NULL';
             $params['userId'] = $filters['user']->getId();
         }
 
@@ -168,26 +169,37 @@ class ErrorOccurrenceRepository extends ServiceEntityRepository
     /**
      * Occurrences par heure pour aujourd'hui
      */
-    public function getTodayHourlyStats(): array
+    public function getTodayHourlyStats(array $filters = []): array
     {
         $today = new \DateTime('today');
         $tomorrow = new \DateTime('tomorrow');
 
-        // Utiliser SQL natif pour HOUR()
+        // Utiliser SQL natif pour HOUR() avec isolation utilisateur
         $sql = "
-            SELECT HOUR(created_at) as hour, COUNT(*) as count
-            FROM error_occurrences 
-            WHERE created_at >= :today AND created_at < :tomorrow
-            GROUP BY HOUR(created_at)
-            ORDER BY hour ASC
+            SELECT HOUR(eo.created_at) as hour, COUNT(*) as count
+            FROM error_occurrences eo
+            JOIN error_groups eg ON eo.error_group_id = eg.id
         ";
+
+        $params = [
+            'today' => $today->format('Y-m-d H:i:s'),
+            'tomorrow' => $tomorrow->format('Y-m-d H:i:s')
+        ];
+        $whereClauses = ['eo.created_at >= :today AND eo.created_at < :tomorrow'];
+
+        // Filtre utilisateur (multi-tenancy)
+        if (isset($filters['user'])) {
+            $sql .= " LEFT JOIN projects p ON eg.project_id = p.id";
+            $whereClauses[] = 'p.owner_id = :userId AND eg.project_id IS NOT NULL';
+            $params['userId'] = $filters['user']->getId();
+        }
+
+        $sql .= " WHERE " . implode(' AND ', $whereClauses);
+        $sql .= " GROUP BY HOUR(eo.created_at) ORDER BY hour ASC";
 
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery([
-            'today' => $today->format('Y-m-d H:i:s'),
-            'tomorrow' => $tomorrow->format('Y-m-d H:i:s')
-        ]);
+        $result = $stmt->executeQuery($params);
 
         $results = $result->fetchAllAssociative();
 
@@ -336,14 +348,14 @@ class ErrorOccurrenceRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('eo');
 
-        // Join avec ErrorGroup si nécessaire
-        $needsErrorGroupJoin = isset($filters['project']) ||
-            isset($filters['status']) ||
-            isset($filters['http_status']) ||
-            isset($filters['error_type']);
+        // TOUJOURS joindre ErrorGroup pour pouvoir filtrer par utilisateur
+        $qb->join('eo.errorGroup', 'eg');
 
-        if ($needsErrorGroupJoin) {
-            $qb->join('eo.errorGroup', 'eg');
+        // IMPORTANT: Filtre par utilisateur (multi-tenancy)
+        if (isset($filters['user'])) {
+            $qb->join('eg.projectEntity', 'p')
+                ->andWhere('p.owner = :user')
+                ->setParameter('user', $filters['user']);
         }
 
         // Filtre par projet

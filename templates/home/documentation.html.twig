@@ -126,45 +126,9 @@
                             <h4 class="docs__nav-section-title">Intégrations</h4>
                             <ul class="docs__nav-list">
                                 <li class="docs__nav-item">
-                                    <a href="#symfony" class="docs__nav-link">
-                                        <span class="docs__nav-icon">🎼</span>
-                                        Symfony
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#laravel" class="docs__nav-link">
-                                        <span class="docs__nav-icon">🅻</span>
-                                        Laravel
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#react" class="docs__nav-link">
-                                        <span class="docs__nav-icon">⚛️</span>
-                                        React
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#vue" class="docs__nav-link">
-                                        <span class="docs__nav-icon">💚</span>
-                                        Vue.js
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#angular" class="docs__nav-link">
-                                        <span class="docs__nav-icon">🅰️</span>
-                                        Angular
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#nodejs" class="docs__nav-link">
-                                        <span class="docs__nav-icon">💚</span>
-                                        Node.js
-                                    </a>
-                                </li>
-                                <li class="docs__nav-item">
-                                    <a href="#python" class="docs__nav-link">
-                                        <span class="docs__nav-icon">🐍</span>
-                                        Python
+                                    <a href="#framework-integrations" class="docs__nav-link">
+                                        <span class="docs__nav-icon">🔧</span>
+                                        Intégrations Frameworks
                                     </a>
                                 </li>
                                 <li class="docs__nav-item">
@@ -212,6 +176,24 @@
             {# Main Content #}
             <main class="docs__main">
                 <div class="docs__content">
+                    {# Search Bar #}
+                    <div class="docs__search">
+                        <div class="docs__search-input-container">
+                            <input 
+                                type="text" 
+                                class="docs__search-input" 
+                                placeholder="Rechercher dans la documentation..."
+                                id="docs-search"
+                            >
+                            <div class="docs__search-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="docs__search-results" id="search-results"></div>
+                    </div>
                     {# Getting Started Section #}
                     <section id="getting-started" class="docs__section">
                         <h2 class="docs__section-title">
@@ -311,222 +293,329 @@ throw new Exception('Test error for Error Explorer');</code></pre>
                         </div>
                     </section>
 
-                    {# Symfony Integration #}
-                    <section id="symfony" class="docs__section">
+                    {# Framework Integrations with Tabs #}
+                    <section id="framework-integrations" class="docs__section">
                         <h2 class="docs__section-title">
-                            <span class="docs__section-icon">🎼</span>
-                            Intégration Symfony
+                            <span class="docs__section-icon">🔧</span>
+                            Intégrations Frameworks
                         </h2>
 
-                        <div class="docs__framework-info">
-                            <div class="docs__framework-badge">
-                                <span class="docs__framework-logo">🎼</span>
-                                <div>
-                                    <h4>Symfony Bundle</h4>
-                                    <p>Support Symfony 4.4+, PHP 7.2+</p>
-                                </div>
-                            </div>
-                        </div>
+                        <p class="docs__section-intro">
+                            Choisissez votre framework et suivez le guide d'installation adapté à votre environnement.
+                        </p>
 
-                        <h3>Installation</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>Terminal</span>
-                                <button class="docs__copy-btn" data-copy="composer require error-explorer/error-reporter">Copier</button>
+                        {# Framework Tabs #}
+                        <div class="docs__framework-tabs">
+                            <div class="docs__tab-nav">
+                                <button class="docs__tab-btn docs__tab-btn--active" data-framework="symfony">
+                                    <span class="docs__tab-icon">🎼</span>
+                                    <span class="docs__tab-label">Symfony</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="laravel">
+                                    <span class="docs__tab-icon">🅻</span>
+                                    <span class="docs__tab-label">Laravel</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="nodejs">
+                                    <span class="docs__tab-icon">💚</span>
+                                    <span class="docs__tab-label">Node.js</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="react">
+                                    <span class="docs__tab-icon">⚛️</span>
+                                    <span class="docs__tab-label">React</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="vue">
+                                    <span class="docs__tab-icon">💚</span>
+                                    <span class="docs__tab-label">Vue.js</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="angular">
+                                    <span class="docs__tab-icon">🅰️</span>
+                                    <span class="docs__tab-label">Angular</span>
+                                </button>
+                                <button class="docs__tab-btn" data-framework="python">
+                                    <span class="docs__tab-icon">🐍</span>
+                                    <span class="docs__tab-label">Python</span>
+                                </button>
                             </div>
-                            <pre><code>composer require error-explorer/error-reporter</code></pre>
-                        </div>
 
-                        <h3>Configuration</h3>
-                        <p>Ajoutez le bundle dans <code>config/bundles.php</code> :</p>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>config/bundles.php</span>
-                            </div>
-                            <pre><code>&lt;?php
+                            {# Framework Content Panels #}
+                            <div class="docs__tab-content">
+                                {# Symfony Panel #}
+                                <div class="docs__tab-panel docs__tab-panel--active" data-framework="symfony">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                            <button class="docs__copy-btn" data-copy="composer require error-explorer/error-reporter">Copier</button>
+                                        </div>
+                                        <pre><code>composer require error-explorer/error-reporter</code></pre>
+                                    </div>
 
-return [
-    // ... autres bundles
-    ErrorExplorer\ErrorReporter\ErrorReporterBundle::class =&gt; ['all' =&gt; true],
-];</code></pre>
-                        </div>
-
-                        <p>Créez <code>config/packages/error_reporter.yaml</code> :</p>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>config/packages/error_reporter.yaml</span>
-                            </div>
-                            <pre><code>error_reporter:
+                                    <h3>Configuration</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>config/packages/error_reporter.yaml</span>
+                                        </div>
+                                        <pre><code>error_reporter:
     webhook_url: '%env(ERROR_WEBHOOK_URL)%'
     token: '%env(ERROR_WEBHOOK_TOKEN)%'
     project_name: '%env(PROJECT_NAME)%'
-    enabled: '%env(bool:ERROR_REPORTING_ENABLED)%'
-    ignore_exceptions:
-        - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
-        - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'</code></pre>
-                        </div>
+    enabled: '%env(bool:ERROR_REPORTING_ENABLED)%'</code></pre>
+                                    </div>
 
-                        <h3>Usage manuel</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>PHP</span>
-                            </div>
-                            <pre><code>use ErrorExplorer\ErrorReporter\ErrorReporter;
-
-class YourController
-{
-    public function someAction()
-    {
-        try {
-            // Votre code ici
-        } catch (\Exception $e) {
-            // Report simple
-            ErrorReporter::reportError($e, 'prod', 500);
-            throw $e; // Re-lancer si nécessaire
-        }
-    }
-}</code></pre>
-                        </div>
-
-                        <div class="docs__info-box">
-                            <div class="docs__info-icon">💡</div>
-                            <div class="docs__info-content">
-                                <h4>Astuce</h4>
-                                <p>Le bundle capture automatiquement toutes les exceptions non gérées. Vous n'avez besoin du reporting manuel que pour des cas spécifiques.</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {# Laravel Integration #}
-                    <section id="laravel" class="docs__section">
-                        <h2 class="docs__section-title">
-                            <span class="docs__section-icon">🅻</span>
-                            Intégration Laravel
-                        </h2>
-
-                        <div class="docs__framework-info">
-                            <div class="docs__framework-badge">
-                                <span class="docs__framework-logo">🅻</span>
-                                <div>
-                                    <h4>Laravel Package</h4>
-                                    <p>Support Laravel 8+, PHP 7.4+</p>
+                                    <h3>Variables d'environnement</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>.env</span>
+                                        </div>
+                                        <pre><code>ERROR_WEBHOOK_URL=https://your-domain.com/webhook/token
+ERROR_WEBHOOK_TOKEN=your-project-token
+PROJECT_NAME=my-symfony-app</code></pre>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <h3>Installation</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>Terminal</span>
-                            </div>
-                            <pre><code>composer require error-explorer/laravel-error-reporter</code></pre>
-                        </div>
+                                {# Laravel Panel #}
+                                <div class="docs__tab-panel" data-framework="laravel">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                            <button class="docs__copy-btn" data-copy="composer require error-explorer/laravel-error-reporter">Copier</button>
+                                        </div>
+                                        <pre><code>composer require error-explorer/laravel-error-reporter</code></pre>
+                                    </div>
 
-                        <h3>Configuration</h3>
-                        <p>Le package est autodécouvert. Ajoutez simplement vos variables d'environnement :</p>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>.env</span>
-                            </div>
-                            <pre><code>ERROR_WEBHOOK_URL=https://your-error-explorer-domain.com
-ERROR_WEBHOOK_TOKEN=your-unique-project-token
+                                    <h3>Configuration</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>.env</span>
+                                        </div>
+                                        <pre><code>ERROR_WEBHOOK_URL=https://your-domain.com/webhook/token
+ERROR_WEBHOOK_TOKEN=your-project-token
 ERROR_PROJECT_NAME="My Laravel App"
 ERROR_REPORTING_ENABLED=true</code></pre>
-                        </div>
+                                    </div>
 
-                        <h3>Usage avec Facade</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>PHP</span>
-                            </div>
-                            <pre><code>use ErrorExplorer\LaravelErrorReporter\Facades\ErrorReporter;
+                                    <h3>Usage avec Facade</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>PHP</span>
+                                        </div>
+                                        <pre><code>use ErrorExplorer\LaravelErrorReporter\Facades\ErrorReporter;
 
-class YourController extends Controller
-{
-    public function someAction()
-    {
-        try {
-            // Votre code ici
-        } catch (\Exception $e) {
-            ErrorReporter::reportError($e, 'production', 500);
-            throw $e;
-        }
-    }
+try {
+    // Your code here
+} catch (\Exception $e) {
+    ErrorReporter::reportError($e, 'production', 500);
 }</code></pre>
-                        </div>
-                    </section>
-
-                    {# React Integration #}
-                    <section id="react" class="docs__section">
-                        <h2 class="docs__section-title">
-                            <span class="docs__section-icon">⚛️</span>
-                            Intégration React
-                        </h2>
-
-                        <div class="docs__framework-info">
-                            <div class="docs__framework-badge">
-                                <span class="docs__framework-logo">⚛️</span>
-                                <div>
-                                    <h4>React SDK</h4>
-                                    <p>Support React 16.8+, TypeScript inclus</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <h3>Installation</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>Terminal</span>
-                            </div>
-                            <pre><code>npm install @error-explorer/react-error-reporter</code></pre>
-                        </div>
+                                {# Node.js Panel #}
+                                <div class="docs__tab-panel" data-framework="nodejs">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                            <button class="docs__copy-btn" data-copy="npm install error-explorer-node-reporter">Copier</button>
+                                        </div>
+                                        <pre><code>npm install error-explorer-node-reporter</code></pre>
+                                    </div>
 
-                        <h3>Configuration</h3>
-                        <div class="docs__code-block">
-                            <div class="docs__code-header">
-                                <span>App.tsx</span>
-                            </div>
-                            <pre><code>import React from 'react';
-import { ErrorReporterProvider } from '@error-explorer/react-error-reporter';
+                                    <h3>Configuration Express</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>app.js</span>
+                                        </div>
+                                        <pre><code>const { ErrorExplorer } = require('error-explorer-node-reporter');
+
+ErrorExplorer.init({
+  webhookUrl: process.env.ERROR_EXPLORER_WEBHOOK_URL,
+  projectName: process.env.ERROR_EXPLORER_PROJECT_NAME || 'my-node-app',
+  environment: process.env.NODE_ENV || 'development',
+  
+  // Nouvelles options v1.1.0
+  onError: (error, context) => console.error('ErrorExplorer failed:', error),
+  enableOfflineQueue: true,
+  enableRateLimit: true
+});
+
+// Express middleware automatique
+ErrorExplorer.setupExpress(app, {
+  captureRequestBody: true,
+  captureRequestHeaders: true,
+  skipHealthChecks: true
+});</code></pre>
+                                    </div>
+
+                                    <div class="docs__info-box">
+                                        <div class="docs__info-icon">🚀</div>
+                                        <div class="docs__info-content">
+                                            <h4>Nouveautés v1.1.0</h4>
+                                            <p>SDK avec initialisation non-bloquante, gestion d'erreurs personnalisée, et fonctionnalités de performance avancées.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {# React Panel #}
+                                <div class="docs__tab-panel" data-framework="react">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                        </div>
+                                        <pre><code>npm install @error-explorer/react-error-reporter</code></pre>
+                                    </div>
+
+                                    <h3>Configuration</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>App.tsx</span>
+                                        </div>
+                                        <pre><code>import { ErrorReporterProvider } from '@error-explorer/react-error-reporter';
 
 function App() {
   return (
     &lt;ErrorReporterProvider
-      config={
+      config=&#123;&#123;
         projectToken: 'your-project-token',
         apiUrl: 'https://your-error-explorer-instance.com',
-        environment: 'production',
-        debug: process.env.NODE_ENV === 'development',
-    }
+        environment: 'production'
+      &#125;&#125;
     &gt;
       &lt;YourApp /&gt;
     &lt;/ErrorReporterProvider&gt;
   );
 }</code></pre>
+                                    </div>
+                                </div>
+
+                                {# Vue Panel #}
+                                <div class="docs__tab-panel" data-framework="vue">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                        </div>
+                                        <pre><code>npm install @error-explorer/vue-error-reporter</code></pre>
+                                    </div>
+
+                                    <h3>Configuration</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>main.js</span>
+                                        </div>
+                                        <pre><code>import { ErrorExplorerPlugin } from '@error-explorer/vue-error-reporter';
+
+app.use(ErrorExplorerPlugin, {
+  projectToken: 'your-project-token',
+  apiUrl: 'https://your-error-explorer.com',
+  environment: 'production'
+});</code></pre>
+                                    </div>
+                                </div>
+
+                                {# Angular Panel #}
+                                <div class="docs__tab-panel" data-framework="angular">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                        </div>
+                                        <pre><code>npm install @error-explorer/angular-error-reporter</code></pre>
+                                    </div>
+
+                                    <h3>Configuration</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>app.module.ts</span>
+                                        </div>
+                                        <pre><code>import { ErrorExplorerModule } from '@error-explorer/angular-error-reporter';
+
+@NgModule({
+  imports: [
+    ErrorExplorerModule.forRoot({
+      projectToken: 'your-project-token',
+      apiUrl: 'https://your-error-explorer.com',
+      environment: 'production'
+    })
+  ]
+})</code></pre>
+                                    </div>
+                                </div>
+
+                                {# Python Panel #}
+                                <div class="docs__tab-panel" data-framework="python">
+                                    <h3>Installation</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>Terminal</span>
+                                        </div>
+                                        <pre><code>pip install error-explorer-python</code></pre>
+                                    </div>
+
+                                    <h3>Configuration Django/Flask</h3>
+                                    <div class="docs__code-block">
+                                        <div class="docs__code-header">
+                                            <span>settings.py</span>
+                                        </div>
+                                        <pre><code>import error_explorer
+
+error_explorer.init(
+    webhook_url=os.environ.get('ERROR_EXPLORER_WEBHOOK_URL'),
+    project_name=os.environ.get('ERROR_EXPLORER_PROJECT_NAME'),
+    environment=os.environ.get('ENVIRONMENT', 'development'),
+)</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# WordPress Integration #}
+                    <section id="wordpress" class="docs__section">
+                        <h2 class="docs__section-title">
+                            <span class="docs__section-icon">📝</span>
+                            Intégration WordPress
+                        </h2>
+
+                        <div class="docs__framework-info">
+                            <div class="docs__framework-badge">
+                                <span class="docs__framework-logo">📝</span>
+                                <div>
+                                    <h4>WordPress Plugin</h4>
+                                    <p>Support WordPress 5.0+, capture automatique</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <h3>Usage avec Hook</h3>
+                        <h3>Installation</h3>
+                        
+                        <div class="docs__info-box">
+                            <div class="docs__info-icon">📥</div>
+                            <div class="docs__info-content">
+                                <h4>Téléchargement direct</h4>
+                                <p>Téléchargez le plugin WordPress prêt à l'emploi et installez-le directement depuis votre tableau de bord WordPress.</p>
+                                <a href="{{ asset('error-explorer-wordpress-plugin.zip') }}" class="docs__download-btn" download>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    Télécharger le plugin WordPress
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <h3>Configuration</h3>
+                        <p>Ajoutez ces constantes dans votre fichier <code>wp-config.php</code> :</p>
                         <div class="docs__code-block">
                             <div class="docs__code-header">
-                                <span>MyComponent.tsx</span>
+                                <span>wp-config.php</span>
                             </div>
-                            <pre><code>import React from 'react';
-import { useErrorReporter } from '@error-explorer/react-error-reporter';
-
-function MyComponent() {
-  const { reportError, reportMessage, addBreadcrumb } = useErrorReporter();
-
-  const handleClick = async () =&gt; {
-    try {
-      addBreadcrumb('User clicked submit button', 'user');
-      await riskyOperation();
-    } catch (error) {
-      await reportError(error, { context: 'form_submission' });
-    }
-  };
-
-  return &lt;button onClick={handleClick}&gt;Submit&lt;/button&gt;;
-}</code></pre>
+                            <pre><code>define('ERROR_EXPLORER_WEBHOOK_URL', 'https://your-error-explorer.com');
+define('ERROR_EXPLORER_TOKEN', 'your-project-token');
+define('ERROR_EXPLORER_PROJECT', 'my-wordpress-site');
+define('ERROR_EXPLORER_ENABLED', true);</code></pre>
                         </div>
                     </section>
 

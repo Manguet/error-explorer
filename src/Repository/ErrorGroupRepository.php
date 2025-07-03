@@ -196,6 +196,43 @@ class ErrorGroupRepository extends ServiceEntityRepository
     }
 
     /**
+     * Récupère les tags populaires pour un utilisateur
+     */
+    public function getPopularTagsForUser(User $user, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('eg');
+        $qb->select('t.id, t.name, t.color, COUNT(eg.id) as error_count')
+            ->join('eg.projectEntity', 'p')
+            ->join('eg.tags', 't')
+            ->where('p.owner = :user')
+            ->setParameter('user', $user)
+            ->groupBy('t.id, t.name, t.color')
+            ->orderBy('error_count', 'DESC')
+            ->addOrderBy('t.name', 'ASC')
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère les erreurs par tag pour un utilisateur
+     */
+    public function findByTagForUser(string $tagName, User $user, int $limit = 20): array
+    {
+        $qb = $this->createQueryBuilder('eg');
+        $qb->join('eg.projectEntity', 'p')
+            ->join('eg.tags', 't')
+            ->where('p.owner = :user')
+            ->andWhere('t.name = :tagName')
+            ->setParameter('user', $user)
+            ->setParameter('tagName', $tagName)
+            ->orderBy('eg.lastSeen', 'DESC')
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * Crée un QueryBuilder avec les filtres appliqués (incluant multi-tenancy)
      */
     private function createFilteredQueryBuilder(array $filters): QueryBuilder
@@ -256,6 +293,64 @@ class ErrorGroupRepository extends ServiceEntityRepository
         if (isset($filters['exception_class'])) {
             $qb->andWhere('eg.exceptionClass = :exceptionClass')
                 ->setParameter('exceptionClass', $filters['exception_class']);
+        }
+
+        // Filtre par tags
+        if (isset($filters['tags']) && !empty($filters['tags'])) {
+            if (is_array($filters['tags'])) {
+                // Filtrer par plusieurs tags (AND ou OR selon le mode)
+                $tagMode = $filters['tag_mode'] ?? 'any'; // 'any' pour OR, 'all' pour AND
+                
+                if ($tagMode === 'all') {
+                    // Mode AND : l'erreur doit avoir TOUS les tags
+                    foreach ($filters['tags'] as $index => $tag) {
+                        $alias = "t{$index}";
+                        $qb->join('eg.tags', $alias);
+                        
+                        if (is_numeric($tag)) {
+                            $qb->andWhere("{$alias}.id = :tag{$index}")
+                               ->setParameter("tag{$index}", $tag);
+                        } else {
+                            $qb->andWhere("{$alias}.name = :tag{$index}")
+                               ->setParameter("tag{$index}", $tag);
+                        }
+                    }
+                } else {
+                    // Mode OR : l'erreur doit avoir AU MOINS UN des tags
+                    $qb->join('eg.tags', 'tags');
+                    
+                    $tagConditions = [];
+                    foreach ($filters['tags'] as $index => $tag) {
+                        if (is_numeric($tag)) {
+                            $tagConditions[] = "tags.id = :tag{$index}";
+                            $qb->setParameter("tag{$index}", $tag);
+                        } else {
+                            $tagConditions[] = "tags.name = :tag{$index}";
+                            $qb->setParameter("tag{$index}", $tag);
+                        }
+                    }
+                    
+                    if (!empty($tagConditions)) {
+                        $qb->andWhere('(' . implode(' OR ', $tagConditions) . ')');
+                    }
+                }
+            } else {
+                // Filtrer par un seul tag
+                $qb->join('eg.tags', 'tags');
+                if (is_numeric($filters['tags'])) {
+                    $qb->andWhere('tags.id = :tag')
+                       ->setParameter('tag', $filters['tags']);
+                } else {
+                    $qb->andWhere('tags.name = :tag')
+                       ->setParameter('tag', $filters['tags']);
+                }
+            }
+        }
+
+        // Filtre pour exclure les erreurs sans tags
+        if (isset($filters['untagged_only']) && $filters['untagged_only']) {
+            $qb->leftJoin('eg.tags', 'untagged_check')
+               ->andWhere('untagged_check.id IS NULL');
         }
 
         // Filtre pour exclure les erreurs ignorées par défaut

@@ -484,10 +484,17 @@ class Dashboard {
 
     // Utility Methods
     showNotification(message, type = 'info', duration = 5000) {
-        const container = document.getElementById('flash-messages') || document.body;
-        const notification = document.createElement('div');
+        // Create or get the notification container
+        let container = document.getElementById('dashboard-flash-messages');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'dashboard-flash-messages';
+            container.className = 'dashboard-flash-messages';
+            document.body.appendChild(container);
+        }
 
-        notification.className = `flash-message alert-${type} dashboard-fade-in`;
+        const notification = document.createElement('div');
+        notification.className = `flash-message alert-${type}`;
         notification.innerHTML = `
             ${message}
             <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
@@ -648,8 +655,8 @@ document.addEventListener('DOMContentLoaded', () => {
         initDashboardProject();
     }
 
-    // Error detail specific
-    if (document.body.classList.contains('dashboard-error-detail')) {
+    // Error detail specific - check for presence of elements instead of body class
+    if (document.getElementById('occurrence-chart') || document.getElementById('stack-trace-content')) {
         initErrorDetail();
     }
 });
@@ -899,6 +906,9 @@ function initErrorDetail() {
         }
     };
 
+    // Enhanced stack trace functionality
+    initInteractiveStackTrace();
+
     window.copyFingerprint = () => {
         const fingerprint = document.querySelector('[data-fingerprint]')?.dataset.fingerprint;
         if (fingerprint) {
@@ -910,28 +920,52 @@ function initErrorDetail() {
     const chartCanvas = document.getElementById('occurrence-chart');
     if (chartCanvas) {
         initOccurrenceChart();
+
+        // Add resize listener to redraw chart
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                initOccurrenceChart();
+            }, 250);
+        });
     }
 
     function initOccurrenceChart() {
         const statsData = chartCanvas.dataset.stats;
+
         if (statsData) {
             try {
                 const stats = JSON.parse(statsData);
                 drawOccurrenceChart(chartCanvas, stats);
             } catch (error) {
                 console.error('Error parsing chart data:', error);
+                drawOccurrenceChart(chartCanvas, []);
             }
+        } else {
+            drawOccurrenceChart(chartCanvas, []);
         }
     }
 
     function drawOccurrenceChart(canvas, data) {
         const ctx = canvas.getContext('2d');
-        const width = canvas.offsetWidth;
-        const height = 300;
+        const container = canvas.parentElement;
 
-        // Set canvas size
-        canvas.width = width;
-        canvas.height = height;
+        // Get actual container dimensions
+        const containerRect = container.getBoundingClientRect();
+        // Use full container width minus padding
+        const width = Math.max(containerRect.width - 64, 600); // Account for 2rem padding on each side
+        const height = 350;
+
+        // Set canvas actual size and style size
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        canvas.width = width * devicePixelRatio;
+        canvas.height = height * devicePixelRatio;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+
+        // Scale context for high DPI displays
+        ctx.scale(devicePixelRatio, devicePixelRatio);
 
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
@@ -1074,12 +1108,6 @@ function initErrorDetail() {
             const y = padding + (chartHeight / 5) * i;
             ctx.fillText(value.toString(), padding - 15, y + 4);
         }
-
-        // Chart title
-        ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 14px Inter, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('Occurrences par jour', padding, 25);
     }
 
     // Refresh chart function
@@ -1109,6 +1137,189 @@ function initErrorDetail() {
             window.open(searchUrl, '_blank');
         }
     };
+
+    // Interactive stack trace enhancement
+    function initInteractiveStackTrace() {
+        const stackTraceElement = document.getElementById('stack-trace-content');
+
+        if (!stackTraceElement) {
+            return;
+        }
+
+        const stackTraceText = stackTraceElement.textContent;
+        if (!stackTraceText) return;
+
+        // Enhanced syntax highlighting
+        const enhancedStackTrace = enhanceStackTrace(stackTraceText);
+        stackTraceElement.innerHTML = enhancedStackTrace;
+
+        // Add keyboard shortcuts
+        stackTraceElement.setAttribute('tabindex', '0');
+        stackTraceElement.addEventListener('keydown', handleStackTraceKeyboard);
+
+        // Add double-click to copy line
+        stackTraceElement.addEventListener('dblclick', handleStackTraceDoubleClick);
+
+        // Add tooltip functionality
+        addStackTraceTooltips(stackTraceElement);
+    }
+
+    function enhanceStackTrace(stackTrace) {
+        const lines = stackTrace.split('\n');
+        let enhancedLines = [];
+
+        lines.forEach((line, index) => {
+            if (!line.trim()) {
+                enhancedLines.push('<br>');
+                return;
+            }
+
+            let enhancedLine = line;
+
+            // Highlight error messages
+            if (line.includes('Exception') || line.includes('Error') || line.includes('Fatal')) {
+                enhancedLine = `<span class="stack-trace-line error-line">${escapeHtml(line)}</span>`;
+            }
+            // Highlight file paths with line numbers
+            else if (line.match(/at\s+.*\s+in\s+.*\.php:\d+/)) {
+                enhancedLine = line.replace(
+                    /(at\s+)([^\\s]+)(\s+in\s+)([^:]+\.php):(\d+)/,
+                    '$1<span class="method-name">$2</span>$3<span class="file-path" data-file="$4" data-line="$5">$4</span>:<span class="line-number">$5</span>'
+                );
+                enhancedLine = `<span class="stack-trace-line">${enhancedLine}</span>`;
+            }
+            // Highlight stack trace entries
+            else if (line.match(/^\s*#\d+/)) {
+                enhancedLine = line.replace(
+                    /^(\s*#\d+\s+)([^(]+)(\([^)]*\))?\s*(.*)?$/,
+                    '$1<span class="method-name">$2</span><span class="method-args">$3</span> <span class="file-info">$4</span>'
+                );
+                enhancedLine = `<span class="stack-trace-line">${enhancedLine}</span>`;
+            }
+            // Generic file paths
+            else if (line.match(/\/[^\\s]*\.php/)) {
+                enhancedLine = line.replace(
+                    /(\/[^\\s]*\.php)(:(\d+))?/g,
+                    '<span class="file-path" data-file="$1" data-line="$3">$1</span>$2'
+                );
+                enhancedLine = `<span class="stack-trace-line">${enhancedLine}</span>`;
+            }
+            else {
+                enhancedLine = `<span class="stack-trace-line">${escapeHtml(line)}</span>`;
+            }
+
+            enhancedLines.push(enhancedLine);
+        });
+
+        return enhancedLines.join('\n');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function handleStackTraceKeyboard(e) {
+        // Ctrl+A to select all
+        if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+            e.preventDefault();
+            window.getSelection().selectAllChildren(e.target);
+        }
+
+        // Ctrl+C to copy
+        if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+            e.preventDefault();
+            window.copyStackTrace();
+        }
+
+        // F to find/search within stack trace
+        if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            findInStackTrace();
+        }
+    }
+
+    function handleStackTraceDoubleClick(e) {
+        const line = e.target.closest('.stack-trace-line');
+        if (line) {
+            // Copy the entire line
+            const lineText = line.textContent;
+            window.dashboard.copyToClipboard(lineText);
+
+            // Visual feedback
+            line.style.background = 'rgba(34, 197, 94, 0.2)';
+            setTimeout(() => {
+                line.style.background = '';
+            }, 1000);
+        }
+    }
+
+    function addStackTraceTooltips(container) {
+        const filePathElements = container.querySelectorAll('.file-path');
+
+        filePathElements.forEach(element => {
+            element.addEventListener('mouseenter', (e) => {
+                const filePath = e.target.dataset.file;
+                const lineNumber = e.target.dataset.line;
+
+                let tooltipText = `File: ${filePath}`;
+                if (lineNumber) {
+                    tooltipText += `\nLine: ${lineNumber}`;
+                }
+                tooltipText += '\nDouble-click to copy, Ctrl+Click to search';
+
+                e.target.setAttribute('title', tooltipText);
+            });
+
+            // Add click to search functionality
+            element.addEventListener('click', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    const fileName = e.target.dataset.file.split('/').pop();
+                    const searchUrl = `/dashboard?search=${encodeURIComponent(fileName)}`;
+                    window.open(searchUrl, '_blank');
+                }
+            });
+        });
+    }
+
+    function findInStackTrace() {
+        const searchTerm = prompt('Rechercher dans le stack trace:');
+        if (!searchTerm) return;
+
+        const stackTraceElement = document.getElementById('stack-trace-content');
+        const text = stackTraceElement.textContent;
+
+        if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+            // Highlight found terms
+            const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+            const highlighted = stackTraceElement.innerHTML.replace(
+                regex,
+                '<mark style="background: yellow; color: black;">$1</mark>'
+            );
+            stackTraceElement.innerHTML = highlighted;
+
+            // Scroll to first match
+            const firstMatch = stackTraceElement.querySelector('mark');
+            if (firstMatch) {
+                firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            window.dashboard.showNotification(`Trouvé: ${searchTerm}`, 'success');
+
+            // Clear highlights after 5 seconds
+            setTimeout(() => {
+                initInteractiveStackTrace(); // Re-initialize to clear highlights
+            }, 5000);
+        } else {
+            window.dashboard.showNotification(`Terme non trouvé: ${searchTerm}`, 'warning');
+        }
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\\]\\]/g, '\\\\$&');
+    }
 }
 
 /**

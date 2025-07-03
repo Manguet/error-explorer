@@ -197,7 +197,6 @@
   padding: 1.25rem 2rem !important;
   animation: bulkActionsSlideUp 0.4s ease-out !important;
   min-width: 400px !important;
-  max-width: 600px !important;
 
   // Effet de brillance subtile
   &::before {
@@ -360,5 +359,30 @@
   to {
     opacity: 0;
     transform: translateX(-50%) translateY(100px);
+  }
+}
+
+// Style pour les cellules de sélection
+.table-cell-select {
+  width: 40px !important;
+  text-align: center !important;
+
+  input[type="checkbox"] {
+    cursor: pointer;
+    transform: scale(1.1);
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+}
+
+// Animation de pulsation pour l'indicateur actif
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }

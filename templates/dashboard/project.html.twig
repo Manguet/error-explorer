@@ -6,13 +6,7 @@
 {% block page_subtitle %}Monitoring et erreurs spécifiques à ce projet{% endblock %}
 
 {% block breadcrumb_items %}
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
     <a href="{{ path('projects_index') }}">Projets</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
     <span>{{ project }}</span>
 {% endblock %}
 
@@ -211,271 +205,163 @@
     <div class="dashboard-table-container">
         <div class="dashboard-table-container-header">
             <h3>
-                🚨 Erreurs du projet {{ project }}
-                <span style="color: #64748b; font-weight: 400; font-size: 0.875rem; margin-left: 0.5rem;">
-                        ({{ pagination.total_items }} au total)
-                    </span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 0.5rem; color: #ef4444;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                </svg>
+                Erreurs du projet {{ project }}
             </h3>
-            <div class="table-actions">
-                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #64748b;">
-                    Trier par:
-                    <select id="sort-select" class="sort-select">
-                        <option value="lastSeen|DESC" {{ sort == 'lastSeen' and direction == 'DESC' ? 'selected' : '' }}>Plus récentes</option>
-                        <option value="occurrenceCount|DESC" {{ sort == 'occurrenceCount' and direction == 'DESC' ? 'selected' : '' }}>Plus fréquentes</option>
-                        <option value="firstSeen|ASC" {{ sort == 'firstSeen' and direction == 'ASC' ? 'selected' : '' }}>Plus anciennes</option>
-                        <option value="message|ASC" {{ sort == 'message' and direction == 'ASC' ? 'selected' : '' }}>Message A-Z</option>
-                    </select>
-                </label>
-            </div>
         </div>
 
-        {% if error_groups|length > 0 %}
-        <table class="dashboard-table">
-            <thead>
-            <tr>
-                <th>Erreur</th>
-                <th>Type</th>
-                <th>Statut</th>
-                <th>Occurrences</th>
-                <th>Dernière vue</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for error in error_groups %}
-                <tr data-error-id="{{ error.id }}">
-                    <td>
-                        <div class="table-cell-title">
-                            <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
-                                {{ error.title }}
-                            </a>
-                        </div>
-                        <div class="table-cell-subtitle">
-                            {{ error.message|length > 100 ? error.message|slice(0, 100) ~ '...' : error.message }}
-                        </div>
-                        <div class="table-cell-meta">
-                            {% if error.httpStatusCode %}
-                                <span class="status-badge badge-warning">HTTP {{ error.httpStatusCode }}</span>
-                            {% endif %}
-                            {% if error.environment %}
-                                <span class="status-badge badge-ignored">{{ error.environment }}</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td>
-                                    <span class="status-badge badge-{{ error.errorType }}">
-                                        {{ error.errorType|title }}
-                                    </span>
-                    </td>
-                    <td>
-                                    <span class="status-badge badge-{{ error.status }}">
-                                        {{ error.status|title }}
-                                    </span>
-                    </td>
-                    <td>
-                        <div class="table-cell-title">{{ error.occurrenceCount }}</div>
-                        <div class="table-cell-meta">
-                            Depuis {{ error.firstSeen|date('d/m/Y') }}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="table-cell-title">{{ error.lastSeen|date('d/m H:i') }}</div>
-                        <div class="table-cell-meta">{{ error.lastSeen|date('d/m/Y') }}</div>
-                    </td>
-                    <td>
-                        <div class="table-actions">
-                            {% if error.status == 'open' %}
-                                <button class="action-btn btn-success" onclick="resolveError({{ error.id }})" title="Résoudre">
-                                    ✓
-                                </button>
-                                <button class="action-btn btn-danger" onclick="ignoreError({{ error.id }})" title="Ignorer">
-                                    ✕
-                                </button>
-                            {% elseif error.status == 'resolved' %}
-                                <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                    ↻
-                                </button>
-                            {% elseif error.status == 'ignored' %}
-                                <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                    ↻
-                                </button>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="dashboard-empty-state">
-            <div class="empty-icon">🎉</div>
-            <h3>Aucune erreur trouvée pour ce projet</h3>
-            {% if filters|length > 1 %}
-                        <p>Aucune erreur ne correspond à vos critères de recherche pour ce projet.</p>
-                        <a href="{{ path('dashboard_project', { project: project }) }}" class="empty-action">
-                            Voir toutes les erreurs du projet
-                        </a>
-                    {% else %}
-                        <p>Félicitations ! Ce projet ne présente aucune erreur. Continuez ainsi !</p>
-                        <a href="{{ path('projects_show', { id: project_entity.id }) }}" class="empty-action">
-                            Configurer le projet
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            {% if pagination.total_pages > 1 %}
-                <div class="dashboard-pagination">
-                    {% if pagination.current_page > 1 %}
-                        <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: pagination.current_page - 1 })) }}">
-                            ← Précédent
-                        </a>
-                    {% endif %}
-
-                    {% for page in range(max(1, pagination.current_page - 2), min(pagination.total_pages, pagination.current_page + 2)) %}
-                        {% if page == pagination.current_page %}
-                            <span class="current">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: page })) }}">
-                                {{ page }}
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if pagination.current_page < pagination.total_pages %}
-                        <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: pagination.current_page + 1 })) }}">
-                            Suivant →
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+        <div class="table-container">
+            <div id="errors-table"></div>
+        </div>
         </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du tri
-            const sortSelect = document.getElementById('sort-select');
-            if (sortSelect) {
-                sortSelect.addEventListener('change', function() {
-                    const [sort, direction] = this.value.split('|');
-                    const url = new URL(window.location);
-                    url.searchParams.set('sort', sort);
-                    url.searchParams.set('direction', direction);
-                    url.searchParams.delete('page');
-                    window.location.href = url.toString();
-                });
-            }
-
-            // Actions sur les erreurs (même code que dashboard index)
-            window.resolveError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_resolve', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'resolved');
-                }
-            };
-
-            window.ignoreError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_ignore', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'ignored');
-                }
-            };
-
-            window.reopenError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_reopen', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'open');
-                }
-            };
-
-            function updateErrorStatus(errorId, newStatus) {
-                const row = document.querySelector(`tr[data-error-id="${errorId}"]`);
-                if (row) {
-                    const statusBadge = row.querySelector('.badge-open, .badge-resolved, .badge-ignored');
-                    if (statusBadge) {
-                        statusBadge.className = `status-badge badge-${newStatus}`;
-                        statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+        // Initialiser DataTable pour les erreurs
+        $(document).ready(function () {
+            $('#errors-table').initDataTables({{ datatable_settings(datatable) }}, {
+                searching: true,
+                dom: 'lTfgtpi',
+                pageLength: 25,
+                responsive: true,
+                language: {
+                    "sProcessing":     "Traitement en cours...",
+                    "sSearch":         "Rechercher :",
+                    "sLengthMenu":     "Afficher _MENU_ éléments",
+                    "sInfo":           "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+                    "sInfoEmpty":      "Affichage de l'élément 0 à 0 sur 0 élément",
+                    "sInfoFiltered":   "(filtré de _MAX_ éléments au total)",
+                    "sInfoPostFix":    "",
+                    "sLoadingRecords": "Chargement en cours...",
+                    "sZeroRecords":    "Aucun élément à afficher",
+                    "sEmptyTable":     "Aucune donnée disponible dans le tableau",
+                    "oPaginate": {
+                        "sFirst":      "Premier",
+                        "sPrevious":   "Précédent",
+                        "sNext":       "Suivant",
+                        "sLast":       "Dernier"
+                    },
+                    "oAria": {
+                        "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                        "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
                     }
-
-                    const actionsCell = row.querySelector('.table-actions');
-                    if (actionsCell) {
-                        let buttonsHtml = '';
-                        if (newStatus === 'open') {
-                            buttonsHtml = `
-                                <button class="action-btn btn-success" onclick="resolveError(${errorId})" title="Résoudre">✓</button>
-                                <button class="action-btn btn-danger" onclick="ignoreError(${errorId})" title="Ignorer">✕</button>
-                            `;
-                        } else {
-                            buttonsHtml = `
-                                <button class="action-btn btn-warning" onclick="reopenError(${errorId})" title="Rouvrir">↻</button>
-                            `;
-                        }
-                        actionsCell.innerHTML = buttonsHtml;
-                    }
-
-                    row.style.background = '#dcfce7';
-                    setTimeout(() => {
-                        row.style.background = '';
-                    }, 1000);
                 }
-            }
-
-            // Auto-refresh
-            const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
-            let autoRefreshInterval;
-
-            if (autoRefreshToggle) {
-                autoRefreshToggle.addEventListener('change', function() {
-                    if (this.checked) {
-                        startAutoRefresh();
-                    } else {
-                        stopAutoRefresh();
-                    }
-                });
-
-                if (autoRefreshToggle.checked) {
-                    startAutoRefresh();
-                }
-            }
-
-            function startAutoRefresh() {
-                autoRefreshInterval = setInterval(async () => {
-                    try {
-                        const response = await fetch('{{ path('dashboard_api_stats') }}?' + new URLSearchParams({{ filters|json_encode|raw }}));
-                        const stats = await response.json();
-                        updateStatsDisplay(stats);
-                    } catch (error) {
-                        console.error('Erreur lors du refresh des stats:', error);
-                    }
-                }, 30000);
-            }
-
-            function stopAutoRefresh() {
-                if (autoRefreshInterval) {
-                    clearInterval(autoRefreshInterval);
-                }
-            }
-
-            function updateStatsDisplay(stats) {
-                const statCards = document.querySelectorAll('.dashboard-stat-card-value');
-                if (statCards.length >= 4) {
-                    statCards[0].textContent = stats.total_errors || '0';
-                    statCards[1].textContent = (stats.total_occurrences || 0).toLocaleString();
-                    statCards[2].textContent = stats.resolved_errors || '0';
-                    statCards[3].textContent = (stats.occurrences_this_week || 0).toLocaleString();
-                }
-
-                statCards.forEach(card => {
-                    card.style.transform = 'scale(1.05)';
-                    setTimeout(() => {
-                        card.style.transform = '';
-                    }, 200);
-                });
-            }
+            });
         });
+
+        // Actions sur les erreurs
+        window.resolveError = async function(errorId) {
+            if (!window.dashboard) {
+                console.error('Dashboard not initialized');
+                return;
+            }
+            const result = await window.dashboard.performAction(`{{ path('dashboard_error_resolve', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+            if (result) {
+                updateErrorStatus(errorId, 'resolved');
+            }
+        };
+
+        window.ignoreError = async function(errorId) {
+            if (!window.dashboard) {
+                console.error('Dashboard not initialized');
+                return;
+            }
+            const result = await window.dashboard.performAction(`{{ path('dashboard_error_ignore', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+            if (result) {
+                updateErrorStatus(errorId, 'ignored');
+            }
+        };
+
+        window.reopenError = async function(errorId) {
+            if (!window.dashboard) {
+                console.error('Dashboard not initialized');
+                return;
+            }
+            const result = await window.dashboard.performAction(`{{ path('dashboard_error_reopen', { id: '__ID__' }) }}`.replace('__ID__', errorId));
+            if (result) {
+                updateErrorStatus(errorId, 'open');
+            }
+        };
+
+        function updateErrorStatus(errorId, newStatus) {
+            const row = document.querySelector(`tr[data-error-id="${errorId}"]`);
+            if (row) {
+                // Mettre à jour le badge de statut
+                const statusBadge = row.querySelector('.badge-open, .badge-resolved, .badge-ignored');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge badge-${newStatus}`;
+                    statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                }
+
+                // Animation de feedback
+                row.style.background = '#dcfce7';
+                row.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    row.style.background = '';
+                    row.style.transform = '';
+                }, 1000);
+            }
+        }
+
+        // Auto-refresh
+        const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
+        let autoRefreshInterval;
+
+        if (autoRefreshToggle) {
+            autoRefreshToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+
+            if (autoRefreshToggle.checked) {
+                startAutoRefresh();
+            }
+        }
+
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('{{ path('dashboard_api_stats') }}?' + new URLSearchParams({{ filters|json_encode|raw }}));
+                    const stats = await response.json();
+                    updateStatsDisplay(stats);
+                } catch (error) {
+                    console.error('Erreur lors du refresh des stats:', error);
+                }
+            }, 30000);
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        function updateStatsDisplay(stats) {
+            const statCards = document.querySelectorAll('.dashboard-stat-card-value');
+            if (statCards.length >= 4) {
+                statCards[0].textContent = stats.total_errors || '0';
+                statCards[1].textContent = (stats.total_occurrences || 0).toLocaleString();
+                statCards[2].textContent = stats.resolved_errors || '0';
+                statCards[3].textContent = (stats.occurrences_this_week || 0).toLocaleString();
+            }
+
+            statCards.forEach(card => {
+                card.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 200);
+            });
+        }
     </script>
 {% endblock %}

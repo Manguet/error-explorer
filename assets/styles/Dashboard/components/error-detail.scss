@@ -1,0 +1,696 @@
+// Error Detail Page - BEM Architecture
+.error-detail {
+  
+  // Two-column layout for error detail page
+  &__layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    
+    @include responsive('lg') {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    @include responsive('md') {
+      gap: 1rem;
+    }
+  }
+  
+  &__main-column {
+    min-width: 0; // Prevent grid items from overflowing
+  }
+  
+  &__sidebar-column {
+    min-width: 0; // Prevent grid items from overflowing
+    
+    @include responsive('lg') {
+      order: -1; // Move sidebar above main content on mobile
+    }
+  }
+  
+  // Responsive improvements for smaller screens
+  @include responsive('lg') {
+    // Stack trace and code sections
+    .dashboard-code-block {
+      overflow-x: auto;
+    }
+    
+    .error-detail__stack-preview {
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    
+    // Git code snippets
+    .git-code-snippet__line-content {
+      font-size: 0.75rem;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    
+    // Tables in mobile
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    // DataTables responsive
+    .dataTables_wrapper {
+      .dataTables_length,
+      .dataTables_filter {
+        @include responsive('md') {
+          margin-bottom: 1rem;
+          
+          select, input {
+            width: 100%;
+            max-width: none;
+          }
+        }
+      }
+      
+      .dataTables_paginate {
+        @include responsive('md') {
+          text-align: center;
+          
+          .paginate_button {
+            margin: 0 0.125rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+  }
+  
+  @include responsive('md') {
+    // Further mobile optimizations
+    .dashboard-section {
+      margin-bottom: 1rem;
+    }
+    
+    .dashboard-table-container-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+      
+      h3 {
+        font-size: 1rem;
+      }
+    }
+    
+    .table-actions {
+      width: 100%;
+      justify-content: stretch;
+      
+      .filter-btn, .action-btn {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.75rem;
+        padding: 0.5rem;
+      }
+    }
+    
+    // Export dropdown mobile optimization
+    .export-dropdown-menu {
+      position: fixed !important;
+      left: 1rem !important;
+      right: 1rem !important;
+      top: auto !important;
+      bottom: 1rem !important;
+      width: auto !important;
+      z-index: 10000;
+    }
+  }
+  // Overview Section
+  &__overview {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &__overview-content {
+    padding: 2rem;
+  }
+
+  &__overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    @include responsive('md') {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  &__overview-main {
+    flex: 1;
+  }
+
+  &__badges {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__message {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 1.5rem 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  &__meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+  }
+
+  &__meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__meta-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+  }
+
+  &__meta-value {
+    color: rgba(255, 255, 255, 0.7);
+
+    a {
+      color: #3b82f6;
+      text-decoration: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: #60a5fa;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      }
+    }
+  }
+
+  &__environment-tag {
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  // AI Suggestions Section
+  &__ai-section {
+    margin-bottom: 2rem;
+  }
+
+  &__ai-content {
+    padding: 2rem;
+    background: transparent;
+  }
+
+  &__ai-source {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &__ai-source-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+
+    @include responsive('md') {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+
+  &__ai-source-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__ai-source-icon {
+    width: 24px;
+    height: 24px;
+    color: $primary-blue;
+  }
+
+  &__ai-provider-badge {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: $primary-blue;
+    color: white;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    font-weight: 600;
+  }
+
+  &__ai-timestamp {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+    text-align: right;
+
+    @include responsive('md') {
+      text-align: left;
+    }
+  }
+
+  &__badges-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  // Suggestion Cards
+  &__suggestion-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &__suggestion-content {
+    padding: 1.5rem 2rem;
+  }
+
+  &__suggestion-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem 0;
+    color: #ffffff;
+    font-size: 1.125rem;
+    font-weight: 600;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.8;
+    }
+  }
+
+  &__suggestion-text {
+    margin: 0;
+    line-height: 1.6;
+    color: $dashboard-text-light;
+  }
+
+  &__suggestion-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+    color: $dashboard-text-light;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  // Solutions Grid
+  &__solutions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__solution-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  &__solution-title {
+    margin: 0 0 0.75rem 0;
+    color: $dashboard-text;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  &__solution-description {
+    margin: 0;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  // Stack Trace Section
+  &__stack-section {
+    margin-bottom: 2rem;
+  }
+
+  &__stack-preview {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    color: #f8fafc;
+    font-size: 0.875rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: text;
+    user-select: text;
+
+    &:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    &:focus {
+      outline: 2px solid rgba(59, 130, 246, 0.5);
+      outline-offset: 2px;
+    }
+
+    // Syntax highlighting for stack trace
+    .error-line {
+      color: #ef4444;
+      font-weight: 600;
+      background: rgba(239, 68, 68, 0.1);
+      padding: 2px 4px;
+      border-radius: 4px;
+      margin: 2px 0;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-path {
+      color: #3b82f6;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 1px 4px;
+      border-radius: 4px;
+
+      &:hover {
+        text-decoration: underline;
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateX(2px);
+      }
+    }
+
+    .line-number {
+      color: #64748b;
+      font-size: 0.8rem;
+      background: rgba(100, 116, 139, 0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+      display: inline-block;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .method-name {
+      color: #10b981;
+      font-weight: 500;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .method-args {
+      color: #f59e0b;
+      font-style: italic;
+    }
+
+    .file-info {
+      color: #8b5cf6;
+      font-size: 0.85em;
+    }
+
+    .stack-trace-line {
+      display: block;
+      padding: 4px 0;
+      border-left: 3px solid transparent;
+      padding-left: 8px;
+      margin: 2px 0;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-left-color: rgba(59, 130, 246, 0.5);
+        background: rgba(59, 130, 246, 0.05);
+        transform: translateX(4px);
+      }
+    }
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      border: 2px solid rgba(0, 0, 0, 0.6);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      &:active {
+        background: rgba(255, 255, 255, 0.7);
+      }
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  // Git Code Context Section
+  &__git-context-section {
+    margin-top: 2rem;
+  }
+
+  // Occurrences Section
+  &__occurrences-section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  &__occurrence-item {
+    @include dashboard-card;
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 4px solid transparent;
+    transition: $dashboard-transition;
+
+    &:hover {
+      border-left-color: $primary-blue;
+      background: rgba(59, 130, 246, 0.05);
+    }
+  }
+
+  &__occurrence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    @include responsive('md') {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+
+  &__occurrence-timestamp {
+    color: $dashboard-text;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  &__occurrence-context {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+  }
+
+  &__occurrence-details {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  // Charts Section
+  &__charts-section {
+    margin-bottom: 2rem;
+  }
+
+  &__chart-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    min-height: 400px;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  // Canvas chart styling
+  #occurrence-chart {
+    display: block;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  // Responsive adjustments
+  @include responsive('lg') {
+    &__overview-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    &__meta-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+  }
+
+  @include responsive('md') {
+    &__overview-content,
+    &__ai-content,
+    &__suggestion-content {
+      padding: 1.5rem;
+    }
+
+    &__solution-card {
+      padding: 1rem;
+    }
+
+    &__chart-container {
+      height: 350px;
+      padding: 1rem;
+      overflow-x: auto;
+
+      #occurrence-chart {
+        min-width: 500px;
+      }
+    }
+
+    &__stack-preview {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      padding: 1rem;
+    }
+  }
+}
+
+// Code blocks specific to error detail
+.error-detail__code-block {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.875rem;
+    color: $dashboard-text-light;
+  }
+
+  pre {
+    margin: 0;
+    padding: 1rem;
+    background: transparent;
+    color: $dashboard-text-light;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    overflow-x: auto;
+
+    code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+  }
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(59, 130, 246, 0.2);
+  color: $primary-blue;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: $dashboard-transition;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+  }
+}

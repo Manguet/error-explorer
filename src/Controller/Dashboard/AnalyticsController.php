@@ -208,18 +208,20 @@ class AnalyticsController extends AbstractController
 
         foreach ($errors as $error) {
             // Calculs avancés pour chaque erreur
-            $durationUnresolved = $error->getStatus() === 'resolved' && $error->getResolvedAt()
-                ? round((($error->getResolvedAt()->getTimestamp() - $error->getFirstSeen()->getTimestamp()) / 3600), 1)
+            // Since getResolvedAt() is removed, we can't calculate exact resolution time
+            $durationUnresolved = $error->getStatus() === 'resolved'
+                ? round(((time() - $error->getFirstSeen()->getTimestamp()) / 3600), 1)
                 : round(((time() - $error->getFirstSeen()->getTimestamp()) / 3600), 1);
 
             $firstSeenDay = $error->getFirstSeen()->format('l'); // Nom du jour en anglais
             $firstSeenHour = $error->getFirstSeen()->format('H');
             $lastActivityDays = round((time() - $error->getLastSeen()->getTimestamp()) / (24 * 3600));
 
-            // Extraction d'informations du contexte et de la requête
-            $context = $error->getLatestContext();
-            $request = $error->getLatestRequest();
-            $userAgent = $error->getLatestUserAgent() ?: '';
+            // Extraction d'informations du contexte et de la requête depuis la dernière occurrence
+            $latestOccurrence = $error->getLatestOccurrence();
+            $context = $latestOccurrence ? $latestOccurrence->getContext() : [];
+            $request = $latestOccurrence ? $latestOccurrence->getRequest() : [];
+            $userAgent = $latestOccurrence ? $latestOccurrence->getUserAgent() : '';
 
             $environment = $error->getEnvironment() ?: 'Unknown';
             $browser = $this->extractBrowserFromUserAgent($userAgent);
@@ -231,7 +233,7 @@ class AnalyticsController extends AbstractController
             $sourceLine = $error->getLine() ?: 'Unknown';
 
             // Stack trace extrait (première ligne)
-            $stackTrace = $error->getStackTrace() ? explode("\n", $error->getStackTrace())[0] : 'Non disponible';
+            $stackTrace = $error->getStackTracePreview() ? explode("\n", $error->getStackTracePreview())[0] : 'Non disponible';
             $stackTrace = substr($stackTrace, 0, 100) . (strlen($stackTrace) > 100 ? '...' : '');
 
             // Calculs de fréquence et patterns
@@ -294,8 +296,8 @@ class AnalyticsController extends AbstractController
                 $this->escapeCsvField($tags),
                 $this->escapeCsvField($severity),
                 $this->escapeCsvField($complexity),
-                $this->escapeCsvField($error->getResolvedBy() ?: 'Non résolu'),
-                $error->getResolvedAt() ? $error->getResolvedAt()->format('Y-m-d H:i:s') : 'Non résolu'
+                $this->escapeCsvField('Non résolu'), // getResolvedBy() removed
+                'Non résolu' // getResolvedAt() removed
             );
         }
 
@@ -813,7 +815,7 @@ class AnalyticsController extends AbstractController
 
     private function estimateComplexity($error): string
     {
-        $stackTrace = $error->getStackTrace() ?: '';
+        $stackTrace = $error->getStackTracePreview() ?: '';
         $message = $error->getMessage() ?: '';
 
         // Analyse de la complexité basée sur la stack trace et le message
@@ -1025,9 +1027,10 @@ class AnalyticsController extends AbstractController
         ];
 
         foreach ($errors as $error) {
-            $context = $error->getLatestContext();
-            $request = $error->getLatestRequest();
-            $userAgent = $error->getLatestUserAgent() ?: '';
+            $latestOccurrence = $error->getLatestOccurrence();
+            $context = $latestOccurrence ? $latestOccurrence->getContext() : [];
+            $request = $latestOccurrence ? $latestOccurrence->getRequest() : [];
+            $userAgent = $latestOccurrence ? $latestOccurrence->getUserAgent() : '';
 
             $data['errors'][] = [
                 'id' => $error->getId(),
@@ -1039,11 +1042,11 @@ class AnalyticsController extends AbstractController
                 'occurrence_count' => $error->getOccurrenceCount(),
                 'first_seen' => $error->getFirstSeen()->format('c'),
                 'last_seen' => $error->getLastSeen()->format('c'),
-                'resolved_at' => $error->getResolvedAt()?->format('c'),
-                'resolved_by' => $error->getResolvedBy(),
+                'resolved_at' => null, // getResolvedAt() removed
+                'resolved_by' => null, // getResolvedBy() removed
                 'file' => $error->getFile(),
                 'line' => $error->getLine(),
-                'stack_trace' => $error->getStackTrace(),
+                'stack_trace' => $error->getStackTracePreview(),
                 'environment' => $error->getEnvironment(),
                 'http_status_code' => $error->getHttpStatusCode(),
                 'context' => $context,

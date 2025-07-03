@@ -1,54 +1,110 @@
-.dashboard-flash-messages {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
-  display: flex;
+// Conteneur global pour TOUS les flash messages sur le dashboard
+.dashboard-content .dashboard-flash-messages,
+body.dashboard-error-detail .dashboard-flash-messages,
+body[class*="dashboard"] .dashboard-flash-messages,
+#dashboard-flash-messages {
+  position: fixed !important;
+  top: 60px !important;
+  right: 2rem !important;
+  z-index: 9999 !important;
+  display: flex !important;
   flex-direction: column;
   gap: 0.75rem;
+  pointer-events: none;
 
-  .flash-message {
-    padding: 1rem 1.25rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    animation: flashSlideIn 0.3s ease-out;
-    position: relative;
-    min-width: 300px;
+  @media (max-width: $dashboard-breakpoint-md) {
+    top: calc($mobile-header-height + 1rem) !important;
+    right: 1rem !important;
+  }
+}
 
-    &.alert-success {
-      background: rgba($status-resolved, 0.1);
-      color: $status-resolved;
-      border: 1px solid rgba($status-resolved, 0.2);
-    }
+// Forcer la position pour tous les flash messages dans le dashboard
+body[class*="dashboard"] .flash-message,
+body[class*="dashboard"] .notification,
+.dashboard-content .flash-message,
+.dashboard-content .notification {
+  position: relative !important;
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  margin-bottom: 0 !important;
+}
 
-    &.alert-error {
-      background: rgba($status-open, 0.1);
-      color: $status-open;
-      border: 1px solid rgba($status-open, 0.2);
-    }
+.flash-message {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: flashSlideIn 0.3s ease-out;
+  position: relative;
+  min-width: 300px;
+  pointer-events: auto; // Restaurer les clics sur les messages
+  backdrop-filter: blur(8px); // Effet de flou
 
-    &.alert-warning {
-      background: rgba($status-warning, 0.1);
-      color: $status-warning;
-      border: 1px solid rgba($status-warning, 0.2);
-    }
+  &.alert-success {
+    background: rgba($status-resolved, 0.1);
+    color: $status-resolved;
+    border: 1px solid rgba($status-resolved, 0.2);
+  }
 
-    .close-btn {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-      background: none;
-      border: none;
-      font-size: 1.25rem;
-      cursor: pointer;
-      color: inherit;
-      opacity: 0.7;
+  &.alert-error {
+    background: rgba($status-open, 0.1);
+    color: $status-open;
+    border: 1px solid rgba($status-open, 0.2);
+  }
 
-      &:hover {
-        opacity: 1;
-      }
+  &.alert-warning {
+    background: rgba($status-warning, 0.1);
+    color: $status-warning;
+    border: 1px solid rgba($status-warning, 0.2);
+  }
+
+  &.alert-info {
+    background: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+    border: 1px solid rgba($primary-blue, 0.2);
+  }
+
+  // Support pour la structure alternative flash-message--type
+  &.flash-message--success {
+    background: rgba($status-resolved, 0.1);
+    color: $status-resolved;
+    border: 1px solid rgba($status-resolved, 0.2);
+  }
+
+  &.flash-message--error {
+    background: rgba($status-open, 0.1);
+    color: $status-open;
+    border: 1px solid rgba($status-open, 0.2);
+  }
+
+  &.flash-message--warning {
+    background: rgba($status-warning, 0.1);
+    color: $status-warning;
+    border: 1px solid rgba($status-warning, 0.2);
+  }
+
+  &.flash-message--info {
+    background: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+    border: 1px solid rgba($primary-blue, 0.2);
+  }
+
+  .close-btn,
+  .flash-message__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
     }
   }
 }

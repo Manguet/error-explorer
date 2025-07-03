@@ -100,7 +100,6 @@ class FooterComponent {
 
         // Écouter les changements de préférences
         window.addEventListener('cookiePreferencesApplied', (event) => {
-            console.log('Préférences cookies mises à jour:', event.detail);
             this.onCookiePreferencesChanged(event.detail);
         });
     }

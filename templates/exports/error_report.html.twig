@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport d'erreur - {{ error_group.exceptionClass }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+        
+        .header {
+            background: #1e40af;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .meta-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .meta-grid {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .meta-row {
+            display: table-row;
+        }
+        
+        .meta-label {
+            display: table-cell;
+            font-weight: bold;
+            color: #4a5568;
+            padding: 5px 10px 5px 0;
+            width: 120px;
+            vertical-align: top;
+        }
+        
+        .meta-value {
+            display: table-cell;
+            padding: 5px 0;
+            vertical-align: top;
+        }
+        
+        .error-details {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .error-message {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            border-left: 4px solid #ed8936;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: 'DejaVu Sans Mono', monospace;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+        
+        .stack-trace {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            font-family: 'DejaVu Sans Mono', monospace;
+            font-size: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow: hidden;
+        }
+        
+        .occurrences-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 10px;
+        }
+        
+        .occurrences-table th,
+        .occurrences-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .occurrences-table th {
+            background: #f7fafc;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .occurrences-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-open {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .status-resolved {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-ignored {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 10px;
+            color: #6b7280;
+            text-align: center;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .truncated {
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🚨 Rapport d'erreur</h1>
+        <p>{{ error_group.exceptionClass }} - Projet {{ error_group.project }}</p>
+    </div>
+
+    <!-- Informations générales -->
+    <div class="meta-info">
+        <div class="meta-grid">
+            <div class="meta-row">
+                <div class="meta-label">Projet :</div>
+                <div class="meta-value">{{ error_group.project }}</div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Type d'erreur :</div>
+                <div class="meta-value">{{ error_group.exceptionClass }}</div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Statut :</div>
+                <div class="meta-value">
+                    <span class="status-badge status-{{ error_group.status }}">
+                        {{ error_group.status|title }}
+                    </span>
+                </div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Fichier :</div>
+                <div class="meta-value">{{ error_group.file }}:{{ error_group.line }}</div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Première occurrence :</div>
+                <div class="meta-value">{{ error_group.firstSeen|date('d/m/Y H:i:s') }}</div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Dernière occurrence :</div>
+                <div class="meta-value">{{ error_group.lastSeen|date('d/m/Y H:i:s') }}</div>
+            </div>
+            <div class="meta-row">
+                <div class="meta-label">Nombre d'occurrences :</div>
+                <div class="meta-value">{{ error_group.occurrenceCount }}</div>
+            </div>
+            {% if error_group.assignedTo %}
+            <div class="meta-row">
+                <div class="meta-label">Assigné à :</div>
+                <div class="meta-value">{{ error_group.assignedTo.fullName }}</div>
+            </div>
+            {% endif %}
+            {% if error_group.tags|length > 0 %}
+            <div class="meta-row">
+                <div class="meta-label">Tags :</div>
+                <div class="meta-value">
+                    {% for tag in error_group.tags %}
+                        <span class="pdf-tag" style="background-color: {{ tag.color }}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-right: 4px; display: inline-block;">
+                            {{ tag.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="meta-row">
+                <div class="meta-label">Rapport généré :</div>
+                <div class="meta-value">{{ generated_at|date('d/m/Y H:i:s') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div class="error-details">
+        <h2 class="section-title">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem; vertical-align: middle;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+            Message d'erreur
+        </h2>
+        <div class="error-message">{{ error_group.message }}</div>
+    </div>
+
+    <!-- Stack trace -->
+    {% if occurrences|length > 0 and occurrences[0].stackTrace %}
+    <div class="error-details">
+        <h2 class="section-title">📋 Stack Trace</h2>
+        <div class="stack-trace">{{ occurrences[0].stackTrace|slice(0, 3000) }}{% if occurrences[0].stackTrace|length > 3000 %}
+
+[Stack trace tronquée - voir l'application pour la version complète]{% endif %}</div>
+    </div>
+    {% endif %}
+
+    <!-- Occurrences récentes -->
+    {% if occurrences|length > 0 %}
+    <div class="page-break">
+        <h2 class="section-title">📊 Occurrences récentes ({{ total_occurrences }} affichées)</h2>
+        
+        <table class="occurrences-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>URL</th>
+                    <th>Méthode</th>
+                    <th>IP</th>
+                    <th>Environnement</th>
+                    <th>Utilisateur</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for occurrence in occurrences|slice(0, 50) %}
+                <tr>
+                    <td>{{ occurrence.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ occurrence.url|length > 40 ? occurrence.url|slice(0, 40) ~ '...' : occurrence.url }}</td>
+                    <td>{{ occurrence.httpMethod }}</td>
+                    <td>{{ occurrence.ipAddress }}</td>
+                    <td>{{ occurrence.environment }}</td>
+                    <td>{{ occurrence.userId ?: 'Anonyme' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        {% if total_occurrences > 50 %}
+        <p class="truncated">
+            ⚠️ Seules les 50 premières occurrences sont affichées. 
+            Consultez l'application pour voir toutes les {{ total_occurrences }} occurrences.
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Context des occurrences récentes -->
+    {% if occurrences|length > 0 %}
+    <div class="page-break">
+        <h2 class="section-title">🔍 Détails des occurrences récentes</h2>
+        
+        {% for occurrence in occurrences|slice(0, 3) %}
+        <div style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 15px; border-radius: 6px;">
+            <h3 style="font-size: 14px; margin-bottom: 10px; color: #2d3748;">
+                Occurrence #{{ occurrence.id }} - {{ occurrence.createdAt|date('d/m/Y H:i:s') }}
+            </h3>
+            
+            <div class="meta-grid">
+                <div class="meta-row">
+                    <div class="meta-label">URL :</div>
+                    <div class="meta-value">{{ occurrence.url }}</div>
+                </div>
+                <div class="meta-row">
+                    <div class="meta-label">User Agent :</div>
+                    <div class="meta-value">{{ occurrence.userAgent|slice(0, 100) }}{% if occurrence.userAgent|length > 100 %}...{% endif %}</div>
+                </div>
+                {% if occurrence.memoryUsage %}
+                <div class="meta-row">
+                    <div class="meta-label">Mémoire :</div>
+                    <div class="meta-value">{{ (occurrence.memoryUsage / 1024 / 1024)|round(2) }} MB</div>
+                </div>
+                {% endif %}
+                {% if occurrence.executionTime %}
+                <div class="meta-row">
+                    <div class="meta-label">Temps d'exécution :</div>
+                    <div class="meta-value">{{ occurrence.executionTime }} ms</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if total_occurrences > 3 %}
+        <p class="truncated">
+            ⚠️ Seules les 3 premières occurrences détaillées sont affichées.
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>
+            Rapport généré par <strong>Error Explorer</strong> le {{ generated_at|date('d/m/Y à H:i:s') }}<br>
+            Ce document contient des informations confidentielles sur les erreurs du projet {{ error_group.project }}
+        </p>
+    </div>
+</body>
+</html>

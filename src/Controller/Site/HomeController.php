@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class HomeController extends AbstractController
 {
@@ -21,7 +22,8 @@ class HomeController extends AbstractController
         private readonly PlanRepository $planRepository,
         private readonly UserRepository $userRepository,
         private readonly ErrorGroupRepository $errorGroupRepository,
-        private readonly ChangelogParser $changelogParser
+        private readonly ChangelogParser $changelogParser,
+        #[Autowire('%app.mailer_from_email%')] private readonly string $mailerFromEmail
     ) {}
 
     #[Route('/', name: 'home')]
@@ -202,8 +204,8 @@ class HomeController extends AbstractController
             try {
                 // Créer l'email
                 $email = (new Email())
-                    ->from('error.explorer.contact@gmail.com')
-                    ->to('error.explorer.contact@gmail.com')
+                    ->from($this->mailerFromEmail)
+                    ->to($this->mailerFromEmail)
                     ->replyTo($data['email'])
                     ->subject('[Contact] ' . $data['subject'])
                     ->html($this->renderView('emails/contact.html.twig', [
@@ -218,7 +220,7 @@ class HomeController extends AbstractController
 
                 // Email de confirmation au visiteur
                 $confirmationEmail = (new Email())
-                    ->from('noreply@errorexplorer.com')
+                    ->from($this->mailerFromEmail)
                     ->to($data['email'])
                     ->subject('Confirmation de réception - Error Explorer')
                     ->html($this->renderView('emails/contact_confirmation.html.twig', [

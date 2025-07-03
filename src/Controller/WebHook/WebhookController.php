@@ -106,6 +106,16 @@ class WebhookController extends AbstractController
                 ], 400);
             }
 
+            // Protection anti-spam - Vérifier le rate limiting par IP/token
+            if (!$this->checkRateLimit($request, $project)) {
+                return $this->json([
+                    'success' => false,
+                    'error' => 'Trop de requêtes. Veuillez patienter.',
+                    'error_code' => 'RATE_LIMIT_EXCEEDED',
+                    'retry_after' => 60
+                ], 429);
+            }
+
             // Récupération et validation du payload
             $payload = json_decode($request->getContent(), true);
 
@@ -266,6 +276,12 @@ class WebhookController extends AbstractController
             return 'Payload vide';
         }
 
+        // Vérifier la taille totale du payload (limite généreuse pour les gros contextes)
+        $payloadSize = strlen(json_encode($payload));
+        if ($payloadSize > 10 * 1024 * 1024) { // 10MB max
+            return 'Payload trop volumineux (max 10MB)';
+        }
+
         // Champs obligatoires
         $required = ['message', 'exception_class', 'file', 'line', 'project'];
 
@@ -275,22 +291,84 @@ class WebhookController extends AbstractController
             }
         }
 
-        // Validation des types
-        if (!is_string($payload['message']) || strlen($payload['message']) > 2000) {
-            return 'Le champ "message" doit être une chaîne de moins de 2000 caractères';
+        // Validation des types (sans limites de longueur - troncature gérée par WebhookDataExtractor)
+        if (!is_string($payload['message'])) {
+            return 'Le champ "message" doit être une chaîne';
         }
 
-        if (!is_string($payload['project']) || strlen($payload['project']) > 100) {
-            return 'Le champ "project" doit être une chaîne de moins de 100 caractères';
+        if (!is_string($payload['project'])) {
+            return 'Le champ "project" doit être une chaîne';
         }
 
         if (!is_int($payload['line']) || $payload['line'] < 0) {
             return 'Le champ "line" doit être un entier positif';
         }
 
+        // Validation du fichier
+        if (!is_string($payload['file'])) {
+            return 'Le champ "file" doit être une chaîne';
+        }
+
+        // Validation de la classe d'exception
+        if (!is_string($payload['exception_class'])) {
+            return 'Le champ "exception_class" doit être une chaîne';
+        }
+
         // Validation optionnelle du code HTTP
         if (isset($payload['http_status']) && (!is_int($payload['http_status']) || $payload['http_status'] < 100 || $payload['http_status'] > 599)) {
             return 'Le champ "http_status" doit être un code HTTP valide (100-599)';
+        }
+
+        // Validation de l'environnement si fourni
+        if (isset($payload['environment'])) {
+            if (!is_string($payload['environment'])) {
+                return 'Le champ "environment" doit être une chaîne';
+            }
+            
+            // Note: La normalisation des environnements est gérée par WebhookDataExtractor
+            // qui accepte les valeurs inconnues et les normalise en 'unknown'
+        }
+
+        // Validation du timestamp si fourni
+        if (isset($payload['timestamp'])) {
+            if (!is_string($payload['timestamp'])) {
+                return 'Le champ "timestamp" doit être une chaîne au format ISO 8601';
+            }
+            
+            try {
+                $timestamp = new \DateTime($payload['timestamp']);
+                $now = new \DateTime();
+                $maxFuture = (clone $now)->add(new \DateInterval('PT1H'));
+                $maxPast = (clone $now)->sub(new \DateInterval('P30D'));
+                
+                if ($timestamp > $maxFuture) {
+                    return 'Le timestamp ne peut pas être dans le futur (max 1 heure)';
+                }
+                
+                if ($timestamp < $maxPast) {
+                    return 'Le timestamp ne peut pas être trop ancien (max 30 jours)';
+                }
+            } catch (\Exception $e) {
+                return 'Le champ "timestamp" doit être au format ISO 8601 valide';
+            }
+        }
+
+        // Validation de la stack trace si fournie
+        if (isset($payload['stack_trace']) && !is_string($payload['stack_trace'])) {
+            return 'Le champ "stack_trace" doit être une chaîne';
+        }
+
+        // Validation des contextes si fournis
+        if (isset($payload['request']) && !is_array($payload['request'])) {
+            return 'Le champ "request" doit être un objet';
+        }
+
+        if (isset($payload['server']) && !is_array($payload['server'])) {
+            return 'Le champ "server" doit être un objet';
+        }
+
+        if (isset($payload['context']) && !is_array($payload['context'])) {
+            return 'Le champ "context" doit être un objet';
         }
 
         return null;
@@ -307,5 +385,42 @@ class WebhookController extends AbstractController
             "#3 /var/www/vendor/symfony/http-kernel/Kernel.php(202): Symfony\\Component\\HttpKernel\\Kernel->handle()\n" .
             "#4 /var/www/public/index.php(25): App\\Kernel->handle()\n" .
             "#5 {main}";
+    }
+
+    /**
+     * Vérifie le rate limiting pour éviter le spam
+     */
+    private function checkRateLimit(Request $request, Project $project): bool
+    {
+        $ip = $request->getClientIp();
+        $token = $project->getWebhookToken();
+        
+        // Clé pour le cache basée sur IP + token
+        $cacheKey = "webhook_rate_limit_{$ip}_{$token}";
+        
+        // Utiliser APCu pour un cache simple et rapide
+        if (function_exists('apcu_exists') && apcu_exists($cacheKey)) {
+            $requests = apcu_fetch($cacheKey);
+            
+            // Limite : 100 requêtes par minute par IP/token
+            if ($requests >= 100) {
+                $this->logger->warning('Rate limit dépassé', [
+                    'ip' => $ip,
+                    'token' => $token,
+                    'requests' => $requests
+                ]);
+                return false;
+            }
+            
+            // Incrémenter le compteur
+            apcu_store($cacheKey, $requests + 1, 60);
+        } else {
+            // Premier appel dans la minute
+            if (function_exists('apcu_store')) {
+                apcu_store($cacheKey, 1, 60);
+            }
+        }
+        
+        return true;
     }
 }

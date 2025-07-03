@@ -719,8 +719,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Raccourci clavier pour les développeurs
     if (window.location.search.includes('debug=changelog')) {
-        console.log('Mode debug changelog activé');
-        console.log('Stats:', window.changelogComponent.getUsageStats());
 
         // Ajouter des commandes debug
         window.debugChangelog = {

@@ -6,7 +6,7 @@
     <a href="{{ path('projects_index') }}" class="nav-link">
         📁 Projets
     </a>
-    <a href="{{ path('projects_show', { id: project.id }) }}" class="nav-link">
+    <a href="{{ path('projects_show', { slug: project.slug }) }}" class="nav-link">
         {{ project.name }}
     </a>
     <span class="nav-link active">Édition</span>
@@ -16,33 +16,30 @@
 {% block page_subtitle %}Modifiez les informations de votre projet{% endblock %}
 
 {% block breadcrumb_items %}
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
     <a href="{{ path('projects_index') }}">Projets</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
-    <a href="{{ path('projects_show', { id: project.id }) }}">{{ project.name }}</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
+    <a href="{{ path('projects_show', { slug: project.slug }) }}">{{ project.name }}</a>
     <span>Édition</span>
 {% endblock %}
 
 {% block header_actions %}
-    <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+    <a href="{{ path('projects_show', { slug: project.slug }) }}" class="header-btn btn-secondary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
         </svg>
         Voir le projet
     </a>
-    <a href="{{ path('project_alerts_settings', { id: project.id }) }}" class="header-btn btn-secondary">
+    <a href="{{ path('project_alerts_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
         </svg>
         Alertes
+    </a>
+    <a href="{{ path('project_git_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+        </svg>
+        Git
     </a>
     <a href="{{ path('projects_index') }}" class="header-btn btn-secondary">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +152,7 @@
                     </div>
 
                     <div class="form-actions full-width">
-                        <a href="{{ path('projects_show', { id: project.id }) }}" class="header-btn btn-secondary">
+                        <a href="{{ path('projects_show', { slug: project.slug }) }}" class="header-btn btn-secondary">
                             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -297,6 +294,23 @@
         </div>
     </div>
 </div>
+
+<!-- Modale de confirmation -->
+<div class="confirmation-modal" id="confirmModal">
+    <div class="confirmation-modal__content">
+        <div class="confirmation-modal__icon" id="confirmIcon">
+            <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+            </svg>
+        </div>
+        <h3 class="confirmation-modal__title" id="confirmTitle">Confirmation</h3>
+        <p class="confirmation-modal__message" id="confirmMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+        <div class="confirmation-modal__actions">
+            <button class="confirmation-modal__button confirmation-modal__button--secondary" onclick="closeConfirmModal()">Annuler</button>
+            <button class="confirmation-modal__button confirmation-modal__button--primary" id="confirmButton" onclick="confirmAction()">Confirmer</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
@@ -329,136 +343,215 @@
             }
         }
 
+        // Variables pour la modale de confirmation
+        let currentConfirmAction = null;
+        
+        // Gestion de la modale de confirmation
+        function showConfirmModal(title, message, actionText, actionType, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmButton').textContent = actionText;
+            document.getElementById('confirmButton').className = `confirmation-modal__button confirmation-modal__button--${actionType}`;
+            
+            // Mettre à jour l'icône selon le type
+            const iconElement = document.getElementById('confirmIcon');
+            iconElement.className = `confirmation-modal__icon confirmation-modal__icon--${actionType}`;
+            
+            // Changer l'icône selon le type
+            let iconSvg = '';
+            switch(actionType) {
+                case 'danger':
+                    iconSvg = '<svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/></svg>';
+                    break;
+                case 'warning':
+                    iconSvg = '<svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/></svg>';
+                    break;
+                case 'primary':
+                    iconSvg = '<svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                    break;
+                default:
+                    iconSvg = '<svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            }
+            iconElement.innerHTML = iconSvg;
+            
+            currentConfirmAction = callback;
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('show');
+        }
+        
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('show');
+            currentConfirmAction = null;
+        }
+        
+        function confirmAction() {
+            if (currentConfirmAction) {
+                currentConfirmAction();
+            }
+            closeConfirmModal();
+        }
+        
+        // Fermer la modale en cliquant sur l'overlay
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+        
+        // Fermer la modale avec la touche Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('confirmModal').classList.contains('show')) {
+                closeConfirmModal();
+            }
+        });
+        
         // Réinitialiser le formulaire
         function resetForm() {
-            if (confirm('Voulez-vous vraiment réinitialiser le formulaire ?\n\nToutes vos modifications non sauvegardées seront perdues.')) {
-                document.getElementById('name').value = originalName;
-                document.getElementById('description').value = '{{ project.description|e('js') }}';
-                document.getElementById('environment').value = '{{ project.environment|e('js') }}';
-                document.getElementById('notification_email').value = '{{ project.notificationEmail|e('js') }}';
-                document.getElementById('repository_url').value = '{{ project.repositoryUrl|e('js') }}';
-                updateSlugPreview();
-            }
+            showConfirmModal(
+                'Réinitialiser le formulaire',
+                'Voulez-vous vraiment réinitialiser le formulaire ?\n\nToutes vos modifications non sauvegardées seront perdues.',
+                'Réinitialiser',
+                'warning',
+                function() {
+                    document.getElementById('name').value = originalName;
+                    document.getElementById('description').value = '{{ project.description|e('js') }}';
+                    document.getElementById('environment').value = '{{ project.environment|e('js') }}';
+                    document.getElementById('notification_email').value = '{{ project.notificationEmail|e('js') }}';
+                    document.getElementById('repository_url').value = '{{ project.repositoryUrl|e('js') }}';
+                    updateSlugPreview();
+                    showNotification('Formulaire réinitialisé', 'info');
+                }
+            );
         }
 
         // Toggle statut du projet
         async function toggleStatus() {
             const isCurrentlyActive = {{ project.isActive ? 'true' : 'false' }};
             const actionText = isCurrentlyActive ? 'désactiver' : 'activer';
+            const actionType = isCurrentlyActive ? 'danger' : 'primary';
             
-            if (!confirm(`Êtes-vous sûr de vouloir ${actionText} ce projet ?`)) {
-                return;
-            }
-            
-            try {
-                const response = await fetch('{{ path('projects_toggle_status', { id: project.id }) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+            showConfirmModal(
+                `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} le projet`,
+                `Êtes-vous sûr de vouloir ${actionText} ce projet ?`,
+                actionText.charAt(0).toUpperCase() + actionText.slice(1),
+                actionType,
+                async function() {
+                    try {
+                        const response = await fetch('{{ path('projects_toggle_status', { slug: project.slug }) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showNotification(result.message, 'success');
+                            
+                            // Mettre à jour l'affichage du bouton et du statut
+                            const toggleBtn = document.querySelector('button[onclick="toggleStatus()"]');
+                            const statusSpan = document.querySelector('.project-status');
+                            
+                            if (result.is_active) {
+                                // Projet activé
+                                toggleBtn.className = 'quick-action-btn btn-danger';
+                                toggleBtn.innerHTML = `
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Désactiver le projet</span>
+                                `;
+                                statusSpan.className = 'project-status active';
+                                statusSpan.textContent = 'Actif';
+                            } else {
+                                // Projet désactivé
+                                toggleBtn.className = 'quick-action-btn btn-success';
+                                toggleBtn.innerHTML = `
+                                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>Activer le projet</span>
+                                `;
+                                statusSpan.className = 'project-status inactive';
+                                statusSpan.textContent = 'Inactif';
+                            }
+                        } else {
+                            showNotification(result.error || 'Une erreur est survenue', 'error');
+                        }
+                    } catch (error) {
+                        showNotification('Erreur de connexion', 'error');
+                        console.error('Toggle status error:', error);
                     }
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification(result.message, 'success');
-                    
-                    // Mettre à jour l'affichage du bouton et du statut
-                    const toggleBtn = document.querySelector('button[onclick="toggleStatus()"]');
-                    const statusSpan = document.querySelector('.project-status');
-                    
-                    if (result.is_active) {
-                        // Projet activé
-                        toggleBtn.className = 'quick-action-btn btn-danger';
-                        toggleBtn.innerHTML = `
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Désactiver le projet</span>
-                        `;
-                        statusSpan.className = 'project-status active';
-                        statusSpan.textContent = 'Actif';
-                    } else {
-                        // Projet désactivé
-                        toggleBtn.className = 'quick-action-btn btn-success';
-                        toggleBtn.innerHTML = `
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 4h10a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9a2 2 0 002 2z"/>
-                            </svg>
-                            <span>Activer le projet</span>
-                        `;
-                        statusSpan.className = 'project-status inactive';
-                        statusSpan.textContent = 'Inactif';
-                    }
-                } else {
-                    showNotification(result.error || 'Une erreur est survenue', 'error');
                 }
-            } catch (error) {
-                showNotification('Erreur de connexion', 'error');
-                console.error('Toggle status error:', error);
-            }
+            );
         }
 
         // Régénérer le token
         async function regenerateToken() {
-            if (!confirm('⚠️ Attention !\n\nRégénérer le token va invalider l\'ancien token. Vous devrez mettre à jour la configuration dans vos applications.\n\nÊtes-vous sûr ?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch('{{ path('projects_regenerate_token', { id: project.id }) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+            showConfirmModal(
+                '⚠️ Régénérer le token webhook',
+                'Attention ! Régénérer le token va invalider l\'ancien token. Vous devrez mettre à jour la configuration dans vos applications.\n\nÊtes-vous sûr ?',
+                'Régénérer le token',
+                'warning',
+                async function() {
+                    try {
+                        const response = await fetch('{{ path('projects_regenerate_token', { slug: project.slug }) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        const result = await response.json();
+                        console.log('Token regeneration result:', result);
+                        
+                        if (result.success) {
+                            showNotification('Token régénéré ! Mettez à jour vos applications.', 'warning');
+                            
+                            // Mettre à jour l'affichage du token
+                            const tokenElement = document.getElementById('webhook-token-display');
+                            console.log('Token element found:', tokenElement);
+                            console.log('New token:', result.new_token);
+                            
+                            if (tokenElement && result.new_token) {
+                                const oldToken = tokenElement.textContent;
+                                
+                                // Force la mise à jour avec plusieurs méthodes
+                                tokenElement.textContent = result.new_token;
+                                tokenElement.innerHTML = result.new_token;
+                                
+                                console.log('Token updated from:', oldToken, 'to:', result.new_token);
+                                console.log('Current token display:', tokenElement.textContent);
+                                
+                                // Animation de mise à jour
+                                tokenElement.style.background = '#fef3c7';
+                                tokenElement.style.transition = 'background 0.3s ease';
+                                tokenElement.style.border = '2px solid #f59e0b';
+                                setTimeout(() => {
+                                    tokenElement.style.background = '';
+                                    tokenElement.style.border = '';
+                                }, 3000);
+                                
+                                // Force le reflow
+                                tokenElement.offsetHeight;
+                                
+                            } else {
+                                console.error('Token element not found or new_token missing');
+                                console.log('Available elements with webhook-token:', document.querySelectorAll('[id*="webhook"], [class*="token"]'));
+                            }
+                        } else {
+                            showNotification(result.error || 'Erreur lors de la régénération du token', 'error');
+                        }
+                    } catch (error) {
+                        showNotification('Erreur de connexion', 'error');
+                        console.error('Regenerate token error:', error);
                     }
-                });
-                
-                const result = await response.json();
-                console.log('Token regeneration result:', result);
-                
-                if (result.success) {
-                    showNotification('Token régénéré ! Mettez à jour vos applications.', 'warning');
-                    
-                    // Mettre à jour l'affichage du token
-                    const tokenElement = document.getElementById('webhook-token-display');
-                    console.log('Token element found:', tokenElement);
-                    console.log('New token:', result.new_token);
-                    
-                    if (tokenElement && result.new_token) {
-                        const oldToken = tokenElement.textContent;
-                        
-                        // Force la mise à jour avec plusieurs méthodes
-                        tokenElement.textContent = result.new_token;
-                        tokenElement.innerHTML = result.new_token;
-                        
-                        console.log('Token updated from:', oldToken, 'to:', result.new_token);
-                        console.log('Current token display:', tokenElement.textContent);
-                        
-                        // Animation de mise à jour
-                        tokenElement.style.background = '#fef3c7';
-                        tokenElement.style.transition = 'background 0.3s ease';
-                        tokenElement.style.border = '2px solid #f59e0b';
-                        setTimeout(() => {
-                            tokenElement.style.background = '';
-                            tokenElement.style.border = '';
-                        }, 3000);
-                        
-                        // Force le reflow
-                        tokenElement.offsetHeight;
-                        
-                    } else {
-                        console.error('Token element not found or new_token missing');
-                        console.log('Available elements with webhook-token:', document.querySelectorAll('[id*="webhook"], [class*="token"]'));
-                    }
-                } else {
-                    showNotification(result.error || 'Erreur lors de la régénération du token', 'error');
                 }
-            } catch (error) {
-                showNotification('Erreur de connexion', 'error');
-                console.error('Regenerate token error:', error);
-            }
+            );
         }
 
         // Écouteurs d'événements

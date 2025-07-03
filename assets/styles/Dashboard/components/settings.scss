@@ -521,7 +521,7 @@
             box-shadow: 0 0 10px rgba($primary-blue, 0.4);
 
             &:before {
-                transform: translateX(26px);
+                transform: translateX(20px);
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             }
         }
@@ -690,7 +690,8 @@
             flex-shrink: 0;
 
             .btn {
-                @include dashboard-button(rgba(255, 255, 255, 0.1));
+                @include dashboard-button();
+                background: rgba(255, 255, 255, 0.1);
                 color: $dashboard-text-light;
                 border: 1px solid $dashboard-border;
 
@@ -732,7 +733,9 @@
         flex-shrink: 0;
 
         .btn-danger {
-            @include dashboard-button($status-open);
+            @include dashboard-button();
+            background: $status-open;
+            color: $white;
 
             &:hover {
                 background: darken($status-open, 10%);
@@ -745,11 +748,14 @@
 // Buttons coherent avec le dashboard
 .btn {
     &.btn-primary {
-        @include dashboard-button($primary-blue);
+        @include dashboard-button();
+        background: $primary-blue;
+        color: $white;
     }
 
     &.btn-secondary {
-        @include dashboard-button(rgba(255, 255, 255, 0.1));
+        @include dashboard-button();
+        background: rgba(255, 255, 255, 0.1);
         color: $dashboard-text-light;
         border: 1px solid $dashboard-border;
 
@@ -760,7 +766,9 @@
     }
 
     &.btn-danger {
-        @include dashboard-button($status-open);
+        @include dashboard-button();
+        background: $status-open;
+        color: $white;
     }
 }
 

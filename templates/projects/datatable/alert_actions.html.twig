@@ -1,5 +1,5 @@
 <div class="alert-actions">
-    <a href="{{ path('project_alerts_settings', { id: row.id }) }}" 
+    <a href="{{ path('project_alerts_settings', { slug: row.slug }) }}" 
        class="btn btn-sm btn-primary" 
        title="Configurer les alertes">
         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10,7 +10,7 @@
     </a>
     
     {% if row.alertsEnabled %}
-        <form style="display: inline;" method="POST" action="{{ path('project_test_alert', { id: row.id }) }}">
+        <form style="display: inline;" method="POST" action="{{ path('project_test_alert', { slug: row.slug }) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('test_alert_' ~ row.id) }}">
             <button type="submit" 
                     class="btn btn-sm btn-warning" 

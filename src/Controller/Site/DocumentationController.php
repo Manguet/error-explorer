@@ -11,22 +11,21 @@ class DocumentationController extends AbstractController
     #[Route('/docs', name: 'documentation')]
     public function index(): Response
     {
-        // Statistiques et informations pour la documentation
+        // Statistiques et informations pour la documentation basées sur les vrais packages
         $stats = [
             'supported_frameworks' => [
                 'backend' => [
-                    'symfony' => ['name' => 'Symfony', 'version' => '4.4+', 'icon' => '🎼'],
-                    'laravel' => ['name' => 'Laravel', 'version' => '8.0+', 'icon' => '🅻'],
-                    'php' => ['name' => 'PHP', 'version' => '7.4+', 'icon' => '🐘'],
-                    'python' => ['name' => 'Python', 'version' => '3.7+', 'icon' => '🐍'],
-                    'nodejs' => ['name' => 'Node.js', 'version' => '14+', 'icon' => '💚'],
-                    'wordpress' => ['name' => 'WordPress', 'version' => '5.0+', 'icon' => '📝'],
+                    'symfony' => ['name' => 'Symfony', 'version' => '4.4+', 'icon' => '🎼', 'package' => 'error-explorer/error-reporter'],
+                    'laravel' => ['name' => 'Laravel', 'version' => '8.0+', 'icon' => '🅻', 'package' => 'error-explorer/laravel-error-reporter'],
+                    'php' => ['name' => 'PHP', 'version' => '7.2+', 'icon' => '🐘', 'package' => 'error-explorer/php-error-reporter'],
+                    'python' => ['name' => 'Python', 'version' => '3.7+', 'icon' => '🐍', 'package' => 'error-explorer'],
+                    'nodejs' => ['name' => 'Node.js', 'version' => '14+', 'icon' => '💚', 'package' => '@error-explorer/node-error-reporter'],
+                    'wordpress' => ['name' => 'WordPress', 'version' => '5.0+', 'icon' => '📝', 'package' => 'error-explorer/wordpress-error-reporter'],
                 ],
                 'frontend' => [
-                    'react' => ['name' => 'React', 'version' => '16.8+', 'icon' => '⚛️'],
-                    'vue' => ['name' => 'Vue.js', 'version' => '3.0+', 'icon' => '💚'],
-                    'angular' => ['name' => 'Angular', 'version' => '12+', 'icon' => '🅰️'],
-                    'vanilla' => ['name' => 'JavaScript', 'version' => 'ES6+', 'icon' => '📜'],
+                    'react' => ['name' => 'React', 'version' => '16.8+', 'icon' => '⚛️', 'package' => '@error-explorer/react-error-reporter'],
+                    'vue' => ['name' => 'Vue.js', 'version' => '3.0+', 'icon' => '💚', 'package' => '@error-explorer/vue-error-reporter'],
+                    'angular' => ['name' => 'Angular', 'version' => '12+', 'icon' => '🅰️', 'package' => '@error-explorer/angular-error-reporter'],
                 ]
             ],
             'installation_time' => '< 5 minutes',
@@ -34,7 +33,7 @@ class DocumentationController extends AbstractController
             'uptime' => '99.9%'
         ];
 
-        // Exemples de code pour différents frameworks
+        // Exemples de code réels basés sur les packages
         $codeExamples = [
             'symfony' => [
                 'installation' => 'composer require error-explorer/error-reporter',
@@ -42,30 +41,68 @@ class DocumentationController extends AbstractController
     webhook_url: \'%env(ERROR_WEBHOOK_URL)%\'
     token: \'%env(ERROR_WEBHOOK_TOKEN)%\'
     project_name: \'%env(PROJECT_NAME)%\'
-    enabled: \'%env(bool:ERROR_REPORTING_ENABLED)%\'',
+    enabled: \'%env(bool:ERROR_REPORTING_ENABLED)%\'
+    ignore_exceptions:
+        - \'Symfony\Component\Security\Core\Exception\AccessDeniedException\'
+        - \'Symfony\Component\HttpKernel\Exception\NotFoundHttpException\'',
                 'usage' => 'use ErrorExplorer\ErrorReporter\ErrorReporter;
 
+// Automatic capture (no code needed)
+// Exceptions are automatically captured and sent
+
+// Manual reporting
 try {
-    // Votre code ici
+    // Your code here
 } catch (\Exception $e) {
     ErrorReporter::reportError($e, \'prod\', 500);
     throw $e;
-}'
+}
+
+// Add breadcrumbs for context
+ErrorReporter::addBreadcrumb(\'User action\', \'user\', \'info\');'
             ],
             'laravel' => [
                 'installation' => 'composer require error-explorer/laravel-error-reporter',
-                'config' => 'ERROR_WEBHOOK_URL=https://your-domain.com
+                'config' => 'ERROR_WEBHOOK_URL=https://your-error-explorer.com
 ERROR_WEBHOOK_TOKEN=your-project-token
-ERROR_PROJECT_NAME="My Laravel App"
+PROJECT_NAME="My Laravel App"
 ERROR_REPORTING_ENABLED=true',
                 'usage' => 'use ErrorExplorer\LaravelErrorReporter\Facades\ErrorReporter;
 
+// Automatic via service provider
+// Exceptions are captured automatically
+
+// Manual reporting
 try {
-    // Votre code ici
+    // Your code here
 } catch (\Exception $e) {
     ErrorReporter::reportError($e, \'production\', 500);
     throw $e;
 }'
+            ],
+            'php' => [
+                'installation' => 'composer require error-explorer/php-error-reporter',
+                'config' => 'use ErrorExplorer\ErrorExplorer;
+
+$config = [
+    \'webhook_url\' => \'https://your-error-explorer.com\',
+    \'token\' => \'your-project-token\',
+    \'project\' => \'my-php-app\',
+    \'environment\' => \'production\'
+];
+
+ErrorExplorer::init($config);',
+                'usage' => 'use ErrorExplorer\ErrorExplorer;
+
+try {
+    // Your code here
+} catch (Exception $e) {
+    ErrorExplorer::captureException($e);
+    throw $e;
+}
+
+// Add context
+ErrorExplorer::addBreadcrumb(\'User login attempt\');'
             ],
             'react' => [
                 'installation' => 'npm install @error-explorer/react-error-reporter',
@@ -74,7 +111,7 @@ try {
 <ErrorReporterProvider
   config={{
     projectToken: \'your-project-token\',
-    apiUrl: \'https://your-instance.com\',
+    apiUrl: \'https://your-error-explorer.com\',
     environment: \'production\'
   }}
 >
@@ -88,6 +125,123 @@ try {
   await riskyOperation();
 } catch (error) {
   await reportError(error, { context: \'user_action\' });
+}
+
+// Error Boundary
+<ErrorBoundary fallback={<ErrorUI />}>
+  <MyComponent />
+</ErrorBoundary>'
+            ],
+            'vue' => [
+                'installation' => 'npm install @error-explorer/vue-error-reporter',
+                'config' => 'import { createApp } from \'vue\';
+import { ErrorExplorerPlugin } from \'@error-explorer/vue-error-reporter\';
+
+const app = createApp(App);
+app.use(ErrorExplorerPlugin, {
+  projectToken: \'your-project-token\',
+  apiUrl: \'https://your-error-explorer.com\',
+  environment: \'production\'
+});',
+                'usage' => 'import { useErrorExplorer } from \'@error-explorer/vue-error-reporter\';
+
+const { captureException, addBreadcrumb } = useErrorExplorer();
+
+try {
+  await someAsyncOperation();
+} catch (error) {
+  captureException(error);
+}'
+            ],
+            'nodejs' => [
+                'installation' => 'npm install @error-explorer/node-error-reporter',
+                'config' => 'const ErrorReporter = require(\'@error-explorer/node-error-reporter\');
+
+ErrorReporter.init({
+  webhookUrl: \'https://your-error-explorer.com\',
+  token: \'your-project-token\',
+  project: \'my-node-app\',
+  environment: \'production\'
+});',
+                'usage' => 'const ErrorReporter = require(\'@error-explorer/node-error-reporter\');
+
+// Express middleware
+app.use(ErrorReporter.middleware());
+
+// Manual reporting
+try {
+  // Your code here
+} catch (error) {
+  ErrorReporter.captureException(error);
+  throw error;
+}'
+            ],
+            'python' => [
+                'installation' => 'pip install error-explorer',
+                'config' => 'import error_explorer
+
+error_explorer.init(
+    webhook_url="https://your-error-explorer.com",
+    token="your-project-token",
+    project="my-python-app",
+    environment="production"
+)',
+                'usage' => 'import error_explorer
+
+try:
+    # Your code here
+    pass
+except Exception as e:
+    error_explorer.capture_exception(e)
+    raise
+
+# Flask integration
+from error_explorer.integrations.flask import ErrorExplorerFlask
+ErrorExplorerFlask(app)'
+            ],
+            'angular' => [
+                'installation' => 'npm install @error-explorer/angular-error-reporter',
+                'config' => 'import { ErrorExplorerModule } from \'@error-explorer/angular-error-reporter\';
+
+@NgModule({
+  imports: [
+    ErrorExplorerModule.forRoot({
+      projectToken: \'your-project-token\',
+      apiUrl: \'https://your-error-explorer.com\',
+      environment: \'production\'
+    })
+  ]
+})',
+                'usage' => 'import { ErrorExplorerService } from \'@error-explorer/angular-error-reporter\';
+
+constructor(private errorReporter: ErrorExplorerService) {}
+
+try {
+  // Your code here
+} catch (error) {
+  this.errorReporter.captureException(error);
+}'
+            ],
+            'wordpress' => [
+                'installation' => 'composer require error-explorer/wordpress-error-reporter',
+                'config' => '// wp-config.php
+define(\'ERROR_EXPLORER_WEBHOOK_URL\', \'https://your-error-explorer.com\');
+define(\'ERROR_EXPLORER_TOKEN\', \'your-project-token\');
+define(\'ERROR_EXPLORER_PROJECT\', \'my-wordpress-site\');
+define(\'ERROR_EXPLORER_ENABLED\', true);
+
+// Activate the plugin',
+                'usage' => '// Automatic error capture
+// All PHP errors and exceptions are captured automatically
+
+// Manual reporting in themes/plugins
+if (function_exists(\'error_explorer_capture\')) {
+    try {
+        // Your code here
+    } catch (Exception $e) {
+        error_explorer_capture($e);
+        throw $e;
+    }
 }'
             ]
         ];

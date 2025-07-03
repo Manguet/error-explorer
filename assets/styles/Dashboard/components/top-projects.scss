@@ -1,0 +1,72 @@
+/**
+ * Top Projects Component - BEM Architecture
+ * Composant pour afficher les projets principaux dans le dashboard
+ */
+
+.dashboard-top-projects {
+  padding: 1.5rem;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  &__item {
+    padding: 1.5rem;
+    background: rgba(17, 24, 39, 0.8);
+    border-radius: 8px;
+    border: 1px solid rgba(55, 65, 81, 0.5);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(17, 24, 39, 0.95);
+      border-color: rgba($primary-blue, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $dashboard-text;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  &__stats {
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+  }
+
+  &__action {
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    background: rgba($primary-blue, 0.1);
+    color: $primary-blue;
+    border: 1px solid rgba($primary-blue, 0.2);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    
+    &:hover {
+      background: $primary-blue;
+      color: white;
+      border-color: $primary-blue;
+      transform: translateX(2px);
+    }
+  }
+}

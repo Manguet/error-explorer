@@ -2,7 +2,7 @@ datatables:
     language_from_cdn: true
     options:
         lengthMenu : [10, 25, 50, 100]
-        pageLength: 10
+        pageLength: 25
         dom: "<'row' <'col-sm-12' tr>><'row' <'col-sm-6'l><'col-sm-6 text-right'pi>>"
         stateSave: true
         searching: true

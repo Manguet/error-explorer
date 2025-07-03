@@ -226,7 +226,7 @@
                         {% for error in top_errors %}
                             <tr>
                                 <td>
-                                    <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
+                                    <a href="{{ path('dashboard_error_detail', { projectSlug: error.projectEntity ? error.projectEntity.slug : error.project, id: error.id }) }}">
                                         {{ error.title|length > 40 ? error.title|slice(0, 40) ~ '...' : error.title }}
                                     </a>
                                 </td>

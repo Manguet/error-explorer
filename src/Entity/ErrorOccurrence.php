@@ -63,6 +63,9 @@ class ErrorOccurrence
     #[ORM\Column(nullable: true)]
     private ?float $executionTime = null;
 
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $commitHash = null;
+
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -227,86 +230,15 @@ class ErrorOccurrence
         return $this;
     }
 
-    /**
-     * Extrait les données de la requête depuis le payload webhook
-     */
-    public function setRequestFromWebhook(array $requestData): static
+    public function getCommitHash(): ?string
     {
-        $this->request = $requestData;
+        return $this->commitHash;
+    }
 
-        // Extraire les champs principaux pour les index
-        $this->url = $requestData['url'] ?? null;
-        $this->httpMethod = $requestData['method'] ?? null;
-        $this->ipAddress = $requestData['ip'] ?? null;
-        $this->userAgent = $requestData['user_agent'] ?? null;
-
+    public function setCommitHash(?string $commitHash): static
+    {
+        $this->commitHash = $commitHash;
         return $this;
-    }
-
-    /**
-     * Extrait les données du serveur depuis le payload webhook
-     */
-    public function setServerFromWebhook(array $serverData): static
-    {
-        $this->server = $serverData;
-
-        // Extraire les métriques importantes
-        $this->memoryUsage = $serverData['memory_usage'] ?? null;
-        $this->executionTime = $serverData['execution_time'] ?? null;
-
-        return $this;
-    }
-
-    /**
-     * Formate l'usage mémoire en format lisible
-     */
-    public function getFormattedMemoryUsage(): ?string
-    {
-        if (!$this->memoryUsage) {
-            return null;
-        }
-
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $bytes = $this->memoryUsage;
-        $i = 0;
-
-        while ($bytes >= 1024 && $i < count($units) - 1) {
-            $bytes /= 1024;
-            $i++;
-        }
-
-        return round($bytes, 2) . ' ' . $units[$i];
-    }
-
-    /**
-     * Formate le temps d'exécution
-     */
-    public function getFormattedExecutionTime(): ?string
-    {
-        if (!$this->executionTime) {
-            return null;
-        }
-
-        if ($this->executionTime < 1) {
-            return round($this->executionTime * 1000) . ' ms';
-        }
-
-        return round($this->executionTime, 2) . ' s';
-    }
-
-    /**
-     * Retourne une version courte de la stack trace pour l'affichage
-     */
-    public function getShortStackTrace(int $lines = 5): string
-    {
-        if (!$this->stackTrace) {
-            return '';
-        }
-
-        $stackLines = explode("\n", $this->stackTrace);
-        $shortStack = array_slice($stackLines, 0, $lines);
-
-        return implode("\n", $shortStack);
     }
 
     /**

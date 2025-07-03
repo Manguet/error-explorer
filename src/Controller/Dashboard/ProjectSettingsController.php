@@ -5,10 +5,14 @@ namespace App\Controller\Dashboard;
 use App\Entity\ErrorGroup;
 use App\Entity\Project;
 use App\Form\ProjectAlertsType;
+use App\Form\GitIntegrationType;
+use App\Repository\ProjectRepository;
 use App\Service\AlertService;
 use App\Service\ExternalWebhookService;
+use App\Service\GitIntegrationService;
 use App\Service\SettingsManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,23 +20,61 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/projects/{id}/settings')]
+#[Route('/projects/{slug}/settings')]
 #[IsGranted('ROLE_USER')]
 class ProjectSettingsController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly SettingsManager $settingsManager
+        private readonly SettingsManager $settingsManager,
+        private readonly ProjectRepository $projectRepository,
+        private readonly LoggerInterface $logger
     ) {}
+
+    #[Route('/git', name: 'project_git_settings')]
+    public function gitSettings(
+        string $slug,
+        Request $request,
+        GitIntegrationService $gitIntegrationService
+    ): Response {
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+
+        if (!$project) {
+            throw $this->createNotFoundException('Projet non trouvé');
+        }
+
+        $form = $this->createForm(GitIntegrationType::class, $project);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gérer le token d'accès
+            $token = $form->get('gitAccessToken')->getData();
+            if ($token) {
+                $encryptedToken = $gitIntegrationService->encryptToken($token);
+                $project->setGitAccessToken($encryptedToken);
+            }
+
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Configuration Git mise à jour avec succès !');
+
+            return $this->redirectToRoute('project_git_settings', ['slug' => $project->getSlug()]);
+        }
+
+        return $this->render('projects/settings/git.html.twig', [
+            'project' => $project,
+            'form' => $form->createView(),
+        ]);
+    }
 
     #[Route('/alerts', name: 'project_alerts_settings')]
     public function alertsSettings(
-        Project $project,
+        string $slug,
         Request $request
     ): Response {
-        // Vérifier que l'utilisateur possède ce projet
-        if ($project->getOwner() !== $this->getUser()) {
-            throw $this->createAccessDeniedException();
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+        
+        if (!$project) {
+            throw $this->createNotFoundException('Projet non trouvé');
         }
 
         $form = $this->createForm(ProjectAlertsType::class, $project);
@@ -44,7 +86,7 @@ class ProjectSettingsController extends AbstractController
             $this->addFlash('success', 'Configuration des alertes mise à jour avec succès !');
 
             return $this->redirectToRoute('project_alerts_settings', [
-                'id' => $project->getId()
+                'slug' => $project->getSlug()
             ]);
         }
 
@@ -57,21 +99,53 @@ class ProjectSettingsController extends AbstractController
 
     #[Route('/test-alert', name: 'project_test_alert', methods: ['POST'])]
     public function testAlert(
-        Project $project,
+        string $slug,
         Request $request,
         AlertService $alertService
     ): Response {
-        // Vérifier que l'utilisateur possède ce projet
-        if ($project->getOwner() !== $this->getUser()) {
-            throw $this->createAccessDeniedException();
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+        
+        if (!$project) {
+            throw $this->createNotFoundException('Projet non trouvé');
         }
 
         // Vérifier le token CSRF
-        if (!$this->isCsrfTokenValid('test_alert_' . $project->getId(), $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('test_alert_' . $project->getSlug(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Token CSRF invalide');
         }
 
         try {
+            // Debug : Vérifier les paramètres
+            $user = $this->getUser();
+            $globalAlertsEnabled = $this->settingsManager->getSetting('email.error_alerts', false);
+            $projectAlertsEnabled = $project->isAlertsEnabled();
+            $userEmailEnabled = $user->isEmailAlertsEnabled();
+            
+            // Log debug info
+            $this->logger->info('Test alert debug info', [
+                'global_alerts_enabled' => $globalAlertsEnabled,
+                'project_alerts_enabled' => $projectAlertsEnabled, 
+                'user_email_enabled' => $userEmailEnabled,
+                'user_email' => $user->getEmail(),
+                'project_name' => $project->getName()
+            ]);
+            
+            // Afficher des messages spécifiques pour aider au debug
+            if (!$globalAlertsEnabled) {
+                $this->addFlash('error', 'Les alertes globales sont désactivées par l\'administrateur.');
+                return $this->redirectToRoute('project_alerts_settings', ['slug' => $project->getSlug()]);
+            }
+            
+            if (!$projectAlertsEnabled) {
+                $this->addFlash('error', 'Les alertes sont désactivées pour ce projet.');
+                return $this->redirectToRoute('project_alerts_settings', ['slug' => $project->getSlug()]);
+            }
+            
+            if (!$userEmailEnabled) {
+                $this->addFlash('error', 'Vous avez désactivé les alertes email dans vos préférences utilisateur.');
+                return $this->redirectToRoute('project_alerts_settings', ['slug' => $project->getSlug()]);
+            }
+
             // Créer une erreur de test factice
             $testErrorGroup = new ErrorGroup();
             $testErrorGroup->setFingerprint('test-alert-' . time())
@@ -86,15 +160,23 @@ class ProjectSettingsController extends AbstractController
                 ->setEnvironment('test')
                 ->setStackTracePreview("TestException: Test alert\n  at ProjectSettingsController::testAlert (line 100)\n  at Dashboard (generated test)")
                 ->setStatus(ErrorGroup::STATUS_OPEN)
-                ->setOccurrenceCount(1);
+                ->setOccurrenceCount(1)
+                ->setFirstSeen(new \DateTime())
+                ->setLastSeen(new \DateTime());
+
+            // Assigner un ID temporaire pour les tests (négatif pour éviter les conflits)
+            $reflection = new \ReflectionClass($testErrorGroup);
+            $idProperty = $reflection->getProperty('id');
+            $idProperty->setAccessible(true);
+            $idProperty->setValue($testErrorGroup, -1);
 
             // Envoyer l'alerte de test
-            $success = $alertService->sendErrorAlert($testErrorGroup, $project, $this->getUser());
+            $success = $alertService->sendErrorAlert($testErrorGroup, $project, $user);
 
             if ($success) {
                 $this->addFlash('success', '🎉 Alerte de test envoyée avec succès ! Vérifiez votre boîte email.');
             } else {
-                $this->addFlash('warning', 'L\'alerte de test n\'a pas pu être envoyée. Vérifiez votre configuration.');
+                $this->addFlash('warning', 'L\'alerte de test n\'a pas pu être envoyée. Vérifiez les logs pour plus de détails.');
             }
 
         } catch (\Exception $e) {
@@ -102,18 +184,19 @@ class ProjectSettingsController extends AbstractController
         }
 
         return $this->redirectToRoute('project_alerts_settings', [
-            'id' => $project->getId()
+            'slug' => $project->getSlug()
         ]);
     }
 
     #[Route('/webhook/save', name: 'project_webhook_save', methods: ['POST'])]
     public function saveWebhook(
-        Project $project,
+        string $slug,
         Request $request
     ): JsonResponse {
-        // Vérifier que l'utilisateur possède ce projet
-        if ($project->getOwner() !== $this->getUser()) {
-            return new JsonResponse(['success' => false, 'message' => 'Accès refusé']);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+        
+        if (!$project) {
+            return new JsonResponse(['success' => false, 'message' => 'Projet non trouvé']);
         }
 
         try {
@@ -174,12 +257,13 @@ class ProjectSettingsController extends AbstractController
 
     #[Route('/webhook/remove', name: 'project_webhook_remove', methods: ['POST'])]
     public function removeWebhook(
-        Project $project,
+        string $slug,
         Request $request
     ): JsonResponse {
-        // Vérifier que l'utilisateur possède ce projet
-        if ($project->getOwner() !== $this->getUser()) {
-            return new JsonResponse(['success' => false, 'message' => 'Accès refusé']);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+        
+        if (!$project) {
+            return new JsonResponse(['success' => false, 'message' => 'Projet non trouvé']);
         }
 
         try {
@@ -201,13 +285,14 @@ class ProjectSettingsController extends AbstractController
 
     #[Route('/webhook/test', name: 'project_webhook_test', methods: ['POST'])]
     public function testWebhook(
-        Project $project,
+        string $slug,
         Request $request,
         ExternalWebhookService $webhookService
     ): JsonResponse {
-        // Vérifier que l'utilisateur possède ce projet
-        if ($project->getOwner() !== $this->getUser()) {
-            return new JsonResponse(['success' => false, 'message' => 'Accès refusé']);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
+        
+        if (!$project) {
+            return new JsonResponse(['success' => false, 'message' => 'Projet non trouvé']);
         }
 
         try {

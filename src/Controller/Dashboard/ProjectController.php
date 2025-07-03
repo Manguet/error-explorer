@@ -3,11 +3,13 @@
 namespace App\Controller\Dashboard;
 
 use App\DataTable\Type\ProjectDataTableType;
+use App\DataTable\Type\ProjectErrorGroupDataTableType;
 use App\Entity\ErrorGroup;
 use App\Entity\Project;
 use App\Repository\ErrorGroupRepository;
 use App\Repository\ErrorOccurrenceRepository;
 use App\Repository\ProjectRepository;
+use App\Service\Email\EmailService;
 use App\Service\ErrorLimitService;
 use Doctrine\ORM\EntityManagerInterface;
 use Omines\DataTablesBundle\DataTableFactory;
@@ -100,8 +102,8 @@ class ProjectController extends AbstractController
                 $errors[] = 'Le nom du projet est requis';
             } elseif (strlen($name) > 100) {
                 $errors[] = 'Le nom du projet ne peut pas dépasser 100 caractères';
-            } elseif ($this->projectRepository->isNameExists($name)) {
-                $errors[] = 'Un projet avec ce nom existe déjà';
+            } elseif ($this->projectRepository->isNameExistsForUser($name, $user)) {
+                $errors[] = 'Un projet avec ce nom existe déjà dans vos projets';
             }
 
             if ($description && strlen($description) > 1000) {
@@ -127,7 +129,7 @@ class ProjectController extends AbstractController
                     ->setOwner($user)
                 ;
 
-                // Générer un slug unique
+                // Générer un slug globalement unique
                 $slug = $this->projectRepository->generateUniqueSlug($name);
                 $project->setSlug($slug);
 
@@ -139,7 +141,7 @@ class ProjectController extends AbstractController
 
                 $this->addFlash('success', 'Projet créé avec succès ! Token webhook généré.');
 
-                return $this->redirectToRoute('projects_show', ['id' => $project->getId()]);
+                return $this->redirectToRoute('projects_show', ['slug' => $project->getSlug()]);
             }
 
             // Afficher les erreurs
@@ -178,10 +180,10 @@ class ProjectController extends AbstractController
     /**
      * Éditer un projet
      */
-    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request): Response
+    #[Route('/{slug}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    public function edit(string $slug, Request $request): Response
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             throw $this->createNotFoundException('Projet non trouvé');
@@ -201,8 +203,8 @@ class ProjectController extends AbstractController
                 $errors[] = 'Le nom du projet est requis';
             } elseif (strlen($name) > 100) {
                 $errors[] = 'Le nom du projet ne peut pas dépasser 100 caractères';
-            } elseif ($this->projectRepository->isNameExists($name, $project->getId())) {
-                $errors[] = 'Un autre projet avec ce nom existe déjà';
+            } elseif ($this->projectRepository->isNameExistsForUser($name, $user, $project->getId())) {
+                $errors[] = 'Un autre projet avec ce nom existe déjà dans vos projets';
             }
 
             if ($description && strlen($description) > 1000) {
@@ -228,7 +230,7 @@ class ProjectController extends AbstractController
 
                 $this->addFlash('success', 'Projet mis à jour avec succès');
 
-                return $this->redirectToRoute('projects_show', ['id' => $project->getId()]);
+                return $this->redirectToRoute('projects_show', ['slug' => $project->getSlug()]);
             }
 
             // Afficher les erreurs
@@ -245,18 +247,13 @@ class ProjectController extends AbstractController
     /**
      * Régénérer le token webhook
      */
-    #[Route('/{id}/regenerate-token', name: 'regenerate_token', methods: ['POST'])]
-    public function regenerateToken(int $id): JsonResponse
+    #[Route('/{slug}/regenerate-token', name: 'regenerate_token', methods: ['POST'])]
+    public function regenerateToken(string $slug): JsonResponse
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             return $this->json(['success' => false, 'error' => 'Projet non trouvé'], 404);
-        }
-
-        // Vérifier que le projet appartient à l'utilisateur connecté
-        if ($project->getOwner() !== $this->getUser()) {
-            return $this->json(['success' => false, 'error' => 'Accès refusé'], 403);
         }
 
         $oldToken = $project->getWebhookToken();
@@ -275,10 +272,10 @@ class ProjectController extends AbstractController
     /**
      * Activer/désactiver un projet
      */
-    #[Route('/{id}/toggle-status', name: 'toggle_status', methods: ['POST'])]
-    public function toggleStatus(int $id): JsonResponse
+    #[Route('/{slug}/toggle-status', name: 'toggle_status', methods: ['POST'])]
+    public function toggleStatus(string $slug): JsonResponse
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
@@ -297,10 +294,10 @@ class ProjectController extends AbstractController
     /**
      * Supprimer un projet
      */
-    #[Route('/{id}/delete', name: 'delete', methods: ['POST'])]
-    public function delete(int $id): JsonResponse
+    #[Route('/{slug}/delete', name: 'delete', methods: ['POST'])]
+    public function delete(string $slug): JsonResponse
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
@@ -354,10 +351,10 @@ class ProjectController extends AbstractController
     /**
      * API: Statistiques d'un projet
      */
-    #[Route('/{id}/stats', name: 'api_stats', methods: ['GET'])]
-    public function apiStats(int $id): JsonResponse
+    #[Route('/{slug}/stats', name: 'api_stats', methods: ['GET'])]
+    public function apiStats(string $slug): JsonResponse
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
@@ -369,10 +366,10 @@ class ProjectController extends AbstractController
     /**
      * Teste la connectivité du webhook d'un projet
      */
-    #[Route('/{id}/test-webhook', name: 'test_webhook', methods: ['POST'])]
-    public function testWebhook(int $id, Request $request): JsonResponse
+    #[Route('/{slug}/test-webhook', name: 'test_webhook', methods: ['POST'])]
+    public function testWebhook(string $slug, Request $request): JsonResponse
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             return $this->json(['error' => 'Projet non trouvé'], 404);
@@ -500,7 +497,9 @@ class ProjectController extends AbstractController
             'user_id' => $this->getUser()->getId(),
             'total_projects' => count($projects),
             'projects' => $data
-        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        ]);
+        
+        $response->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         $filename = 'projets_' . date('Y-m-d_H-i-s') . '.json';
         $response->headers->set('Content-Type', 'application/json; charset=utf-8');
@@ -583,10 +582,10 @@ class ProjectController extends AbstractController
     /**
      * Afficher un projet avec ses instructions d'installation
      */
-    #[Route('/details/{id}', name: 'show')]
-    public function show(int $id, Request $request): Response
+    #[Route('/details/{slug}', name: 'show')]
+    public function show(string $slug, Request $request, DataTableFactory $dataTableFactory): Response
     {
-        $project = $this->projectRepository->find($id);
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $this->getUser()]);
 
         if (!$project) {
             throw $this->createNotFoundException('Projet non trouvé');
@@ -609,15 +608,326 @@ class ProjectController extends AbstractController
             )
         ];
 
-        // Récupérer les groupes d'erreurs pour ce projet
-        $error_groups = $project->getErrorGroups();
+        // Appliquer les filtres de la requête
+        $requestFilters = $this->getFiltersFromRequest($request);
+        $allFilters = array_merge($filters, $requestFilters);
+
+        // Créer le DataTable pour les erreurs du projet
+        $table = $dataTableFactory->createFromType(ProjectErrorGroupDataTableType::class, [
+            'user' => $this->getUser(),
+            'project' => $project->getSlug(),
+            'filters' => $allFilters
+        ])->handleRequest($request);
+
+        // Si c'est une requête AJAX DataTable, renvoyer la réponse JSON
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
 
         return $this->render('projects/show.html.twig', [
             'project' => $project,
             'instructions' => $instructions,
             'stats' => $stats,
             'webhook_url' => $project->getWebhookUrl($baseUrl),
-            'error_groups' => $error_groups
+            'datatable' => $table,
+            'filters' => $this->cleanFiltersForTemplate($allFilters)
         ]);
+    }
+
+    /**
+     * Extrait les filtres depuis la requête
+     */
+    private function getFiltersFromRequest(Request $request): array
+    {
+        $filters = [];
+
+        // Filtre par statut
+        if ($status = $request->query->get('status')) {
+            $filters['status'] = $status;
+        }
+
+        // Filtre par code HTTP
+        if ($httpStatus = $request->query->get('http_status')) {
+            $filters['http_status'] = (int) $httpStatus;
+        }
+
+        // Filtre par type d'erreur
+        if ($errorType = $request->query->get('error_type')) {
+            $filters['error_type'] = $errorType;
+        }
+
+        // Filtre par environnement
+        if ($environment = $request->query->get('environment')) {
+            $filters['environment'] = $environment;
+        }
+
+        // Filtre par récence (en jours)
+        $days = $request->query->getInt('days', 7);
+        if ($days > 0) {
+            $filters['since'] = new \DateTime("-{$days} days");
+        }
+
+        // Filtre par recherche textuelle
+        if ($search = $request->query->get('search')) {
+            $filters['search'] = trim($search);
+        }
+
+        return $filters;
+    }
+
+    /**
+     * Nettoie les filtres pour le template (enlève les objets DateTime)
+     */
+    private function cleanFiltersForTemplate(array $filters): array
+    {
+        $cleanFilters = [];
+
+        foreach ($filters as $key => $value) {
+            // Ignorer les objets non-sérialisables comme DateTime et User
+            if (!is_object($value)) {
+                $cleanFilters[$key] = $value;
+            } elseif ($value instanceof \DateTime) {
+                // Convertir DateTime en string pour l'affichage
+                $cleanFilters[$key . '_display'] = $value->format('Y-m-d H:i:s');
+            }
+            // Ignorer les autres objets (comme User)
+        }
+
+        return $cleanFilters;
+    }
+
+    /**
+     * Actions en lot sur les erreurs d'un projet
+     */
+    #[Route('/details/{slug}/bulk-errors', name: 'bulk_errors', methods: ['POST'])]
+    public function bulkErrorActions(string $slug, Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+
+        // Vérifier que le projet appartient à l'utilisateur
+        $projectEntity = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $user]);
+        if (!$projectEntity) {
+            return $this->json(['success' => false, 'error' => 'Projet non trouvé'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $action = $data['action'] ?? null;
+        $errorIds = $data['error_ids'] ?? [];
+
+        if (!$action || empty($errorIds)) {
+            return $this->json(['success' => false, 'error' => 'Paramètres manquants'], 400);
+        }
+
+        if (!in_array($action, ['resolve', 'ignore', 'reopen'])) {
+            return $this->json(['success' => false, 'error' => 'Action non valide'], 400);
+        }
+
+        try {
+            // Récupérer les erreurs concernées (appartenant au projet et à l'utilisateur)
+            $errors = $this->errorGroupRepository->createQueryBuilder('eg')
+                ->where('eg.id IN (:ids)')
+                ->andWhere('eg.projectEntity = :projectEntity')
+                ->setParameter('ids', $errorIds)
+                ->setParameter('projectEntity', $projectEntity)
+                ->getQuery()
+                ->getResult();
+
+            if (empty($errors)) {
+                return $this->json(['success' => false, 'error' => 'Aucune erreur trouvée'], 404);
+            }
+
+            $count = 0;
+            foreach ($errors as $error) {
+                // Vérifier que l'erreur appartient bien à un projet de l'utilisateur
+                if ($error->getProjectEntity() && $error->getProjectEntity()->getOwner()->getId() !== $user->getId()) {
+                    continue;
+                }
+
+                switch ($action) {
+                    case 'resolve':
+                        if ($error->getStatus() !== ErrorGroup::STATUS_RESOLVED) {
+                            $error->setStatus(ErrorGroup::STATUS_RESOLVED);
+                            $count++;
+                        }
+                        break;
+                    case 'ignore':
+                        if ($error->getStatus() !== ErrorGroup::STATUS_IGNORED) {
+                            $error->setStatus(ErrorGroup::STATUS_IGNORED);
+                            $count++;
+                        }
+                        break;
+                    case 'reopen':
+                        if ($error->getStatus() !== ErrorGroup::STATUS_OPEN) {
+                            $error->setStatus(ErrorGroup::STATUS_OPEN);
+                            $count++;
+                        }
+                        break;
+                }
+            }
+
+            $this->entityManager->flush();
+
+            $actionText = match($action) {
+                'resolve' => 'résolues',
+                'ignore' => 'ignorées',
+                'reopen' => 'rouvertes'
+            };
+
+            return $this->json([
+                'success' => true,
+                'message' => sprintf('%d erreur(s) %s avec succès', $count, $actionText)
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Erreur lors de l\'action groupée: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Récupère la liste des utilisateurs assignables pour un projet
+     */
+    #[Route('/details/{slug}/assignable-users', name: 'assignable_users', methods: ['GET'])]
+    public function getAssignableUsers(string $slug): JsonResponse
+    {
+        $user = $this->getUser();
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $user]);
+
+        if (!$project || !$user) {
+            return $this->json(['success' => false, 'error' => 'Projet non trouvé'], 404);
+        }
+
+        $assignableUsers = [];
+
+        // Ajouter l'utilisateur principal (propriétaire du projet)
+        $assignableUsers[] = [
+            'id' => $user->getId(),
+            'full_name' => $user->getFullName(),
+            'initials' => $user->getInitials(),
+            'role' => 'Propriétaire',
+            'email' => $user->getEmail()
+        ];
+
+        // Ajouter les membres de l'équipe si le projet en a une
+        if ($project->getTeam()) {
+            $team = $project->getTeam();
+
+            foreach ($team->getMembers() as $member) {
+                if ($member->isActive() && $member->getUser()) {
+                    $memberUser = $member->getUser();
+                    if ($memberUser) {
+                        $assignableUsers[] = [
+                            'id' => $memberUser->getId(),
+                            'full_name' => $memberUser->getFullName(),
+                            'initials' => $memberUser->getInitials(),
+                            'role' => ucfirst($member->getRole()),
+                            'email' => $memberUser->getEmail()
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $this->json([
+            'success' => true,
+            'users' => $assignableUsers
+        ]);
+    }
+
+    /**
+     * Assigner une erreur à un utilisateur
+     */
+    #[Route('/details/{slug}/assign-error', name: 'assign_error', methods: ['POST'])]
+    public function assignError(string $slug, Request $request, EmailService $emailService): JsonResponse
+    {
+        $user = $this->getUser();
+        $project = $this->projectRepository->findOneBy(['slug' => $slug, 'owner' => $user]);
+
+        if (!$project) {
+            return $this->json(['success' => false, 'error' => 'Projet non trouvé'], 404);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $errorId = $data['error_id'] ?? null;
+        $assigneeId = $data['user_id'] ?? null;
+
+        if (!$errorId) {
+            return $this->json(['success' => false, 'error' => 'ID de l\'erreur manquant'], 400);
+        }
+
+        try {
+            // Récupérer l'erreur et vérifier qu'elle appartient au projet
+            $errorGroup = $this->errorGroupRepository->createQueryBuilder('eg')
+                ->where('eg.id = :errorId')
+                ->andWhere('eg.projectEntity = :project')
+                ->setParameter('errorId', $errorId)
+                ->setParameter('project', $project)
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            if (!$errorGroup) {
+                return $this->json(['success' => false, 'error' => 'Erreur non trouvée'], 404);
+            }
+
+            $assignee = null;
+            $assigneeName = 'Non assigné';
+
+            // Si un utilisateur est spécifié, vérifier qu'il peut être assigné
+            if ($assigneeId) {
+                // Vérifier que c'est le propriétaire ou un membre de l'équipe
+                if ($assigneeId == $user->getId()) {
+                    $assignee = $user;
+                    $assigneeName = $user->getFullName();
+                } elseif ($project->getTeam()) {
+                    $team = $project->getTeam();
+                    foreach ($team->getMembers() as $member) {
+                        if ($member->isActive() && $member->getUser() && $member->getUser()->getId() == $assigneeId) {
+                            $assignee = $member->getUser();
+                            $assigneeName = $assignee->getFullName();
+                            break;
+                        }
+                    }
+                }
+
+                if (!$assignee) {
+                    return $this->json(['success' => false, 'error' => 'Utilisateur non autorisé pour ce projet'], 403);
+                }
+            }
+
+            // Assigner l'erreur
+            $errorGroup->setAssignedTo($assignee);
+            $this->entityManager->flush();
+
+            // Envoyer une notification email si l'utilisateur a activé les notifications
+            if ($assignee) {
+                try {
+                    $emailService->sendErrorAssignmentNotification($assignee, $errorGroup, $project, $user);
+                } catch (\Exception $e) {
+                    error_log('Erreur envoi email assignation: ' . $e->getMessage());
+                }
+            }
+
+            $message = $assignee
+                ? sprintf('Erreur assignée à %s avec succès', $assigneeName)
+                : 'Assignation retirée avec succès';
+
+            return $this->json([
+                'success' => true,
+                'message' => $message,
+                'assigned_to' => $assignee ? [
+                    'id' => $assignee->getId(),
+                    'name' => $assignee->getFullName(),
+                    'initials' => $assignee->getInitials()
+                ] : null
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Erreur lors de l\'assignation: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

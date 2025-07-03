@@ -21,19 +21,18 @@
     {% endblock %}
 </head>
 
-<body class="dashboard">
-{% if app.flashes|length > 0 %}
-    <div class="flash-container" id="flash-container">
-        {% for type, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="flash-message flash-message--{{ type }}" data-auto-dismiss="5000">
-                    <span class="flash-message__content">{{ message }}</span>
-                    <button class="flash-message__close" onclick="this.parentElement.remove()">&times;</button>
-                </div>
-            {% endfor %}
+<body class="dashboard {{ body_class|default('') }}">
+<!-- Conteneur permanent pour les flash messages -->
+<div class="dashboard-flash-messages" id="dashboard-flash-messages">
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-message flash-message--{{ type }}" data-auto-dismiss="5000">
+                <span class="flash-message__content">{{ message }}</span>
+                <button class="flash-message__close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
         {% endfor %}
-    </div>
-{% endif %}
+    {% endfor %}
+</div>
 
 <div class="dashboard__layout">
     <!-- Sidebar Component -->
@@ -173,8 +172,8 @@
 
     <!-- Main Content Area -->
     <main class="dashboard__content">
-        <!-- Header Component -->
-        <header class="header">
+        <!-- Page-specific header section -->
+        <header class="header__page">
             <div class="header__top">
                 <div class="header__title-group">
                     {% block page_header %}
@@ -185,11 +184,11 @@
 
                 <div class="header__actions">
                     {% block header_actions %}
-                        <button class="btn btn--secondary" onclick="window.location.reload()">
-                            <svg class="btn__icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button class="header-btn btn-secondary" onclick="window.location.reload()">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
-                            <span class="btn__text">Actualiser</span>
+                            Actualiser
                         </button>
                     {% endblock %}
                 </div>

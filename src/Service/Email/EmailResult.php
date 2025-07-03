@@ -24,6 +24,11 @@ class EmailResult
         return new self(false, $attempts, $errorMessage, $metadata);
     }
 
+    public static function skipped(string $reason, array $metadata = []): self
+    {
+        return new self(true, 0, "Skipped: $reason", $metadata);
+    }
+
     public function isSuccess(): bool
     {
         return $this->success;

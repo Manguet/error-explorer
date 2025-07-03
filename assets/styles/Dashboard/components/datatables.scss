@@ -1,145 +1,178 @@
 /* Override des styles DataTables pour intégration avec le dashboard */
-.dataTables_wrapper {
-  color: $dashboard-text !important;
+.dashboard-table-container {
+  .dataTables_wrapper {
+    color: $dashboard-text !important;
+    font-size: 14px;
 
-  .dataTables_length,
-  .dataTables_filter,
-  .dataTables_info,
-  .dataTables_paginate {
-    color: $dashboard-text-light !important;
-  }
-
-  .dataTables_length {
-    margin-bottom: 1rem;
-    margin-left: 1.5rem;
-
-    select {
-      background-color: $dashboard-card-bg !important;
-      border: 1px solid $dashboard-border !important;
-      color: $dashboard-text !important;
-      border-radius: 6px !important;
-      padding: 0.5rem !important;
-    }
-  }
-
-  .dataTables_filter {
-    margin-bottom: 1rem;
-    margin-right: 1.5rem;
-
-    input {
-      background-color: $dashboard-card-bg !important;
-      border: 1px solid $dashboard-border !important;
-      color: $dashboard-text !important;
-      border-radius: 6px !important;
-      padding: 0.5rem !important;
-    }
-  }
-
-  .dataTables_info {
-    display: none !important;
-  }
-
-  .dataTables_paginate {
-    margin-top: 1rem;
-    text-align: center;
-    padding-bottom: 1rem;
-    padding-right: 1.5rem;
-
-    .paginate_button {
-      background: $dashboard-card-bg !important;
-      border: 1px solid $dashboard-border !important;
+    .dataTables_length,
+    .dataTables_filter,
+    .dataTables_info,
+    .dataTables_paginate {
       color: $dashboard-text-light !important;
-      border-radius: 6px !important;
-      margin: 0 2px !important;
-      padding: 0.5rem 0.75rem !important;
-      font-size: 0.875rem !important;
-      font-weight: 500 !important;
+    }
 
-      &:hover {
-        background: $primary-blue !important;
-        border-color: $primary-blue !important;
-        color: white !important;
-        transform: translateY(-1px) !important;
-      }
+    .dataTables_length {
+      display: none !important;
+    }
 
-      &.current {
-        background: $primary-blue !important;
-        border-color: $primary-blue !important;
-        color: white !important;
-        box-shadow: 0 4px 12px rgba($primary-blue, 0.3) !important;
-      }
+    .dataTables_filter {
+      display: none !important;
+    }
 
-      &.disabled {
-        background: rgba($dashboard-card-bg, 0.5) !important;
-        border-color: rgba($dashboard-border, 0.5) !important;
-        color: rgba($dashboard-text-light, 0.5) !important;
-        cursor: not-allowed !important;
+    .dataTables_info {
+      color: $dashboard-text-light;
+      font-size: 13px;
+      font-weight: 500;
+      padding-top: 10px;
+      margin-left: 1.5rem;
+    }
+
+    .dataTables_paginate {
+      padding-top: 20px;
+      text-align: right;
+      padding-right: 1.5rem;
+
+      .paginate_button {
+        display: inline-block !important;
+        padding: 6px 12px !important;
+        margin: 0 2px !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+        color: $dashboard-text-light !important;
+        background: $dashboard-card-bg !important;
+        border: 1px solid $dashboard-border !important;
+        border-radius: 4px !important;
+        text-decoration: none !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
 
         &:hover {
-          background: rgba($dashboard-card-bg, 0.5) !important;
-          border-color: rgba($dashboard-border, 0.5) !important;
-          color: rgba($dashboard-text-light, 0.5) !important;
-          transform: none !important;
+          color: $dashboard-text !important;
+          background: rgba($primary-blue, 0.1) !important;
+          border-color: $dashboard-border !important;
+          text-decoration: none !important;
+        }
+
+        &.current {
+          color: white !important;
+          background: $primary-blue !important;
+          border-color: $primary-blue !important;
+        }
+
+        &.disabled {
+          color: rgba($dashboard-text-light, 0.3) !important;
+          background: rgba($dashboard-card-bg, 0.3) !important;
+          border-color: rgba($dashboard-border, 0.3) !important;
+          cursor: not-allowed !important;
+          opacity: 0.5;
+
+          &:hover {
+            color: rgba($dashboard-text-light, 0.3) !important;
+            background: rgba($dashboard-card-bg, 0.3) !important;
+            border-color: rgba($dashboard-border, 0.3) !important;
+            transform: none !important;
+          }
         }
       }
     }
-  }
 
-  .top {
-    padding: 0 1.5rem;
-  }
+    .top {
+      padding: 0 1.5rem;
+    }
 
-  .bottom {
-    padding: 1rem 1.5rem 1.5rem;
+    .bottom {
+      padding: 1rem 1.5rem 1.5rem;
+    }
   }
 }
 
 /* Styles pour la table */
-table.dataTable {
-  background: $dashboard-card-bg !important;
-  border: none !important;
-
-  thead th {
-    background: rgba(0, 0, 0, 0.2) !important;
-    color: $dashboard-text !important;
-    border-bottom: 1px solid $dashboard-border !important;
-    padding: 1rem 1.5rem !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-  }
-
-  tbody td {
-    background: $dashboard-card-bg !important;
+.dashboard-table-container {
+  table.dataTable {
+    background: transparent !important;
     border: none !important;
-    border-bottom: 1px solid $dashboard-border !important;
-    color: $dashboard-text !important;
-    padding: 1rem 1.5rem !important;
-    font-size: 0.875rem !important;
-    vertical-align: top !important;
-  }
+    font-size: 13px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
 
-  tbody tr:hover td {
-    background: rgba(0, 0, 0, 0.8) !important;
+    thead th {
+      background: rgba($dashboard-text-light, 0.1) !important;
+      color: $dashboard-text !important;
+      border-bottom: 2px solid $dashboard-border !important;
+      padding: 12px 8px !important;
+      font-weight: 600 !important;
+      font-size: 10px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    tbody {
+      tr {
+        background: transparent !important;
+        border-bottom: 1px solid rgba($dashboard-border, 0.5) !important;
+
+        &:nth-child(even) {
+          background: rgba($dashboard-text-light, 0.02) !important;
+        }
+
+        &:hover {
+          background: rgba($dashboard-text-light, 0.05) !important;
+        }
+
+        &:nth-child(even):hover {
+          background: rgba($dashboard-text-light, 0.08) !important;
+        }
+      }
+
+      td {
+        background: transparent !important;
+        border: none !important;
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+        color: $dashboard-text !important;
+        padding: 8px !important;
+        font-size: 13px !important;
+        vertical-align: top !important;
+      }
+    }
   }
 }
 
 /* Styles pour les badges dans le datatable */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.dashboard-table-container {
+  .status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 
-  &.badge-info {
-    background-color: rgba($primary-blue, 0.1);
-    color: lighten($primary-blue, 20%);
-    border: 1px solid rgba($primary-blue, 0.2);
+    &.badge-open {
+      background: rgba($status-open, 0.1);
+      color: $status-open;
+    }
+
+    &.badge-resolved {
+      background: rgba($status-resolved, 0.1);
+      color: $status-resolved;
+    }
+
+    &.badge-ignored {
+      background: rgba($status-ignored, 0.1);
+      color: $status-ignored;
+    }
+
+    &.badge-info {
+      background-color: rgba($primary-blue, 0.1);
+      color: rgba(59, 130, 246, 0.9);
+      border: 1px solid rgba($primary-blue, 0.2);
+    }
   }
 }
 
@@ -155,13 +188,13 @@ table.dataTable {
 
   &.active {
     background-color: rgba($status-resolved, 0.1);
-    color: lighten($status-resolved, 10%);
+    color: rgba(16, 185, 129, 0.9);
     border: 1px solid rgba($status-resolved, 0.2);
   }
 
   &.inactive {
     background-color: rgba($status-ignored, 0.1);
-    color: lighten($status-ignored, 20%);
+    color: rgba(107, 114, 128, 0.9);
     border: 1px solid rgba($status-ignored, 0.2);
   }
 }
@@ -181,7 +214,7 @@ table.dataTable {
 
     &:hover {
       text-decoration: underline;
-      color: lighten($primary-blue, 10%);
+      color: rgba(59, 130, 246, 0.9);
     }
   }
 
@@ -235,62 +268,124 @@ table.dataTable {
   }
 }
 
-.action-btn {
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: none;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: $dashboard-transition;
-  min-width: 2rem;
-  min-height: 2rem;
+/* Action buttons dans le DataTable */
+.dashboard-table-container {
+  .action-btn {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
 
-  svg {
-    width: 16px;
-    height: 16px;
-  }
+    &.btn-success {
+      background: rgba($status-resolved, 0.1);
+      color: $status-resolved;
 
-  &.btn-secondary {
-    background: rgba($status-ignored, 0.1);
-    color: lighten($status-ignored, 20%);
+      &:hover {
+        background: $status-resolved;
+        color: white;
+      }
+    }
 
-    &:hover {
-      background: $status-ignored;
-      color: white;
+    &.btn-danger {
+      background: rgba($status-open, 0.1);
+      color: $status-open;
+
+      &:hover {
+        background: $status-open;
+        color: white;
+      }
+    }
+
+    &.btn-warning {
+      background: rgba($status-warning, 0.1);
+      color: $status-warning;
+
+      &:hover {
+        background: $status-warning;
+        color: white;
+      }
+    }
+
+    &.btn-secondary {
+      background: rgba($status-ignored, 0.1);
+      color: rgba(107, 114, 128, 0.9);
+
+      &:hover {
+        background: $status-ignored;
+        color: white;
+      }
     }
   }
 
-  &.btn-success {
-    background: rgba($status-resolved, 0.1);
-    color: $status-resolved;
-
-    &:hover {
-      background: $status-resolved;
-      color: white;
+  /* Table cells content */
+  .table-cell-title {
+    font-weight: 600;
+    color: $dashboard-text;
+    margin-bottom: 2px;
+    font-size: 13px;
+    
+    a {
+      color: $primary-blue;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        color: lighten($primary-blue, 10%);
+        text-decoration: underline;
+      }
     }
   }
 
-  &.btn-warning {
-    background: rgba($status-warning, 0.1);
-    color: $status-warning;
-
-    &:hover {
-      background: $status-warning;
-      color: white;
-    }
+  .table-cell-meta {
+    font-size: 11px;
+    color: $dashboard-text-light;
+  }
+  
+  .table-cell-subtitle {
+    font-size: 10px;
+    color: $dashboard-text-light;
+    padding: 0.25rem 0;
   }
 
-  &.btn-danger {
-    background: rgba($status-open, 0.1);
-    color: $status-open;
+  /* Cellules spécifiques */
+  .error-cell {
+    max-width: 300px;
+  }
 
-    &:hover {
-      background: $status-open;
-      color: white;
-    }
+  .project-cell {
+    min-width: 120px;
+  }
+
+  .status-cell {
+    width: 100px;
+    text-align: center;
+  }
+
+  .occurrence-cell {
+    width: 120px;
+    text-align: center;
+  }
+
+  .date-cell {
+    width: 100px;
+    font-size: 12px;
+  }
+
+  .actions-cell {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .project-actions-cell {
+    width: 160px;
+    min-width: 160px;
+    text-align: center;
   }
 }
 
@@ -303,11 +398,136 @@ table.dataTable {
   font-style: italic;
 }
 
+/* Styles compacts pour les projets */
+.project-error-stats {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-stat-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  
+  .stat-number {
+    font-weight: 600;
+    color: $dashboard-text;
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+  
+  small {
+    font-size: 0.6875rem;
+    color: $dashboard-text-light;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-weight: 500;
+  }
+}
+
+/* Actions compactes pour les projets */
+.dashboard-table-container {
+  .table-actions {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.375rem;
+      margin: 0;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      line-height: 1;
+      min-width: 28px;
+      height: 28px;
+      
+      svg {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+      }
+      
+      &.btn-success {
+        background: rgba($status-resolved, 0.1);
+        color: $status-resolved;
+
+        &:hover {
+          background: $status-resolved;
+          color: white;
+        }
+      }
+
+      &.btn-danger {
+        background: rgba($status-open, 0.1);
+        color: $status-open;
+
+        &:hover {
+          background: $status-open;
+          color: white;
+        }
+      }
+
+      &.btn-warning {
+        background: rgba($status-warning, 0.1);
+        color: $status-warning;
+
+        &:hover {
+          background: $status-warning;
+          color: white;
+        }
+      }
+
+      &.btn-secondary {
+        background: rgba($status-ignored, 0.1);
+        color: rgba(107, 114, 128, 0.9);
+
+        &:hover {
+          background: $status-ignored;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
 /* Style pour l'état vide si aucun projet dans le datatable */
 .dataTables_empty {
   text-align: center;
   padding: 3rem;
   color: $dashboard-text-light !important;
+}
+
+/* Styles spécifiques pour les cellules d'erreurs du projet */
+.dashboard-table-container {
+  .table-cell-main {
+    max-width: 400px;
+    min-width: 250px;
+  }
+  
+  .table-cell-center {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .table-cell-actions {
+    text-align: center;
+    vertical-align: middle;
+    width: 100px;
+    min-width: 100px;
+  }
 }
 
 /* Styles pour section-header cohérents avec l'admin */
@@ -370,7 +590,7 @@ table.dataTable {
 
   &-secondary {
     background: rgba($status-ignored, 0.1);
-    color: lighten($status-ignored, 20%);
+    color: rgba(107, 114, 128, 0.9);
     border: 1px solid rgba($status-ignored, 0.2);
 
     &:hover {
@@ -386,5 +606,5 @@ table.dataTable {
   border-radius: 0;
   border: none;
   overflow: hidden;
-  padding-top: 1rem;
+  padding-bottom: 2rem;
 }

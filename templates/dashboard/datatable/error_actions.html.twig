@@ -1,0 +1,19 @@
+{# templates/dashboard/datatable/error_actions.html.twig #}
+<div class="table-actions">
+    {% if row.status == 'open' %}
+        <button class="action-btn btn-success" onclick="resolveError({{ row.id }})" title="Résoudre">
+            ✓
+        </button>
+        <button class="action-btn btn-danger" onclick="ignoreError({{ row.id }})" title="Ignorer">
+            ✕
+        </button>
+    {% elseif row.status == 'resolved' %}
+        <button class="action-btn btn-warning" onclick="reopenError({{ row.id }})" title="Rouvrir">
+            ↻
+        </button>
+    {% elseif row.status == 'ignored' %}
+        <button class="action-btn btn-warning" onclick="reopenError({{ row.id }})" title="Rouvrir">
+            ↻
+        </button>
+    {% endif %}
+</div>

@@ -91,9 +91,21 @@ class ErrorGroup
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTimeInterface $aiSuggestionsGeneratedAt = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'assigned_to_id', referencedColumnName: 'id', nullable: true)]
+    private ?User $assignedTo = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?DateTimeInterface $assignedAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'errorGroups')]
+    #[ORM\JoinTable(name: 'error_group_tags')]
+    private Collection $tags;
+
     public function __construct()
     {
         $this->occurrences = new ArrayCollection();
+        $this->tags = new ArrayCollection();
         $this->firstSeen = new DateTime();
         $this->lastSeen = new DateTime();
     }
@@ -376,29 +388,6 @@ class ErrorGroup
         );
     }
 
-    /**
-     * Génère un fingerprint unique basé sur les caractéristiques de l'erreur
-     */
-    public static function generateFingerprint(
-        string $exceptionClass,
-        string $file,
-        int $line,
-        string $message
-    ): string {
-        // Normaliser le chemin de fichier (enlever les parties variables)
-        $normalizedFile = preg_replace('/^.*\/(src|app|vendor)\//', '$1/', $file);
-
-        // Normaliser le message (enlever les IDs, valeurs dynamiques, etc.)
-        $normalizedMessage = preg_replace('/\b\d+\b/', 'N', $message);
-        $normalizedMessage = preg_replace('/["\']([^"\']*)["\']/', '""', $normalizedMessage);
-
-        return hash('sha256', implode('|', [
-            $exceptionClass,
-            $normalizedFile,
-            $line,
-            $normalizedMessage
-        ]));
-    }
 
     public function getLastAlertSentAt(): ?DateTimeInterface
     {
@@ -411,85 +400,6 @@ class ErrorGroup
         return $this;
     }
 
-    /**
-     * Retourne la stack trace de la première occurrence (pour compatibilité)
-     */
-    public function getStackTrace(): ?string
-    {
-        if ($this->stackTracePreview) {
-            return $this->stackTracePreview;
-        }
-        
-        $firstOccurrence = $this->occurrences->first();
-        return $firstOccurrence ? $firstOccurrence->getStackTrace() : null;
-    }
-
-    /**
-     * Retourne le contexte de la dernière occurrence
-     */
-    public function getLatestContext(): array
-    {
-        if ($this->occurrences->isEmpty()) {
-            return [];
-        }
-        
-        // Trier par date de création et prendre la plus récente
-        $latestOccurrence = $this->occurrences->toArray();
-        usort($latestOccurrence, function($a, $b) {
-            return $b->getCreatedAt() <=> $a->getCreatedAt();
-        });
-        
-        return $latestOccurrence[0]->getContext();
-    }
-
-    /**
-     * Retourne les informations de requête de la dernière occurrence
-     */
-    public function getLatestRequest(): array
-    {
-        if ($this->occurrences->isEmpty()) {
-            return [];
-        }
-        
-        $latestOccurrence = $this->occurrences->toArray();
-        usort($latestOccurrence, function($a, $b) {
-            return $b->getCreatedAt() <=> $a->getCreatedAt();
-        });
-        
-        return $latestOccurrence[0]->getRequest();
-    }
-
-    /**
-     * Retourne l'User-Agent de la dernière occurrence
-     */
-    public function getLatestUserAgent(): ?string
-    {
-        if ($this->occurrences->isEmpty()) {
-            return null;
-        }
-        
-        $latestOccurrence = $this->occurrences->toArray();
-        usort($latestOccurrence, function($a, $b) {
-            return $b->getCreatedAt() <=> $a->getCreatedAt();
-        });
-        
-        return $latestOccurrence[0]->getUserAgent();
-    }
-
-    /**
-     * Méthodes pour compatibilité avec l'export (ajoutées temporairement)
-     */
-    public function getResolvedAt(): ?DateTimeInterface
-    {
-        // Cette propriété n'existe pas encore, retourner null pour l'instant
-        return null;
-    }
-
-    public function getResolvedBy(): ?string
-    {
-        // Cette propriété n'existe pas encore, retourner null pour l'instant
-        return null;
-    }
 
     public function getAiSuggestions(): ?array
     {
@@ -532,5 +442,123 @@ class ErrorGroup
 
         $expiryTime = (clone $this->aiSuggestionsGeneratedAt)->add(new \DateInterval("PT{$hoursValid}H"));
         return new DateTime() > $expiryTime;
+    }
+
+    public function getAssignedTo(): ?User
+    {
+        return $this->assignedTo;
+    }
+
+    public function setAssignedTo(?User $assignedTo): static
+    {
+        $this->assignedTo = $assignedTo;
+        $this->assignedAt = $assignedTo ? new DateTime() : null;
+        return $this;
+    }
+
+    public function getAssignedAt(): ?DateTimeInterface
+    {
+        return $this->assignedAt;
+    }
+
+    public function setAssignedAt(?DateTimeInterface $assignedAt): static
+    {
+        $this->assignedAt = $assignedAt;
+        return $this;
+    }
+
+    public function isAssigned(): bool
+    {
+        return $this->assignedTo !== null;
+    }
+
+    public function assign(User $user): static
+    {
+        $this->assignedTo = $user;
+        $this->assignedAt = new DateTime();
+        return $this;
+    }
+
+    public function unassign(): static
+    {
+        $this->assignedTo = null;
+        $this->assignedAt = null;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->incrementUsageCount();
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            $tag->decrementUsageCount();
+        }
+
+        return $this;
+    }
+
+    public function hasTag(Tag $tag): bool
+    {
+        return $this->tags->contains($tag);
+    }
+
+    public function hasTagByName(string $tagName): bool
+    {
+        foreach ($this->tags as $tag) {
+            if ($tag->getName() === $tagName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getTagNames(): array
+    {
+        return $this->tags->map(fn(Tag $tag) => $tag->getName())->toArray();
+    }
+
+    public function getTagsAsArray(): array
+    {
+        return $this->tags->map(fn(Tag $tag) => $tag->toArray())->toArray();
+    }
+
+    public function clearTags(): static
+    {
+        foreach ($this->tags as $tag) {
+            $tag->decrementUsageCount();
+        }
+        $this->tags->clear();
+        return $this;
+    }
+
+    public function syncTags(array $tags): static
+    {
+        // Supprimer tous les tags actuels
+        $this->clearTags();
+        
+        // Ajouter les nouveaux tags
+        foreach ($tags as $tag) {
+            if ($tag instanceof Tag) {
+                $this->addTag($tag);
+            }
+        }
+        
+        return $this;
     }
 }

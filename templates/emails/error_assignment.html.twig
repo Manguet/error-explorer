@@ -1,0 +1,109 @@
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Nouvelle erreur assignée - {{ app_name }}{% endblock %}
+
+{% block header_class %}email-header--info{% endblock %}
+
+{% block status_badge %}
+    <div class="status-badge">📋 Assignation</div>
+{% endblock %}
+
+{% block email_title %}Nouvelle erreur assignée{% endblock %}
+
+{% block email_subtitle %}Une erreur nécessite votre attention{% endblock %}
+
+{% block body %}
+    <h2>Bonjour {{ user.fullName }},</h2>
+    
+    <p>
+        Une nouvelle erreur vous a été assignée dans le projet 
+        <strong>{{ project.name }}</strong> et nécessite votre attention.
+    </p>
+
+    {% if assigned_by %}
+        <div class="info-card">
+            <div class="card-title">👤 Assigné par</div>
+            <div class="card-content">
+                <strong>{{ assigned_by.fullName }}</strong><br>
+                Le {{ assigned_at|date('d/m/Y à H:i') }}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="details-grid">
+        <div class="detail-item">
+            <div class="detail-label">Projet</div>
+            <div class="detail-value">{{ project.name }}</div>
+        </div>
+        {% if project.environment %}
+        <div class="detail-item">
+            <div class="detail-label">Environnement</div>
+            <div class="detail-value">{{ project.environment|title }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="error-card">
+        <div class="card-title">🚨 {{ error.exceptionClass }}</div>
+        <div class="card-content">
+            <div class="code-block">{{ error.message }}</div>
+        </div>
+    </div>
+
+    <div class="details-grid-4">
+        <div class="detail-item">
+            <div class="detail-label">Fichier</div>
+            <div class="detail-value">{{ error.file|split('/')|last }}:{{ error.line }}</div>
+        </div>
+        
+        <div class="detail-item">
+            <div class="detail-label">Occurrences</div>
+            <div class="detail-value">{{ error.occurrenceCount }}</div>
+        </div>
+        
+        <div class="detail-item">
+            <div class="detail-label">Première fois</div>
+            <div class="detail-value">{{ error.firstSeen|date('d/m/Y') }}</div>
+        </div>
+        
+        <div class="detail-item">
+            <div class="detail-label">Dernière fois</div>
+            <div class="detail-value">{{ error.lastSeen|date('d/m/Y') }}</div>
+        </div>
+    </div>
+
+    <div class="btn-center">
+        <a href="{{ error_url }}" class="btn btn-primary btn-large">
+            🔍 Voir l'erreur en détail
+        </a>
+        <a href="{{ project_url }}" class="btn btn-secondary">
+            📊 Aller au projet
+        </a>
+    </div>
+
+    <h3>🎯 Prochaines étapes</h3>
+    <ol class="styled-ordered-list">
+        <li>Consultez les détails de l'erreur pour comprendre le contexte</li>
+        <li>Analysez la stack trace et les conditions d'occurrence</li>
+        <li>Reproduisez le problème si possible</li>
+        <li>Implémentez et testez la correction</li>
+        <li>Marquez l'erreur comme résolue une fois corrigée</li>
+    </ol>
+
+    <div class="warning-card">
+        <div class="card-title">⚠️ Rappel important</div>
+        <div class="card-content">
+            Cette erreur vous a été spécifiquement assignée. N'hésitez pas à la réassigner 
+            à un autre membre de l'équipe si elle sort de votre domaine d'expertise.
+        </div>
+    </div>
+
+    <p style="font-size: 14px; color: #64748b; margin-top: 30px;">
+        💡 <strong>Astuce :</strong> Vous pouvez gérer vos préférences de notification 
+        dans les <a href="{{ dashboard_url }}/settings" style="color: #3b82f6;">paramètres de votre compte</a>.
+    </p>
+{% endblock %}
+
+{% block additional_footer_links %}
+    <a href="{{ unsubscribe_url }}" class="footer-link">Se désabonner</a>
+{% endblock %}

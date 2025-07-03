@@ -1,0 +1,396 @@
+// Git integration component styles
+
+.git-integration {
+  &__instructions {
+    margin-top: 2rem;
+    display: none;
+    
+    &--active {
+      display: block;
+    }
+  }
+  
+  &__alert {
+    background-color: $alert-bg-info;
+    border: 1px solid $alert-border-info;
+    border-radius: $dashboard-radius;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    
+    &--success {
+      background-color: $alert-bg-success;
+      border-color: $alert-border-success;
+      color: $alert-text-success;
+    }
+    
+    &--warning {
+      background-color: $alert-bg-warning;
+      border-color: $alert-border-warning;
+      color: $alert-text-warning;
+    }
+    
+    &--info {
+      background-color: $alert-bg-info;
+      border-color: $alert-border-info;
+      color: $alert-text-info;
+    }
+  }
+  
+  &__alert-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+  }
+  
+  &__provider-section {
+    display: none;
+    
+    &--active {
+      display: block;
+    }
+  }
+  
+  &__provider-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: $dashboard-text;
+  }
+  
+  &__steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    li {
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+      position: relative;
+      
+      &::before {
+        content: counter(step);
+        counter-increment: step;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: $primary-blue;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  &__steps {
+    counter-reset: step;
+  }
+  
+  &__code {
+    background-color: $dashboard-code-bg;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+    color: $dashboard-code-text;
+  }
+  
+  &__status {
+    padding: 2rem;
+  }
+  
+  &__status-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  &__status-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.75rem;
+    
+    &--success {
+      color: $status-resolved;
+    }
+  }
+  
+  &__status-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $dashboard-text;
+  }
+  
+  &__status-details {
+    margin-top: 1.5rem;
+    
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: $dashboard-text;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+      li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid $dashboard-border;
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        strong {
+          color: $dashboard-text;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+  
+  &__form-section {
+    padding: 2rem;
+  }
+  
+  &__submit-button {
+    margin-top: 2rem;
+  }
+  
+  // Form field overrides
+  &__field {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: $dashboard-text;
+    }
+    
+    input,
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid $dashboard-border;
+      border-radius: $dashboard-radius;
+      background-color: $dashboard-card-bg;
+      color: $dashboard-text;
+      font-size: 1rem;
+      transition: $dashboard-transition;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary-blue;
+        box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
+      }
+      
+      &::placeholder {
+        color: $dashboard-text-light;
+      }
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1.25rem;
+      padding-right: 2.5rem;
+      
+      option {
+        background-color: $dashboard-card-bg;
+        color: $dashboard-text;
+        padding: 0.5rem;
+        
+        &:hover,
+        &:focus {
+          background-color: rgba($primary-blue, 0.1);
+        }
+      }
+    }
+    
+    small {
+      display: block;
+      margin-top: 0.5rem;
+      color: $dashboard-text-light;
+      font-size: 0.875rem;
+    }
+  }
+  
+  &__help-text {
+    display: block;
+    margin-top: 0.5rem;
+    color: $dashboard-text-light;
+    font-size: 0.875rem;
+  }
+}
+
+// Styles spécifiques pour le formulaire Symfony
+#git_integration_gitProvider {
+  background-color: $dashboard-card-bg !important;
+  color: $dashboard-text !important;
+  border: 1px solid $dashboard-border !important;
+  
+  option {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    padding: 8px !important;
+    
+    &:hover {
+      background-color: #334155 !important;
+      color: #ffffff !important;
+    }
+    
+    &:checked {
+      background-color: rgba(59, 130, 246, 0.2) !important;
+      color: #ffffff !important;
+    }
+    
+    &:focus {
+      background-color: #334155 !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
+// Styles additionnels pour forcer l'affichage
+select#git_integration_gitProvider option {
+  background: #1e293b !important;
+  color: #fff !important;
+}
+
+// Alternative avec une approche plus globale
+.git-integration select,
+.git-integration__field select {
+  background-color: #1e293b !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  
+  option {
+    background-color: #1e293b !important;
+    color: #fff !important;
+    
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #334155 !important;
+      color: #fff !important;
+    }
+  }
+}
+
+// Links within instructions
+.git-integration__instructions a {
+  color: $primary-blue;
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Important notes
+.git-integration__important {
+  display: block;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba($status-warning, 0.1);
+  border-left: 4px solid $status-warning;
+  border-radius: 0 $dashboard-radius $dashboard-radius 0;
+  color: darken($status-warning, 15%);
+  font-size: 0.875rem;
+  
+  strong {
+    font-weight: 600;
+  }
+}
+
+// Git code snippets
+.git-code-snippets {
+  padding: 1.5rem;
+}
+
+.git-code-snippet {
+  &__lines {
+    background-color: $dashboard-code-bg;
+    border-radius: 0 0 $dashboard-radius $dashboard-radius;
+    overflow-x: auto;
+  }
+  
+  &__line {
+    display: flex;
+    border-left: 3px solid transparent;
+    transition: $dashboard-transition;
+    
+    &:hover {
+      background-color: rgba($primary-blue, 0.05);
+    }
+    
+    &--error {
+      background-color: rgba($status-open, 0.1);
+      border-left-color: $status-open;
+      
+      .git-code-snippet__line-number {
+        color: $status-open;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  &__line-number {
+    display: inline-block;
+    min-width: 50px;
+    padding: 0.5rem 1rem;
+    text-align: right;
+    color: $dashboard-text-light;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+    user-select: none;
+    border-right: 1px solid $dashboard-border;
+  }
+  
+  &__line-content {
+    flex: 1;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-family: $font-mono;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre;
+    
+    code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+  }
+}
+
+// Loading spinner for git context
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 1rem;
+  border: 3px solid $dashboard-border;
+  border-top-color: $primary-blue;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

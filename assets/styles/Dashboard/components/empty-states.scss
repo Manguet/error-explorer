@@ -26,5 +26,6 @@
 
   .empty-action {
     @include dashboard-button();
+    color: $dashboard-text;
   }
 }

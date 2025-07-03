@@ -1,0 +1,153 @@
+// Modal de confirmation - Thème sombre
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+
+    .confirmation-modal__content {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  &__content {
+    background: $dashboard-card-bg;
+    border: 1px solid $dashboard-border;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    &--warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    &--danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    &--success {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $dashboard-text;
+    text-align: center;
+    margin-bottom: 0.75rem;
+  }
+
+  &__message {
+    color: $dashboard-text-light;
+    text-align: center;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  &__button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+
+    &--primary {
+      background: #3b82f6;
+      color: white;
+
+      &:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+      }
+    }
+
+    &--success {
+      background: #10b981;
+      color: white;
+
+      &:hover {
+        background: #059669;
+        transform: translateY(-1px);
+      }
+    }
+
+    &--warning {
+      background: #f59e0b;
+      color: white;
+
+      &:hover {
+        background: #d97706;
+        transform: translateY(-1px);
+      }
+    }
+
+    &--secondary {
+      background: rgba($dashboard-text-light, 0.1);
+      color: $dashboard-text-light;
+      border: 1px solid rgba($dashboard-text-light, 0.3);
+
+      &:hover {
+        background: rgba($dashboard-text-light, 0.2);
+        color: $dashboard-text;
+      }
+    }
+  }
+}
+
+// Animation d'entrée
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

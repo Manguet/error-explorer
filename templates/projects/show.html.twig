@@ -6,14 +6,8 @@
 {% block page_subtitle %}Monitoring et erreurs spécifiques à ce projet{% endblock %}
 
 {% block breadcrumb_items %}
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
     <a href="{{ path('projects_index') }}">Projets</a>
-    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
-    <span>{{ project }}</span>
+    <span>{{ project.name }}</span>
 {% endblock %}
 
 {% block header_actions %}
@@ -24,13 +18,25 @@
         Tous les projets
     </a>
     {% if project is defined %}
-        <a href="{{ path('project_alerts_settings', { id: project.id }) }}" class="header-btn btn-secondary">
+        <a href="{{ path('project_alerts_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>
             </svg>
             Alertes
         </a>
-        <a href="{{ path('projects_edit', { id: project.id }) }}" class="header-btn btn-secondary">
+        <a href="{{ path('project_git_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            </svg>
+            Git
+        </a>
+        <a href="{{ path('documentation') }}" class="header-btn btn-primary" target="_blank">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            Instructions SDK
+        </a>
+        <a href="{{ path('projects_edit', { slug: project.slug }) }}" class="header-btn btn-secondary">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -51,46 +57,6 @@
 {% endblock %}
 
 {% block body %}
-{#    <!-- Project Info Banner -->#}
-{#    {% if project_entity is defined and project_entity %}#}
-{#        <div class="dashboard-section">#}
-{#            <div class="project-status-banner status-active">#}
-{#                <div class="status-content">#}
-{#                    <div class="status-icon">#}
-{#                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">#}
-{#                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>#}
-{#                        </svg>#}
-{#                    </div>#}
-{#                    <div class="status-text">#}
-{#                        <h3>📦 Projet configuré</h3>#}
-{#                        <p>#}
-{#                            {% if project_entity.description %}#}
-{#                                {{ project_entity.description }}#}
-{#                            {% else %}#}
-{#                                Monitoring actif pour ce projet#}
-{#                            {% endif %}#}
-{#                        </p>#}
-{#                    </div>#}
-{#                    <div class="status-actions">#}
-{#                        <a href="{{ path('project_alerts_settings', { id: project_entity.id }) }}" class="header-btn btn-primary">#}
-{#                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">#}
-{#                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM8.06 2A1.31 1.31 0 006.75 3.31L2.36 7.7c-.87.87-.87 2.28 0 3.15l6.01 6.01c.43.43 1.12.43 1.55 0l4.39-4.39A1.31 1.31 0 0015.62 11L11.23 6.61c-.87-.87-2.28-.87-3.15 0z"/>#}
-{#                            </svg>#}
-{#                            Alertes#}
-{#                        </a>#}
-{#                        <a href="{{ path('projects_edit', { id: project_entity.id }) }}" class="header-btn btn-secondary">#}
-{#                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">#}
-{#                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>#}
-{#                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>#}
-{#                            </svg>#}
-{#                            Configurer#}
-{#                        </a>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endif %}#}
-
     <!-- Stats Cards -->
     <div class="dashboard-section">
         <div class="projects-stats-grid">
@@ -144,11 +110,228 @@
         </div>
     </div>
 
-    <!-- Filters -->
+    <!-- Quick Setup Section -->
+    {% if stats.total_errors == 0 %}
     <div class="dashboard-section">
+        <div class="setup-guide">
+            <div class="setup-guide-header">
+                <div class="setup-guide-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <div class="setup-guide-content">
+                    <h3>Configuration requise</h3>
+                    <p>Configurez votre application pour commencer à recevoir les erreurs</p>
+                </div>
+                <div class="setup-guide-action">
+                    <a href="{{ path('documentation') }}" target="_blank" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M14 6h6m0 0v6m0-6L10 16"/>
+                        </svg>
+                        Instructions SDK
+                    </a>
+                </div>
+            </div>
+            <div class="setup-guide-details">
+                <div class="setup-detail">
+                    <label>URL Webhook</label>
+                    <div class="setup-value">
+                        <code>{{ webhook_url }}</code>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ webhook_url }}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="setup-detail">
+                    <label>Token Projet</label>
+                    <div class="setup-value">
+                        <code>{{ project.webhookToken }}</code>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ project.webhookToken }}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="setup-detail">
+                    <label>Projet</label>
+                    <div class="setup-value">
+                        <code>{{ project.slug }}</code>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ project.slug }}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <style>
+    .setup-guide {
+        background: var(--dashboard-card-bg, #1f2937);
+        border: 1px solid var(--dashboard-border, #374151);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .setup-guide-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+        border-bottom: 1px solid var(--dashboard-border, #374151);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+    }
+
+    .setup-guide-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .setup-guide-content {
+        flex: 1;
+    }
+
+    .setup-guide-content h3 {
+        margin: 0 0 4px 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--dashboard-text, #f9fafb);
+    }
+
+    .setup-guide-content p {
+        margin: 0;
+        color: var(--dashboard-text-light, #d1d5db);
+        font-size: 14px;
+    }
+
+    .setup-guide-action .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: #3b82f6;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .setup-guide-action .btn:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .setup-guide-details {
+        padding: 24px;
+        display: grid;
+        gap: 20px;
+        margin-bottom: 2rem;
+    }
+
+    .setup-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .setup-detail label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--dashboard-text, #f9fafb);
+        margin: 0;
+    }
+
+    .setup-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--dashboard-border, #374151);
+        border-radius: 8px;
+        padding: 12px;
+    }
+
+    .setup-value code {
+        flex: 1;
+        background: none;
+        border: none;
+        color: #10b981;
+        font-family: 'JetBrains Mono', 'Monaco', 'Menlo', monospace;
+        font-size: 13px;
+        word-break: break-all;
+        margin: 0;
+        padding: 0;
+    }
+
+    .copy-btn {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 6px;
+        padding: 6px;
+        color: #3b82f6;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6;
+        transform: scale(1.05);
+    }
+
+    .copy-btn:active {
+        transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+        .setup-guide-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .setup-guide-details {
+            padding: 16px;
+        }
+
+        .setup-value {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .copy-btn {
+            align-self: flex-end;
+        }
+    }
+    </style>
+
+    <!-- Filters -->
+    <div class="dashboard-section" style="margin-top:2rem">
         <div class="dashboard-filters">
             <form method="GET" class="dashboard-filters-grid">
-                <input type="hidden" name="project" value="{{ project }}">
 
                 <div class="dashboard-filters-group">
                     <label>Statut</label>
@@ -216,7 +399,7 @@
                         </svg>
                         Filtrer
                     </button>
-                    <a href="{{ path('dashboard_project', { project: project }) }}" class="filter-btn btn-secondary">
+                    <a href="{{ path('projects_show', { slug: project.slug }) }}" class="filter-btn btn-secondary">
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
@@ -227,277 +410,577 @@
         </div>
     </div>
 
+    <!-- Bulk Actions for Errors -->
+    <div class="bulk-actions" id="bulk-actions-errors" style="display: none;">
+        <div>
+            <span class="selected-count">0 erreur(s) sélectionnée(s)</span>
+            <div class="bulk-actions-buttons">
+                <button class="bulk-action-btn" data-action="resolve" onclick="bulkErrorAction('resolve')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Résoudre
+                </button>
+                <button class="bulk-action-btn" data-action="ignore" onclick="bulkErrorAction('ignore')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Ignorer
+                </button>
+                <button class="bulk-action-btn" data-action="reopen" onclick="bulkErrorAction('reopen')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Rouvrir
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Errors Table -->
     <div class="dashboard-section">
         <div class="dashboard-table-container">
             <div class="dashboard-table-container-header">
                 <h3>
-                    🚨 Erreurs du projet {{ project }}
-                    <span class="text-muted">
-{#                        ({{ pagination.total_items }} au total)#}
-                    </span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; margin-right: 0.5rem; color: #ef4444;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5C3.312 18.333 4.274 20 5.814 20z"/>
+                    </svg>
+                    Erreurs du projet {{ project }}
                 </h3>
-                <div class="table-actions">
-                    <label class="d-flex align-center gap-2 text-muted">
-                        Trier par:
-                        <select id="sort-select" class="sort-select">
-{#                            <option value="lastSeen|DESC" {{ sort == 'lastSeen' and direction == 'DESC' ? 'selected' : '' }}>Plus récentes</option>#}
-{#                            <option value="occurrenceCount|DESC" {{ sort == 'occurrenceCount' and direction == 'DESC' ? 'selected' : '' }}>Plus fréquentes</option>#}
-{#                            <option value="firstSeen|ASC" {{ sort == 'firstSeen' and direction == 'ASC' ? 'selected' : '' }}>Plus anciennes</option>#}
-{#                            <option value="message|ASC" {{ sort == 'message' and direction == 'ASC' ? 'selected' : '' }}>Message A-Z</option>#}
-                        </select>
-                    </label>
-                </div>
             </div>
 
-            {% if error_groups is defined and error_groups|length > 0 %}
-                <table class="dashboard-table">
-                    <thead>
-                    <tr>
-                        <th>Erreur</th>
-                        <th>Type</th>
-                        <th>Statut</th>
-                        <th>Occurrences</th>
-                        <th>Dernière vue</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for error in error_groups %}
-                        <tr data-error-id="{{ error.id }}">
-                            <td>
-                                <div class="table-cell-title">
-                                    <a href="{{ path('dashboard_error_detail', { id: error.id }) }}">
-                                        {{ error.title }}
-                                    </a>
-                                </div>
-                                <div class="table-cell-subtitle">
-                                    {{ error.message|length > 100 ? error.message|slice(0, 100) ~ '...' : error.message }}
-                                </div>
-                                <div class="table-cell-meta">
-                                    {% if error.httpStatusCode %}
-                                        <span class="status-badge badge-warning">HTTP {{ error.httpStatusCode }}</span>
-                                    {% endif %}
-                                    {% if error.environment %}
-                                        <span class="status-badge badge-ignored">{{ error.environment }}</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>
-                                    <span class="status-badge badge-{{ error.errorType }}">
-                                        {{ error.errorType|title }}
-                                    </span>
-                            </td>
-                            <td>
-                                    <span class="status-badge badge-{{ error.status }}">
-                                        {{ error.status|title }}
-                                    </span>
-                            </td>
-                            <td>
-                                <div class="table-cell-title">{{ error.occurrenceCount }}</div>
-                                <div class="table-cell-meta">
-                                    Depuis {{ error.firstSeen|date('d/m/Y') }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="table-cell-title">{{ error.lastSeen|date('d/m H:i') }}</div>
-                                <div class="table-cell-meta">{{ error.lastSeen|date('d/m/Y') }}</div>
-                            </td>
-                            <td>
-                                <div class="table-actions">
-                                    {% if error.status == 'open' %}
-                                        <button class="action-btn btn-success" onclick="resolveError({{ error.id }})" title="Résoudre">
-                                            ✓
-                                        </button>
-                                        <button class="action-btn btn-danger" onclick="ignoreError({{ error.id }})" title="Ignorer">
-                                            ✕
-                                        </button>
-                                    {% elseif error.status == 'resolved' %}
-                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                            ↻
-                                        </button>
-                                    {% elseif error.status == 'ignored' %}
-                                        <button class="action-btn btn-warning" onclick="reopenError({{ error.id }})" title="Rouvrir">
-                                            ↻
-                                        </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="dashboard-empty-state">
-                    <div class="empty-icon">🎉</div>
-                    <h3>Aucune erreur trouvée pour ce projet</h3>
-                    {% if filters is defined and filters|length > 1 %}
-                        <p>Aucune erreur ne correspond à vos critères de recherche pour ce projet.</p>
-                        <a href="{{ path('dashboard_project', { project: project }) }}" class="empty-action">
-                            Voir toutes les erreurs du projet
-                        </a>
-                    {% else %}
-                        <p>Félicitations ! Ce projet ne présente aucune erreur. Continuez ainsi !</p>
-{#                        <a href="{{ path('projects_show', { id: project_entity.id }) }}" class="empty-action">#}
-                        <a href="#" class="empty-action">
-                            Configurer le projet
-                        </a>
-                    {% endif %}
+            <div class="table-container">
+                <div id="errors-table"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="confirmation-modal__content">
+            <div class="confirmation-modal__icon" id="modal-icon">
+                <svg id="modal-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="confirmation-modal__title" id="modal-title">Confirmer l'action</h3>
+            <p class="confirmation-modal__message" id="modal-message">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            <div class="confirmation-modal__actions">
+                <button class="confirmation-modal__button confirmation-modal__button--secondary" onclick="hideConfirmModal()">Annuler</button>
+                <button class="confirmation-modal__button confirmation-modal__button--primary" id="modal-confirm-btn">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'assignation -->
+    <div class="assignment-modal" id="assignment-modal">
+        <div class="assignment-modal__content">
+            <div class="assignment-modal__header">
+                <h3 class="assignment-modal__title">Assigner l'erreur</h3>
+                <button class="assignment-modal__close" onclick="hideAssignmentModal()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="assignment-modal__body">
+                <div class="assignment-user-list" id="assignment-user-list">
+                    <!-- Sera rempli dynamiquement -->
                 </div>
-            {% endif %}
-
-            {% if pagination is defined and pagination.total_pages > 1 %}
-                <div class="dashboard-pagination">
-                    {% if pagination.current_page > 1 %}
-                        <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: pagination.current_page - 1 })) }}">
-                            ← Précédent
-                        </a>
-                    {% endif %}
-
-                    {% for page in range(max(1, pagination.current_page - 2), min(pagination.total_pages, pagination.current_page + 2)) %}
-                        {% if page == pagination.current_page %}
-                            <span class="current">{{ page }}</span>
-                        {% else %}
-                            <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: page })) }}">
-                                {{ page }}
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if pagination.current_page < pagination.total_pages %}
-                        <a href="{{ path('dashboard_project', { project: project }|merge(app.request.query.all)|merge({ page: pagination.current_page + 1 })) }}">
-                            Suivant →
-                        </a>
-                    {% endif %}
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.css"/>
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/dt-1.10.16/datatables.min.js"></script>
+    <script src="/bundles/datatables/js/datatables.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du tri
-            const sortSelect = document.getElementById('sort-select');
-            if (sortSelect) {
-                sortSelect.addEventListener('change', function() {
-                    const [sort, direction] = this.value.split('|');
-                    const url = new URL(window.location);
-                    url.searchParams.set('sort', sort);
-                    url.searchParams.set('direction', direction);
-                    url.searchParams.delete('page');
-                    window.location.href = url.toString();
+        // Actions sur les erreurs
+        window.resolveError = async function(errorId) {
+            try {
+                const response = await fetch(`{{ path('dashboard_error_resolve', { id: '__ID__' }) }}`.replace('__ID__', errorId), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-            }
 
-            // Actions sur les erreurs (même code que dashboard index)
-            window.resolveError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_resolve', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'resolved');
-                }
-            };
+                const result = await response.json();
 
-            window.ignoreError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_ignore', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'ignored');
-                }
-            };
-
-            window.reopenError = async function(errorId) {
-                const result = await performAction(`{{ path('dashboard_error_reopen', { id: '__ID__' }) }}`.replace('__ID__', errorId));
-                if (result) {
-                    updateErrorStatus(errorId, 'open');
-                }
-            };
-
-            function updateErrorStatus(errorId, newStatus) {
-                const row = document.querySelector(`tr[data-error-id="${errorId}"]`);
-                if (row) {
-                    const statusBadge = row.querySelector('.badge-open, .badge-resolved, .badge-ignored');
-                    if (statusBadge) {
-                        statusBadge.className = `status-badge badge-${newStatus}`;
-                        statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-                    }
-
-                    const actionsCell = row.querySelector('.table-actions');
-                    if (actionsCell) {
-                        let buttonsHtml = '';
-                        if (newStatus === 'open') {
-                            buttonsHtml = `
-                                <button class="action-btn btn-success" onclick="resolveError(${errorId})" title="Résoudre">✓</button>
-                                <button class="action-btn btn-danger" onclick="ignoreError(${errorId})" title="Ignorer">✕</button>
-                            `;
-                        } else {
-                            buttonsHtml = `
-                                <button class="action-btn btn-warning" onclick="reopenError(${errorId})" title="Rouvrir">↻</button>
-                            `;
-                        }
-                        actionsCell.innerHTML = buttonsHtml;
-                    }
-
-                    row.style.background = '#dcfce7';
-                    setTimeout(() => {
-                        row.style.background = '';
-                    }, 1000);
-                }
-            }
-
-            // Auto-refresh
-            const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
-            let autoRefreshInterval;
-
-            if (autoRefreshToggle) {
-                autoRefreshToggle.addEventListener('change', function() {
-                    if (this.checked) {
-                        startAutoRefresh();
+                if (result.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.message || 'Erreur résolue avec succès', 'success');
                     } else {
-                        stopAutoRefresh();
+                        alert('Erreur résolue avec succès');
                     }
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.error || 'Erreur lors de la résolution', 'error');
+                    } else {
+                        alert('Erreur lors de la résolution: ' + (result.error || 'Erreur inconnue'));
+                    }
+                }
+            } catch (error) {
+                console.error('Resolve error failed:', error);
+                if (typeof showNotification === 'function') {
+                    showNotification('Erreur lors de la résolution', 'error');
+                } else {
+                    alert('Erreur lors de la résolution');
+                }
+            }
+        };
+
+        window.ignoreError = async function(errorId) {
+            try {
+                const response = await fetch(`{{ path('dashboard_error_ignore', { id: '__ID__' }) }}`.replace('__ID__', errorId), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
-                if (autoRefreshToggle.checked) {
-                    startAutoRefresh();
-                }
-            }
+                const result = await response.json();
 
-            function startAutoRefresh() {
-                autoRefreshInterval = setInterval(async () => {
-                    try {
-                        {#const response = await fetch('{{ path('dashboard_api_stats') }}?' + new URLSearchParams({{ filters|json_encode|raw }}));#}
-                        {#const stats = await response.json();#}
-                        {#updateStatsDisplay(stats);#}
-                    } catch (error) {
-                        console.error('Erreur lors du refresh des stats:', error);
+                if (result.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.message || 'Erreur ignorée avec succès', 'success');
+                    } else {
+                        alert('Erreur ignorée avec succès');
                     }
-                }, 30000);
-            }
-
-            function stopAutoRefresh() {
-                if (autoRefreshInterval) {
-                    clearInterval(autoRefreshInterval);
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.error || 'Erreur lors de l\'action', 'error');
+                    } else {
+                        alert('Erreur lors de l\'action: ' + (result.error || 'Erreur inconnue'));
+                    }
+                }
+            } catch (error) {
+                console.error('Ignore error failed:', error);
+                if (typeof showNotification === 'function') {
+                    showNotification('Erreur lors de l\'action', 'error');
+                } else {
+                    alert('Erreur lors de l\'action');
                 }
             }
+        };
 
-            function updateStatsDisplay(stats) {
-                const statCards = document.querySelectorAll('.stat-card-value');
-                if (statCards.length >= 4) {
-                    statCards[0].textContent = stats.total_errors || '0';
-                    statCards[1].textContent = (stats.total_occurrences || 0).toLocaleString();
-                    statCards[2].textContent = stats.resolved_errors || '0';
-                    statCards[3].textContent = (stats.occurrences_this_week || 0).toLocaleString();
+        window.reopenError = async function(errorId) {
+            try {
+                const response = await fetch(`{{ path('dashboard_error_reopen', { id: '__ID__' }) }}`.replace('__ID__', errorId), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.message || 'Erreur rouverte avec succès', 'success');
+                    } else {
+                        alert('Erreur rouverte avec succès');
+                    }
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    if (typeof showNotification === 'function') {
+                        showNotification(result.error || 'Erreur lors de la réouverture', 'error');
+                    } else {
+                        alert('Erreur lors de la réouverture: ' + (result.error || 'Erreur inconnue'));
+                    }
+                }
+            } catch (error) {
+                console.error('Reopen error failed:', error);
+                if (typeof showNotification === 'function') {
+                    showNotification('Erreur lors de la réouverture', 'error');
+                } else {
+                    alert('Erreur lors de la réouverture');
+                }
+            }
+        };
+
+        function updateErrorStatus(errorId, newStatus) {
+            const row = document.querySelector(`tr[data-error-id="${errorId}"]`);
+            if (row) {
+                // Mettre à jour le badge de statut
+                const statusBadge = row.querySelector('.badge-open, .badge-resolved, .badge-ignored');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge badge-${newStatus}`;
+                    statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
                 }
 
-                statCards.forEach(card => {
-                    card.style.transform = 'scale(1.05)';
+                // Mettre à jour les boutons d'action
+                const actionsCell = row.querySelector('.table-actions');
+                if (actionsCell) {
+                    let buttonsHtml = '';
+                    if (newStatus === 'open') {
+                        buttonsHtml = `
+                            <button class="action-btn btn-success" onclick="resolveError(${errorId})" title="Résoudre">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn btn-danger" onclick="ignoreError(${errorId})" title="Ignorer">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        `;
+                    } else {
+                        buttonsHtml = `
+                            <button class="action-btn btn-warning" onclick="reopenError(${errorId})" title="Rouvrir">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                            </button>
+                        `;
+                    }
+                    actionsCell.innerHTML = buttonsHtml;
+                }
+
+                // Animation de feedback
+                row.style.background = '#dcfce7';
+                row.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    row.style.background = '';
+                    row.style.transform = '';
+                }, 1000);
+            }
+        }
+
+        // Auto-refresh toggle
+        const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
+        if (autoRefreshToggle) {
+            autoRefreshToggle.addEventListener('change', function() {
+                if (this.checked && window.dashboard) {
+                    window.dashboard.startAutoRefresh();
+                } else if (window.dashboard) {
+                    window.dashboard.stopAutoRefresh();
+                }
+            });
+
+            // Store preference
+            autoRefreshToggle.addEventListener('change', function() {
+                localStorage.setItem('dashboard-auto-refresh', this.checked);
+            });
+
+            // Restore preference
+            const savedPreference = localStorage.getItem('dashboard-auto-refresh');
+            if (savedPreference !== null) {
+                autoRefreshToggle.checked = savedPreference === 'true';
+            }
+        }
+
+        // Fonctions d'assignation des erreurs
+        let currentErrorId = null;
+
+        window.showAssignmentModal = async function(errorId) {
+            currentErrorId = errorId;
+            const modal = document.getElementById('assignment-modal');
+            const userList = document.getElementById('assignment-user-list');
+
+            // Récupérer la liste des utilisateurs assignables
+            try {
+                const response = await fetch(`{{ path('projects_assignable_users', { slug: project.slug }) }}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    let usersHtml = '<div class="assignment-user-item unassign-option" data-user-id="">';
+                    usersHtml += '<div class="assignment-user-avatar">×</div>';
+                    usersHtml += '<div class="assignment-user-info">';
+                    usersHtml += '<div class="assignment-user-name">Non assigné</div>';
+                    usersHtml += '<div class="assignment-user-role">Retirer l\'assignation</div>';
+                    usersHtml += '</div></div>';
+
+                    data.users.forEach(user => {
+                        usersHtml += `<div class="assignment-user-item" data-user-id="${user.id}">`;
+                        usersHtml += `<div class="assignment-user-avatar">${user.initials}</div>`;
+                        usersHtml += '<div class="assignment-user-info">';
+                        usersHtml += `<div class="assignment-user-name">${user.full_name}</div>`;
+                        usersHtml += `<div class="assignment-user-role">${user.role}</div>`;
+                        usersHtml += '</div></div>';
+                    });
+
+                    userList.innerHTML = usersHtml;
+
+                    // Ajouter les événements de clic
+                    document.querySelectorAll('.assignment-user-item').forEach(item => {
+                        item.addEventListener('click', () => assignError(item.dataset.userId));
+                    });
+
+                    modal.classList.add('show');
+                } else {
+                    showNotification(data.error || 'Erreur lors du chargement des utilisateurs', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading assignable users:', error);
+                showNotification('Erreur lors du chargement des utilisateurs', 'error');
+            }
+        };
+
+        window.hideAssignmentModal = function() {
+            const modal = document.getElementById('assignment-modal');
+            modal.classList.remove('show');
+            currentErrorId = null;
+        };
+
+        async function assignError(userId) {
+            if (!currentErrorId) return;
+
+            try {
+                const response = await fetch(`{{ path('projects_assign_error', { slug: project.slug }) }}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        error_id: currentErrorId,
+                        user_id: userId || null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    hideAssignmentModal();
+                    // Recharger le DataTable
                     setTimeout(() => {
-                        card.style.transform = '';
-                    }, 200);
-                });
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error assigning error:', error);
+                showNotification('Erreur lors de l\'assignation', 'error');
             }
+        }
+
+        // Fermer la modal d'assignation en cliquant à l'extérieur
+        document.getElementById('assignment-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAssignmentModal();
+            }
+        });
+
+        // Gestion des actions en lot pour les erreurs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion de la checkbox "Tout sélectionner"
+            document.addEventListener('change', function(e) {
+                if (e.target.id === 'select-all-errors') {
+                    const checkboxes = document.querySelectorAll('.error-checkbox');
+                    checkboxes.forEach(cb => cb.checked = e.target.checked);
+                    updateBulkErrorActions();
+                }
+
+                if (e.target.classList.contains('error-checkbox')) {
+                    updateBulkErrorActions();
+
+                    // Gérer l'état de la checkbox "tout sélectionner"
+                    const allCheckboxes = document.querySelectorAll('.error-checkbox');
+                    const checkedCheckboxes = document.querySelectorAll('.error-checkbox:checked');
+                    const selectAllCheckbox = document.getElementById('select-all-errors');
+
+                    if (selectAllCheckbox) {
+                        if (checkedCheckboxes.length === 0) {
+                            selectAllCheckbox.indeterminate = false;
+                            selectAllCheckbox.checked = false;
+                        } else if (checkedCheckboxes.length === allCheckboxes.length) {
+                            selectAllCheckbox.indeterminate = false;
+                            selectAllCheckbox.checked = true;
+                        } else {
+                            selectAllCheckbox.indeterminate = true;
+                        }
+                    }
+                }
+            });
+        });
+
+        function updateBulkErrorActions() {
+            const selected = document.querySelectorAll('.error-checkbox:checked');
+            const bulkActions = document.getElementById('bulk-actions-errors');
+            const countElement = document.querySelector('.selected-count');
+
+            if (selected.length > 0) {
+                bulkActions.style.display = 'block';
+                countElement.textContent = `${selected.length} erreur(s) sélectionnée(s)`;
+            } else {
+                bulkActions.style.display = 'none';
+            }
+        }
+
+        // Fonctions pour la modal de confirmation
+        function showConfirmModal(title, message, confirmText, confirmClass, onConfirm) {
+            const modal = document.getElementById('confirmation-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalIcon = document.getElementById('modal-icon');
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            confirmBtn.textContent = confirmText;
+            confirmBtn.className = `confirmation-modal__button confirmation-modal__button--${confirmClass}`;
+
+            // Changer l'icône selon l'action
+            modalIcon.className = `confirmation-modal__icon confirmation-modal__icon--${confirmClass}`;
+
+            // Gérer le clic de confirmation
+            confirmBtn.onclick = () => {
+                hideConfirmModal();
+                onConfirm();
+            };
+
+            modal.classList.add('show');
+        }
+
+        function hideConfirmModal() {
+            const modal = document.getElementById('confirmation-modal');
+            modal.classList.remove('show');
+        }
+
+        // Fermer la modal en cliquant à l'extérieur
+        document.getElementById('confirmation-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideConfirmModal();
+            }
+        });
+
+        // Fermer la modal avec Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideConfirmModal();
+            }
+        });
+
+        async function bulkErrorAction(action) {
+            const selected = Array.from(document.querySelectorAll('.error-checkbox:checked')).map(cb => parseInt(cb.value));
+
+            if (selected.length === 0) {
+                showNotification('Aucune erreur sélectionnée', 'warning');
+                return;
+            }
+
+            let actionData = {};
+            switch(action) {
+                case 'resolve':
+                    actionData = {
+                        title: 'Résoudre les erreurs',
+                        message: `Êtes-vous sûr de vouloir résoudre ${selected.length} erreur(s) sélectionnée(s) ?`,
+                        confirmText: 'Résoudre',
+                        confirmClass: 'success'
+                    };
+                    break;
+                case 'ignore':
+                    actionData = {
+                        title: 'Ignorer les erreurs',
+                        message: `Êtes-vous sûr de vouloir ignorer ${selected.length} erreur(s) sélectionnée(s) ?`,
+                        confirmText: 'Ignorer',
+                        confirmClass: 'warning'
+                    };
+                    break;
+                case 'reopen':
+                    actionData = {
+                        title: 'Rouvrir les erreurs',
+                        message: `Êtes-vous sûr de vouloir rouvrir ${selected.length} erreur(s) sélectionnée(s) ?`,
+                        confirmText: 'Rouvrir',
+                        confirmClass: 'primary'
+                    };
+                    break;
+            }
+
+            showConfirmModal(
+                actionData.title,
+                actionData.message,
+                actionData.confirmText,
+                actionData.confirmClass,
+                async () => {
+                    try {
+                        const response = await fetch(`{{ path('projects_bulk_errors', { slug: project.slug }) }}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action, error_ids: selected })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            showNotification(result.message, 'success');
+                            // Recharger la page pour mettre à jour le DataTable
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showNotification(result.error, 'error');
+                        }
+                    } catch (error) {
+                        showNotification('Erreur lors de l\'action groupée', 'error');
+                        console.error('Bulk error action failed:', error);
+                    }
+                }
+            );
+        }
+
+        // Fonction pour copier dans le presse-papiers
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                if (typeof showNotification === 'function') {
+                    showNotification('Copié dans le presse-papiers !', 'success');
+                } else {
+                    alert('Copié dans le presse-papiers !');
+                }
+            }).catch(function(err) {
+                console.error('Erreur lors de la copie:', err);
+                if (typeof showNotification === 'function') {
+                    showNotification('Erreur lors de la copie', 'error');
+                } else {
+                    alert('Erreur lors de la copie');
+                }
+            });
+        }
+
+        // Initialiser DataTable pour les erreurs
+        $(document).ready(function () {
+            $('#errors-table').initDataTables({{ datatable_settings(datatable) }}, {
+                searching: true,
+                dom: 'lTfgtpi',
+                pageLength: 25,
+                responsive: true,
+                language: {
+                    "sProcessing":     "Traitement en cours...",
+                    "sSearch":         "Rechercher :",
+                    "sLengthMenu":     "Afficher _MENU_ éléments",
+                    "sInfo":           "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+                    "sInfoEmpty":      "Affichage de l'élément 0 à 0 sur 0 élément",
+                    "sInfoFiltered":   "(filtré de _MAX_ éléments au total)",
+                    "sInfoPostFix":    "",
+                    "sLoadingRecords": "Chargement en cours...",
+                    "sZeroRecords":    "Aucun élément à afficher",
+                    "sEmptyTable":     "Aucune donnée disponible dans le tableau",
+                    "oPaginate": {
+                        "sFirst":      "Premier",
+                        "sPrevious":   "Précédent",
+                        "sNext":       "Suivant",
+                        "sLast":       "Dernier"
+                    },
+                    "oAria": {
+                        "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                        "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
+                    }
+                },
+                drawCallback: function() {
+                    // Réinitialiser les sélections après redraw
+                    updateBulkErrorActions();
+                },
+                initComplete: function() {
+                    // Ajouter la checkbox "Tout sélectionner" dans l'en-tête
+                    const selectHeader = $('#errors-table thead th:first-child');
+                    selectHeader.html('<input type="checkbox" id="select-all-errors" class="error-select-all">');
+                }
+            });
         });
     </script>
 {% endblock %}

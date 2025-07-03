@@ -1,10 +1,10 @@
-<div class="error-stats">
-    <div class="stat-item">
-        <span class="stat-value">{{ row.totalErrors }}</span>
-        <span class="stat-label">groupes</span>
+<div class="project-error-stats">
+    <div class="project-stat-compact">
+        <span class="stat-number">{{ row.totalErrors }}</span>
+        <small>erreurs</small>
     </div>
-    <div class="stat-item">
-        <span class="stat-value">{{ row.totalOccurrences }}</span>
-        <span class="stat-label">occurrences</span>
+    <div class="project-stat-compact">
+        <span class="stat-number">{{ row.totalOccurrences|number_format }}</span>
+        <small>occur.</small>
     </div>
 </div>

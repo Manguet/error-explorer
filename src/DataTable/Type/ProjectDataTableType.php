@@ -77,7 +77,7 @@ class ProjectDataTableType implements DataTableTypeInterface
                 'template' => 'projects/datatable/project_actions.html.twig',
                 'orderable' => false,
                 'searchable' => false,
-                'className' => 'text-center actions-cell'
+                'className' => 'text-center actions-cell project-actions-cell'
             ])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Project::class,

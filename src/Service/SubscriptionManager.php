@@ -11,6 +11,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class SubscriptionManager
 {
@@ -19,7 +20,10 @@ class SubscriptionManager
         private EntityManagerInterface $entityManager,
         private MailerInterface $mailer,
         private Environment $twig,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private SettingsManager $settingsManager,
+        #[Autowire('%app.stripe.secret_key%')] private readonly string $stripeSecretKey,
+        #[Autowire('%app.mailer_from_email%')] private readonly string $mailerFromEmail
     ) {}
 
     public function handleTrialExpiration(Subscription $subscription): void
@@ -145,7 +149,7 @@ class SubscriptionManager
             $user = $subscription->getUser();
             
             $email = (new Email())
-                ->from('noreply@error-explorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('Paiement confirmé - Error Explorer')
                 ->html($this->twig->render('emails/payment_success.html.twig', [
@@ -173,7 +177,7 @@ class SubscriptionManager
             $user = $subscription->getUser();
             
             $email = (new Email())
-                ->from('noreply@error-explorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('Échec du paiement - Error Explorer')
                 ->html($this->twig->render('emails/payment_failed.html.twig', [
@@ -202,7 +206,7 @@ class SubscriptionManager
             $user = $subscription->getUser();
             
             $email = (new Email())
-                ->from('noreply@error-explorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('Abonnement annulé - Error Explorer')
                 ->html($this->twig->render('emails/subscription_cancelled.html.twig', [
@@ -230,7 +234,7 @@ class SubscriptionManager
             $user = $subscription->getUser();
             
             $email = (new Email())
-                ->from('noreply@error-explorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('Votre essai se termine bientôt - Error Explorer')
                 ->html($this->twig->render('emails/trial_ending.html.twig', [
@@ -259,7 +263,7 @@ class SubscriptionManager
             $user = $subscription->getUser();
             
             $email = (new Email())
-                ->from('noreply@error-explorer.com')
+                ->from($this->mailerFromEmail)
                 ->to($user->getEmail())
                 ->subject('Votre essai gratuit est terminé - Error Explorer')
                 ->html($this->twig->render('emails/trial_expired.html.twig', [
@@ -324,7 +328,7 @@ class SubscriptionManager
         foreach ($expiredMethods as $method) {
             try {
                 // Détacher de Stripe et supprimer localement
-                $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
+                $stripe = new \Stripe\StripeClient($this->stripeSecretKey);
                 $stripe->paymentMethods->detach($method->getStripePaymentMethodId());
                 
                 $this->entityManager->remove($method);

@@ -17,8 +17,9 @@ class StripeService
     private StripeClient $stripe;
 
     public function __construct(
-        #[Autowire('%env(STRIPE_SECRET_KEY)%')] private string $stripeSecretKey,
-        #[Autowire('%env(STRIPE_PUBLIC_KEY)%')] private string $stripePublicKey,
+        #[Autowire('%app.stripe.secret_key%')] private string $stripeSecretKey,
+        #[Autowire('%app.stripe.public_key%')] private string $stripePublicKey,
+        #[Autowire('%app.base_url%')] private readonly string $baseUrl,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger
     ) {
@@ -405,11 +406,11 @@ class StripeService
 
     private function getSuccessUrl(): string
     {
-        return $_ENV['APP_URL'] . '/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}';
+        return $this->baseUrl . '/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}';
     }
 
     private function getCancelUrl(): string
     {
-        return $_ENV['APP_URL'] . '/dashboard/billing/cancel';
+        return $this->baseUrl . '/dashboard/billing/cancel';
     }
 }

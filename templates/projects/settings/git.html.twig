@@ -1,0 +1,266 @@
+{% extends 'dashboard/base.html.twig' %}
+
+{% block title %}Git Integration - {{ project.name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Force des styles pour le select Git Provider */
+        #git_integration_gitProvider {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        #git_integration_gitProvider option {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            padding: 8px !important;
+        }
+        
+        select#git_integration_gitProvider option:checked {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #ffffff !important;
+        }
+        
+        /* Styles plus spécifiques */
+        .git-integration__field select option {
+            background: #1e293b !important;
+            color: #fff !important;
+        }
+    </style>
+{% endblock %}
+
+{% block page_title %}Intégration Git{% endblock %}
+{% block page_subtitle %}Connectez votre dépôt Git pour afficher des extraits de code avec vos erreurs.{% endblock %}
+
+{% block breadcrumb_items %}
+    <a href="{{ path('dashboard_project', { project: project.slug }) }}">{{ project.name }}</a>
+    <span>Paramètres</span>
+    <span>Intégration Git</span>
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ path('dashboard_project', { project: project.slug }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Retour au projet
+    </a>
+    <a href="{{ path('project_alerts_settings', { slug: project.slug }) }}" class="header-btn btn-secondary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Alertes
+    </a>
+{% endblock %}
+
+{% block body %}
+    {% if project.isGitConfigured() and project.gitAccessToken %}
+        <div class="dashboard-section">
+            <div class="dashboard-table-container">
+                <div class="dashboard-table-container-header">
+                    <h3>État de la configuration</h3>
+                </div>
+                <div class="git-integration__status">
+                    <div class="git-integration__alert git-integration__alert--success">
+                        <div class="git-integration__status-header">
+                            <svg class="git-integration__status-icon git-integration__status-icon--success" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="git-integration__status-title">Configuration réussie !</span>
+                        </div>
+                        <p>Votre dépôt Git est maintenant connecté. Error Explorer peut accéder au code source pour enrichir les stack traces.</p>
+                    </div>
+                    
+                    <div class="git-integration__status-details">
+                        <h4>Détails de la configuration :</h4>
+                        <ul>
+                            <li><strong>Fournisseur :</strong> {{ project.gitProvider|capitalize }}</li>
+                            <li><strong>Dépôt :</strong> {{ project.repositoryUrl }}</li>
+                            <li><strong>Token :</strong> ••••••••• (chiffré et sécurisé)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="git-integration__alert git-integration__alert--info">
+                        <svg class="git-integration__alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+                        <strong>Note :</strong> Les tokens sont chiffrés dans notre base de données et ne peuvent être utilisés que pour lire le code source de votre dépôt.
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="dashboard-section">
+        <div class="dashboard-table-container">
+            <div class="dashboard-table-container-header">
+                <h3>Configuration du Dépôt</h3>
+            </div>
+            <div class="git-integration__form-section">
+                {{ form_start(form) }}
+                
+                <div class="git-integration__field">
+                    {{ form_label(form.repositoryUrl) }}
+                    {{ form_widget(form.repositoryUrl, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_help(form.repositoryUrl) }}
+                    {{ form_errors(form.repositoryUrl) }}
+                </div>
+                
+                <div class="git-integration__field">
+                    {{ form_label(form.gitProvider) }}
+                    {{ form_widget(form.gitProvider, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.gitProvider) }}
+                </div>
+                
+                <div class="git-integration__field">
+                    {{ form_label(form.gitAccessToken) }}
+                    {{ form_widget(form.gitAccessToken, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_help(form.gitAccessToken) }}
+                    {{ form_errors(form.gitAccessToken) }}
+                </div>
+                
+                <div id="provider-instructions" class="git-integration__instructions">
+                    <div class="git-integration__alert git-integration__alert--info">
+                        <svg class="git-integration__alert-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                        <span><strong>Instructions pour créer un token d'accès</strong></span>
+                    </div>
+                    
+                    <div class="git-integration__provider-section github-instructions">
+                        <h5 class="git-integration__provider-title">GitHub - Personal Access Token</h5>
+                        <ol class="git-integration__steps">
+                            <li>Allez sur <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">GitHub Settings > Personal Access Tokens</a></li>
+                            <li>Cliquez sur "Generate new token (classic)"</li>
+                            <li>Donnez un nom descriptif (ex: "Error Explorer")</li>
+                            <li>Sélectionnez les permissions suivantes :
+                                <ul>
+                                    <li><code class="git-integration__code">repo</code> (pour les dépôts privés)</li>
+                                    <li><code class="git-integration__code">public_repo</code> (pour les dépôts publics uniquement)</li>
+                                </ul>
+                            </li>
+                            <li>Cliquez sur "Generate token"</li>
+                            <li>Copiez le token et collez-le dans le champ ci-dessus</li>
+                        </ol>
+                        <p class="git-integration__important">
+                            <strong>Important :</strong> Copiez le token immédiatement, vous ne pourrez plus le voir après avoir quitté la page.
+                        </p>
+                    </div>
+                    
+                    <div class="git-integration__provider-section gitlab-instructions">
+                        <h5 class="git-integration__provider-title">GitLab - Personal Access Token</h5>
+                        <ol class="git-integration__steps">
+                            <li>Allez sur <a href="https://gitlab.com/-/profile/personal_access_tokens" target="_blank" rel="noopener">GitLab Settings > Access Tokens</a></li>
+                            <li>Donnez un nom descriptif (ex: "Error Explorer")</li>
+                            <li>Sélectionnez une date d'expiration (optionnel)</li>
+                            <li>Sélectionnez les permissions suivantes :
+                                <ul>
+                                    <li><code class="git-integration__code">read_api</code></li>
+                                    <li><code class="git-integration__code">read_repository</code></li>
+                                </ul>
+                            </li>
+                            <li>Cliquez sur "Create personal access token"</li>
+                            <li>Copiez le token et collez-le dans le champ ci-dessus</li>
+                        </ol>
+                        <p class="git-integration__important">
+                            <strong>Important :</strong> Copiez le token immédiatement, vous ne pourrez plus le voir après avoir quitté la page.
+                        </p>
+                    </div>
+                    
+                    <div class="git-integration__provider-section bitbucket-instructions">
+                        <h5 class="git-integration__provider-title">Bitbucket - App Password</h5>
+                        <ol class="git-integration__steps">
+                            <li>Allez sur <a href="https://bitbucket.org/account/settings/app-passwords/new" target="_blank" rel="noopener">Bitbucket Settings > App passwords</a></li>
+                            <li>Donnez un nom descriptif (ex: "Error Explorer")</li>
+                            <li>Sélectionnez les permissions suivantes :
+                                <ul>
+                                    <li><code class="git-integration__code">Repositories: Read</code></li>
+                                </ul>
+                            </li>
+                            <li>Cliquez sur "Create"</li>
+                            <li>Copiez le mot de passe et collez-le dans le champ ci-dessus</li>
+                        </ol>
+                        <p class="git-integration__important">
+                            <strong>Important :</strong> Copiez le mot de passe immédiatement, vous ne pourrez plus le voir après avoir quitté la page.
+                        </p>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary git-integration__submit-button">Enregistrer</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function() {
+            'use strict';
+            
+            const providerSelect = document.getElementById('{{ form.gitProvider.vars.id }}');
+            const instructionsContainer = document.getElementById('provider-instructions');
+            const providerSections = document.querySelectorAll('.git-integration__provider-section');
+            
+            function showProviderInstructions() {
+                const selectedProvider = providerSelect.value;
+                
+                // Hide all provider sections
+                providerSections.forEach(section => {
+                    section.classList.remove('git-integration__provider-section--active');
+                });
+                
+                if (selectedProvider) {
+                    // Show instructions container
+                    instructionsContainer.classList.add('git-integration__instructions--active');
+                    
+                    // Show specific provider section
+                    const activeSection = document.querySelector('.' + selectedProvider + '-instructions');
+                    if (activeSection) {
+                        activeSection.classList.add('git-integration__provider-section--active');
+                    }
+                } else {
+                    // Hide instructions container
+                    instructionsContainer.classList.remove('git-integration__instructions--active');
+                }
+            }
+            
+            // Listen for provider changes
+            providerSelect.addEventListener('change', showProviderInstructions);
+            
+            // Show instructions on page load if provider is already selected
+            showProviderInstructions();
+            
+            // Force les styles du select pour corriger le problème de lisibilité
+            function forceSelectStyles() {
+                const select = document.getElementById('git_integration_gitProvider');
+                if (select) {
+                    select.style.setProperty('background-color', '#1e293b', 'important');
+                    select.style.setProperty('color', '#ffffff', 'important');
+                    
+                    // Force les styles des options
+                    const options = select.querySelectorAll('option');
+                    options.forEach(option => {
+                        option.style.setProperty('background-color', '#1e293b', 'important');
+                        option.style.setProperty('color', '#ffffff', 'important');
+                    });
+                }
+            }
+            
+            // Applique les styles immédiatement et après les changements
+            forceSelectStyles();
+            
+            // Réapplique les styles après tout changement du DOM
+            const observer = new MutationObserver(forceSelectStyles);
+            observer.observe(document.body, { childList: true, subtree: true });
+            
+            // Applique les styles à chaque focus/interaction
+            providerSelect.addEventListener('focus', forceSelectStyles);
+            providerSelect.addEventListener('click', forceSelectStyles);
+        })();
+    </script>
+{% endblock %}
